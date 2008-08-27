@@ -3,10 +3,9 @@ class DefaultRenderer
 {
 	public static function render($element)
 	{
-		print "<div class='fapi-element-div'>";
-
 		if($element->getType()=="Field")
 		{
+			print "<div class='fapi-element-div'>";
 			print "<div class='fapi-label'>".$element->getLabel();
 			if($element->getRequired())
 			{	
@@ -32,7 +31,10 @@ class DefaultRenderer
 		{
 			print "<div class='fapi-description'>".$element->getDescription()."</div>";
 		}
-		print "</div>";		
+		if($element->getType()=="Field")
+		{
+			print "</div>";
+		}		
 	}
 }
 ?>

@@ -65,7 +65,6 @@ class Form extends Container
 		return false;
 	}
 	
-	
 	/**
 	 * Renders the form.
 	 *

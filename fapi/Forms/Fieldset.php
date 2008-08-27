@@ -4,6 +4,11 @@ include_once "DefaultRenderer.php";
 
 class Fieldset extends Container
 {	
+	public function __construct($label="")
+	{
+		$this->setLabel($label);
+	}
+	
 	public function render()
 	{
 		print "<fieldset>";

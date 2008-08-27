@@ -160,7 +160,7 @@ abstract class Field extends Element
 	{
 		$classes="";
 		if($this->error) $classes.="error ";
-		if($this->getRequired()) $classes .="required";
+		if($this->getRequired()) $classes .="required ";
 		return $classes;
 	}
 	

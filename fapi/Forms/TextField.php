@@ -25,6 +25,11 @@ class TextField extends Field
 		print '<input class="fapi-textfield '.$this->getClasses().'" type="text" name="'.$this->getName().'" id="'.$this->getId().'" value="'.$this->getValue().'" />';
 	}
 	
+	public function getClasses()
+	{
+		return Field::getClasses().strtolower($this->type)." ";
+	}
+	
 	public function setRegExp($regexp)
 	{
 		$this->type="REGEXP";

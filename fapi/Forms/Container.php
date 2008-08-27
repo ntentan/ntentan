@@ -5,7 +5,6 @@ include_once "Element.php";
  * The container class. This abstract class provides the necessary
  * basis for implementing form element containers. The container
  * is a special element which contains other form elements.
- *
  */
 abstract class Container extends Element
 {	
