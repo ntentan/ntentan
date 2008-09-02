@@ -1,4 +1,6 @@
 <?php
+include_once "Attribute.php";
+
 /**
  * The form element class. An element can be anything from the form
  * itself to the objects that are put in the form. Provides an 
@@ -36,6 +38,10 @@ abstract class Element
 	 * @var string
 	 */
 	protected $method;
+	
+	protected $classes = array();
+	
+	protected $attributes = array();
 		
 	public function __construct($label="", $description="", $id="")
 	{
@@ -121,10 +127,40 @@ abstract class Element
 	
 	abstract public function validate();
 	
-	public function getClasses()
+	public function getCSSClasses()
 	{
-		return "";
+		$ret = "";
+		foreach($this->classes as $class)
+		{
+			$ret .= $class." ";
+		}
+		return $ret;
 	}
 	
+	public function addCSSClass($class)
+	{
+		array_push($this->classes, $class);
+	}
+	
+	public function addAttributeObject($attribute)
+	{
+		array_push($this->attributes, $attribute);
+	}
+	
+	public function addAttribute($attribute,$value)
+	{
+		$attribute = new Attribute($attribute, $value);
+		$this->addAttributeObject($attribute);
+	}
+	
+	public function getAttributes()
+	{
+		$ret = "";
+		foreach($this->attributes as $attribute)
+		{
+			$ret .= $attribute->getHTML()." ";
+		}
+		return $ret;
+	}
 }
 ?>

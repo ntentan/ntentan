@@ -27,11 +27,11 @@ class TableLayout extends Container
 	 * @param unknown_type $num_rows
 	 * @param unknown_type $num_columns
 	 */
-	public function __construct($num_rows=-1, $num_columns=-1)
+	public function __construct($num_rows=-1, $num_columns=-1, $id="")
 	{
 		$this->num_rows = $num_rows;
 		$this->num_columns = $num_columns;
-
+		$this->setId($id);
 		for($i=0; $i<$num_rows; $i++)
 		{
 			array_push($this->elements,array());
@@ -77,7 +77,7 @@ class TableLayout extends Container
 		}
 		else
 		{
-			print "<table>";
+			print "<table class='fapi-table ".$this->getCSSClasses()."' ".($this->getId()!=""?"id='".$this->getId()."'":"")." >";
 			for($row=0; $row<$this->num_rows; $row++)
 			{
 				print "<tr>";

@@ -12,22 +12,28 @@ class TextField extends Field
 	protected $type;
 	protected $max_val;
 	protected $min_val;
-	protected $reg_exp;
+	protected $regexp;
 	
 	public function __construct($label="",$name="",$description="",$value="")
 	{
 		Field::__construct($name,$value);
 		Element::__construct($label, $description);
+		$this->type = "TEXT";
 	}
 		
 	public function render()
 	{
-		print '<input class="fapi-textfield '.$this->getClasses().'" type="text" name="'.$this->getName().'" id="'.$this->getId().'" value="'.$this->getValue().'" />';
+		$this->addAttribute("class","fapi-textfield ".$this->getCSSClasses());
+		$this->addAttribute("type","text");
+		$this->addAttribute("name",$this->getName());
+		$this->addAttribute("id",$this->getId());
+		$this->addAttribute("value",$this->getValue());
+		print "<input {$this->getAttributes()} >"; //class="fapi-textfield '.$this->getCSSClasses().'" type="text" name="'.$this->getName().'" id="'.$this->getId().'" value="'.$this->getValue().'" />';
 	}
 	
-	public function getClasses()
+	public function getCSSClasses()
 	{
-		return Field::getClasses().strtolower($this->type)." ";
+		return Field::getCSSClasses().strtolower($this->type);
 	}
 	
 	public function setRegExp($regexp)
@@ -81,12 +87,6 @@ class TextField extends Field
 					return false;
 				}
 			}
-			else
-			{
-				$this->error = true;
-				array_push($this->errors,"This field cannot be numeric");
-				return false;
-			}
 			return true;
 		}
 		
@@ -112,7 +112,20 @@ class TextField extends Field
 				return false;
 			}
 			return true;
-		}		
+		}
+
+		else if($this->type=="REGEXP")
+		{
+			if(eregi($this->regexp, $this->getValue()))
+			{
+				return true;
+			}
+			else
+			{
+				$this->error = true;
+				return false;
+			}
+		}
 	}
 }
 ?>

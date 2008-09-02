@@ -38,7 +38,7 @@ class SelectionList extends Field
 	
 	public function render()
 	{
-		print "<select class='fapi-list ".$this->getClasses()."' name='".$this->getName()."' ".($this->multiple?"multiple='multiple'":"").">";
+		print "<select class='fapi-list ".$this->getCSSClasses()."' name='".$this->getName()."' ".($this->multiple?"multiple='multiple'":"").">";
 		foreach($this->options as $option)
 		{
 			print "<option value='$option->value' ".($this->getValue()==$option->value?"selected='selected'":"").">$option->label</option>";

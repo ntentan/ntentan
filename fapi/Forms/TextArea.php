@@ -10,7 +10,7 @@ class TextArea extends Field
 	
 	public function render()
 	{
-		print "<textarea class='fapi-textarea ".$this->getClasses()."' name='".$this->getName()."'>".$this->getValue()."</textarea>"; 
+		print "<textarea class='fapi-textarea ".$this->getCSSClasses()."' name='".$this->getName()."'>".$this->getValue()."</textarea>"; 
 	}
 }
 ?>

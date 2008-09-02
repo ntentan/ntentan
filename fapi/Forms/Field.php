@@ -124,6 +124,7 @@ abstract class Field extends Element
 		}
 		else
 		{
+			print "No Method";
 			$this->setValue("");
 		}	
 			
@@ -156,9 +157,9 @@ abstract class Field extends Element
 		return __CLASS__;
 	}
 	
-	public function getClasses()
+	public function getCSSClasses()
 	{
-		$classes="";
+		$classes=parent::getCSSClasses();
 		if($this->error) $classes.="error ";
 		if($this->getRequired()) $classes .="required ";
 		return $classes;

@@ -33,7 +33,7 @@ class RadioButton extends Field
 	
 	public function render()
 	{
-		print "<input class='fapi-radiobutton ".$this->getClasses()."' type='radio' name='".$this->getName()."' value='".$this->getValue()."' ".($this->getValue()==$_POST[$this->getName()]?"checked='checked'":"")."/>";
+		print "<input class='fapi-radiobutton ".$this->getCSSClasses()."' type='radio' name='".$this->getName()."' value='".$this->getValue()."' ".($this->getValue()==$_POST[$this->getName()]?"checked='checked'":"")."/>";
 		print '<span class="fapi-label">'.$this->getLabel()."</span>";
 		print "<div class='fapi-description'>".$this->getDescription()."</div>";
 	}

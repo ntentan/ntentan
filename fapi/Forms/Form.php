@@ -43,11 +43,11 @@ class Form extends Container
 	
 	public function __construct($method="")
 	{
+		parent::__construct();
 		if($method=="") $method="POST";
 		$this->setMethod($method);
 		$this->sendValidator = new HiddenField("is_form_sent");
 		$this->add($this->sendValidator);
-		$this->renderer = "DefaultRenderer";
 	}
 	
 	public function validate()
@@ -73,11 +73,15 @@ class Form extends Container
 	{
 		if($this->validate()) return;
 		$this->sendValidator->setValue("yes");
-		print '<form method="'.$this->method.'" id="'.$this->id.'">';
-		foreach($this->elements as $element)
+		$this->addAttribute("method",$this->getMethod());
+		$this->addAttribute("id",$this->getId());
+		$this->addAttribute("class","fapi-form");
+		print '<form '.$this->getAttributes().'>';
+		/*foreach($this->elements as $element)
 		{
 			DefaultRenderer::render($element);
-		}
+		}*/
+		$this->renderElements();
 		print '<input type="submit" '.($this->submitValue?('value="'.$this->submitValue.'"'):"").' />';
 		print '</form>';
 	}

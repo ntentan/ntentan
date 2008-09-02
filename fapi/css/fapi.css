@@ -1,8 +1,16 @@
 @CHARSET "US-ASCII";
 
+.fapi-form
+{
+font-family:Arial, Helvetica, Sans;
+}
+
+/*****************************
+	BASIC ELEMENT
+******************************/
 div.fapi-element-div
 {
-padding:10px;
+padding:5px;
 }
 
 .fapi-label
@@ -10,16 +18,27 @@ padding:10px;
 font-weight:bold;	
 }
 
-div.fapi-description
+.fapi-description
 {
 font-size:small;
 color:#808080;
 }
 
+/********************************
+RADIO BUTTON
+********************************/
 div.fapi-radio-button
 {
 padding-top:2px;
 padding-bottom:2px;
+}
+
+/*******************************
+TEXT FIELDS
+*******************************/
+.fapi-textfield
+{
+width:100%;	
 }
 
 span.fapi-required
@@ -29,17 +48,32 @@ color:#ff8000;
 
 input.fapi-textfield
 {
-width:50%;
+
 }
 
 .required
 {
-background-color:#fff0d0;	
+background-color:#fff0d0;
+}
+
+.numeric
+{
+width:40%;	
+}
+
+.text
+{
+width:100%;
 }
 
 .error
 {
 border:1px solid red;	
+}
+
+.code
+{
+width:40%;	
 }
 
 div.error
@@ -55,4 +89,22 @@ div.error ul
 margin:0px;
 padding:5px;
 padding-left:20px;
+}
+
+/***************************
+TAB LAYOUT
+****************************/
+ul.fapi-tab-list
+{
+margin:0px;
+padding:0px;
+list-style:none;
+}
+
+ul.fapi-tab-list > li
+{
+display:inline;
+margin-left:3px;
+margin-right:3px;
+padding:5px;
 }
