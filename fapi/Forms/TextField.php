@@ -75,6 +75,8 @@ class TextField extends Field
 			return false;
 		}
 		
+		if($this->getValue()=="") return true;
+		
 		//Perform validation on text fields
 		if($this->type=="TEXT")
 		{

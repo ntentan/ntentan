@@ -5,12 +5,14 @@ class RadioGroup extends Field
 {
 	protected $buttons = array();
 	
-	public function __construc($name="")
+	public function __construct($label="",$name="",$description="")
 	{
+		$this->setLabel($label);
 		$this->setName($name);	
+		$this->setDescription($description);
 	}
 	
-	public function addRadiobutton($button)
+	public function add($button)
 	{
 		if($button->getType()=="RadioButton")
 		{

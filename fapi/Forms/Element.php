@@ -43,6 +43,10 @@ abstract class Element
 	
 	protected $attributes = array();
 		
+	protected $errors = array();
+	
+	protected $error;
+		
 	public function __construct($label="", $description="", $id="")
 	{
 		$this->setLabel($label);
@@ -106,9 +110,14 @@ abstract class Element
 		return $this->method;
 	}
 	
+	public function getErrors()
+	{
+		return $this->errors;
+	}
+	
 	public function hasError()
 	{
-		return false;
+		return $this->error;
 	}
 	
 	public function getType()

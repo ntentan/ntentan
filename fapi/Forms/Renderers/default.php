@@ -15,15 +15,20 @@ function default_renderer_head()
  */
 function default_renderer_element($element)
 {
-	if($element->getType()=="Field")
-	{
+	/*if($element->getType()=="Field")
+	{*/
 		print "<div class='fapi-element-div'>";
-		print "<div class='fapi-label'>".$element->getLabel();
-		if($element->getRequired())
-		{	
-			print "<span class='fapi-required'>*</span>";
+		
+		if($element->getType()=="Field")
+		{
+			print "<div class='fapi-label'>".$element->getLabel();
+			if($element->getRequired())
+			{	
+				print "<span class='fapi-required'>*</span>";
+			}
+			print "</div>";
 		}
-		print "</div>";
+		
 		if($element->hasError())
 		{
 			print "<div class='error'>";
@@ -33,9 +38,9 @@ function default_renderer_element($element)
 				print "<li>$error</li>";
 			}
 			print "</ul>";
-			print "</div>";
+			print "</div><p></p>";
 		}
-	}
+	/*}*/
 		
 	$element->render();
 		
@@ -43,10 +48,10 @@ function default_renderer_element($element)
 	{
 		print "<div class='fapi-description'>".$element->getDescription()."</div>";
 	}
-	if($element->getType()=="Field")
-	{
+	/*if($element->getType()=="Field")
+	{*/
 		print "</div>";
-	}		
+	/*}*/		
 }
 
 /**

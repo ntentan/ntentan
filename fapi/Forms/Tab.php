@@ -22,7 +22,8 @@ class Tab extends Container
 	
 	public function render()
 	{
-		print "<div class='fapi-tab {$this->getCSSClasses()}'>";
+		$this->addAttribute("class","fapi-tab {$this->getCSSClasses()}");
+		print "<div {$this->getAttributes()}>";
 		$this->renderElements();
 		print "</div>";
 	}

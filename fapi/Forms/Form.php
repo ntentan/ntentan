@@ -82,7 +82,9 @@ class Form extends Container
 			DefaultRenderer::render($element);
 		}*/
 		$this->renderElements();
+		print '<div id="fapi-submit-area">';
 		print '<input type="submit" '.($this->submitValue?('value="'.$this->submitValue.'"'):"").' />';
+		print '</div>';
 		print '</form>';
 	}
 	

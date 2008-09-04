@@ -37,10 +37,6 @@ abstract class Field extends Element
 	 */
 	protected $enabled;
 	
-	protected $errors = array();
-	
-	protected $error;
-	
 	/**
 	 * The constructor for the fiel element.
 	 *
@@ -140,16 +136,6 @@ abstract class Field extends Element
 			return false;
 		}
 		return true;
-	}
-	
-	public function getErrors()
-	{
-		return $this->errors;
-	}
-	
-	public function hasError()
-	{
-		return $this->error;
 	}
 	
 	public function getType()

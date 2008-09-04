@@ -1,8 +1,34 @@
 @CHARSET "US-ASCII";
 
+.fapi-table
+{
+width:100%;
+}
+
+table.fapi-table td
+{
+padding-bottom:20px;
+vertical-align:top;
+}
+
 .fapi-form
 {
 font-family:Arial, Helvetica, Sans;
+}
+
+#fapi-submit-area
+{
+padding:10px;	
+}
+
+.fapi-fieldset
+{
+border-color:#a0a0a0;	
+}
+
+.fapi-fieldset legend
+{
+font-weight:bold;	
 }
 
 /*****************************
@@ -11,11 +37,13 @@ font-family:Arial, Helvetica, Sans;
 div.fapi-element-div
 {
 padding:5px;
+padding-bottom:15px;
 }
 
 .fapi-label
 {
-font-weight:bold;	
+font-weight:bold;
+color:#606060;
 }
 
 .fapi-description
@@ -101,10 +129,44 @@ padding:0px;
 list-style:none;
 }
 
-ul.fapi-tab-list > li
+li.fapi-tab-selected
 {
-display:inline;
-margin-left:3px;
-margin-right:3px;
+background-color:#e0e0e0;
+padding-top:10px;
+}
+
+li.fapi-tab-unselected
+{
+background-color:#a0a0a0;
+}
+
+ul.fapi-tab-list li
+{
+/*display:inline;*/
+float:left;
+margin-right:5px;
 padding:5px;
 }
+
+ul.fapi-tab-list li a
+{
+text-decoration:none;
+color:black;
+font-weight:bold;
+padding:5px;
+padding-left:10px;
+padding-right:10px;
+}
+
+div.fapi-tab-unselected
+{
+display:none;
+}
+
+div.fapi-tab
+{
+background-color:#e0e0e0;
+clear:both;
+padding:10px;
+}
+
