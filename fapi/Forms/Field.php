@@ -37,6 +37,9 @@ abstract class Field extends Element
 	 */
 	protected $enabled;
 	
+	protected $validationFunc;
+	
+	
 	/**
 	 * The constructor for the fiel element.
 	 *
@@ -127,6 +130,20 @@ abstract class Field extends Element
 		return array($this->getName() => $this->getValue());
 	}
 	
+	/**
+	 * Sets a custom validation function which is to be called during the
+	 * validation phase. This function takes as a parameter an array which must
+	 * be used to store all the individual error messages encountered during the
+	 * validation phase.
+	 *
+	 * @param $validationFunc A string representing the name of the validation
+	 * function
+	 */
+	public function setValidationFunc($validationFunc)
+	{
+		$this->validationFunc = $validationFunc;
+	}
+	
 	public function validate()
 	{
 		if($this->getRequired() && $this->getValue() == "")
@@ -134,6 +151,11 @@ abstract class Field extends Element
 			$this->error = true;
 			array_push($this->errors,"This field is required.");
 			return false;
+		}
+		$validationFunc = $this->validationFunc;
+		if($validationFunc!="")
+		{
+			$validationFunc($this->errors);
 		}
 		return true;
 	}
