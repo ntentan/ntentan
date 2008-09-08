@@ -39,7 +39,6 @@ abstract class Field extends Element
 	
 	protected $validationFunc;
 	
-	
 	/**
 	 * The constructor for the fiel element.
 	 *

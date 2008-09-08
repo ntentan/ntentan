@@ -2,6 +2,8 @@
 /**
  * An abstract databas class which provides a simple method through
  * which users can connect to their databases.
+ * 
+ * @author James Ekow Abaka Ainooson
  */
 abstract class Database
 {
