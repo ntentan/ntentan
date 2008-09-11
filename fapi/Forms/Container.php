@@ -37,6 +37,10 @@ abstract class Container extends Element
 	 */
 	protected $renderer_element;
 	
+	protected $database_table;
+	
+	protected $database_schema;
+	
 	public function __construct($renderer="default")
 	{
 		$this->setRenderer($renderer);
@@ -69,6 +73,7 @@ abstract class Container extends Element
 		array_push($this->elements, $element);
 		$element->setMethod($this->method);
 	}
+	
 	
 	/**
 	 * Method for removing a particular form element from the 
@@ -114,6 +119,32 @@ abstract class Container extends Element
 		return $retval;
 	}
 	
+	public function saveData()
+	{
+		if($this->database_table!="")
+		{
+			//Get Data from the database
+			$data = $this->getData();
+			
+			//Extract Fields and build query
+			$field = array_keys($data);
+			$query = "INSERT INTO ".($this->database_schema!=""?$this->database_schema:"").$this->database_table."(";
+			for($i=0; $i<count($field); $i++)
+			{
+				if($i!=0) $query.=",";
+				$query.=$field[$i];
+			}
+			$query.=") VALUES(";
+			for($i=0; $i<count($field); $i++)
+			{
+				if($i!=0) $query.=",";
+				$query.="\"".mysql_escape_string($data[$field[$i]])."\"";
+			}
+			$query.=")";
+			mysql_query($query) or die(mysql_error());
+		}
+	}
+	
 	public function getType()
 	{
 		return __CLASS__;
@@ -129,6 +160,16 @@ abstract class Container extends Element
 		{
 			$renderer_element($element);
 		}		
+	}
+	
+	protected function setDatabaseTable($database_table)
+	{
+		$this->database_table = $database_table;
+	}
+	
+	protected function setDatabaseSchema($database_schema)
+	{
+		$this->database_schema = $database_schema;
 	}
 		
 }

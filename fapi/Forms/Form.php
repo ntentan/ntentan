@@ -10,7 +10,8 @@ include_once "DefaultRenderer.php";
  * @todo Change all labels from DIVs to LABEL
  * @todo Setup JavaScript hooks
  * @todo Remove the is_form_sent field from the value returned to the validated function
- * @todo Add styling hooks called from the various classes for CSS
+ * @todo Add styling hooks called from the various classes for CSS (Elaborate!)
+ * @todo Change all includes to requires
  */
 class Form extends Container
 {	
@@ -46,19 +47,25 @@ class Form extends Container
 		parent::__construct();
 		if($method=="") $method="POST";
 		$this->setMethod($method);
-		$this->sendValidator = new HiddenField("is_form_sent");
-		$this->add($this->sendValidator);
+		//$this->sendValidator = new HiddenField("is_form_sent");
+		//$this->add($this->sendValidator);
 	}
 	
 	public function validate()
 	{
 		$form_data = $this->getData();
-		if($form_data['is_form_sent']=="yes")
+		
+		if($this->getMethod()=="POST") $sent=$_POST['is_form_sent'];
+		if($this->getMethod()=="GET") $sent=$_GET['is_form_sent'];
+		
+		if($sent=="yes")
 		{
+			$form_data = array_shift($form_data);
 			if(parent::validate())
 			{
 				$callback = $this->callback;
-				$callback($form_data);
+				if($callback!="") $callback($form_data);
+				$this->saveData();
 				return true;
 			}
 		}
@@ -72,19 +79,15 @@ class Form extends Container
 	public function render()
 	{
 		if($this->validate()) return;
-		$this->sendValidator->setValue("yes");
 		$this->addAttribute("method",$this->getMethod());
 		$this->addAttribute("id",$this->getId());
 		$this->addAttribute("class","fapi-form");
 		print '<form '.$this->getAttributes().'>';
-		/*foreach($this->elements as $element)
-		{
-			DefaultRenderer::render($element);
-		}*/
 		$this->renderElements();
 		print '<div id="fapi-submit-area">';
 		print '<input type="submit" '.($this->submitValue?('value="'.$this->submitValue.'"'):"").' />';
 		print '</div>';
+		print '<input type="hidden" name="is_form_sent" value="yes" />';
 		print '</form>';
 	}
 	

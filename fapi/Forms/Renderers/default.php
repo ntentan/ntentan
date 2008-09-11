@@ -22,7 +22,7 @@ function default_renderer_element($element)
 		if($element->getType()=="Field")
 		{
 			print "<div class='fapi-label'>".$element->getLabel();
-			if($element->getRequired())
+			if($element->getRequired() && $element->getLabel()!="")
 			{	
 				print "<span class='fapi-required'>*</span>";
 			}

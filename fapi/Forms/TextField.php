@@ -19,12 +19,12 @@ class TextField extends Field
 		Field::__construct($name,$value);
 		Element::__construct($label, $description);
 		$this->type = "TEXT";
+		$this->addAttribute("type","text");
 	}
 		
 	public function render()
 	{
 		$this->addAttribute("class","fapi-textfield ".$this->getCSSClasses());
-		$this->addAttribute("type","text");
 		$this->addAttribute("name",$this->getName());
 		$this->addAttribute("id",$this->getId());
 		$this->addAttribute("value",$this->getValue());

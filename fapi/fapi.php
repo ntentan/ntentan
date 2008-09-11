@@ -9,4 +9,11 @@ include_once "Forms/SelectionList.php";
 include_once "Forms/TextArea.php";
 include_once "Forms/TableLayout.php";
 include_once "Forms/EmailField.php";
+include_once "Forms/DatabaseColumnField.php";
+include_once "Forms/MonthField.php";
+include_once "Forms/DateField.php";
+include_once "Forms/Tab.php";
+include_once "Forms/TabLayout.php";
+include_once "Forms/PasswordField.php";
+include_once "Forms/BoxContainer.php";
 ?>

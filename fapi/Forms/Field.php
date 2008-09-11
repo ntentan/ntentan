@@ -122,10 +122,9 @@ abstract class Field extends Element
 		}
 		else
 		{
-			print "No Method";
+			throw new Exception("The method for this field has not been set.");
 			$this->setValue("");
-		}	
-			
+		}			
 		return array($this->getName() => $this->getValue());
 	}
 	
@@ -171,6 +170,5 @@ abstract class Field extends Element
 		if($this->getRequired()) $classes .="required ";
 		return $classes;
 	}
-	
 }
 ?>

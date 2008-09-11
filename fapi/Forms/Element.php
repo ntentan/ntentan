@@ -162,6 +162,17 @@ abstract class Element
 		$this->addAttributeObject($attribute);
 	}
 	
+	public function setAttribute($attribute,$value)
+	{
+		foreach($this->attributes as $attrib)
+		{
+			if($attrib->getAttribute()==$attribute)
+			{
+				$attrib->setValue($value);
+			}
+		}
+	}
+	
 	public function getAttributes()
 	{
 		$ret = "";
