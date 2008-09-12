@@ -1,12 +1,15 @@
 <?php
-include_once "Element.php";
+require_once "Element.php";
+require_once "DatabaseInterface.php";
+require_once "ValidatableInterface.php";
+
 
 /**
  * The container class. This abstract class provides the necessary
  * basis for implementing form element containers. The container
  * is a special element which contains other form elements.
  */
-abstract class Container extends Element
+abstract class Container extends Element implements DatabaseInterface, Validatable
 {	
 	/**
 	 * The array which holds all the elements.
@@ -40,6 +43,9 @@ abstract class Container extends Element
 	protected $database_table;
 	
 	protected $database_schema;
+	
+	protected $primary_key_field;
+	protected $primary_key_value;
 	
 	public function __construct($renderer="default")
 	{
@@ -87,6 +93,14 @@ abstract class Container extends Element
 		
 	}
 	
+	public function setData($data)
+	{
+		foreach($this->elements as $element)
+		{
+			$element->setData($data);
+		}
+	}
+	
 	public function getData()
 	{
 		$data = array();
@@ -119,6 +133,18 @@ abstract class Container extends Element
 		return $retval;
 	}
 	
+	public function retrieveData()
+	{
+		$data = array();
+		if($this->database_table!="")
+		{
+			$query = "SELECT * FROM ".($this->database_schema!=""?$this->database_schema.".":"");" WHERE {$this->primary_key_field}={$this->primary_key_value}";
+			$result = mysql_query($query);
+			$data = mysql_fetch_assoc($result);
+		}
+		return $data;
+	}
+	
 	public function saveData()
 	{
 		if($this->database_table!="")
@@ -128,19 +154,29 @@ abstract class Container extends Element
 			
 			//Extract Fields and build query
 			$field = array_keys($data);
-			$query = "INSERT INTO ".($this->database_schema!=""?$this->database_schema:"").$this->database_table."(";
-			for($i=0; $i<count($field); $i++)
+			
+			if($this->primary_key_field=='')
 			{
-				if($i!=0) $query.=",";
-				$query.=$field[$i];
+				$query = "INSERT INTO ".($this->database_schema!=""?$this->database_schema.".":"").$this->database_table."(";
+				for($i=0; $i<count($field); $i++)
+				{
+					if($i!=0) $query.=",";
+					$query.=$field[$i];
+				}
+				$query.=") VALUES(";
+				for($i=0; $i<count($field); $i++)
+				{
+					if($i!=0) $query.=",";
+					$query.="\"".mysql_escape_string($data[$field[$i]])."\"";
+				}
+				$query.=")";
 			}
-			$query.=") VALUES(";
-			for($i=0; $i<count($field); $i++)
+			else
 			{
-				if($i!=0) $query.=",";
-				$query.="\"".mysql_escape_string($data[$field[$i]])."\"";
+				$query = "UPDATE ".($this->database_schema!=""?$this->database_schema:"").".".$this->database_table.
+				         " SET ";
+				
 			}
-			$query.=")";
 			mysql_query($query) or die(mysql_error());
 		}
 	}
@@ -170,6 +206,12 @@ abstract class Container extends Element
 	protected function setDatabaseSchema($database_schema)
 	{
 		$this->database_schema = $database_schema;
+	}
+	
+	protected function setPrimaryKey($primary_key_field,$primary_key_value)
+	{
+		$this->primary_key_field = $primary_key_field;
+		$this->primary_key_value = $primary_key_value;
 	}
 		
 }

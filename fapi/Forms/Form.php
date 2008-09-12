@@ -12,6 +12,8 @@ include_once "DefaultRenderer.php";
  * @todo Remove the is_form_sent field from the value returned to the validated function
  * @todo Add styling hooks called from the various classes for CSS (Elaborate!)
  * @todo Change all includes to requires
+ * @todo add Namespaces to form class for ntentan
+ * 
  */
 class Form extends Container
 {	
@@ -60,6 +62,10 @@ class Form extends Container
 		
 		if($sent=="yes")
 		{
+			//Remove the first data element which is used for checking if the
+			//was properly selected. This would actually be stored as 
+			//$form_data["is_form_sent"].
+			  
 			$form_data = array_shift($form_data);
 			if(parent::validate())
 			{
@@ -69,6 +75,16 @@ class Form extends Container
 				return true;
 			}
 		}
+		else
+		{
+			if($this->database_table != "" && 
+			   $this->primary_key_field !="" && 
+			   $this->primary_key_value !="")
+			{
+				$this->retrieveData();
+			}
+		}
+		
 		return false;
 	}
 	

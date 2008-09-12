@@ -132,10 +132,6 @@ abstract class Element
 	 */
 	abstract public function render();
 	
-	abstract public function getData();
-	
-	abstract public function validate();
-	
 	public function getCSSClasses()
 	{
 		$ret = "";
