@@ -42,6 +42,8 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 	
 	protected $validationFunc;
 	
+	protected $unique;
+		
 	/**
 	 * The constructor for the fiel element.
 	 *
@@ -93,6 +95,11 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 		return $this->value;
 	}
 	
+	public function getDisplayValue()
+	{
+		return $this->value;
+	}
+	
 	/**
      * Sets the required status of the field.
      * 
@@ -111,6 +118,11 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 	public function getRequired()
 	{
 		return $this->required;
+	}
+	
+	public function setUnique($unique)
+	{
+		$this->unique = $unique;
 	}
 	
 	public function getData()
@@ -158,10 +170,37 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 			array_push($this->errors,"This field is required.");
 			return false;
 		}
+		
+		if($this->parent->getDatabaseTable()!="" && $this->unique)
+		{
+			$schema = $this->parent->getDatabaseSchema();
+			$table = $this->parent->getDatabaseTable();
+			$name = $this->getName();
+			$value = $this->getValue();
+			$primary_key_field = $this->parent->getPrimaryKeyField();
+			$primary_key_value = $this->parent->getPrimaryKeyValue();
+			
+			$query = "SELECT ".($primary_key_field!=""?$primary_key_field.",":"")."$name FROM ".($schema!=""?$schema.".":"")."$table WHERE $name='$value'";
+			$result = mysql_query($query);
+			
+			if(mysql_num_rows($result)>0)
+			{
+				//die($query);
+				$row = mysql_fetch_assoc($result);
+				if($primary_key_field!="" && $row[$primary_key_field]==$primary_key_value)
+				{
+					return true;
+				}
+				$this->error = true;
+				array_push($this->errors,"This field must be unique. There is already a {$this->getLabel()}, $value in the database.");
+				return false;					
+			}
+		}
+		
 		$validationFunc = $this->validationFunc;
 		if($validationFunc!="")
 		{
-			$validationFunc($this->errors);
+			return $validationFunc($this->errors);
 		}
 		return true;
 	}
@@ -174,7 +213,7 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 	public function getCSSClasses()
 	{
 		$classes=parent::getCSSClasses();
-		if($this->error) $classes.="error ";
+		if($this->error) $classes.="fapi-error ";
 		if($this->getRequired()) $classes .="required ";
 		return $classes;
 	}

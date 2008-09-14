@@ -1,7 +1,7 @@
 <?php
-require_once "Element.php";
-require_once "DatabaseInterface.php";
-require_once "ValidatableInterface.php";
+require_once ("Element.php");
+require_once ("DatabaseInterface.php");
+require_once ("ValidatableInterface.php");
 
 
 /**
@@ -46,6 +46,7 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 	
 	protected $primary_key_field;
 	protected $primary_key_value;
+	protected $showfields = true;
 	
 	public function __construct($renderer="default")
 	{
@@ -77,7 +78,9 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 	public function add($element)
 	{
 		array_push($this->elements, $element);
-		$element->setMethod($this->method);
+		$element->setMethod($this->getMethod());
+		$element->setShowField($this->getShowField());
+		$element->parent = $this;
 	}
 	
 	
@@ -138,7 +141,7 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 		$data = array();
 		if($this->database_table!="")
 		{
-			$query = "SELECT * FROM ".($this->database_schema!=""?$this->database_schema.".":"");" WHERE {$this->primary_key_field}={$this->primary_key_value}";
+			$query = "SELECT * FROM ".($this->database_schema!=""?$this->database_schema.".":"")." {$this->database_table} WHERE {$this->primary_key_field}='{$this->primary_key_value}'";
 			$result = mysql_query($query);
 			$data = mysql_fetch_assoc($result);
 		}
@@ -173,10 +176,17 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 			}
 			else
 			{
-				$query = "UPDATE ".($this->database_schema!=""?$this->database_schema:"").".".$this->database_table.
+				$query = "UPDATE ".($this->database_schema!=""?$this->database_schema.".":"").$this->database_table.
 				         " SET ";
+				for($i=0; $i<count($field); $i++)
+				{
+					$query.=$field[$i]."=\"".mysql_escape_string($data[$field[$i]])."\" ";
+					if($i!=count($field)-1) $query.=", ";
+				}
 				
+				$query .= " WHERE {$this->primary_key_field}='{$this->primary_key_value}'";
 			}
+			//print $query;
 			mysql_query($query) or die(mysql_error());
 		}
 	}
@@ -192,27 +202,80 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 		$renderer_foot = $this->renderer_foot;
 		$renderer_element = $this->renderer_element;
 		
+		if($render_head!="") $render_head();
 		foreach($this->elements as $element)
 		{
-			$renderer_element($element);
-		}		
+			$renderer_element($element,$this->getShowField());
+		}
+		if($render_head!="") $render_foot();
 	}
 	
-	protected function setDatabaseTable($database_table)
+	public function setDatabaseTable($database_table)
 	{
 		$this->database_table = $database_table;
 	}
 	
-	protected function setDatabaseSchema($database_schema)
+	public function getDatabaseTable()
+	{
+		if($this->database_table=="")
+		{
+			if($this->parent != null) return $this->parent->getDatabaseTable();
+		}
+		else
+		{
+			return $this->database_table;
+		}
+	}
+	
+	public function setDatabaseSchema($database_schema)
 	{
 		$this->database_schema = $database_schema;
 	}
 	
-	protected function setPrimaryKey($primary_key_field,$primary_key_value)
+	public function getDatabaseSchema()
+	{
+		return $this->database_schema;
+	}
+	
+	public function setPrimaryKey($primary_key_field,$primary_key_value)
 	{
 		$this->primary_key_field = $primary_key_field;
 		$this->primary_key_value = $primary_key_value;
 	}
+	
+	public function getPrimaryKeyField()
+	{
+		if($this->primary_key_field=="")
+		{
+			if($this->parent != null) return $this->parent->getPrimaryKeyField();
+		}
+		else
+		{
+			return $this->primary_key_field;
+		}
+	}
+	
+	public function getPrimaryKeyValue()
+	{
+		if($this->primary_key_field=="")
+		{
+			if($this->parent != null) return $this->parent->getPrimaryKeyValue();
+		}
+		else
+		{
+			return $this->primary_key_value;
+		}
+	}
+	
+	public function setShowField($showfield)
+	{
+		Element::setShowField($showfield);
+		foreach($this->elements as $element)
+		{
+			$element->setShowField($showfield);
+		}
+	}
+	
 		
 }
 ?>

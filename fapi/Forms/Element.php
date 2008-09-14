@@ -46,6 +46,10 @@ abstract class Element
 	protected $errors = array();
 	
 	protected $error;
+	
+	protected $showfield = true;
+	
+	protected $parent = null;	
 		
 	public function __construct($label="", $description="", $id="")
 	{
@@ -177,6 +181,16 @@ abstract class Element
 			$ret .= $attribute->getHTML()." ";
 		}
 		return $ret;
+	}
+	
+	public function setShowField($showfield)
+	{
+		$this->showfield = $showfield;
+	}
+	
+	public function getShowField()
+	{
+		return $this->showfield;
 	}
 }
 ?>

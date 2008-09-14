@@ -1,7 +1,7 @@
 <?php
-include_once "Container.php";
-include_once "HiddenField.php";
-include_once "DefaultRenderer.php";
+include_once ("Container.php");
+include_once ("HiddenField.php");
+include_once ("DefaultRenderer.php");
 
 /**
  * The form class. This class represents the overall form class. This
@@ -49,8 +49,6 @@ class Form extends Container
 		parent::__construct();
 		if($method=="") $method="POST";
 		$this->setMethod($method);
-		//$this->sendValidator = new HiddenField("is_form_sent");
-		//$this->add($this->sendValidator);
 	}
 	
 	public function validate()
@@ -70,8 +68,8 @@ class Form extends Container
 			if(parent::validate())
 			{
 				$callback = $this->callback;
-				if($callback!="") $callback($form_data);
 				$this->saveData();
+				if($callback!="") $callback($form_data);
 				return true;
 			}
 		}
@@ -81,7 +79,8 @@ class Form extends Container
 			   $this->primary_key_field !="" && 
 			   $this->primary_key_value !="")
 			{
-				$this->retrieveData();
+				$data = $this->retrieveData();
+				$this->setData($data);
 			}
 		}
 		
@@ -101,7 +100,10 @@ class Form extends Container
 		print '<form '.$this->getAttributes().'>';
 		$this->renderElements();
 		print '<div id="fapi-submit-area">';
-		print '<input type="submit" '.($this->submitValue?('value="'.$this->submitValue.'"'):"").' />';
+		if($this->getShowField())
+		{
+			print '<input type="submit" '.($this->submitValue?('value="'.$this->submitValue.'"'):"").' />';
+		}
 		print '</div>';
 		print '<input type="hidden" name="is_form_sent" value="yes" />';
 		print '</form>';

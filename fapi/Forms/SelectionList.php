@@ -45,5 +45,16 @@ class SelectionList extends Field
 		}
 		print "</select>";
 	}
+	
+	public function getDisplayValue()
+	{
+		foreach($this->options as $option)
+		{
+			if($option->value == $this->getValue())
+			{
+				return $option->label;
+			}
+		}
+	}
 }
 ?>

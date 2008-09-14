@@ -13,7 +13,7 @@ function default_renderer_head()
  *
  * @param $element The element to be rendererd.
  */
-function default_renderer_element($element)
+function default_renderer_element($element, $showfields=true)
 {
 	/*if($element->getType()=="Field")
 	{*/
@@ -22,7 +22,7 @@ function default_renderer_element($element)
 		if($element->getType()=="Field")
 		{
 			print "<div class='fapi-label'>".$element->getLabel();
-			if($element->getRequired() && $element->getLabel()!="")
+			if($element->getRequired() && $element->getLabel()!="" && $showfields)
 			{	
 				print "<span class='fapi-required'>*</span>";
 			}
@@ -31,7 +31,7 @@ function default_renderer_element($element)
 		
 		if($element->hasError())
 		{
-			print "<div class='error'>";
+			print "<div class='fapi-error'>";
 			print "<ul>";
 			foreach($element->getErrors() as $error)
 			{
@@ -41,10 +41,24 @@ function default_renderer_element($element)
 			print "</div><p></p>";
 		}
 	/*}*/
-		
-	$element->render();
-		
-	if($element->getType()!="Container")
+	
+	if($element->getType()=="Field")
+	{
+		if($showfields)
+		{
+			$element->render();
+		}
+		else
+		{
+			print $element->getDisplayValue();
+		}
+	}
+	else
+	{
+		$element->render();
+	}
+	
+	if($element->getType()!="Container" && $showfields)
 	{
 		print "<div class='fapi-description'>".$element->getDescription()."</div>";
 	}

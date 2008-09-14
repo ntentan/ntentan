@@ -13,5 +13,10 @@ class PasswordField extends TextField
 		if($this->getValue()!="") $this->setValue(md5($this->getValue()));
 		return array($this->getName() => $this->getValue());
 	}
+	
+	public function getDisplayValue()
+	{
+		return "This field cannot be viewed";
+	}
 }
 ?>
