@@ -63,7 +63,7 @@ class TabLayout extends Container
 		print "<ul class='fapi-tab-list ".$this->getCSSClasses()."'>";
 		for($i=0; $i<count($this->tabs); $i++)
 		{
-			print "<li id='fapi-tab-top-$i' class='".($i==0?"fapi-tab-selected":"fapi-tab-unselected")."'><a href='#' onclick='fapiSwitchTabTo($i)'>".$this->tabs[$i]."</a></li>";
+			print "<li id='fapi-tab-top-$i' onclick='fapiSwitchTabTo($i)' class='".($i==0?"fapi-tab-selected":"fapi-tab-unselected")."'>".$this->tabs[$i]."</li>";
 		}
 		print "</ul><p style='clear:both' ></p>";
 		foreach($this->elements as $element)

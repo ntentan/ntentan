@@ -29,6 +29,7 @@ class TableLayout extends Container
 	 */
 	public function __construct($num_rows=-1, $num_columns=-1, $id="")
 	{
+		parent::__construct();
 		$this->num_rows = $num_rows;
 		$this->num_columns = $num_columns;
 		$this->setId($id);
@@ -51,6 +52,7 @@ class TableLayout extends Container
 	 */
 	public function add($element,$row=-1,$column=-1)
 	{
+		if($element->parent!=null) throw new Exception("Element being added to table already has a parent");
 		if($row==-1 || $column==-1)
 		{
 			parent::add($element);
@@ -62,17 +64,38 @@ class TableLayout extends Container
 		}
 	}
 	
+	public function getElements()
+	{
+		$data = array();
+		for($row=0; $row<$this->num_rows; $row++)
+		{
+			for($column=0;$column<$this->num_columns; $column++)
+			{
+				foreach($this->elements[$row][$column] as $element)
+				{
+					array_push($data,$element);
+				}
+			}
+		}
+		return $data;
+	}
+	
 	/**
 	 * Renders the table.
 	 *
 	 */
 	public function render()
 	{
+		$renderer_head = $this->renderer_head;
+		$renderer_foot = $this->renderer_foot;
+		$renderer_element = $this->renderer_element;
+		
+		if($render_head!="") $render_head();
 		if($this->num_rows==-1 || $this->num_columns==-1)
 		{
 			foreach($this->elements as $element)
 			{
-				DefaultRenderer::render($element);
+				$renderer_element($element,$this->getShowField());
 			}
 		}
 		else
@@ -86,7 +109,7 @@ class TableLayout extends Container
 					print "<td>";
 					foreach($this->elements[$row][$column] as $element)
 					{
-						DefaultRenderer::render($element);
+						$renderer_element($element,$this->getShowField());
 					}
 					print "</td>";
 				}
@@ -94,6 +117,7 @@ class TableLayout extends Container
 			}
 			print "</table>";
 		}
+		if($render_head!="") $render_foot();
 	}
 	
 	public function setMethod($method)

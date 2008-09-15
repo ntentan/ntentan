@@ -23,7 +23,9 @@ class Checkbox extends Field
 	
 	public function render()
 	{
-		print '<input class="fapi-checkbox" type="checkbox" name="'.$this->getName().'" id="'.$this->getId().'" value="'.$this->getValue().'" '.($this->getValue()==$_POST[$this->getName()]?"checked='checked'":"").' />';
+		print '<input class="fapi-checkbox" type="checkbox" name="'.$this->getName().'" id="'.$this->getId().'" value="'.$this->getValue().'" '.
+		      (($this->getValue()==$_POST[$this->getName()]&&$_POST["is_form_sent"]=="yes")?"checked='checked'":"").' />';
+		      
 		print '<span class="fapi-label">'.$this->getLabel()."</span>";
 	}
 	

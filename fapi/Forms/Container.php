@@ -77,10 +77,17 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 	 */
 	public function add($element)
 	{
-		array_push($this->elements, $element);
-		$element->setMethod($this->getMethod());
-		$element->setShowField($this->getShowField());
-		$element->parent = $this;
+		if($element->parent==null)
+		{
+			array_push($this->elements, $element);
+			$element->setMethod($this->getMethod());
+			$element->setShowField($this->getShowField());
+			$element->parent = $this;
+		}
+		else
+		{
+			throw new Exception("Element added already has a parent");
+		}
 	}
 	
 	
@@ -270,10 +277,15 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 	public function setShowField($showfield)
 	{
 		Element::setShowField($showfield);
-		foreach($this->elements as $element)
+		foreach($this->getElements() as $element)
 		{
 			$element->setShowField($showfield);
 		}
+	}
+	
+	public function getElements()
+	{
+		return $this->elements;
 	}
 	
 		

@@ -5,7 +5,7 @@
 }
 
 table.fapi-table td {
-	padding-bottom: 20px;
+	/*padding-bottom: 10px;*/
 	vertical-align: top;
 }
 
@@ -78,25 +78,29 @@ input.fapi-textfield {
 	width: 100%;
 }
 
-.error {
-	border: 1px solid red;
+.fapi-error
+{
+border:1px solid red;	
 }
 
-.code {
-	width: 40%;
+.code
+{
+width:40%;	
 }
 
-div.error {
-	background-color: pink;
-	border: 1px solid red;
-	margin-bottom: 5px;
-	color: red;
+div.fapi-error
+{
+background-color:pink;
+border:1px solid red;
+margin-bottom:5px;
+color:red;
 }
 
-div.error ul {
-	margin: 0px;
-	padding: 5px;
-	padding-left: 20px;
+div.fapi-error ul
+{
+margin:0px;
+padding:5px;
+padding-left:20px;
 }
 
 /***************************
@@ -138,6 +142,7 @@ div.fapi-tab-unselected {
 
 div.fapi-tab {
 	background-color: #e0e0e0;
+	border:1px #404040;
 	clear: both;
 	padding: 10px;
 }

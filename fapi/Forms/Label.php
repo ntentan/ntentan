@@ -10,5 +10,10 @@ class Label extends Element
 	{
 		print "<label>".$this->getLabel()."</label>";
 	}
+	
+	public function getData()
+	{
+		return array();
+	}
 }
 ?>
