@@ -170,7 +170,7 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 			array_push($this->errors,"This field is required.");
 			return false;
 		}
-		
+
 		if($this->parent->getDatabaseTable()!="" && $this->unique)
 		{
 			$schema = $this->parent->getDatabaseSchema();

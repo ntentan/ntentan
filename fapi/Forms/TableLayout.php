@@ -61,6 +61,7 @@ class TableLayout extends Container
 		{
 			array_push($this->elements[$row][$column],$element);
 			$element->setMethod($this->method);
+			$element->parent = $this;
 		}
 	}
 	

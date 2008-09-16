@@ -15,5 +15,11 @@ class Label extends Element
 	{
 		return array();
 	}
+	
+	public function validate()
+	{
+		//Always return true cos labels can't be validated.
+		return true;
+	}
 }
 ?>
