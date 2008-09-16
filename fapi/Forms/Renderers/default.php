@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  *  
  *  Copyright 2008, James Ainooson 
  *
@@ -22,7 +22,7 @@
 
 /**
  * The default renderer head function
- *
+ * @category  Renderers
  */
 function default_renderer_head()
 {

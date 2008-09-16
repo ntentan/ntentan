@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  *  
  *  Copyright 2008, James Ainooson 
  *

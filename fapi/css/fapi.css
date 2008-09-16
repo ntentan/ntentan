@@ -1,8 +1,6 @@
-/**
- *  
- *  Copyright 2008, James Ainooson 
+/*   Copyright 2008, James Ainooson 
  *
- *  This file is part of Ntentan.
+ *   This file is part of Ntentan.
  *
  *   Ntentan is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by

@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  *  
  *  Copyright 2008, James Ainooson 
  *
@@ -22,7 +22,7 @@
 
 /**
  * The Attribute class is used for storing and rendering HTML attributes.
- *
+ * @category Forms
  */
 class Attribute
 {
@@ -49,26 +49,51 @@ class Attribute
 		$this->value = $value;
 	}
 	
+	/**
+	 * Returns the HTML text for the attribute.
+	 *
+	 * @return The text for the attribute in the format attribute="value"
+	 */
 	public function getHTML()
 	{
 		return "$this->attribute=\"$this->value\"";
 	}
 	
+	/**
+	 * Sets the attribute.
+	 *
+	 * @param unknown_type $attribute
+	 */
 	public function setAttribute($attribute)
 	{
 		$this->attribute = $attribute;
 	}
 	
+	/**
+	 * Gets tje attribute
+	 *
+	 * @return The attribute
+	 */
 	public function getAttribute()
 	{
 		return $this->attribute;
 	}
 	
+	/**
+	 * Sets the value of the attribute.
+	 *
+	 * @param $value The value to assign to the attribute.
+	 */
 	public function setValue($value)
 	{
 		$this->value = $value;
 	}
 	
+	/**
+	 * Returns the value for the attribute.
+	 *
+	 * @return The value for the attribute.
+	 */
 	public function getValue()
 	{
 		return $this->value;
