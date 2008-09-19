@@ -16,7 +16,7 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+ *   along with Ntentan.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -104,6 +104,8 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 			$element->setMethod($this->getMethod());
 			$element->setShowField($this->getShowField());
 			$element->parent = $this;
+			$element->setNameEncryption($this->getNameEncryption());
+			$element->setNameEncryptionKey($this->getNameEncryptionKey());
 		}
 		else
 		{
@@ -309,6 +311,22 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 		return $this->elements;
 	}
 	
-		
+	public function setNameEncryption($nameEncryption)
+	{
+		Element::setNameEncryption($nameEncryption);
+		foreach($this->getElements() as $element)
+		{
+			$element->setNameEncryption($nameEncryption);
+		}
+	}
+	
+	public function setNameEncryptionKey($nameEncryptionKey)
+	{
+		Element::setNameEncryptionKey($nameEncryptionKey);
+		foreach($this->getElements() as $element)
+		{
+			$element->setNameEncryptionKey($nameEncryptionKey);
+		}
+	}
 }
 ?>

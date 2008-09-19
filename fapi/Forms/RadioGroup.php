@@ -14,7 +14,7 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+ *   along with Ntentan.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -36,7 +36,9 @@ class RadioGroup extends Field
 	{
 		if($button->getType()=="RadioButton")
 		{
-			$button->setName($this->name);
+			$button->setName($this->getName(false));
+			$button->setNameEncryption($this->getNameEncryption());
+			$button->setNameEncryptionKey($this->getNameEncryptionKey());
 			array_push($this->buttons, $button);
 		}
 		else
@@ -71,6 +73,24 @@ class RadioGroup extends Field
 			$this->setValue($_GET[$this->getName()]);
 		}
 		return array($this->getName() => $this->getValue());
+	}
+	
+	public function setNameEncryption($nameEncryption)
+	{
+		Element::setNameEncryption($nameEncryption);
+		foreach($this->buttons as $element)
+		{
+			$element->setNameEncryption($nameEncryption);
+		}
+	}
+	
+	public function setNameEncryptionKey($nameEncryptionKey)
+	{
+		Element::setNameEncryptionKey($nameEncryptionKey);
+		foreach($this->buttons as $element)
+		{
+			$element->setNameEncryptionKey($nameEncryptionKey);
+		}
 	}
 }
 ?>

@@ -16,7 +16,7 @@
  *   GNU General Public License for more details.
  *
  *   You should have received a copy of the GNU General Public License
- *   along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+ *   along with Ntentan.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -91,9 +91,16 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 	 *
 	 * @return The name of the form field.
 	 */
-	public function getName()
+	public function getName($encrypt=true)
 	{
-		return $this->name;
+		if($this->getNameEncryption() && $encrypt)
+		{
+			return Cipher::quickEncrypt($this->name);
+		}
+		else
+		{
+			return $this->name;
+		}
 	}
 	
 	/**
@@ -203,6 +210,7 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 			
 			$query = "SELECT ".($primary_key_field!=""?$primary_key_field.",":"")."$name FROM ".($schema!=""?$schema.".":"")."$table WHERE $name='$value'";
 			$result = mysql_query($query);
+			print $query;
 			
 			if(mysql_num_rows($result)>0)
 			{
@@ -238,5 +246,6 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 		if($this->getRequired()) $classes .="required ";
 		return $classes;
 	}
+
 }
 ?>
