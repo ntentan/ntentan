@@ -82,17 +82,14 @@ class Form extends Container
 		
 		if($sent=="yes")
 		{
-			//Remove the first data element which is used for checking if the
-			//was properly selected. This would actually be stored as 
-			//$form_data["is_form_sent"].
-			  
-			$form_data = array_shift($form_data);
 			if(parent::validate())
 			{
 				$callback = $this->callback;
 				$this->saveData();
-				if($callback!="") $callback($form_data);
-				return true;
+				if($callback!="")
+				{ 
+					return $callback($form_data);
+				}
 			}
 		}
 		else
