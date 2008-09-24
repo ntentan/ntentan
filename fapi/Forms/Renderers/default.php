@@ -1,7 +1,7 @@
 <?php
 /*
- *  
- *  Copyright 2008, James Ainooson 
+ *
+ *  Copyright 2008, James Ainooson
  *
  *  This file is part of Ntentan.
  *
@@ -26,7 +26,7 @@
  */
 function default_renderer_head()
 {
-	
+
 }
 
 /**
@@ -36,33 +36,30 @@ function default_renderer_head()
  */
 function default_renderer_element($element, $showfields=true)
 {
-	/*if($element->getType()=="Field")
-	{*/
-		print "<div class='fapi-element-div'>";
-		
-		if($element->getType()=="Field")
+	print "<div class='fapi-element-div'>";
+
+	if($element->getType()=="Field")
+	{
+		print "<div class='fapi-label'>".$element->getLabel();
+		if($element->getRequired() && $element->getLabel()!="" && $element->showField())
 		{
-			print "<div class='fapi-label'>".$element->getLabel();
-			if($element->getRequired() && $element->getLabel()!="" && $showfields)
-			{	
-				print "<span class='fapi-required'>*</span>";
-			}
-			print "</div>";
+			print "<span class='fapi-required'>*</span>";
 		}
-		
-		if($element->hasError())
+		print "</div>";
+	}
+
+	if($element->hasError())
+	{
+		print "<div class='fapi-error'>";
+		print "<ul>";
+		foreach($element->getErrors() as $error)
 		{
-			print "<div class='fapi-error'>";
-			print "<ul>";
-			foreach($element->getErrors() as $error)
-			{
-				print "<li>$error</li>";
-			}
-			print "</ul>";
-			print "</div><p></p>";
+			print "<li>$error</li>";
 		}
-	/*}*/
-	
+		print "</ul>";
+		print "</div><p></p>";
+	}
+
 	if($element->getType()=="Field")
 	{
 		if($showfields)
@@ -78,15 +75,13 @@ function default_renderer_element($element, $showfields=true)
 	{
 		$element->render();
 	}
-	
-	if($element->getType()!="Container" && $showfields)
+
+	if($element->getType()!="Container" && $element->showField())
 	{
 		print "<div class='fapi-description'>".$element->getDescription()."</div>";
+		print "<input type='hidden' name='".$element->getName()."' value='".$element->getValue()."' />";
 	}
-	/*if($element->getType()=="Field")
-	{*/
-		print "</div>";
-	/*}*/		
+	print "</div>";
 }
 
 /**
@@ -95,7 +90,7 @@ function default_renderer_element($element, $showfields=true)
  */
 function default_renderer_foot()
 {
-	
+
 }
 
 ?>

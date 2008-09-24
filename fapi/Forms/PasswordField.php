@@ -18,6 +18,12 @@
  *
  */
 
+/**
+ * A subclass of the TextField which is rendered as a password. It also returns
+ * an encrypted value to bestored when it is used in connection with the database
+ * interface.
+ *
+ */
 class PasswordField extends TextField
 {
 	public function __construct($label="",$name="",$description="")
@@ -29,8 +35,11 @@ class PasswordField extends TextField
 	public function getData()
 	{
 		parent::getData();
-		if($this->getValue()!="") $this->setValue(Cipher::quickEncrypt($this->getValue());
-		return array($this->getName() => $this->getValue());
+		if($this->getValue()!="")
+		{
+			$this->setValue(Cipher::quickEncrypt($this->getValue());
+		}
+		return array($this->getName(false) => $this->getValue());
 	}
 	
 	public function getDisplayValue()

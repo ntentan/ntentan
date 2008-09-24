@@ -64,11 +64,11 @@ class Checkbox extends Field
 	{
 		if($this->getMethod()=="POST")
 		{
-			return array($this->getName() => $_POST[$this->getName()]);
+			return array($this->getName(false) => $_POST[$this->getName()]);
 		}
 		else if($this->getMethod()=="GET")
 		{
-			return array($this->getName() => $_GET[$this->getName()]);
+			return array($this->getName(false) => $_GET[$this->getName()]);
 		}
 	}
 }

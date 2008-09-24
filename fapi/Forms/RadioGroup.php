@@ -72,7 +72,7 @@ class RadioGroup extends Field
 		{
 			$this->setValue($_GET[$this->getName()]);
 		}
-		return array($this->getName() => $this->getValue());
+		return array($this->getName(false) => $this->getValue());
 	}
 	
 	public function setNameEncryption($nameEncryption)

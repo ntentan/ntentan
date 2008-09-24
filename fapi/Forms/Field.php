@@ -168,7 +168,7 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 			throw new Exception("The method for this field has not been set.");
 			$this->setValue("");
 		}			
-		return array($this->getName() => $this->getValue());
+		return array($this->getName(false) => $this->getValue());
 	}
 	
 	public function setData($data)
