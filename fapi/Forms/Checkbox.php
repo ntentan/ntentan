@@ -28,6 +28,10 @@ include_once "Field.php";
  */
 class Checkbox extends Field
 {
+	
+	protected $checkedValue;
+
+	
 	/**
 	 * Constructor for the checkbox.
 	 *
@@ -41,12 +45,22 @@ class Checkbox extends Field
 		Element::__construct($label, $description);
 		parent::__construct($name, $value);
 	}
-	
+
+	public function setCheckedValue($checkedValue)
+	{
+		$this->checkedValue = $checkedValue;
+    }
+
+	public function getCheckedValue()
+	{
+		return $this->checkedValue;
+    }
+
 	public function render()
 	{
-		print '<input class="fapi-checkbox" type="checkbox" name="'.$this->getName().'" id="'.$this->getId().'" value="'.$this->getValue().'" '.
-		      (($this->getValue()==$_POST[$this->getName()]&&$_POST["is_form_sent"]=="yes")?"checked='checked'":"").' />';
-		      
+		print '<input class="fapi-checkbox" type="checkbox" name="'.$this->getName().'" id="'.$this->getId().'" value="'.$this->getCheckedValue().'" '.
+		      (($this->getValue()==$this->getCheckedValue())?"checked='checked'":"").' />';
+
 		print '<span class="fapi-label">'.$this->getLabel()."</span>";
 	}
 	
@@ -60,17 +74,6 @@ class Checkbox extends Field
 		return __CLASS__;
 	}
 	
-	public function getData()
-	{
-		if($this->getMethod()=="POST")
-		{
-			return array($this->getName(false) => $_POST[$this->getName()]);
-		}
-		else if($this->getMethod()=="GET")
-		{
-			return array($this->getName(false) => $_GET[$this->getName()]);
-		}
-	}
 }
 
 ?>
