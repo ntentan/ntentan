@@ -42,6 +42,7 @@ class SelectionList extends Field
 	public function setMultiple($multiple)
 	{
 		$this->multiple = $multiple;
+		return $this;
 	}
 
 	//! Add an option to the selection list.
@@ -50,6 +51,7 @@ class SelectionList extends Field
 	public function addOption($label="", $value="")
 	{
 		array_push($this->options, new SelectionListItem($label, $value));
+		return $this;
 	}
 
 	public function render()
@@ -58,7 +60,7 @@ class SelectionList extends Field
 		if($this->ajax && $validations != "[]")
 		{
 			$this->addAttribute("onblur","fapiValidate('".$this->getId()."',$validations)");
-		}		
+		}
 		$ret = "<select {$this->getAttributes()} class='fapi-list ".$this->getCSSClasses()."' name='".$this->getName()."' ".($this->multiple?"multiple='multiple'":"").">";
 		foreach($this->options as $option)
 		{

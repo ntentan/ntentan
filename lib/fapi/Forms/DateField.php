@@ -44,11 +44,16 @@
         {
             $ret = "<div style='float:left'><span class='fapi-description'>Day</span><br />";
             $ret .= $this->dayField->render();
+            $this->dayField->addAttribute("style","margin-right:5px");
+
             $ret .= "</div>
                        <div style='float:left'><span class='fapi-description'>Month</span><br />";
             $ret .= $this->monthField->render();
+            $this->monthField->addAttribute("style","margin-right:5px");
+
             $ret .= "</div>
                        <div style='float:left'><span class='fapi-description'>Year</span><br />";
+            $this->yearField->addAttribute("style","width:40px;margin-right:5px");
             $ret .= $this->yearField->render();
             $ret .= "</div><p style='clear:both'></p>";
             return $ret;
@@ -80,11 +85,11 @@
         {
             if($this->dayField->getValue()=="" || $this->monthField->getValue()=="" || $this->yearField->getValue()=="")
             {
-                return "";
+                return 0;
             }
             else
             {
-                return $this->yearField->getValue()."-".$this->monthField->getValue()."-".$this->dayField->getValue();
+                return strtotime($this->yearField->getValue()."-".$this->monthField->getValue()."-".$this->dayField->getValue());
             }
         }
 

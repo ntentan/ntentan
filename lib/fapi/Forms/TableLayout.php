@@ -65,6 +65,7 @@ class TableLayout extends Container
 			$element->setMethod($this->getMethod());
 			$element->parent = $this;
 		}
+		return $this;
 	}
 
 	public function getElements()

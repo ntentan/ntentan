@@ -13,8 +13,8 @@ include_once "Attribute.php";
  */
 abstract class Element
 {
-	protected $ajax = true;	
-	
+	protected $ajax = true;
+
 	/**
 	 * The id of the form useful for CSS styling and DOM access.
 	 */
@@ -309,11 +309,19 @@ abstract class Element
 	{
 		return $this->hasFile;
 	}
-	
+
 	public function addError($error)
 	{
 		$this->error = true;
 		$this->errors[] = $error;
+	}
+
+	public static function create()
+	{
+		$args = func_get_args();
+		$element = array_shift($args);
+		$element = new ReflectionClass($element);
+		return $element->newInstanceArgs($args==null?array():$args);
 	}
 }
 ?>
