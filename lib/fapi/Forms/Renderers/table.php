@@ -25,7 +25,7 @@ function table_renderer_element($element, $showfields=true)
     }
 	
 	
-	$ret .="<td 'fapi-layout-table-field'>";
+	$ret .="<td class='fapi-layout-table-field'>";
     if($element->getType()=="Field")
     {
         if($element->getShowField())

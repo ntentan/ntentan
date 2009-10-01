@@ -2,7 +2,7 @@
 /**
  * A simple container for containing form elements. This container does
  * not expose itself to styling by default but styling can be added
- * by adding a class through the attributes interface.
+ * by adding a css class through the attributes interface.
  */
 class BoxContainer extends Container
 {

@@ -1,7 +1,13 @@
 <?php
+/**
+ * A controller used to show error messages.
+ * @todo Let this return controllers.
+ * @author james
+ *
+ */
 class ErrorController extends Controller
 {
-	public function __construct(&$t,$path)
+	public function __construct()
 	{
 		Application::setTitle("Access Restricted");
 		$this->label = "Error";

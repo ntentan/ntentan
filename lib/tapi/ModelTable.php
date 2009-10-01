@@ -12,8 +12,8 @@ class ModelTable extends Table
 	{
 		$headers = $model->getLabels($fields);		
 		array_shift($headers);
-		$data = $model->get($fields);
-		$this->data = $data;
+		$model->get($fields);
+		$this->data = $model->formatData();
 		$this->headers = $headers;				
 	}
 }

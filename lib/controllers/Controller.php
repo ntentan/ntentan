@@ -3,22 +3,85 @@ require_once "ModelController.php";
 require_once "PackageController.php";
 require_once "ErrorController.php";
 
+/**
+ * The Controller class represents the base class for all controllers that are
+ * built for the ntentan framework. Controllers are used to direct the flow of
+ * your application. They are stored in modules and they contain methods which
+ * are called from the url. Parameters to the methods are also passed through the
+ * URL. If no method is specified, the Controller:getContents() method is called.
+ * The methods called by the controllers are expected to generate HTML output
+ * which should be directly displayed to the screen.
+ *
+ * All the controllers you build must extend this class end implement
+ *
+ * @todo Controllers must output data that can be passed to some kind of template
+ *       engine like smarty.
+ * @author james
+ *
+ */
 abstract class Controller
 {
+	/**
+	 * Check if this controller is supposed to be shown in any menus that are
+	 * created. This property is usually false for modules which are built for
+	 * internal use within the application.
+	 */
 	protected $_showInMenu = false;
+
+	/**
+	 * A descriptive label for this controler.
+	 */
 	public $label;
+
+	/**
+	 * A piece of text which briefly described the use of this model.
+	 */
 	public $description;
+
+	/**
+	 * A variable which contains the contents of a given controller after a
+	 * particular method has been called. This is what external controllers
+	 * usually use.
+	 */
 	public $content;
+
+	/**
+	 * This constant represents controllers that are loaded from modules
+	 */
 	const TYPE_MODULE = "module";
+
+	/**
+	 * This constant represents controllers that are loaded from models.
+	 * @var unknown_type
+	 */
 	const TYPE_MODEL = "model";
+
+	/**
+	 * A copy of the path that was used to load this controller in an array
+	 * form.
+	 * @var Array
+	 */
 	protected $path;
+
+	/**
+	 * A short machine readable name for this label.
+	 * @var string
+	 */
 	public $name;
 
-	public function getName()
-	{
-
-	}
-
+	/**
+	 * A utility method to load a controller. This method loads the controller
+	 * and fetches the contents of the controller into the Controller::$contents
+	 * variable if the get_contents parameter is set to true on call. If a controller
+	 * doesn't exist in the module path, a ModelController is loaded to help
+	 * manipulate the contents of the model. If no model exists in that location,
+	 * it is asumed to be a package and a package controller is loaded.
+	 *
+	 * @param $path 		The path for the model to be loaded.
+	 * @param $get_contents A flag which determines whether the contents of the
+	 *						controller should be displayed.
+	 * @return Controller
+	 */
 	public static function load($path,$get_contents=true)
 	{
 		$controller_path = "";
@@ -48,22 +111,25 @@ abstract class Controller
 			}
 		}
 
-		//If it doesn't refer to a page assume the initial name is a module load
-		//it and pass the rest of the path to it.
+		// Check the type of controller and load it.
 		switch($controller_type)
 		{
 		case Controller::TYPE_MODULE:
+			// Load a module controller which would be a subclass of this
+			// class
 			require_once "app/modules$controller_path/$controller_name.php";
 			$controller = new $controller_name();
 			break;
 
 		case Controller::TYPE_MODEL;
+			// Load the ModelController wrapper around an existing model class.
 			$model = substr(str_replace("/",".",$controller_path),1);
 			$controller_name = "ModelController";
 			$controller = new ModelController($model);
 			break;
 
 		default:
+			// Load a package controller for this folder
 			if(is_dir("app/modules$controller_path"))
 			{
 				$controller = new Packagecontroller();
@@ -76,6 +142,8 @@ abstract class Controller
 			}
 		}
 
+		// If the get contents flag has been set return all the contents of this
+		// controller.
 		if($get_contents)
 		{
 			if($i == count($path)-1)
@@ -100,6 +168,14 @@ abstract class Controller
 		return $controller;
 	}
 
+	/**
+	 * An implementation of the default getContents method which returns a No
+	 * content string.
+	 *
+	 * @todo When the controllers are changed to return variables for template
+	 * 		 engines make this return that to.
+	 * @return string
+	 */
 	protected function getContents()
 	{
 		return "No Content";
@@ -109,10 +185,10 @@ abstract class Controller
 	{
 		return $this->_showInMenu;
 	}
-	
+
 	public function getPermissions()
 	{
-		
+
 	}
 }
 ?>

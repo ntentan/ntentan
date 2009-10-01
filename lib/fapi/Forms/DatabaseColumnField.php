@@ -26,7 +26,7 @@ class DatabaseColumnField extends SelectionList
 			$this->setQuery($query);
 		}
 	}
-	
+
 	//! Sets the query for this Field.
 	public function setQuery($query)
 	{
@@ -38,6 +38,7 @@ class DatabaseColumnField extends SelectionList
 				$this->addOption($row[1],$row[0]);
 			}
 		}
+		return $this;
 	}
 }
 

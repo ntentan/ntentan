@@ -1,19 +1,37 @@
 <?php
-class ButtonBar extends Element
+/**
+ * A container for containing buttons.
+ * @author james
+ *
+ */
+class ButtonBar extends Container
 {
-	public $buttons;
-	
+	/**
+	 * The buttons found in this contianer.
+	 * @var Array
+	 */
+	public $buttons = array();
+
+	/**
+	 * Add a new button to this bar.
+	 * @param $label The label for this button
+	 * @return ButtonBar
+	 */
 	public function addButton($label)
 	{
 		$this->buttons[] = new Button($label);
+		return $this;
 	}
-	
+
 	public function render()
 	{
 		$ret = "";
-		foreach($this->buttons as $button)
+		if(Element::getShowfield())
 		{
-			$ret .= $button->render(). " ";
+			foreach($this->buttons as $button)
+			{
+				$ret .= $button->render(). " ";
+			}
 		}
 		return $ret;
 	}

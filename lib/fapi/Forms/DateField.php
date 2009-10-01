@@ -6,102 +6,70 @@
     //! type (YYYY-MM-DD). It also validates the date to ensure that the date
     //! entered is correct.
     //! \ingroup Form_API
-    class DateField extends Field
+    class DateField extends TextField
     {
-        //! The field to store the values for the day.
-        protected $dayField;
-
-        //! The field to store the values for the month.
-        protected $monthField;
-
-        //! The field to store the year.
-        protected $yearField;
-
         public function __construct($label="",$name="",$description="")
         {
-            Field::__construct($name);
-            Element::__construct($label,$description);
-
-            //Setup the field to contain the days.
-            $this->dayField = new SelectionList("Day",$name."_day");
-            for($i=1; $i<32; $i++)
-            {
-                $this->dayField->addOption(strval($i),strval($i));
-            }
-            $this->dayField->parent = $this;
-
-            //Setup the Month Field
-            $this->monthField = new MonthField("Month",$name."_month");
-            $this->monthField->parent = $this;
-
-            //Setup the year field
-            $this->yearField = new TextField("Year", $name."_year");
-            $this->yearField->setAsNumeric(1900,4000);
-            $this->yearField->parent = $this;
+            parent::__construct($label,$name,$description);
         }
 
         public function render()
         {
-            $ret = "<div style='float:left'><span class='fapi-description'>Day</span><br />";
-            $ret .= $this->dayField->render();
-            $this->dayField->addAttribute("style","margin-right:5px");
-
-            $ret .= "</div>
-                       <div style='float:left'><span class='fapi-description'>Month</span><br />";
-            $ret .= $this->monthField->render();
-            $this->monthField->addAttribute("style","margin-right:5px");
-
-            $ret .= "</div>
-                       <div style='float:left'><span class='fapi-description'>Year</span><br />";
-            $this->yearField->addAttribute("style","width:40px;margin-right:5px");
-            $ret .= $this->yearField->render();
-            $ret .= "</div><p style='clear:both'></p>";
-            return $ret;
+        	$this->addCSSClass("fapi-textfield");
+        	$this->addAttribute("class","fapi-sidefield ".$this->getCSSClasses());
+        	$this->addAttribute("id",$this->getId());
+        	$this->addAttribute("name",$this->getName());
+        	$this->addAttribute("value",date("Y/m/d",(int)$this->getValue()));
+        	$id = $this->getId();
+            return "<input ".$this->getAttributes()." /><input class='fapi-sidebutton' type='button' value='..' onclick=\"$('#date-picker-$id').datepicker({altField:'#$id',changeYear:true,changeDate:true,maxDate:null,minDate:'-100y',maxDate:'+100y',dateFormat:'yy/mm/dd'}).slideToggle()\"><div class='fapi-datepicker' id='date-picker-$id'></div>";
         }
 
         public function setValue($value)
         {
-        	// Blank out dates which are empty to prevent unnecessary
-        	// validation errors.
-
-            if($value=="0000-00-00") $value="";
-            parent::setValue($value);
-            $values = explode("-",$value);
-
-            $this->yearField->setValue($values[0]);
-            $this->monthField->setValue($values[1]);
-            $this->dayField->setValue($values[2]);
+			//print strtotime($value)."-".date("Y M d",strtotime($value));
+			//var_dump($value);
+			if(is_numeric($value))
+			{
+				parent::setValue($value);
+			}
+			else
+			{
+				parent::setValue(strtotime($value));
+			}
+			return $this;
         }
 
-        public function setMethod($method)
+        /*public function setMethod($method)
         {
             Element::setMethod($method);
             $this->dayField->setMethod($method);
             $this->monthField->setMethod($method);
             $this->yearField->setMethod($method);
-        }
+        }*/
 
-        public function getValue()
+       /* public function getValue()
         {
-            if($this->dayField->getValue()=="" || $this->monthField->getValue()=="" || $this->yearField->getValue()=="")
+            /*if($this->dayField->getValue()=="" || $this->monthField->getValue()=="" || $this->yearField->getValue()=="")
             {
                 return 0;
             }
             else
             {
-                return strtotime($this->yearField->getValue()."-".$this->monthField->getValue()."-".$this->dayField->getValue());
-            }
-        }
+                //return strtotime($this->yearField->getValue()."-".$this->monthField->getValue()."-".$this->dayField->getValue());
+            }*/
+        	/*var_dump($this->value);
+        	return strtotime($this->value);
+        //}*/
 
-        public function getData($storable=false)
+        /*public function getData($storable=false)
         {
-            $this->dayField->getData();
+            /*$this->dayField->getData();
             $this->yearField->getData();
-            $this->monthField->getData();
-            return array($this->getName(false) => $this->getValue());
-        }
+            $this->monthField->getData();*/
+            /*return array($this->getName(false) => $this->getValue());
+        }*/
 
-        public function validate()
+        /*public function validate()
         {
             if(parent::validate())
             {
@@ -126,11 +94,11 @@
             {
                 return false;
             }
-        }
+        }*/
 
-        public function getDatabaseTable()
+        /*public function getDatabaseTable()
         {
 
-        }
+        }*/
     }
 ?>

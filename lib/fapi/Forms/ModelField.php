@@ -10,7 +10,7 @@ class ModelField extends SelectionList
 		$this->setLabel($field[0]["label"]);
 		$this->setDescription($field[0]["description"]);
 		$this->setName($info["field"]);
-		$data = $model->get(array($info["field"],$value),null,model::MODE_ARRAY);
+		$data = $model->get(array($info["field"],$value),null,Model::MODE_ARRAY);
 
 		$this->addOption("","");
 

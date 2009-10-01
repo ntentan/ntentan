@@ -3,12 +3,12 @@ include_once "Field.php";
 
 /**
  * A regular checkbox with a label.
- * \ingroup Form_API
  */
 class Checkbox extends Field
 {
-	//! Holds the value that should be returned by the checkbox if it was
-	//! checked at the time the form containing it was submitted.
+	/**
+	 * The value that this field should contain if this checkbox is checked.
+	 */
 	protected $checkedValue;
 
 	/**
@@ -30,14 +30,17 @@ class Checkbox extends Field
 	 * Sets the value that should be assigned as the checked value for
 	 * this check box.
 	 * @param $checkedValue The value to be assigned.
+	 * @return Checkbox
 	 */
 	public function setCheckedValue($checkedValue)
 	{
 		$this->checkedValue = $checkedValue;
+		return $this;
     }
 
 	/**
 	 * Gets and returns the checkedValue for the check box.
+	 * @return string
 	 */
 	public function getCheckedValue()
 	{

@@ -50,7 +50,7 @@ class SelectionList extends Field
 	//! \param $value The value associated with the label.
 	public function addOption($label="", $value="")
 	{
-		array_push($this->options, new SelectionListItem($label, $value));
+		$this->options[] = new SelectionListItem($label, $value);
 		return $this;
 	}
 

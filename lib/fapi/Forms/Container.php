@@ -8,24 +8,29 @@ require_once ("ValidatableInterface.php");
 /**
  * The container class. This abstract class provides the necessary
  * basis for implementing form element containers. The container
- * is a special element which contains other form elements. The container
- * implements the DatabaseInterface interface which makes it possible
- * for the container to dump its data directly into the database and
- * also automatically retrieve its data from the database.
+ * is a special element which contains other form elements.
  *
- * For this database interaction to be possible, the $database_table
- * property and the $database_schema property must be set. The following
- * code shows how this could be done using the Form class which is a
- * subclass of the container class.
- *
- * \ingroup Form_API
  */
 abstract class Container extends Element implements DatabaseInterface, Validatable
 {
+	/**
+	 * Data should be stored into databases.
+	 */
 	const STORE_DATABASE = "database";
+
+	/**
+	 * Data should be stored into models.
+	 */
 	const STORE_MODEL = "model";
+
+	/**
+	 * Data should not be stored anywhere.
+	 */
 	const STORE_NONE = "none";
 
+	/**
+	 * Variable which determines where data from the database should be stored.
+	 */
 	protected $store = Container::STORE_NONE;
 
 	/**
@@ -82,7 +87,17 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 	//! being rendered.
 	protected $onRenderCallback;
 
+	/**
+	 * The Ntentan Model which holds the form's data.
+	 * @see Model
+	 */
 	protected $model;
+
+	protected $callback;
+	protected $callbackData;
+
+	protected $validatorCallback;
+	protected $validatorCallbackData;
 
 	public function __construct($renderer="table")
 	{
@@ -91,7 +106,9 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 
 	/**
 	 * Sets the current renderer being used by the container. The renderer
-	 * is responsible for rendering the HTML code used for the form.
+	 * is responsible for rendering the HTML form content.
+	 * @param $renderer The name of the renderer being used.
+	 * @return Container
 	 */
 	public function setRenderer($renderer)
 	{
@@ -100,6 +117,7 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 		$this->renderer_head = $renderer."_renderer_head";
 		$this->renderer_foot = $renderer."_renderer_foot";
 		$this->renderer_element = $renderer."_renderer_element";
+		return $this;
 	}
 
 	/**
@@ -112,13 +130,15 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 
 	/**
 	 * Method for adding an element to the form container.
-	 *
-	 * @param unknown_type $element
+	 * @param  $element
+	 * @return Container
 	 */
-	public function add($element)
+	public function add($e)
 	{
 		//Check if the element has a parent. If it doesnt then add it
 		//to this container. If it does throw an exception.
+		foreach(func_get_args() as $element)
+		{
 		if($element->parent==null)
 		{
 			//throw new Exception("Why");
@@ -134,6 +154,7 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 		else
 		{
 			throw new Exception("Element added already has a parent");
+		}
 		}
 		return $this;
 	}
@@ -160,6 +181,7 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 		{
 			$element->setData($data);
 		}
+		return $this;
 	}
 
 	public function isFormSent()
@@ -279,10 +301,6 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 
 	public function retrieveModelData()
 	{
-		/*var_dump($this->model);
-		var_dump($this->primary_key_field);
-		var_dump($this->primary_key_value);*/
-
 		if($this->model!=null && $this->primary_key_field!=null && $this->primary_key_value!=null)
 		{
 			$data = $this->model->getWithField($this->primary_key_field,$this->primary_key_value);
@@ -401,21 +419,71 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 		}
 	}
 
+	/*public function saveRelatedData($data)
+	{
+		foreach($this->getElements() as $element)
+		{
+			if($element->getType()=="Container")
+			{
+				$element->saveRelatedData($data);
+			}
+		}
+	}
+
+	public function setRelatedData($data)
+	{
+		$errors = array();
+		foreach($this->getElements() as $element)
+		{
+			if($element->getType()=="Container")
+			{
+				$ret = $element->setRelatedData($data);
+				if(is_array($ret))
+				{
+					$errors += $ret;
+				}
+			}
+		}
+		return count($errors)>0?$errors:false;
+	}*/
+
 	protected function saveModelData()
 	{
-		//$model = model::load($this->model);
 		if($this->primary_key_value==null)
 		{
 			$errors = $this->model->setData($this->getData());
+			$errors2 = false;
 			if($errors===true)
 			{
-				$this->model->save();
+				/*foreach($this->getElements() as $element)
+				{
+					if($element->getType()=="Container")
+					{
+						$errors2 = $element->setRelatedData($this->model->getData());
+					}
+				}
+
+				if($errors2===false)
+				{
+					$this->model->save();
+					foreach($this->getElements() as $element)
+					{
+						if($element->getType()=="Container")
+						{
+							$element->saveRelatedData($this->model->getData());
+						}
+					}
+				}
+				else if($errors)
+				{
+					$errors = array("errors"=>array());
+				}*/
 			}
 			return $errors;
 		}
 		else
 		{
-			$errors = $this->model->setData($this->getData());
+			$errors = $this->model->setData($this->getData(),$this->primary_key_field,$this->primary_key_value);
 			if($errors===true)
 			{
 				$this->model->update($this->primary_key_field,$this->primary_key_value);
@@ -478,6 +546,7 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 	{
 		$this->store = Container::STORE_MODEL;
 		$this->model = $model;
+		return $this;
 	}
 
 	//! Gets the $database_table field.
@@ -519,6 +588,13 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 	{
 		$this->primary_key_field = $primary_key_field;
 		$this->primary_key_value = $primary_key_value;
+		foreach($this->getElements() as $element)
+		{
+			if($element->getType() == "Container")
+			{
+				$element->setPrimaryKey($primary_key_field,$primary_key_value);
+			}
+		}
 	}
 
 	//! Returns the $primary_key_field.
@@ -598,7 +674,8 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 			if($element->getType()=="Field" || $element->getType()=="Checkbox")
 			{
 				//print "Field\n";
-				array_push($fields,$element);
+				//array_push($fields,$element);
+				$fields[] = $element;
 			}
 			else if($element->getType()=="Container")
 			{
@@ -610,7 +687,8 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 				foreach($element->getFields() as $field)
 				{
 					//$fields += $field;
-					array_push($fields,$field);
+					//array_push($fields,$field);
+					$fields[] = $field;
 					//print $field->getType();
 				}
 				//print count($element->getFields())." - ";
@@ -665,6 +743,7 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 			}
 			else
 			{
+				if($element->getId()==$id) return $element;
 				try
 				{
 					return $element->getElementById($id);
@@ -672,7 +751,55 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 				catch(Exception $e){}
 			}
 		}
-		throw new Exception("No element with id $id found in array");
+		throw new Exception("No element with id $id found in Container");
+	}
+
+	/**
+	 * Sets the callback function which should be fired whenever this container
+	 * is successfully submitted.
+	 * @param $callback The callback function
+	 * @return Container
+	 */
+	public function setCallback($callback,$data)
+	{
+		$this->callback = $callback;
+		$this->callbackData = $data;
+		return $this;
+	}
+
+	public function setValidatorCallback($callback,$data=null)
+	{
+		$this->validatorCallback = $callback;
+		$this->validatorCallbackData = $data;
+		return $this;
+	}
+
+	protected static function executeCallback()
+	{
+		$args = func_get_args();
+		$function = array_shift($args);
+		$function = explode("::",$function);
+		if(count($function)==2)
+		{
+			$method = new ReflectionMethod($function[0], $function[1]);
+			$method->invokeArgs(null, $args);
+		}
+		else if(count($function)==1)
+		{
+			$method = $function[0];
+			if(function_exists($method))
+			{
+				$method($args[0],$args[1],$args[2]);
+			}
+		}
+	}
+
+	public function clearErrors()
+	{
+		foreach($this->getElements() as $element)
+		{
+			$element->clearErrors();
+		}
 	}
 }
 ?>

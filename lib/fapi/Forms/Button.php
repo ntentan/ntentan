@@ -1,4 +1,9 @@
 <?php
+/**
+ * A simple button which can be displayed on forms.
+ * @author james
+ *
+ */
 class Button extends Field
 {
 	public function __construct($label="")

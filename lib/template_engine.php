@@ -11,9 +11,9 @@ class template_engine extends Smarty
 	{
 		parent::__construct();
 		$this->template_dir = 'app/templates/';
-		$this->compile_dir = 'app/templates_c/';
-		$this->config_dir = 'config/smarty/';
-		$this->cache_dir = 'app/cache/';
+		$this->compile_dir = 'app/cache/template_compile';
+		$this->config_dir = 'config/template/';
+		$this->cache_dir = 'app/cache/smarty';
 		$this->caching = false;
 		//$this->assign('prefix',IndexPage::$prefix);
 		$this->assign('host',$_SERVER["HTTP_HOST"]);

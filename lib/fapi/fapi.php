@@ -1,14 +1,14 @@
 <?php
 /**
- * \page fapi_page The Form API
- * The Form API is a simple API which makes it possible to define forms
- * in PHP and have the forms rendered in HTML. This API provides server
- * side validation and also a DatabaseInterface which makes it possible
- * for data captured by the forms to be put in a database without writing
- * any queries or code. The form API is made up of a collection of classes
- * which are all based on a single element class. This API is very extensible.
+ * @page fapi_page The Form API
+ * The Form API is an api in the ntentan framework which makes it possible to
+ * define forms in PHP and have the forms rendered in HTML. This API provides server
+ * side validation and also an interface which makes it possible to dump the data
+ * collected into databases or ntentan data models. The form API is made up of a
+ * collection of classes which are all based on a single Element class. This API
+ * is very extensible.
  *
- * \section how_fapi_works How the form API Works
+ * @section how_fapi_works How the form API Works
  * The form api is orgarnised around the Element class. This class is extended
  * by two other abstract classes; Field and Container. Subclasses of the Container
  * class are used to contain other Elements. Subclasses of the Field class
@@ -16,7 +16,7 @@
  * class are the Form, FieldSet and BoxContainer class. Some of the subclasses
  * of the Field class are the TextField, TextArea etc.
  *
- * \section using_fapi Using the form API
+ * @section using_fapi Using the form API
  * The following listing shows a simple usage of the form api. This listing
  * creates a simple form intended to get information to be stored in an
  * address book. Embeding this code anywhere within a PHP document should cause the
@@ -117,6 +117,26 @@
  * To retrieve data which is already in the database for updating or editing,
  * you have to set the database table, the primary key field in the table
  * and the value of the primary key. This could be done as shown below.
+ *
+ * \code
+ * $form->setDatabaseTable("address_table");
+ * $form->setPrimaryKeyField("address_id");
+ * $form->setPrimaryKeyValue(2);
+ * \endcode
+ *
+ * \subsection Using Database Models
+ * The Ntentan framework comes with API's for handling model data. These models
+ * are stored in databases. To use models to store your form data you have to
+ * create an instance of the model and assign this instance to your form.
+ *
+ * \code
+ * $model = Model::load("clients.addresses");
+ * $form = new Form();
+ * $form->setModel($model);
+ * \endcode
+ *
+ * To retrieve or modify data which is already in the forms, you still set the
+ * primary key field and the primary key value.
  *
  * \code
  * $form->setDatabaseTable("address_table");

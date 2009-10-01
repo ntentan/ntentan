@@ -53,10 +53,10 @@ class TextField extends Field
 		$this->addJsValidation
 		(array(
 			"func"=>"fapiCheckRegexp",
-			"regexp"=>Field::prepareMessage('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$'),
+			"regexp"=>Field::prepareMessage($regexp),
 			"message"=>Field::prepareMessage("This {$this->getLabel()} format is not valid")
 			)
-		);	
+		);
 	}
 
 	/**
@@ -83,6 +83,10 @@ class TextField extends Field
 		$this->max_val = $max_val;
 	}
 
+	/**
+	 * @todo rewrite this whole validation
+	 * @see lib/fapi/Forms/Field#validate()
+	 */
 	public function validate()
 	{
 
@@ -135,12 +139,13 @@ class TextField extends Field
 
 		else if($this->type=="REGEXP")
 		{
-			if(eregi($this->regexp, $this->getValue()))
+			if(preg_match($this->regexp, $this->getValue()))
 			{
 				return true;
 			}
 			else
 			{
+				array_push($this->errors, "The format of this field is invalid");
 				$this->error = true;
 				return false;
 			}

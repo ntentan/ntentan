@@ -46,7 +46,7 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 	//! A validation constraint which expects that the value entered in
 	//! this field is unique in the database.
 	protected $unique;
-	
+
 	public static function prepareMessage($text)
 	{
 		return "'".addcslashes($text,"\\'\"")."'";
@@ -103,7 +103,7 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 	 *
 	 * @param $value The value of the field.
 	 */
-	public function setValue($value,$unset=false)
+	public function setValue($value)
 	{
 		if($unset)
 		{
@@ -143,6 +143,7 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 			)
 		);
 		$this->required = $required;
+		return $this;
 	}
 
 	/**
@@ -166,7 +167,7 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 				"url"=>Field::prepareMessage("lib/fapi/ajax.php"),
 				"params"=>Field::prepareMessage(sprintf("action=check_unique&t=%s&f=%s",urlencode($param),$this->getName()).($extra!=null?"&":"").$extra)
 				)
-			);		
+			);
 		}
 		$this->unique = $unique;
 	}
@@ -224,12 +225,13 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 
 	public function validate()
 	{
-		global $db;
-		
+		//global $db;
+
 		//Perform the required validation. Generate an error if this
 		//field is empty.
-		if($this->getRequired() && $this->getValue() === "" && $_POST[$this->getName($this->nameEncryption)] === "")
+		if($this->getRequired() && $this->getValue() === "" )//&& $_POST[$this->getName($this->nameEncryption)] === "")
 		{
+			//throw new Exception();
 			$this->error = true;
 			array_push($this->errors,$this->getLabel()." is required.");
 			return false;
@@ -238,7 +240,7 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 		//Perform the unique validation. Query the database and find out
 		// if any other value exists in the database which is the same
 		// as what has been entered.
-		if($this->parent->getDatabaseTable()!="" && $this->unique)
+		/*if($this->parent->getDatabaseTable()!="" && $this->unique)
 		{
 			$schema = $this->parent->getDatabaseSchema();
 			$table = $this->parent->getDatabaseTable();
@@ -262,7 +264,7 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 				array_push($this->errors,"This field must be unique. There is already a {$this->getLabel()}, $value in the database.");
 				return false;
 			}
-		}
+		}*/
 
 		// Call the custom validation function.
 		$validationFunc = $this->validationFunc;
@@ -339,7 +341,7 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 	{
 		return array();
 	}
-	
+
 	public function addJsValidation($validator)
 	{
 		$keys = array_keys($validator);
@@ -350,7 +352,7 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 		}
 		$this->jsValidations[] = "{".implode(",",$members)."}";
 	}
-	
+
 	public function getJsValidations()
 	{
 		return "[".implode($this->jsValidations,",")."]";

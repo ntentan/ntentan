@@ -1,14 +1,18 @@
 <?php
+/**
+ * AJAX handler for the database forms.
+ */
+
 require_once("../../db_connect.php");
 
 switch($_GET["action"])
 {
 case "check_unique":
 	$ret = array("status"=>true);
-	$result = 
+	$result =
 	$db->query(
 		sprintf(
-			"SELECT %s FROM %s WHERE %s='%s'", 
+			"SELECT %s FROM %s WHERE %s='%s'",
 			$db->escape_string($_GET["f"]),
 			$db->escape_string($_GET["t"]),
 			$db->escape_string($_GET["f"]),
@@ -25,7 +29,7 @@ case "check_unique":
 	}
 	print json_encode($ret);
 	break;
-	
+
 case "save_data":
 	$ret = array("status"=>false);
 	$keys = array_keys($_POST);

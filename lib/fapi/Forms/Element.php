@@ -316,10 +316,17 @@ abstract class Element
 		$this->errors[] = $error;
 	}
 
+	public function clearErrors()
+	{
+		$this->error = false;
+		$this->errors = array();
+	}
+
 	public static function create()
 	{
 		$args = func_get_args();
 		$element = array_shift($args);
+		if(!class_exists($element)) throw new Exception("Class requested doesn't exist");
 		$element = new ReflectionClass($element);
 		return $element->newInstanceArgs($args==null?array():$args);
 	}

@@ -4,17 +4,17 @@ class ModelServices
 	protected $model;
 	protected $data;
 	protected $fields;
-	
+
 	public function setModel($model)
 	{
 		$this->model = $model;
 		$this->data = $model->getData();
 		$fields = $this->model->getFields();
 	}
-	
+
 	public function validator_required($name,$parameters)
 	{
-		if($this->data[$name]!=="") 
+		if($this->data[$name]!=="")
 		{
 			return true;
 		}
@@ -23,11 +23,11 @@ class ModelServices
 			return "The %field_name% field is required";
 		}
 	}
-	
+
 	public function validator_unique($name,$parameter)
 	{
 		$data = $this->model->getWithField($name,$this->data[$name]);
-		if(count($data)==0)
+		if(count($data)==0 || $this->model->checkTemp($name,$this->data[$name]))
 		{
 			return true;
 		}
@@ -36,9 +36,12 @@ class ModelServices
 			return "The value of the %field_name% field must be unique.";
 		}
 	}
-	
+
 	public function validator_regexp($name,$parameter)
 	{
-		return true;
+		$ret =  preg_match($parameter[0],$this->data[$name])>0?true:"The %field_name% format is invalid";
+		//var_dump($ret);
+		//die();
+		return $ret;
 	}
 }

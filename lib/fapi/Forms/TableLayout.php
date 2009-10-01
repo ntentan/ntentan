@@ -61,14 +61,16 @@ class TableLayout extends Container
 		}
 		else
 		{
-			array_push($this->tableElements[$row][$column],$element);
+			$this->tableElements[$row][$column][] = $element;
+			/*$this->elements[] = $element;
 			$element->setMethod($this->getMethod());
-			$element->parent = $this;
+			$element->parent = $this;*/
+			parent::add($element);
 		}
 		return $this;
 	}
 
-	public function getElements()
+	/*public function getElements()
 	{
 		$data = array();
 		for($row=0; $row<$this->num_rows; $row++)
@@ -77,12 +79,14 @@ class TableLayout extends Container
 			{
 				foreach($this->tableElements[$row][$column] as $element)
 				{
-					array_push($data,$element);
+					$data[]=$element;
 				}
 			}
 		}
+		var_dump($data);
+		die();
 		return $data;
-	}
+	}*/
 
 	/**
 	 * Renders the table.
@@ -125,14 +129,15 @@ class TableLayout extends Container
 		return $ret;
 	}
 
-	public function setMethod($method)
+	/*public function setMethod($method)
 	{
 		$this->method = $method;
-	}
+	}*/
 
 
-	public function getData($storable=false)
+	/*public function getData($storable=false)
 	{
+		var_dump($this->tableElements);
 		$data = array();
 		if($this->isFormSent())
 		{
@@ -179,9 +184,9 @@ class TableLayout extends Container
 			}
 		}
 		return $data;
-	}
+	}*/
 
-	public function setData($data)
+	/*public function setData($data)
 	{
 		for($row=0; $row<$this->num_rows; $row++)
 		{
@@ -212,6 +217,6 @@ class TableLayout extends Container
 			}
 		}
 		return $retval;
-	}
+	}*/
 }
 ?>
