@@ -27,18 +27,22 @@ class Table
 		);
 	}
 	
-	public function render()
+	public function render($renderHeaders=true)
 	{
-		$table = "<table class='tapi-table'>";
+		if($renderHeaders)
+		{
+			$table = "<table class='tapi-table'>";
 		 
-		//Render Headers
-		$table .= "<thead><tr><td>";
-		$table .= "<input type='checkbox'></td><td>";
-		$table .= implode("</td><td>",$this->headers);
-		$table .= "</td><td>Operations</td></tr></thead>";
+			//Render Headers
+			$table .= "<thead><tr><td>";
+			$table .= "<input type='checkbox'></td><td>";
+			$table .= implode("</td><td>",$this->headers);
+			$table .= "</td><td>Operations</td></tr></thead>";
 		 
-		//Render Data
-		$table .= "<tbody>";
+			//Render Data
+			$table .= "<tbody>";
+		}
+		
 		foreach($this->data as $row)
 		{
 			$key = array_shift($row);
@@ -55,9 +59,13 @@ class Table
 			}
 			$table .= "</td></tr>";
 		}
-		$table .= "</tbody>";
-		 
-		$table .= "</table>";
+		
+		if($renderHeaders)
+		{
+			$table .= "</tbody>";
+			$table .= "</table>";
+		}
+		
 		return $table;
 	}
 }

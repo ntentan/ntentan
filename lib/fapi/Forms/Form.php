@@ -145,13 +145,13 @@ class Form extends Container
 			$ret .= "</ul></div>";
 		}
 		$ret .= $this->renderElements();
-		$ret .= '<div id="fapi-submit-area">';
 
 		$onclickFunction = "fapi_ajax_submit_".$this->getId()."()";
 		$onclickFunction = str_replace("-","_",$onclickFunction);
 
 		if($this->getShowSubmit())
 		{
+			$ret .= '<div id="fapi-submit-area">';
 			$submitValue = $this->submitValue?('value="'.$this->submitValue.'"'):"";
 			if($this->ajaxSubmit)
 			{
@@ -161,8 +161,8 @@ class Form extends Container
 			{
 				$ret .= sprintf('<input class="fapi-submit" type="submit" %s />',$submitValue);
 			}
+			$ret .= '</div>';
 		}
-		$ret .= '</div>';
 		$ret .= '<input type="hidden" name="is_form_'.$this->getId().'_sent" value="yes" />';
 		$ret .= '<input type="hidden" name="is_form_sent" value="yes" />';
 		$ret .= '</form>';

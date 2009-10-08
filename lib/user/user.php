@@ -11,7 +11,7 @@ class User
 				"ip_address"=>$_SERVER["REMOTE_ADDR"],
 				"machine_name"=>$_SERVER["REMOTE_HOST"],
 				"action_performed"=>$activity,
-				"data"=>$data
+				"data"=>base64_encode($data)
 			)
 		);
 		$model->save();

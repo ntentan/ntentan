@@ -66,7 +66,7 @@ function default_renderer_element($element, $showfields=true)
 
     if($element->getType()!="Container" && $element->getShowField())
     {
-        $ret .= "<div class='fapi-description'>".$element->getDescription()."</div>";
+        $ret .= "<div ".($element->getId()==""?"":"id='".$element->getId()."_desc'")." class='fapi-description'>".$element->getDescription()."</div>";
     }
     $ret .= "</div>";
 

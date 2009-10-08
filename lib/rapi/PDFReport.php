@@ -30,7 +30,7 @@ class PDFReport extends Report
 			}
 		}
 
-		$pdf->output();
+		$pdf->Output();
 		die();
 	}
 }

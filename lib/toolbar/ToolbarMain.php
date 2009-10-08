@@ -2,22 +2,22 @@
 class Toolbar
 {
 	protected $buttons = array();
-	
+
 	public function __construct($buttons=array())
 	{
 		$this->buttons = $buttons;
 	}
-	
-	public function addButton($button)
+
+	public function add($button)
 	{
 		$this->buttons[] = $button;
 	}
-	
+
 	public function addLinkButton($label,$link,$icon=null)
 	{
 		$this->buttons[] = new LinkButton($label,$link,$icon);
 	}
-	
+
 	public function render()
 	{
 		$ret = "<ul class='toolbar'>";

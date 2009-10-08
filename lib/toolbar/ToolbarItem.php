@@ -1,7 +1,15 @@
 <?php
-abstract class ToolbarItem 
+abstract class ToolbarItem
 {
-	public abstract function render();
+	protected $icon;
+
+	public function render()
+	{
+		return "<div>".($this->icon==null?"":"<img class='toolbar-icon toolbar-linkbutton-icon' src='{$this->icon}' />").$this->_render()."</div>";
+	}
+
+	protected abstract function _render();
+
 	public abstract function getCssClasses();
 }
 ?>

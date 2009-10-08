@@ -11,6 +11,7 @@
         public function __construct($label="",$name="",$description="")
         {
             parent::__construct($label,$name,$description);
+            $this->setValue(time());
         }
 
         public function render()
@@ -26,79 +27,15 @@
 
         public function setValue($value)
         {
-			//print strtotime($value)."-".date("Y M d",strtotime($value));
-			//var_dump($value);
 			if(is_numeric($value))
 			{
 				parent::setValue($value);
 			}
 			else
 			{
-				parent::setValue(strtotime($value));
+				if(strlen($value)>0) parent::setValue(strtotime($value)); else parent::setValue("");
 			}
 			return $this;
         }
-
-        /*public function setMethod($method)
-        {
-            Element::setMethod($method);
-            $this->dayField->setMethod($method);
-            $this->monthField->setMethod($method);
-            $this->yearField->setMethod($method);
-        }*/
-
-       /* public function getValue()
-        {
-            /*if($this->dayField->getValue()=="" || $this->monthField->getValue()=="" || $this->yearField->getValue()=="")
-            {
-                return 0;
-            }
-            else
-            {
-                //return strtotime($this->yearField->getValue()."-".$this->monthField->getValue()."-".$this->dayField->getValue());
-            }*/
-        	/*var_dump($this->value);
-        	return strtotime($this->value);
-        //}*/
-
-        /*public function getData($storable=false)
-        {
-            /*$this->dayField->getData();
-            $this->yearField->getData();
-            $this->monthField->getData();*/
-            /*return array($this->getName(false) => $this->getValue());
-        }*/
-
-        /*public function validate()
-        {
-            if(parent::validate())
-            {
-                $ret = true;
-                if( $this->dayField->getValue()!="" ||
-                    $this->monthField->getValue()!="" ||
-                    $this->yearField->getValue()!="")
-                {
-                    $ret = $this->dayField->validate();
-                    $ret = $this->monthField->validate();
-                    $ret = $this->yearField->validate();
-                }
-
-                if(!$ret)
-                {
-                    $this->error = true;
-                    array_push($this->errors,"Please ensure that the date entered is valid");
-                }
-                return $ret;
-            }
-            else
-            {
-                return false;
-            }
-        }*/
-
-        /*public function getDatabaseTable()
-        {
-
-        }*/
     }
 ?>

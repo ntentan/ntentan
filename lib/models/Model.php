@@ -14,13 +14,6 @@ abstract class Model implements ArrayAccess
 	 */
 	protected $fields;
 
-	/*private $properties = array(
-		"name"=>null,
-		"label"=>null,
-		"description"=>null,
-		"labels"=>null
-	);*/
-
 	public function __construct($name=null, $serviceClass=null)
 	{
 		//setup the services for this model
@@ -34,9 +27,15 @@ abstract class Model implements ArrayAccess
 		$this->services = array("instance"=>$services, "class"=>$servicesClass);
 	}
 
-	public static function load($model,$serviceClass=null)
+	/**
+	 * 
+	 * @param $model
+	 * @param $serviceClass
+	 * @return Model
+	 */
+	public static function load($model,$path=null,$serviceClass=null)
 	{
-		$model_path = "app/modules/".str_replace(".","/",$model)."/";
+		$model_path = $path."app/modules/".str_replace(".","/",$model)."/";
 		$model_name = array_pop(explode(".",$model));
 		$serviceClass = $serviceClass==null?$model_path.$model_name."Services.php":$serviceClass.".php";
 		return Model::_load($model_path."model.xml",$model_name,$serviceClass);
@@ -48,7 +47,7 @@ abstract class Model implements ArrayAccess
 		{
 			include_once($service_class_file);
 		}
-		return new oracle($model_path);
+		return SQLDatabaseModel::createDefaultDriver($model_path);
 	}
 
 	public static function resolvePath($path)
@@ -80,6 +79,7 @@ abstract class Model implements ArrayAccess
 			{
 				$labels[] = $field["label"];
 			}
+			if(!$key) array_shift($labels);
 		}
 		else
 		{
@@ -126,6 +126,48 @@ abstract class Model implements ArrayAccess
 			}
 		}
 		return $data;
+	}
+	
+
+	public function setData($data,$primary_key_field=null,$primary_key_value=null)
+	{
+		$this->data = $data;
+		if($primary_key_field!="")
+		{
+			$this->tempData = $this->getWithField($primary_key_field,$primary_key_value);
+		}
+		return $this->validate();
+	}
+	
+	public function setResolvableData($data,$primary_key_field=null,$primary_key_value=null)
+	{
+		$errors = array();
+		foreach($data as $key => $value)
+		{
+			switch($this->fields[$key]["type"])
+			{
+			case "date":
+				$data[$key] = strtotime($value);
+				break;
+			case "enum":
+				$data[$key] = array_search(trim($value),$this->fields[$key]["options"]);
+				if($data[$key]===false)
+				{
+					$errors[$key][] = "Invalid Value '<b>$value</b>'<br/>Possible values may include <ul><li>'".implode("'</li><li>'",$this->fields[$key]["options"])."'</li></ul>";
+				}
+				break;
+			case "reference":
+				
+			}
+		}
+		if(count($errors)==0)
+		{
+			return $this->setData($data,$primary_key_field,$primary_key_value);
+		}
+		else
+		{
+			return array("errors"=>$errors);
+		}
 	}
 
 	private function service($service_name,$field_name=null,$args=array())
@@ -191,11 +233,11 @@ abstract class Model implements ArrayAccess
 		}
 	}
 
-	public function getKeyField()
+	public function getKeyField($type="primary")
 	{
 		foreach($this->fields as $name => $field)
 		{
-			if($field["key"]=="true") return $name;
+			if($field["key"]==$type) return $name;
 		}
 	}
 
@@ -218,6 +260,32 @@ abstract class Model implements ArrayAccess
 		$this->service("preUpdate");
 		$this->_updateData($field,$value);
 		$this->service("postUpdate");
+	}
+
+	public static function getModels($path="app/modules")
+	{
+		$prefix = "app/modules";
+		$d = dir($path);
+		$list = array();
+
+		// Go through every file in the module directory
+		while (false !== ($entry = $d->read()))
+		{
+			// Ignore certain directories
+			if($entry!="." && $entry!=".." && is_dir("$path/$entry"))
+			{
+				// Extract the path, load the controller and test weather this
+				// role has the rights to access this controller.
+
+				$url_path = substr(Application::$prefix,0,strlen(Application::$prefix)-1).substr("$path/$entry",strlen($prefix));
+				$module_path = explode("/",substr(substr("$path/$entry",strlen($prefix)),1));
+				$module = Controller::load($module_path, false);
+				$list = $module->name;
+				//$children = $this->generateMenus($role_id,"$path/$entry");
+			}
+		}
+		array_multisort($list,SORT_ASC);
+		return $list;
 	}
 
 	public abstract function getWithField($field,$value);

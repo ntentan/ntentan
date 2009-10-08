@@ -2,30 +2,28 @@
 class HTMLReport extends Report
 {
 	public $htmlHeaders;
-	
+
 	public function output()
 	{
 		if($this->htmlHeaders)
 		{
 			header('Content-type: text/html');
-			header('Content-Disposition: attachment; filename="report.html"');
-			header('Content-Transfer-Encoding: binary');
 			print "<html>
 					<head>
 						<title>Report</title>
 						<style>
 						table
 						{
-						border-collapse:collapse;	
+						border-collapse:collapse;
 						border:2px solid black;
 						}
-						
+
 						td
 						{
 						padding:3px;
-						border:1px solid grey;	
+						border:1px solid grey;
 						}
-						
+
 						thead
 						{
 						background-color:#e0e0e0;
@@ -35,7 +33,7 @@ class HTMLReport extends Report
 					</head>
 				<body>";
 		}
-		
+
 		foreach($this->contents as $content)
 		{
 			switch($content->getType())
@@ -43,7 +41,7 @@ class HTMLReport extends Report
 			case "text":
 				print "<p>".$content->getText()."</p>";
 				break;
-				
+
 			case "table":
 				print "<table><thead><tr><td>";
 				$headers = $content->getHeaders();
@@ -57,7 +55,7 @@ class HTMLReport extends Report
 				break;
 			}
 		}
-		
+
 		if($this->htmlHeaders)
 		{
 			print "</body></html>";

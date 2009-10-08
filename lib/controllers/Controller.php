@@ -156,11 +156,21 @@ abstract class Controller
 				{
 					$controller_class = new ReflectionClass($controller_name);
 					$method = $controller_class->GetMethod($path[$i+1]);
-					$controller->content = $method->invoke($controller,array_slice($path,$i+2));
+					$ret = $method->invoke($controller,array_slice($path,$i+2));
+					if(is_array($ret))
+					{
+						$t = new template_engine();
+						$t->assign($ret["data"]);
+						$controller->content = $t->fetch(isset($ret["template"])?$ret["template"]:$path[$i+1].".tpl");
+					}
+					else if(is_string($ret))
+					{
+						$controller->content = $ret;
+					}
 				}
 				else
 				{
-					$controller->content = "Error! ".$path[$i+1];
+					$controller->content = "<h2>Error</h2> Method does not exist. ".$path[$i+1];
 				}
 			}
 		}
@@ -189,6 +199,11 @@ abstract class Controller
 	public function getPermissions()
 	{
 
+	}
+	
+	public function getTemplateDescription($template,$data)
+	{
+		return array("template"=>"file:/".getcwd()."/app/modules/$template","data"=>$data);
 	}
 }
 ?>

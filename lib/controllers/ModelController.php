@@ -94,7 +94,20 @@ class ModelController extends Controller implements ControllerPermissions
 			$this->toolbar->addLinkButton("New",$this->urlPath."/add");
 		}
 
-		$this->toolbar->addLinkButton("Export",$this->urlPath."/export");
+		if(User::getPermission($this->name."_can_export"))
+		{
+			$exportButton = new MenuButton("Export");
+			$exportButton->addMenuItem("PDF","#","NTHC.openWindow('".$this->urlPath."/export/pdf')");
+			$exportButton->addMenuItem("Data","#","NTHC.openWindow('".$this->urlPath."/export/csv')");
+			$exportButton->addMenuItem("Template","#","NTHC.openWindow('".$this->urlPath."/export/csv/template')");
+			$exportButton->addMenuItem("HTML","#","NTHC.openWindow('".$this->urlPath."/export/html')");
+			$this->toolbar->add($exportButton);//addLinkButton("Export",$this->urlPath."/export");
+		}
+
+		if(User::getPermission($this->name."_can_import"))
+		{
+			$this->toolbar->addLinkButton("Import",$this->urlPath."/import");
+		}
 
 		if(file_exists($this->localPath."/app.xml"))
 		{
@@ -268,7 +281,6 @@ class ModelController extends Controller implements ControllerPermissions
 			}
 			else
 			{
-				//var_dump($return);
 				$fields = array_keys($return["errors"]);
 				foreach($fields as $field)
 				{
@@ -352,9 +364,28 @@ class ModelController extends Controller implements ControllerPermissions
 	 */
 	public function export($params)
 	{
-		$report = new PDFReport(); //HTMLReport();
-		$report->htmlHeaders = true;
-
+		switch($params[0])
+		{
+			case "pdf":
+				$report = new PDFReport();
+				break;
+			case "html":
+				$report = new HTMLReport();
+				$report->htmlHeaders = true;
+				break;
+			case "csv":
+				if($params[1]=="")
+					$report = new CSVReport();
+				else if($params[1]=="template")
+				{
+					$report = new CSVReport();
+					$table = new TableContent($this->model->getLabels(),array());
+					$report->add($table);
+					$report->output();
+				}
+				break;
+		}
+		 //HTMLReport();
 		$title = new TextContent($this->label);
 
 		$headers = $this->model->getLabels();
@@ -371,16 +402,45 @@ class ModelController extends Controller implements ControllerPermissions
 	}
 
 	/**
+	 * 
+	 * @param $params
+	 * @return unknown_type
+	 */
+	public function import($params)
+	{
+		$data = array();
+		$form = new Form();
+		$form->
+		add(
+			Element::create("FileUploadField","File","file","Select the file you want to upload.")->
+				setScript(Application::$prefix."lib/controllers/import.php?model=$this->model_name")->
+				setJsExpression("NTHC.showUploadedData(callback_data)")
+		);
+		$form->setRenderer("default");
+		$form->addAttribute("style","width:230px");
+		$form->setShowSubmit(false);
+
+		$data["form"] = $form->render();
+		return array
+		(
+			"template"=>"file:".getcwd()."/lib/controllers/import.tpl",
+			"data"=>$data
+		);
+	}
+
+	/**
 	 * Delete a particular item from the model.
 	 * @param $params
 	 * @return unknown_type
 	 */
 	public function delete($params)
 	{
+		//xdebug_start_trace("/tmp/trace.out");
 		$data = $this->model->getWithField($this->model->getKeyField(),$params[0]);
 		$this->model->delete($this->model->getKeyField(),$params[0]);
 		User::log("Deleted ".$this->model->name,$data[0]);
 		header("Location: {$this->urlPath}?notification=Successfully+deleted+".strtolower($this->label));
+		//xdebug_stop_trace();
 	}
 
 	/**
@@ -392,14 +452,15 @@ class ModelController extends Controller implements ControllerPermissions
 	 */
 	public function getPermissions()
 	{
-		return array(
-		array("label"=>"Can add","name"=>$this->name."_can_add"),
-		array("label"=>"Can edit","name"=>$this->name."_can_edit"),
-		array("label"=>"Can delete","name"=>$this->name."_can_delete"),
-		array("label"=>"Can view","name"=>$this->name."_can_view"),
-		array("label"=>"Can export","name"=>$this->name."_can_export")
+		return array
+		(
+			array("label"=>"Can add","name"=>$this->name."_can_add"),
+			array("label"=>"Can edit","name"=>$this->name."_can_edit"),
+			array("label"=>"Can delete","name"=>$this->name."_can_delete"),
+			array("label"=>"Can view","name"=>$this->name."_can_view"),
+			array("label"=>"Can export","name"=>$this->name."_can_export"),
+			array("label"=>"Can import","name"=>$this->name."_can_import")
 		);
 	}
-
 }
 ?>
