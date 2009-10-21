@@ -1,7 +1,7 @@
 <?php
 class User
 {
-	public static function log($activity,$data)
+	public static function log($activity,$data=null)
 	{
 		$model = model::load("system.logs");
 		$model->setData(array
@@ -27,7 +27,7 @@ class User
 		else
 		{
 			$model = model::load("system.permissions");
-			$data = $model->get(array("value"),"role_id = $role_id AND permission='$permission'");
+			$data = $model->get(array("fields"=>array("value"),"conditions"=>"role_id = $role_id AND permission='$permission'"));
 			return $data[0]["value"];
 		}
 	}

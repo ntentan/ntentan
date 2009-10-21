@@ -62,9 +62,6 @@ class TableLayout extends Container
 		else
 		{
 			$this->tableElements[$row][$column][] = $element;
-			/*$this->elements[] = $element;
-			$element->setMethod($this->getMethod());
-			$element->parent = $this;*/
 			parent::add($element);
 		}
 		return $this;

@@ -15,7 +15,9 @@ class Toolbar
 
 	public function addLinkButton($label,$link,$icon=null)
 	{
-		$this->buttons[] = new LinkButton($label,$link,$icon);
+		$button = new LinkButton($label,$link,$icon);
+		$this->buttons[] = $button;
+		return $button;
 	}
 
 	public function render()

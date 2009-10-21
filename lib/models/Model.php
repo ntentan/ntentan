@@ -1,4 +1,9 @@
 <?php
+/**
+ * A model represents an abstract data storing entity.
+ * @author james
+ *
+ */
 abstract class Model implements ArrayAccess
 {
 	const MODE_ASSOC = "assoc";
@@ -7,6 +12,7 @@ abstract class Model implements ArrayAccess
 	protected $services;
 
 	public $name;
+	public $prefix;
 
 	/**
 	 *
@@ -38,16 +44,16 @@ abstract class Model implements ArrayAccess
 		$model_path = $path."app/modules/".str_replace(".","/",$model)."/";
 		$model_name = array_pop(explode(".",$model));
 		$serviceClass = $serviceClass==null?$model_path.$model_name."Services.php":$serviceClass.".php";
-		return Model::_load($model_path."model.xml",$model_name,$serviceClass);
+		return Model::_load($model_path."model.xml",$path,$model_name,$model,$serviceClass);
 	}
 
-	private static function _load($model_path,$model_name,$service_class_file=null)
+	private static function _load($model_path,$prefix,$model_name,$model_package,$service_class_file=null)
 	{
 		if(file_exists($service_class_file))
 		{
 			include_once($service_class_file);
 		}
-		return SQLDatabaseModel::createDefaultDriver($model_path);
+		return SQLDatabaseModel::createDefaultDriver($model_path,$model_package,$prefix);
 	}
 
 	public static function resolvePath($path)
@@ -57,18 +63,6 @@ abstract class Model implements ArrayAccess
 		$model_name = implode(".",$path_array);
 		return array("model"=>$model_name, "field"=>$field_name);
 	}
-
-	/*public function __set($name, $value)
-	{
-		if(array_key_exists($name,$this->properties))
-		{
-			$this->properties[$name] = $value;
-		}
-		else
-		{
-			throw new Exception("Unknown property $name in Model");
-		}
-	}*/
 
 	public function getLabels($fields = null, $key = false)
 	{
@@ -99,7 +93,7 @@ abstract class Model implements ArrayAccess
 		return $this->data;
 	}
 
-	public function formatData()
+	/*public function formatData()
 	{
 		$data = $this->data;
 		foreach($data as $index => $row)
@@ -126,9 +120,8 @@ abstract class Model implements ArrayAccess
 			}
 		}
 		return $data;
-	}
+	}*/
 	
-
 	public function setData($data,$primary_key_field=null,$primary_key_value=null)
 	{
 		$this->data = $data;
@@ -216,7 +209,7 @@ abstract class Model implements ArrayAccess
 		}
 	}
 
-	public function getFields($fieldList=null)
+	public function getFields($fieldList=null, $displayFields = false)
 	{
 		if($fieldList == null)
 		{
@@ -232,6 +225,12 @@ abstract class Model implements ArrayAccess
 			return $fields;
 		}
 	}
+	
+	public function hasField($fieldName)
+	{
+		//var_dump(array_keys($this->fields));
+		return array_search($fieldName,array_keys($this->fields))===false?false:true;
+	}
 
 	public function getKeyField($type="primary")
 	{
@@ -244,14 +243,15 @@ abstract class Model implements ArrayAccess
 	public function save()
 	{
 		$this->service("preAdd");
-		$this->_saveModelData();
-		$this->service("postAdd");
+		$ret = $this->_saveModelData();
+		$this->service("postAdd","key",array($ret,$this->getData()));
+		return $ret;
 	}
 
-	public function get($fields=null,$conditions=null,$mode=Model::MODE_ASSOC,$explicit_relations=false)
+	public function get($params=null,$mode=Model::MODE_ASSOC,$explicit_relations=false,$resolve=true)
 	{
-		$data = $this->_getModelData($fields,$conditions,$mode,$explicit_relations);
-		$this->data = $data;
+		$data = $this->_getModelData($params,$mode,$explicit_relations,$resolve);
+		//$this->data = $data;
 		return $data;
 	}
 
@@ -287,12 +287,115 @@ abstract class Model implements ArrayAccess
 		array_multisort($list,SORT_ASC);
 		return $list;
 	}
+	
+	public static function getMulti($params)
+	{
+		//Load all models
+		$fields = array();
+		$field_infos = array();
+		$models = array();
+		
+		foreach($params["fields"] as $field)
+		{
+			$fieldreferences = explode(",",$field); 
+			if(count($fieldreferences)==1)
+			{
+				$fields[]=(string)$field; 
+				$field_infos[] = Model::resolvePath((string)$field);
+			}
+			else
+			{
+				$fields[] = $fieldreferences;
+				foreach($fieldreferences as $ref)
+				{
+					$infos[] = Model::resolvePath((string)$ref); 
+				}
+				$field_infos[] = $infos;
+			}
+		}
+		
+		//var_dump($fields);
+		//var_dump($field_infos);
+		
+		foreach($fields as $i=>$field)
+		{
+			if(is_array($field))
+			{
+				foreach($field_infos[$i] as $info)
+				{
+					if(array_search($info["model"],array_keys($models))===false)
+					{
+						$models[$info["model"]] = Model::load($info["model"]);
+					}
+				}
+			}
+			else
+			{
+				if(array_search($field_infos[$i]["model"],array_keys($models))===false)
+				{
+					$models[$field_infos[$i]["model"]] = Model::load($field_infos[$i]["model"]);
+				}
+			}
+		}
+		
+		//Buld the query
+		$query = "SELECT ";
+		$fieldList = array();
+		foreach($fields as $i => $field)
+		{
+			$field_info = $field_infos[$i];
+			if(is_array($field))
+			{
+				$concatFieldList = array();
+				foreach($field_info as $info)
+				{
+					$fieldData = $models[$info["model"]]->getFields(array($info["field"]));
+					$concatFieldList[] = $models[$info["model"]]->formatField($fieldData[0],$models[$info["model"]]->getDatabase().".".$info["field"],false);
+				}
+				$fieldList[] = $models[$info["model"]]->concatenate($concatFieldList);
+			}
+			else
+			{
+				$fieldData = $models[$field_infos[$i]["model"]]->getFields(array($field_info["field"]));
+				$fieldList[] = $models[$field_info["model"]]->formatField($fieldData[0],$models[$field_info["model"]]->getDatabase().".".$field_info["field"]);
+			}
+		}
+		
+		$tableList = array();
+		foreach($models as $model)
+		{
+			$tableList[] = $model->getDatabase();
+		}
+		
+		$joinConditions = array();
+		foreach($models as $model)
+		{
+			foreach($models as $other_model)
+			{
+				if($model->name == $other_model->name) continue;
+				if($model->hasField($other_model->getKeyField()))
+				{
+					$joinConditions[] = "{$model->getDatabase()}.{$other_model->getKeyField()}={$other_model->getDatabase()}.{$other_model->getKeyField()}";
+				}
+			}
+		}
+		
+		$query.=implode(",",$fieldList)." FROM ".implode(",",$tableList)." WHERE (".implode(" AND ",$joinConditions).")";
+		
+		return $other_model->query($query);
+		
+		//print $query;
+	}
 
 	public abstract function getWithField($field,$value);
-	protected abstract function _getModelData($fields=null,$conditions=null,$mode=Model::MODE_ASSOC,$explicit_relations=false);
+	protected abstract function _getModelData($params=null,$mode=Model::MODE_ASSOC,$explicit_relations=false,$resolve=true);
 	protected abstract function _saveModelData();
 	protected abstract function _updateData($field,$value);
 	public abstract function delete($field,$value);
+	public abstract function escape($string);
+	public abstract function getSearch($searchValue,$field);
+	public abstract function concatenate($fields);
+	public abstract function formatField($field,$value);
 
 }
 ?>

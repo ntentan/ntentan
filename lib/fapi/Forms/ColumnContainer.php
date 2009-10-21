@@ -21,6 +21,15 @@ class ColumnContainer extends TableLayout
 	{
 		parent::__construct(1,$num_columns);
 	}
+	
+	public function add($element,$row=-1,$column=-1)
+	{
+		foreach(func_get_args() as $element)
+		{
+			parent::add($element);
+		}
+		return $this;
+	}
 
 	public function render()
 	{

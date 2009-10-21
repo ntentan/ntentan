@@ -1,4 +1,8 @@
 <?php
+/**
+ * A PHP File which allows you to upload data into models.
+ */
+error_reporting(0);
 set_include_path(get_include_path() . PATH_SEPARATOR . "../../");
 
 $uploaddir = '../../app/uploads/';
@@ -21,10 +25,14 @@ if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile))
 	
 	foreach($model->getLabels() as $i => $label)
 	{
-		if($label!=$headers[$i])
+		if(strtolower($label)!=strtolower($headers[$i]))
 		die("<div id='error'>Invalid file imported</div>");
 	}
 	
+	if($secondary_key == null)
+	{
+		print "<div id='information'><h4>Warning</h4>This model has no secondary keys so imported data may overlap</div>";
+	}
 	
 	$out = "<table class='data-table'>";
 	$out .= "<thead><tr><td>".implode("</td><td>",$headers)."</td></tr></thead>";
@@ -59,6 +67,11 @@ if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile))
 				if($validated===true) $model->save();
 			}
 		}
+		else
+		{
+			$validated = $model->setResolvableData($model_data);
+			if($validated===true) $model->save();
+		}
 		
 		if($validated===true)
 		{
@@ -83,7 +96,7 @@ if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile))
 				$out .= "</td>";
 			}
 			$out .= "</tr>";
-			$status = "<h3>Errors Importing Data</h3>Errors on line $line";
+			$status = "<h3>Errors Importing Data</h3><div class='error'>Errors on line $line</div>";
 			break;
 		}
 		$line++;
@@ -92,6 +105,7 @@ if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile))
 	$out .= "</table>";
 	
 	print $status.$out;
+	die();
 }
 
 ?>

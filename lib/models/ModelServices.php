@@ -26,7 +26,7 @@ class ModelServices
 
 	public function validator_unique($name,$parameter)
 	{
-		$data = $this->model->getWithField($name,$this->data[$name]);
+		$data = $this->model->getWithField($name,$this->model->escape($this->data[$name]));
 		if(count($data)==0 || $this->model->checkTemp($name,$this->data[$name]))
 		{
 			return true;

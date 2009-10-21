@@ -139,22 +139,21 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 		//to this container. If it does throw an exception.
 		foreach(func_get_args() as $element)
 		{
-		if($element->parent==null)
-		{
-			//throw new Exception("Why");
-			array_push($this->elements, $element);
-			$element->setMethod($this->getMethod());
-			$element->setShowField($this->getShowField());
-			$element->parent = $this;
-			$element->setNameEncryption($this->getNameEncryption());
-			$element->setNameEncryptionKey($this->getNameEncryptionKey());
-			$element->ajax = $this->ajax;
-			$this->hasFile |= $element->getHasFile();
-		}
-		else
-		{
-			throw new Exception("Element added already has a parent");
-		}
+			if($element->parent==null)
+			{
+				array_push($this->elements, $element);
+				$element->setMethod($this->getMethod());
+				$element->setShowField($this->getShowField());
+				$element->parent = $this;
+				$element->setNameEncryption($this->getNameEncryption());
+				$element->setNameEncryptionKey($this->getNameEncryptionKey());
+				$element->ajax = $this->ajax;
+				$this->hasFile |= $element->getHasFile();
+			}
+			else
+			{
+				throw new Exception("Element added already has a parent");
+			}
 		}
 		return $this;
 	}
@@ -420,32 +419,32 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 	}
 
 	/*public function saveRelatedData($data)
-	{
+	 {
 		foreach($this->getElements() as $element)
 		{
-			if($element->getType()=="Container")
-			{
-				$element->saveRelatedData($data);
-			}
+		if($element->getType()=="Container")
+		{
+		$element->saveRelatedData($data);
 		}
-	}
+		}
+		}
 
-	public function setRelatedData($data)
-	{
+		public function setRelatedData($data)
+		{
 		$errors = array();
 		foreach($this->getElements() as $element)
 		{
-			if($element->getType()=="Container")
-			{
-				$ret = $element->setRelatedData($data);
-				if(is_array($ret))
-				{
-					$errors += $ret;
-				}
-			}
+		if($element->getType()=="Container")
+		{
+		$ret = $element->setRelatedData($data);
+		if(is_array($ret))
+		{
+		$errors += $ret;
+		}
+		}
 		}
 		return count($errors)>0?$errors:false;
-	}*/
+		}*/
 
 	protected function saveModelData()
 	{
@@ -456,28 +455,28 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 			if($errors===true)
 			{
 				/*foreach($this->getElements() as $element)
-				{
+				 {
 					if($element->getType()=="Container")
 					{
-						$errors2 = $element->setRelatedData($this->model->getData());
+					$errors2 = $element->setRelatedData($this->model->getData());
 					}
-				}
+					}
 
-				if($errors2===false)
-				{
+					if($errors2===false)
+					{
 					$this->model->save();
 					foreach($this->getElements() as $element)
 					{
-						if($element->getType()=="Container")
-						{
-							$element->saveRelatedData($this->model->getData());
-						}
+					if($element->getType()=="Container")
+					{
+					$element->saveRelatedData($this->model->getData());
 					}
-				}
-				else if($errors)
-				{
+					}
+					}
+					else if($errors)
+					{
 					$errors = array("errors"=>array());
-				}*/
+					}*/
 			}
 			return $errors;
 		}

@@ -2,6 +2,7 @@
 require_once "ModelController.php";
 require_once "PackageController.php";
 require_once "ErrorController.php";
+require_once "lib/rapi/ReportController.php";
 
 /**
  * The Controller class represents the base class for all controllers that are
@@ -57,11 +58,16 @@ abstract class Controller
 	const TYPE_MODEL = "model";
 
 	/**
+	 *
+	 */
+	const TYPE_REPORT = "report";
+
+	/**
 	 * A copy of the path that was used to load this controller in an array
 	 * form.
 	 * @var Array
 	 */
-	protected $path;
+	public $path;
 
 	/**
 	 * A short machine readable name for this label.
@@ -105,6 +111,13 @@ abstract class Controller
 				$controller_type = Controller::TYPE_MODEL;
 				break;
 			}
+			else if(file_exists("app/modules/$controller_path/$p/report.xml"))
+			{
+				$controller_name = $p;
+				$controller_path .= "/$p";
+				$controller_type = Controller::TYPE_REPORT;
+				break;
+			}
 			else
 			{
 				$controller_path .= "/$p";
@@ -114,41 +127,48 @@ abstract class Controller
 		// Check the type of controller and load it.
 		switch($controller_type)
 		{
-		case Controller::TYPE_MODULE:
-			// Load a module controller which would be a subclass of this
-			// class
-			require_once "app/modules$controller_path/$controller_name.php";
-			$controller = new $controller_name();
-			break;
+			case Controller::TYPE_MODULE:
+				// Load a module controller which would be a subclass of this
+				// class
+				require_once "app/modules$controller_path/$controller_name.php";
+				$controller = new $controller_name();
+				break;
 
-		case Controller::TYPE_MODEL;
+			case Controller::TYPE_MODEL;
 			// Load the ModelController wrapper around an existing model class.
 			$model = substr(str_replace("/",".",$controller_path),1);
 			$controller_name = "ModelController";
 			$controller = new ModelController($model);
 			break;
+				
+			case Controller::TYPE_REPORT:
+				$controller = new ReportController($controller_path."/report.xml");
+				$controller_name = "ReportController";
+				break;
 
-		default:
-			// Load a package controller for this folder
-			if(is_dir("app/modules$controller_path"))
-			{
-				$controller = new Packagecontroller();
-				$controller_name = "PackageController";
-			}
-			else
-			{
-				$controller = new ErrorController();
-				$controller_name = "ErrorController";
-			}
+			default:
+				// Load a package controller for this folder
+				if(is_dir("app/modules$controller_path"))
+				{
+					$controller = new Packagecontroller();
+					$controller_name = "PackageController";
+				}
+				else
+				{
+					$controller = new ErrorController();
+					$controller_name = "ErrorController";
+				}
 		}
 
 		// If the get contents flag has been set return all the contents of this
 		// controller.
+		$controller->path = $controller_path;
+		
 		if($get_contents)
 		{
 			if($i == count($path)-1)
 			{
-				$controller->content = $controller->getContents();
+				$ret = $controller->getContents();
 			}
 			else
 			{
@@ -157,24 +177,28 @@ abstract class Controller
 					$controller_class = new ReflectionClass($controller_name);
 					$method = $controller_class->GetMethod($path[$i+1]);
 					$ret = $method->invoke($controller,array_slice($path,$i+2));
-					if(is_array($ret))
-					{
-						$t = new template_engine();
-						$t->assign($ret["data"]);
-						$controller->content = $t->fetch(isset($ret["template"])?$ret["template"]:$path[$i+1].".tpl");
-					}
-					else if(is_string($ret))
-					{
-						$controller->content = $ret;
-					}
 				}
 				else
 				{
-					$controller->content = "<h2>Error</h2> Method does not exist. ".$path[$i+1];
+					$ret = "<h2>Error</h2> Method does not exist. ".$path[$i+1];
 				}
 			}
+			
+			
+			if(is_array($ret))
+			{
+				$t = new template_engine();
+				$t->assign($ret["data"]);
+				//print isset($ret["template"])?$ret["template"]:$path[$i+1].".tpl";
+				//if(file_exists(isset($ret["template"])?$ret["template"]:$path[$i+1].".tpl")) print "Found!";
+				$controller->content = $t->fetch(isset($ret["template"])?$ret["template"]:$path[$i+1].".tpl");
+			}
+			else if(is_string($ret))
+			{
+				$controller->content = $ret;
+			}
 		}
-
+		
 		return $controller;
 	}
 
@@ -200,7 +224,7 @@ abstract class Controller
 	{
 
 	}
-	
+
 	public function getTemplateDescription($template,$data)
 	{
 		return array("template"=>"file:/".getcwd()."/app/modules/$template","data"=>$data);

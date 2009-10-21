@@ -45,7 +45,7 @@ class MultiForms extends Container
 		if($this->referenceField=="")return;
 		$referenced_model_info = Model::resolvePath($this->referenceField);
 		$referenced_model = Model::load($referenced_model_info["model"]);
-		$relative_value = $referenced_model->get(array($this->relatedField),"{$referenced_model_info["field"]}='{$data[$referenced_model_info["field"]]}'");
+		$relative_value = $referenced_model->get(array("fields"=>array($this->relatedField),"conditions"=>"{$referenced_model_info["field"]}='{$data[$referenced_model_info["field"]]}'"));
 		$errors = array();
 
 		foreach($this->data as $related_data)
@@ -63,7 +63,7 @@ class MultiForms extends Container
 		if($this->referenceField=="")return;
 		$referenced_model_info = Model::resolvePath($this->referenceField);
 		$referenced_model = Model::load($referenced_model_info["model"]);
-		$relative_value = $referenced_model->get(array($this->relatedField),"{$referenced_model_info["field"]}='{$data[$referenced_model_info["field"]]}'");
+		$relative_value = $referenced_model->get(array("fields"=>array($this->relatedField),"conditions"=>"{$referenced_model_info["field"]}='{$data[$referenced_model_info["field"]]}'"));
 		$errors = array();
 
 		foreach($this->data as $related_data)

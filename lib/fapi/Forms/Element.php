@@ -86,11 +86,13 @@ abstract class Element
 
 	/**
 	 * Public accessor for setting the ID of the element.
+	 * @return Element
 	 */
 	public function setId($id)
 	{
 		$this->id = $id;
 		$this->addAttribute("id",$id);
+		return $this;
 	}
 
 	/**
@@ -105,6 +107,7 @@ abstract class Element
 	public function setLabel($label)
 	{
 		$this->label = $label;
+		return $this;
 	}
 
 	//! Gets the label which is attached to this element.
@@ -322,6 +325,10 @@ abstract class Element
 		$this->errors = array();
 	}
 
+	/**
+	 * Factory method for creating elements.
+	 * @return Element
+	 */
 	public static function create()
 	{
 		$args = func_get_args();
