@@ -288,7 +288,7 @@ abstract class Model implements ArrayAccess
 		return $list;
 	}
 	
-	public static function getMulti($params)
+	public static function getMulti($params,$mode=SQLDatabaseModel::MODE_ASSOC)
 	{
 		//Load all models
 		$fields = array();
@@ -341,6 +341,7 @@ abstract class Model implements ArrayAccess
 		//Buld the query
 		$query = "SELECT ";
 		$fieldList = array();
+		$functions = $params["global_functions"];
 		foreach($fields as $i => $field)
 		{
 			$field_info = $field_infos[$i];
@@ -352,12 +353,12 @@ abstract class Model implements ArrayAccess
 					$fieldData = $models[$info["model"]]->getFields(array($info["field"]));
 					$concatFieldList[] = $models[$info["model"]]->formatField($fieldData[0],$models[$info["model"]]->getDatabase().".".$info["field"],false);
 				}
-				$fieldList[] = $models[$info["model"]]->concatenate($concatFieldList);
+				$fieldList[] = $models[$info["model"]]->applySqlFunctions($models[$info["model"]]->concatenate($concatFieldList),$functions);
 			}
 			else
 			{
 				$fieldData = $models[$field_infos[$i]["model"]]->getFields(array($field_info["field"]));
-				$fieldList[] = $models[$field_info["model"]]->formatField($fieldData[0],$models[$field_info["model"]]->getDatabase().".".$field_info["field"]);
+				$fieldList[] = $models[$field_info["model"]]->formatField($fieldData[0],$models[$field_info["model"]]->getDatabase().".".$field_info["field"],true,$functions);
 			}
 		}
 		
@@ -380,11 +381,22 @@ abstract class Model implements ArrayAccess
 			}
 		}
 		
-		$query.=implode(",",$fieldList)." FROM ".implode(",",$tableList)." WHERE (".implode(" AND ",$joinConditions).")";
+		$query.=implode(",",$fieldList)." FROM ".implode(",",$tableList);
 		
-		return $other_model->query($query);
+		if(count($joinConditions)>0)
+		{
+			$query .= " WHERE (".implode(" AND ",$joinConditions).")";
+		}
 		
-		//print $query;
+		$query.=(strlen($params["conditions"])>0?" AND (".$params["conditions"].")":"");
+		
+		//print $query."<br/><hr/>";
+		if($params["sort_field"]!="")
+		{
+			$query .= " ORDER BY {$params["sort_field"]} {$params["sort_type"]}";
+		}		
+		
+		return $other_model->query($query,$mode);
 	}
 
 	public abstract function getWithField($field,$value);

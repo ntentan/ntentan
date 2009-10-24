@@ -38,12 +38,21 @@ class PDFReport extends Report
 					
 					$content->style["size"]
 				);
-				$pdf->Cell(0,isset($content->style["height"])?$content->style["height"]:0,$content->getText(),0,0,$content->style["align"]);
-				$pdf->Ln(!isset($content->style["height"])?3:0);//$content->style["height"]:3);
+				if(isset($content->style["top_margin"])) $pdf->Ln($content->style["top_margin"]);
+				$pdf->Cell(0,isset($content->style["height"])?$content->style["height"]:$content->style["size"]*0.353+1,$content->getText(),0,0,$content->style["align"]);
+				$pdf->Ln();
+				if(isset($content->style["bottom_margin"])) $pdf->Ln($content->style["bottom_margin"]);
 				break;
 
 			case "table":
-				$pdf->table($content->getHeaders(),$content->getData(),$content->style);
+				if($content->style["totalsBox"]==true)
+				{
+					$pdf->totalsBox($content->getData(),$content->data_params);
+				}
+				else
+				{
+					$pdf->table($content->getHeaders(),$content->getData(),$content->style,$content->data_params);
+				}
 				break;
 			case "logo":
 				$pdf->image($content->image,null,null,8,8);
