@@ -38,6 +38,7 @@
     							<xs:simpleContent>
     								<xs:extension base="xs:string">
     									<xs:attribute name="label" type="xs:string" />
+    									<xs:attribute name="total" type="xs:boolean" default="false" />
     								</xs:extension>
     							</xs:simpleContent>
     							</xs:complexType>

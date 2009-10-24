@@ -11,13 +11,13 @@ class EmailField extends TextField
 	{
 		parent::__construct($label,$name,$description,$value);
 		$this->setRegExp('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$');
-		$this->addJsValidation
+		/*$this->addJsValidation
 		(array(
 			"func"=>"fapiCheckRegexp",
-			"regexp"=>Field::prepareMessage('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$'),
+			"regexp"=>Field::prepareMessage('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/i'),
 			"message"=>Field::prepareMessage("This is not a valid email address")
 			)
-		);		
+		);*/		
 	}
 	
 	public function validate()

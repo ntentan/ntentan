@@ -53,7 +53,7 @@ class TextField extends Field
 		$this->addJsValidation
 		(array(
 			"func"=>"fapiCheckRegexp",
-			"regexp"=>Field::prepareMessage($regexp),
+			"regexp"=>Field::prepareMessage("/".$regexp."/"),
 			"message"=>Field::prepareMessage("This {$this->getLabel()} format is not valid")
 			)
 		);

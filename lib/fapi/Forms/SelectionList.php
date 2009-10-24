@@ -51,6 +51,7 @@ class SelectionList extends Field
 	//! \param $value The value associated with the label.
 	public function addOption($label="", $value="")
 	{
+		if($value==="") $value=$label;
 		$this->options[] = new SelectionListItem($label, $value);
 		return $this;
 	}
@@ -90,10 +91,10 @@ class SelectionList extends Field
 
 	// Extend the default set value field and allow for name resolution
 	// using the id's.
-	public function setValue($value)
+	/*public function setValue($value)
 	{
 		return $this->resolve($value);
-	}
+	}*/
 
 	public function getOptions()
 	{

@@ -9,36 +9,39 @@ class PDFDocument extends FPDF
 	public $style;
 	public $twidth;
 
+	const ORIENTATION_PORTRAIT = "P";
+	const ORIENTATION_LANDSCAPE = "L";
+
 	public function __construct($orientation="L",$paper="A4")
 	{
 		parent::__construct($orientation,"mm",$paper);
-		
+
 		if(is_string($paper))
 		{
 			switch($paper)
 			{
 				case "A4":
 					if($orientation=="L")
-						$this->twidth = 277;
+					$this->twidth = 277;
 					else
-						$this->twidth = 190;
+					$this->twidth = 190;
 					break;
-					
+
 				case "A5":
 					if($orientation=="L")
-						$this->twidth = 190;
+					$this->twidth = 190;
 					else
-						$this->twidth = 128;
+					$this->twidth = 128;
 					break;
 			}
 		}
-		
+
 		$this->AddPage();
 		$this->SetFont('Helvetica', null, 8);
 		$this->SetAutoPageBreak(true, 15);
 	}
 
-	protected function getTableWidths($headers,$data)
+	public function getTableWidths($headers=array(),$data=array())
 	{
 		$widths = array();
 		foreach($headers as $i=>$header)
@@ -98,14 +101,14 @@ class PDFDocument extends FPDF
 			$borders = 1;
 			$headingStyle = 'B';
 		}
-		
+
 		//$this->SetFont('Helvetica',$headingStyle,8);
 		$this->SetFont
 		(	isset($this->style["font"])?$this->style["font"]:"Helvetica",
 			"B", //($this->style["bold"]?"B":"").($this->style["underline"]?"U":"").($this->style["italics"]?"I":""),
-			isset($this->style["font_size"])?$this->style["font_size"]:8
-		);		
-		
+		isset($this->style["font_size"])?$this->style["font_size"]:8
+		);
+
 		for($i=0;$i<count($this->tableHeaders);$i++)
 		{
 			$this->Cell($this->tableWidths[$i],6,$this->tableHeaders[$i],$borders,0,'L',$fill);
@@ -114,34 +117,86 @@ class PDFDocument extends FPDF
 		$this->Ln();
 	}
 
-	public function table($headers,$data,$style=null)
+	public function totalsBox($totals,$params)
 	{
+		$this->SetFont
+		(	isset($this->style["font"])?$this->style["font"]:"Helvetica",
+		($this->style["bold"]?"B":"B").($this->style["underline"]?"U":"").($this->style["italics"]?"I":""),
+		isset($this->style["font_size"])?$this->style["font_size"]:8
+		);
+				
+		$arrayWidth = $this->twidth * (isset($this->style["width"])?$this->style["width"]:1);
+			
+		foreach($params["widths"] as $i=>$width)
+		{
+			$params["widths"][$i] = $params["widths"][$i] * $arrayWidth;
+		}
 		
-		$this->style = $style!=null?$style:$this->style;	
-		$this->processingTable = true;
-		$widths = $this->getTableWidths($headers,$data);
+				
+		/*if($this->style["decoration"]===true)
+		{
+			$this->SetDrawColor(102,128,102);
+			$this->Cell(array_sum($params["widths"]),0,'','T');
+			$this->Ln();
+		}	*/	
 		
+		$this->SetDrawColor(204,255,204);
+		for($i=0;$i<count($params["widths"]);$i++)
+		{
+			//if(isset($totals[$i])) $borders = "LR"; else $borders = 0;
+			$this->Cell($params["widths"][$i],$this->style["cell_height"],$totals[$i],$borders,0,'L');
+		}
+		$this->Ln();
+
+		if($this->style["decoration"]===true)
+		{
+			$this->SetDrawColor(102,128,102);
+			$this->Cell(array_sum($params["widths"]),0,'','T');
+			$this->Ln(0.4);
+			$this->Cell(array_sum($params["widths"]),0,'','T');
+			$this->Ln();
+		}
+	}
+
+	public function table($headers,$data,$style=null,$params=null)
+	{
+
+		$this->style = $style!=null?$style:$this->style;
+
+		if(isset($params["widths"]))
+		{
+			$widths = $params["widths"];
+		}
+		else
+		{
+			$widths = $this->getTableWidths($headers,$data);
+		}
+
 		$arrayWidth = $this->twidth * (isset($this->style["width"])?$this->style["width"]:1);
 		$this->style["cell_height"] = isset($this->style["cell_height"])?$this->style["cell_height"]:4;
-		
+
 
 		foreach($widths as $i=>$width)
 		{
 			$widths[$i] = $widths[$i] * $arrayWidth;
 		}
+		
+		
 
 		$this->tableWidths = $widths;
 		$this->tableHeaders = $headers;
 		$this->tableHeader();
-
+		
+		$this->processingTable = true;
+		
 		$this->SetFillColor(204,255,204);
 		$this->SetTextColor(0);
 		$this->SetFont
 		(	isset($this->style["font"])?$this->style["font"]:"Helvetica",
-			($this->style["bold"]?"B":"").($this->style["underline"]?"U":"").($this->style["italics"]?"I":""),
-			isset($this->style["font_size"])?$this->style["font_size"]:8
+		($this->style["bold"]?"B":"").($this->style["underline"]?"U":"").($this->style["italics"]?"I":""),
+		isset($this->style["font_size"])?$this->style["font_size"]:8
 		);
-		
+
 		if($this->style["decoration"]===true)
 		{
 			$this->SetDrawColor(204,255,204);
@@ -160,18 +215,45 @@ class PDFDocument extends FPDF
 			foreach($fields as $field)
 			{
 				$this->Cell($widths[$i],$this->style["cell_height"],$field,$border,0,'L',$fill);
+				if(is_array($params['total']))
+				{
+					if(array_search($i,$params["total"])!==false)
+					{
+						$totals[$i]+=$field;
+					}
+				}
 				$i++;
 			}
 			if($this->style["decoration"]===true) $fill=!$fill;
 			$this->Ln();
 		}
-		
-		if($this->style["decoration"]===true) 
+
+		if($this->style["decoration"]===true)
 		{
 			$this->SetDrawColor(102,128,102);
 			$this->Cell(array_sum($widths),0,'','T');
 		}
-		
+
+		/*if(count($totals)>0)
+		{
+			$this->totalsBox($totals,$params);
+						$this->Ln(0.5);
+			 $this->SetDrawColor(204,255,204);
+			 for($i=0;$i<count($widths);$i++)
+			 {
+				$this->Cell($widths[$i],$this->style["cell_height"],$totals[$i],"LR",0,'L');
+				}
+				$this->Ln();
+
+				if($this->style["decoration"]===true)
+				{
+				$this->SetDrawColor(102,128,102);
+				$this->Cell(array_sum($widths),0,'','T');
+				$this->Ln(0.4);
+				$this->Cell(array_sum($widths),0,'','T');
+				}
+		}*/
+
 		$this->Ln();
 		$this->processingTable = false;
 	}

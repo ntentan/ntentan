@@ -781,14 +781,14 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 		if(count($function)==2)
 		{
 			$method = new ReflectionMethod($function[0], $function[1]);
-			$method->invokeArgs(null, $args);
+			return $method->invokeArgs(null, $args);
 		}
 		else if(count($function)==1)
 		{
 			$method = $function[0];
 			if(function_exists($method))
 			{
-				$method($args[0],$args[1],$args[2]);
+				return $method($args[0],$args[1],$args[2]);
 			}
 		}
 	}

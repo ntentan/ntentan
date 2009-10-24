@@ -339,6 +339,30 @@ abstract class SQLDatabaseModel extends Model
 		$class = new ReflectionClass($db_driver);
 		return $class->newInstance($model,$package,$path);
 	}
+	
+	public function sqlFunctionLENGTH($field)
+	{
+		return "LENGTH($field)";
+	}
+	
+	public function sqlFunctionMAX($field)
+	{
+		return "MAX($field)";
+	}
+	
+	public function applySqlFunctions($field,$functions,$index=0)
+	{
+		if(!isset($functions[$index])) return $field;
+		$method = new ReflectionMethod(__CLASS__,"sqlFunction$functions[$index]");
+		if(!isset($functions[$index+1]))
+		{
+			return $method->invoke($this,$field);
+		}
+		else
+		{
+			return $this->applySqlFunctions($method->invoke($this,$field),$functions,$index+1); 
+		}
+	}
 
 	protected abstract function beginTransaction();
 	protected abstract function endTransaction();
