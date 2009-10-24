@@ -177,4 +177,5 @@ include_once ("Forms/ModelField.php");
 include_once ("Forms/ButtonBar.php");
 include_once ("Forms/MultiForms.php");
 include_once ("Forms/ColumnContainer.php");
+include_once ("Forms/ModelSearchField.php");
 ?>

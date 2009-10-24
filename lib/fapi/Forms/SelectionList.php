@@ -41,6 +41,7 @@ class SelectionList extends Field
 	//! Sets weather multiple selections could be made.
 	public function setMultiple($multiple)
 	{
+		$this->name.="[]";
 		$this->multiple = $multiple;
 		return $this;
 	}
@@ -61,10 +62,11 @@ class SelectionList extends Field
 		{
 			$this->addAttribute("onblur","fapiValidate('".$this->getId()."',$validations)");
 		}
+		$this->addAttribute("id",$this->getId());
 		$ret = "<select {$this->getAttributes()} class='fapi-list ".$this->getCSSClasses()."' name='".$this->getName()."' ".($this->multiple?"multiple='multiple'":"").">";
 		foreach($this->options as $option)
 		{
-			$ret .= "<option value='$option->value' ".($this->getValue()==$option->value?"selected='selected'":"").">$option->label</option>";
+			$ret .= "<option value='$option->value' ".($this->getValue()===$option->value?"selected='selected'":"").">$option->label</option>";
 		}
 		$ret .= "</select>";
 		return $ret;

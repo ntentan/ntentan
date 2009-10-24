@@ -61,7 +61,7 @@ function table_renderer_element($element, $showfields=true)
     {
         $ret .= "<div class='fapi-description'>".$element->getDescription()."</div>";
     }
-    $ret .= "</div>";
+    //$ret .= "</div>";
 
 	$ret .= "</td></tr>";
 

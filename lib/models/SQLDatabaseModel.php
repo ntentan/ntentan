@@ -30,11 +30,16 @@ abstract class SQLDatabaseModel extends Model
 	public $label;
 	public $description;
 	public $showInMenu;
+	public $package;
+	public $prefix;
+	protected $storedFields;
 
-	public function __construct($model)
+	public function __construct($model,$package="",$prefix="")
 	{
 		if(is_file($model))
 		{
+			$this->prefix = $prefix;
+			$this->package = $package;
 			$this->xml = simplexml_load_file($model);
 			$this->database = $this->xml["database"];
 			$this->label = $this->xml["label"];
@@ -45,8 +50,7 @@ abstract class SQLDatabaseModel extends Model
 
 			// Get a list of all the fields from the model into an array
 			$this->fields = array();
-			$field_xml = $this->xml->xpath("/model:model/model:fields/model:field");
-
+			$field_xml = $this->xml->xpath("/model:model/model:fields/model:field");//[@type!='displayReference']");
 			$this->explicitRelations = $this->xml->xpath("/model:model/model:explicitRelations/model:model");
 
 			foreach($field_xml as $field)
@@ -67,19 +71,25 @@ abstract class SQLDatabaseModel extends Model
 					$options[(string)$option["value"]] = (string)$option;
 				}
 
-
-				$this->fields[(string)$field["name"]] =
+				$fieldInfo =
 				array(
 				"name"=>(string)$field["name"],
 				"type"=>(string)$field["type"],
 				"label"=>(string)$field["label"],
 				"reference"=>(string)$field["reference"],
-				"referenceValue"=>(string)$field["referenceValue"],
+				"referenceValue"=>$this->concatenate(explode(",", (string)$field["referenceValue"])),
 				"key"=>(string)$field["key"],
 				"description"=>(string)$description[0],
 				"validators"=>$validators,
 				"options"=>$options
 				);
+
+				$this->fields[(string)$field["name"]] = $fieldInfo;
+
+				if($field["type"]!="displayReference")
+				{
+					$this->storedFields[(string)$field["name"]] = $fieldInfo;
+				}
 			}
 		}
 		else
@@ -104,6 +114,10 @@ abstract class SQLDatabaseModel extends Model
 		return $elements;
 	}
 
+	/**
+	 *
+	 * @return unknown_type
+	 */
 	public function getReferencedFields()
 	{
 		if($this->referencedFields == null)
@@ -118,12 +132,12 @@ abstract class SQLDatabaseModel extends Model
 				$reference = array();
 				$reference["referencing_field"] = $fields[$i];
 				$reference["reference"] = $references[$i];
-				$reference["referenced_value_field"] = $values[$i];
+				$reference["referenced_value_field"] = $this->concatenate(explode(",",$values[$i]));
 
 				$fieldInfo = model::resolvePath($reference["reference"]);
-				$tempModel = model::load($fieldInfo["model"]);
+				$tempModel = model::load($fieldInfo["model"],$this->prefix);
 				$table = $tempModel->getDatabase();
-				$reference["table"] = "".$table;
+				$reference["table"] = (string)$table;
 				$reference["referenced_field"] = $fieldInfo["field"];
 
 				$return[] = $reference;
@@ -135,98 +149,46 @@ abstract class SQLDatabaseModel extends Model
 
 	public function getWithField($field,$value)
 	{
-  		return $this->query(sprintf("SELECT * FROM %s WHERE $field = '$value'",$this->database));//$rows;
+		//return $this->query(sprintf("SELECT * FROM %s WHERE $field = '$value'",$this->database));//$rows;
+		return $this->get(array("conditions"=>"$field='$value'"),SQLDatabaseModel::MODE_ASSOC,false,false);
 	}
 
-	protected function _getModelData($fields = null,$conditions=null,$mode=model::MODE_ASSOC, $explicit_relations=false)
+	public function getExpandedFieldList($fields,$references,$resolve=true)
 	{
-		$rows = array();
+		if($fields == null) $fields = array_keys($this->storedFields);
 
-		// Get information about all referenced models and pull out all
-		// the required information as well as build up the join parts
-		// of the query.
-		$references = $this->getReferencedFields();
-		$joins = "";
-		//$do_join = count($references)>0?true:false;
+		$expanded_fields = array();
+		$r_expanded_fields = array();
 
-
-		// Generate the field list i.e. the fields that are to be returned
-		// by the query.
-		if($fields!=null)
+		//Go through all the fields in the system.
+		foreach($fields as $field)
 		{
-			$expanded_fields = array();
-
-			//Go through all the fields in the system.
-			foreach($fields as $field)
+			$referred = false;
+			foreach($references as $reference)
 			{
-				$referred = false;
-				foreach($references as $reference)
+				//print (string)$field."<br/>";
+				//var_dump($reference);die();
+				if($reference["referencing_field"] == (string)$field)
 				{
-					//print (string)$field."<br/>";
-					if($reference["referencing_field"] == (string)$field)
-					{
-						$do_join = true;
-						$referred = true;
-						$expanded_fields[] = $reference["table"].".".$reference["referenced_value_field"];
-						break;
-					}
-				}
-				if(!$referred)
-				{
-					$expanded_fields[]= (count($references)>0?$this->database.".":"").(string)$field;
+					$do_join = true;
+					$referred = true;
+					$r_expanded_fields[$field] = $reference["table"].".".$reference["referenced_value_field"];
+					$expanded_fields[$field] = $reference["table"].".".$reference["referenced_value_field"]." as \"{$reference["referencing_field"]}\"";
+					break;
 				}
 			}
-			$field_list = implode(",",$expanded_fields);
-		}
-		else
-		{
-			$field_list = "*";
-		}
-
-		foreach($references as $reference)
-		{
-			$joins .= " LEFT JOIN {$reference["table"]} ON {$this->database}.{$reference["referencing_field"]} = {$reference["table"]}.{$reference["referenced_field"]} ";
-		}
-
-		$query = sprintf("SELECT $field_list FROM %s ",$this->database).($do_join?$joins:"").($conditions!=null?" WHERE ".$conditions:"");
-
-		//$stmt = oci_parse(oracle::$_conn, $query);
-  		//oci_execute($stmt, OCI_DEFAULT);
-
-		/*switch($mode)
-		{
-		case SQLDatabaseModel::MODE_ASSOC:
-			$o_mode = OCI_ASSOC;
-			break;
-		case SQLDatabaseModel::MODE_ARRAY:
-			$o_mode = OCI_NUM;
-			break;
-		}
-
-		while ($row = oci_fetch_array($stmt,$o_mode + OCI_RETURN_NULLS))
-		{
-			$rows[] = $this->formatFields($row);
-		}*/
-
-		$rows = $this->query($query,$mode);
-
-		// Retrieve all explicitly related data
-		if($explicit_relations)
-		{
-			foreach($this->explicitRelations as $explicitRelation)
+			if(!$referred)
 			{
-				foreach($rows as $i => $row)
-				{
-					$model = Model::load((string)$explicitRelation);
-					$data = $model->get(null,$this->getKeyField()."='".$row[$this->getKeyField()]."'");
-					//print $this->getKeyField()."='".$row[$this->getKeyField()]."'";
-					$rows[$i][(string)$explicitRelation] = $data;
-				}
+				$r_expanded_fields[$field]=(count($references)>0?$this->database.".":"").(string)$field;
+				if($resolve)
+					$expanded_fields[$field]= $this->formatField($this->fields[$field],(count($references)>0?$this->database.".":"").(string)$field);
+				else
+					$expanded_fields[$field]=$r_expanded_fields[$field]." as \"{$this->fields[$field]["name"]}\"";
+				//var_dump($this->fields[$field]['type']);
 			}
 		}
-		//oci_free_statement($stmt);
-
-		return $rows;
+		$field_list = implode(",",$expanded_fields);
+		return array("fields"=>$field_list,"expandedFields"=>$r_expanded_fields,"doJoin"=>$do_join);
 	}
 
 	protected function _saveModelData()
@@ -244,7 +206,7 @@ abstract class SQLDatabaseModel extends Model
 			else
 			{
 				$fields[] = $field;
-				$values[] = "'".$value."'";
+				$values[] = "'".$this->escape($value)."'";
 			}
 		}
 
@@ -252,45 +214,34 @@ abstract class SQLDatabaseModel extends Model
 		$query = "INSERT INTO $this->database ($fields) VALUES ";
 		$query .= "(".implode(",",$values).")";
 
-		//print $query;
-
-		/*$stmt = oci_parse(oracle::$_conn, $query);
-		oci_execute($stmt,OCI_DEFAULT);
-		oci_free_statement($stmt);*/
 
 		$this->beginTransaction();
 
 		$this->query($query);
 
-		$key_field = $this->getKeyField();
+
 		if(count($relatedData)>0)
 		{
-		$query = "SELECT MAX({$key_field}) as $key_field FROM $this->database";
-
-		/*$stmt = oci_parse(oracle::$_conn, $query);
-		oci_execute($stmt,OCI_DEFAULT);
-		$key_value = oci_fetch_array($stmt,OCI_ARRAY + OCI_RETURN_NULLS);
-		$key_value = $key_value[0];
-		oci_free_statement($stmt);*/
-
-		$key_value = $this->query($query);
-
-		// Save related data
-
-		foreach($relatedData as $database => $data)
-		{
-			$model = Model::load($database);
-			foreach($data as $row)
+			$key_field = $this->getKeyField();
+			$query = "SELECT MAX({$key_field}) as \"$key_field\" FROM $this->database";
+			$key_value = $this->query($query);
+				
+			// Save related data
+			foreach($relatedData as $database => $data)
 			{
-				$row[$key_field] = $key_value;
-				$model->setData($row);
-				$model->save();
+				$model = Model::load($database);
+				foreach($data as $row)
+				{
+					$row[$key_field] = $key_value[0][$key_field];
+					$model->setData($row);
+					$model->save();
+				}
 			}
-		}
 		}
 
 		//oci_commit(oracle::$_conn);
 		$this->endTransaction();
+		return $key_value[0][$key_field];
 	}
 
 	/**
@@ -313,7 +264,7 @@ abstract class SQLDatabaseModel extends Model
 			else
 			{
 				$fields[] = $field;
-				$assignments[] = "$field = '".$value."'";
+				$assignments[] = "$field = '".$this->escape($value)."'";
 			}
 		}
 
@@ -363,7 +314,7 @@ abstract class SQLDatabaseModel extends Model
 
 	public function offsetGet($offset)
 	{
-		$data = $this->_getModelData(null,$this->getKeyField()."='$offset'",Model::MODE_ASSOC,true);
+		$data = $this->_getModelData(array("conditions"=>$this->getKeyField()."='$offset'"),Model::MODE_ASSOC,true);
 		return $data;
 	}
 
@@ -382,14 +333,11 @@ abstract class SQLDatabaseModel extends Model
 
 	}
 
-	public static function createDefaultDriver($model)
+	public static function createDefaultDriver($model,$package,$path)
 	{
 		require "app/config.php";
-		//$db_connection_info = array("username"=>$db_user, "password"=>$db_password, "host"=>$db_host, "database"=>$db_name);
-		/*$method = new ReflectionMethod($db_driver,"connect");
-		$method->invoke(null,$db_connection_info);*/
 		$class = new ReflectionClass($db_driver);
-		return $class->newInstance($model);
+		return $class->newInstance($model,$package,$path);
 	}
 
 	protected abstract function beginTransaction();

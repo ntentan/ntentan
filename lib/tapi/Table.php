@@ -6,13 +6,20 @@ class Table
 	protected $cellRenderers = array();
 	protected $operations = array();
 	protected $prefix;
+	public $name = "defaultTable";
+	public $headerParams;
 	
-	public function __construct($prefix,$headers=null, $data=null, $operations=null)
+	public function __construct($prefix,$headers=null, $data=null, $operations=null,$headerParams=null)
 	{
-		Application::addStyleSheet("css/tapi.css");
+		if(class_exists("Application")) Application::addStyleSheet("css/tapi.css");
 		$this->prefix = $prefix;
 		$this->headers = $headers;
 		$this->data = $data;
+		$this->operations = $operations;
+	}
+	
+	public function setOperations($operations)
+	{
 		$this->operations = $operations;
 	}
 	
@@ -27,29 +34,50 @@ class Table
 		);
 	}
 	
+	protected function renderHeader()
+	{
+		$table = "<table class='tapi-table'>";
+		 
+		//Render Headers
+		$table .= "<thead><tr><td>";
+		$table .= "<input type='checkbox' onchange=\"ntentan.tapi.notify('$this->name','0',this)\"></td><td>";
+		$table .= implode("</td><td>",$this->headers);
+		$table .= "</td><td>Operations</td></tr></thead>";
+		 
+		//Render Data
+		$table .= "<tbody id='tbody'>";
+		return $table;
+	}
+	
+	protected function renderFooter()
+	{
+		$table .= "</tbody>";
+		$table .= "</table>";
+		return $table;
+	}
+	
 	public function render($renderHeaders=true)
 	{
-		if($renderHeaders)
-		{
-			$table = "<table class='tapi-table'>";
-		 
-			//Render Headers
-			$table .= "<thead><tr><td>";
-			$table .= "<input type='checkbox'></td><td>";
-			$table .= implode("</td><td>",$this->headers);
-			$table .= "</td><td>Operations</td></tr></thead>";
-		 
-			//Render Data
-			$table .= "<tbody>";
-		}
+	
+		if($renderHeaders) $table = $this->renderHeader();
 		
 		foreach($this->data as $row)
 		{
 			$key = array_shift($row);
-			$table .= "<tr><td>";
-			$table .= "<input type='checkbox'></td><td>";
-			$table .= implode("</td><td>",$row);
-			$table .= "</td><td>";
+			$table .= "<tr>";
+			$table .= "<td><input type='checkbox' class='$this->name-checkbox' value='$key' ></td>";
+			
+			foreach($row as $name=>$value)
+			{
+				$params="";
+				if($this->headerParams[$name]["type"]=="number")
+				{
+					$params = "align='right'";
+				}
+				$table .= "<td $params >$value</td>";
+			}
+			
+			$table .= "<td>";
 			if($this->operations!=null)
 			{
 				foreach($this->operations as $operation)
@@ -60,11 +88,7 @@ class Table
 			$table .= "</td></tr>";
 		}
 		
-		if($renderHeaders)
-		{
-			$table .= "</tbody>";
-			$table .= "</table>";
-		}
+		if($renderHeaders) $table .= $this->renderFooter();
 		
 		return $table;
 	}

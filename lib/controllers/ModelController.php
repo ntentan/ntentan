@@ -26,6 +26,7 @@ class ModelController extends Controller implements ControllerPermissions
 {
 	/**
 	 * An instance of the model that this controller is linked to.
+	 * @var Model
 	 */
 	protected $model;
 
@@ -37,7 +38,7 @@ class ModelController extends Controller implements ControllerPermissions
 	/**
 	 * The URL path through which this controller's model can be accessed.
 	 */
-	protected $urlPath;
+	public $urlPath;
 
 	/**
 	 * The local pathon the computer through which this controllers model can be
@@ -68,7 +69,12 @@ class ModelController extends Controller implements ControllerPermissions
 	 * which is used to display the model.
 	 */
 	private $toolbar;
+	
+
 	protected $action;
+	public $listConditions;
+	public $fieldNames = array();
+	protected $callbackMethod = "ModelController::callback";
 
 	/**
 	 * Constructor for the ModelController
@@ -88,7 +94,22 @@ class ModelController extends Controller implements ControllerPermissions
 		Application::setTitle($this->label);
 
 		$this->toolbar = new Toolbar();
-
+		$this->table = new ModelTable(Application::$prefix.str_replace(".","/",$this->model_name)."/");
+		$this->table->useAjax = true;
+				
+		$this->_showInMenu = $this->model->showInMenu=="false"?false:true;
+		
+		if(file_exists($this->localPath."/app.xml"))
+		{
+			$this->app = simplexml_load_file($this->localPath."/app.xml");
+		}
+		//$this->action;
+		//$this->setupList();
+		
+	}
+	
+	private function setupList()
+	{
 		if(User::getPermission($this->name."_can_add"))
 		{
 			$this->toolbar->addLinkButton("New",$this->urlPath."/add");
@@ -108,30 +129,23 @@ class ModelController extends Controller implements ControllerPermissions
 		{
 			$this->toolbar->addLinkButton("Import",$this->urlPath."/import");
 		}
-
-		if(file_exists($this->localPath."/app.xml"))
-		{
-			$this->app = simplexml_load_file($this->localPath."/app.xml");
-		}
-		$this->_showInMenu = $this->model->showInMenu=="false"?false:true;
-		//$this->action;
-
-		$this->table = new ModelTable(Application::$prefix.str_replace(".","/",$this->model_name)."/");
-
+		
+		$this->toolbar->addLinkButton("Search","#")->linkAttributes="onclick=\"ntentan.tapi.showSearchArea('{$this->table->name}')\"";
+	
 		if(User::getPermission($this->name."_can_edit"))
 		{
 			$this->table->addOperation("edit","Edit");
 		}
 		if(User::getPermission($this->name."_can_delete"))
 		{
-			$this->table->addOperation("delete","Delete","javascript:confirm_redirect('Are you sure you want to delete','%path%/%key%')");
+			$this->table->addOperation("delete","Delete","javascript:ntentan.confirmRedirect('Are you sure you want to delete','%path%/%key%')");
+			$this->toolbar->addLinkButton("Delete","javascript:ntentan.tapi.remove(\"{$this->table->name}\")");
 		}
 
 		if(User::getPermission($this->name."_can_view"))
 		{
 			$this->table->addOperation("view","View");
-		}
-
+		}			
 	}
 
 	public function getContents()
@@ -144,8 +158,17 @@ class ModelController extends Controller implements ControllerPermissions
 		{
 			$fieldNames = $this->app->xpath("/app:app/app:list/app:field");
 		}
+		
+		foreach($fieldNames as $i => $fieldName)
+		{
+			$fieldNames[$i] = (string)$fieldName;
+		}
+		
+		if(count($this->fieldNames)>0) $fieldNames = $this->fieldNames;
+		
+		$this->setupList();
 
-		$this->table->setModel($this->model,$fieldNames);
+		$this->table->setModel($this->model,array("fields"=>$fieldNames,"conditions"=>$this->listConditions));
 		return $this->toolbar->render().$this->table->render();
 	}
 
@@ -256,7 +279,7 @@ class ModelController extends Controller implements ControllerPermissions
 	{
 		$form = $this->getForm();
 		$this->label = "New ".$this->label;
-		$form->setCallback("ModelController::callback",
+		$form->setCallback($this->callbackMethod/*"ModelController::callback"*/,
 			array(
 				"action"=>"add",
 				"instance"=>$this,
@@ -267,7 +290,7 @@ class ModelController extends Controller implements ControllerPermissions
 		return $form->render(); //ModelController::frameText(400,$form->render());
 	}
 
-	public static function callback($data,&$form,$c)
+	public static function callback($data,&$form,$c,$redirect=true)
 	{
 		switch($c["action"])
 		{
@@ -275,9 +298,16 @@ class ModelController extends Controller implements ControllerPermissions
 			$return = $c["instance"]->model->setData($data);
 			if($return===true)
 			{
-				$c["instance"]->model->save();
+				$id = $c["instance"]->model->save();
 				User::log($c["success_message"],serialize($data));
-				header("Location: ".$c["instance"]->urlPath."?notification=".$c["success_message"]);
+				if($redirect)
+				{
+					header("Location: ".$c["instance"]->urlPath."?notification=".$c["success_message"]);
+				}
+				else
+				{
+					return true;
+				}
 			}
 			else
 			{
@@ -299,7 +329,14 @@ class ModelController extends Controller implements ControllerPermissions
 			{
 				$c["instance"]->model->update($c["key_field"],$c["key_value"]);
 				User::log($c["success_message"],serialize($data));
-				header("Location: ".$c["instance"]->urlPath."?notification=".$c["success_message"]);
+				if($redirect)
+				{
+					header("Location: ".$c["instance"]->urlPath."?notification=".$c["success_message"]);
+				}
+				else
+				{
+					return true;
+				}
 			}
 			else
 			{
@@ -325,16 +362,17 @@ class ModelController extends Controller implements ControllerPermissions
 	public function edit($params)
 	{
 		$form = $this->getForm();
-		$data = $this->model->getWithField($this->model->getKeyField(),$params[0]);
+		$data = $this->model->get(array("conditions"=>$this->model->getKeyField()."='".$params[0]."'"),SQLDatabaseModel::MODE_ASSOC,true,false);
 		$form->setData($data[0]);
 		$this->label = "Edit ".$this->label;
-		$form->setCallback("ModelController::callback",
+		$form->setCallback($this->callbackMethod/*"ModelController::callback"*/,
 			array(
 				"action"=>"edit",
 				"instance"=>$this,
 				"success_message"=>"Edited ".$this->model->name,
 				"key_field"=>$this->model->getKeyField(),
-				"key_value"=>$params[0]
+				"key_value"=>$params[0],
+				"form"=>$form
 			)
 		);
 		return $form->render(); //ModelController::frameText(400,$form->render());
@@ -349,7 +387,7 @@ class ModelController extends Controller implements ControllerPermissions
 	{
 		$form = $this->getForm();
 		$form->setShowField(false);
-		$data = $this->model->getWithField($this->model->getKeyField(),$params[0]);
+		$data = $this->model->get(array("conditions"=>$this->model->getKeyField()."='".$params[0]."'"),SQLDatabaseModel::MODE_ASSOC,true);
 		$form->setData($data[0]);
 		$this->label = "View ".$this->label;
 		return $form->render(); //ModelController::frameText(400,$form->render());
@@ -369,10 +407,12 @@ class ModelController extends Controller implements ControllerPermissions
 			case "pdf":
 				$report = new PDFReport();
 				break;
+				
 			case "html":
 				$report = new HTMLReport();
 				$report->htmlHeaders = true;
 				break;
+				
 			case "csv":
 				if($params[1]=="")
 					$report = new CSVReport();
@@ -385,16 +425,19 @@ class ModelController extends Controller implements ControllerPermissions
 				}
 				break;
 		}
-		 //HTMLReport();
+		
 		$title = new TextContent($this->label);
+		$title->style["size"] = 12;
+		$title->style["bold"] = true;
 
 		$headers = $this->model->getLabels();
 
 		$fieldNames = $this->model->getFieldNames();
 		array_shift($fieldNames);
-		$this->model->get($fieldNames);
-		$data = $this->model->formatData();
+		$this->model->get(array("fields"=>$fieldNames));
+		//$data = $this->model->formatData();
 		$table = new TableContent($headers,$data);
+		$table->style["decoration"] = true;
 
 		$report->add($title,$table);
 
