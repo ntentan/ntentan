@@ -6,7 +6,7 @@ function table_renderer_head()
 
 function table_renderer_element($element, $showfields=true)
 {
-	$ret = "<tr>";
+	$ret = "<tr ".($element->getId()==""?"":"id='".$element->getId()."_wrapper'").">";
 	if($element->getType()=="HiddenField")
 	{
 		return $element->render();

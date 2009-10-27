@@ -21,7 +21,7 @@ function default_renderer_element($element, $showfields=true)
 		return $element->render();
 	}
 
-    $ret .= "<div class='fapi-element-div' ".($element->getId()==""?"":"id='".$element->getId()."_div'").">";
+    $ret .= "<div class='fapi-element-div' ".($element->getId()==""?"":"id='".$element->getId()."_wrapper'").">";
 
     if($element->getType()=="Field")
     {

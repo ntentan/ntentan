@@ -53,7 +53,7 @@ class Form extends Container
 	public $ajaxAction = "lib/fapi/ajax.php?action=save_data";
 
 	public $successUrl;
-
+	
 	//! Constructor for initialising the forms. This constructor accepts
 	//! the method of the form.
 	public function __construct($method="")

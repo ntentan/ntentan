@@ -132,19 +132,11 @@ class PDFDocument extends FPDF
 			$params["widths"][$i] = $params["widths"][$i] * $arrayWidth;
 		}
 		
-				
-		/*if($this->style["decoration"]===true)
-		{
-			$this->SetDrawColor(102,128,102);
-			$this->Cell(array_sum($params["widths"]),0,'','T');
-			$this->Ln();
-		}	*/	
-		
 		$this->SetDrawColor(204,255,204);
 		for($i=0;$i<count($params["widths"]);$i++)
 		{
-			//if(isset($totals[$i])) $borders = "LR"; else $borders = 0;
-			$this->Cell($params["widths"][$i],$this->style["cell_height"],$totals[$i],$borders,0,'L');
+			if(isset($totals[$i]) && $i!=0) $borders = "LR"; else $borders = 0;
+			$this->Cell($params["widths"][$i],$this->style["cell_height"],$totals[$i],$borders,0,$i==0?'L':'R');
 		}
 		$this->Ln();
 
@@ -214,7 +206,8 @@ class PDFDocument extends FPDF
 			$i = 0;
 			foreach($fields as $field)
 			{
-				$this->Cell($widths[$i],$this->style["cell_height"],$field,$border,0,'L',$fill);
+				if($params["type"][$i]=="number") $align = "R"; else $align = "L";	
+				$this->Cell($widths[$i],$this->style["cell_height"],$field,$border,0,$align,true);
 				if(is_array($params['total']))
 				{
 					if(array_search($i,$params["total"])!==false)
@@ -225,6 +218,14 @@ class PDFDocument extends FPDF
 				$i++;
 			}
 			if($this->style["decoration"]===true) $fill=!$fill;
+			if($fill)
+			{
+				$this->SetFillColor(204,255,204);
+			}
+			else
+			{
+				$this->SetFillColor(255,255,255);
+			}
 			$this->Ln();
 		}
 

@@ -175,7 +175,8 @@ include_once ("Forms/Button.php");
 include_once ("Forms/SubmitButton.php");
 include_once ("Forms/ModelField.php");
 include_once ("Forms/ButtonBar.php");
-include_once ("Forms/MultiForms.php");
+include_once ("Forms/MultiElements.php");
+include_once ("Forms/MultiFields.php");
 include_once ("Forms/ColumnContainer.php");
 include_once ("Forms/ModelSearchField.php");
 ?>
