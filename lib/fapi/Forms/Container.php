@@ -98,6 +98,7 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 
 	protected $validatorCallback;
 	protected $validatorCallbackData;
+	public $isContainer = true;
 
 	public function __construct($renderer="table")
 	{

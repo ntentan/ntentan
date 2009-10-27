@@ -13,6 +13,9 @@ include_once "Attribute.php";
  */
 abstract class Element
 {
+	const SCOPE_ELEMENT = "";
+	const SCOPE_WRAPPER = "_wrapper";
+		
 	protected $ajax = true;
 
 	/**
@@ -73,6 +76,15 @@ abstract class Element
 	//! A value which determines whether this field is to be used in
 	//! constructing database queries
 	protected $storable = true;
+	
+	/**
+	 * The name of the form field. This is what is to be outputed as
+	 * the HTML name attribute of the field. If name encryption is
+	 * enabled the outputed name to HTML is mangled by the encryption
+	 * algorithm. However internally the Field may still be referenced
+	 * bu the unmangled name.
+	 */
+	protected $name;	
 
 	//! A value which determines whether this element contains file data;
 	protected $hasFile = false;
@@ -90,8 +102,8 @@ abstract class Element
 	 */
 	public function setId($id)
 	{
-		$this->id = $id;
-		$this->addAttribute("id",$id);
+		$this->id = str_replace(".","_",$id);
+		$this->addAttribute("id",$this->id);
 		return $this;
 	}
 
@@ -102,6 +114,35 @@ abstract class Element
 	{
 		return $this->id;
 	}
+	
+
+	/**
+	 * Public accessor for setting the name property of the field.
+	 *
+	 * @param  $name The name to assign to the form element.
+	 */
+	public function setName($name)
+	{
+		$this->name = $name;
+		return $this;
+	}
+
+	/**
+	 * Public accessor for getting the name property of the field.
+	 *
+	 * @return The name of the form field.
+	 */
+	public function getName($encrypt=true)
+	{
+		if($this->getNameEncryption() && $encrypt)
+		{
+			return md5($this->name);
+		}
+		else
+		{
+			return $this->name;
+		}
+	}	
 
 	//! Sets the label which is attached to this element.
 	public function setLabel($label)
@@ -212,6 +253,7 @@ abstract class Element
 		}
 		$attribute = new Attribute($attribute, $value);
 		$this->addAttributeObject($attribute);
+		return $this;
 	}
 
 	public function removeAttribute($attribute)
@@ -237,6 +279,7 @@ abstract class Element
 				$attrib->setValue($value);
 			}
 		}
+		return $this;
 	}
 
 	//! Returns an HTML representation of all the attributes. This method

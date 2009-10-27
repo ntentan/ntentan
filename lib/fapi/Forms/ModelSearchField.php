@@ -4,19 +4,37 @@ class ModelSearchField extends Field
 	protected $searchFields = array();
 	protected $model;
 	protected $storedField;
+	public $boldFirst = true;
 	
-	public function __construct($path,$value)
+	public function __construct($path=null,$value=null)
 	{
-		$info = model::resolvePath($path);
-		$this->model = model::load($info["model"]);
-		$field = $this->model->getFields(array($value));
+		if($path!=null)
+		{
+			$info = model::resolvePath($path);
+			if ($value=="") $value = $info["field"];
+			$this->model = model::load($info["model"]);
+			$field = $this->model->getFields(array($value));
 
-		$this->setLabel($field[0]["label"]);
-		$this->setDescription($field[0]["description"]);
-		$this->setName($info["field"]);
+			$this->setLabel($field[0]["label"]);
+			$this->setDescription($field[0]["description"]);
+			$this->setName($info["field"]);
 
-		$this->addSearchField($value);
-		$this->storedField = $info["field"];
+			$this->addSearchField($value);
+			$this->storedField = $info["field"];
+		}
+	}
+	
+	/**
+	 * 
+	 * @param $model
+	 * @param $value
+	 * @return ModelSearchField
+	 */
+	public function setModel($model,$value="")
+	{
+		$this->model = $model;
+		$this->storedField = $value==""?$this->model->getKeyField():$value;
+		return $this;
 	}
 	
 	public function addSearchField($field)
@@ -29,7 +47,8 @@ class ModelSearchField extends Field
 	{
 		$name = $this->getName();
 		$hidden = new HiddenField($name,$this->getValue());
-		$hidden->addAttribute("id",$this->getId());
+		$id = $this->getId();
+		$hidden->addAttribute("id",$id);
 		$ret = $hidden->render();
 		
 		$this->addSearchField($this->storedField);
@@ -48,7 +67,7 @@ class ModelSearchField extends Field
 		$fields = urlencode(json_encode($jsonSearchFields));
 		
 		$text = new TextField();
-		$text->addAttribute("onkeyup","fapiUpdateSearchField('$name','$path','$fields',this)");
+		$text->addAttribute("onkeyup","fapiUpdateSearchField('$id','$path','$fields',this,".($this->boldFirst?"true":"false").")");
 		$text->addAttribute("autocomplete","off");
 		
 		if($this->getValue()!="")
@@ -61,9 +80,9 @@ class ModelSearchField extends Field
 			$text->setValue($val);
 		}
 		
-		$text->setId($name."_search_entry");		
+		$text->setId($id."_search_entry");		
 		$ret .= $text->render();
-		$ret .= "<div class='fapi-popup' id='{$name}_search_area'></div>";
+		$ret .= "<div class='fapi-popup' id='{$id}_search_area'></div>";
 		return $ret;
 	}
 }
