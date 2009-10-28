@@ -211,7 +211,7 @@ class Form extends Container
 		{
 			$data = $this->getData();
 			$validated = $this->validate() * ($this->validatorCallback==""?1:$this->executeCallback($this->validatorCallback,$data,$this,$this->validatorCallbackData));
-			if($validated)
+			if($validated==1)
 			{
 				$this->executeCallback($this->callback,$data,$this,$this->callbackData);
 			}
