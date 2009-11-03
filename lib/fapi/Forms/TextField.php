@@ -53,10 +53,11 @@ class TextField extends Field
 		$this->addJsValidation
 		(array(
 			"func"=>"fapiCheckRegexp",
-			"regexp"=>Field::prepareMessage("/".$regexp."/"),
+			"regexp"=>"/".$regexp."/",
 			"message"=>Field::prepareMessage("This {$this->getLabel()} format is not valid")
 			)
 		);
+		return $this;
 	}
 
 	/**
@@ -140,7 +141,7 @@ class TextField extends Field
 
 		else if($this->type=="REGEXP")
 		{
-			if(preg_match($this->regexp, $this->getValue()))
+			if(preg_match("$this->regexp", $this->getValue())==1)
 			{
 				return true;
 			}

@@ -81,6 +81,7 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 			if($this->getMethod()=="POST") unset($_POST[$this->getName()]);
 		}
 		$this->value = $value;
+        return $this;
 	}
 
 	/**
