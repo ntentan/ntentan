@@ -87,32 +87,6 @@ class PDFDocument extends FPDF
 		$this->Cell(0,10,"Generated on ".date("jS F, Y @ g:i:s A")." by ".$_SESSION["user_name"],0,0,'R');
 		$this->Ln();
 	}
-	
-	public function attributeBox($data)
-	{
-		$this->SetFont("Helvetica","B",10);
-		$maxWidth = 0;
-		foreach($data as $dat)
-		{
-			$width = $this->GetStringWidth($dat[0]); 
-			if($width > $maxWidth)
-			{
-				$maxWidth = $width; 
-			}
-		}
-	
-		$maxWidth+=10;
-		
-		foreach($data as $dat)
-		{
-			$this->Cell($maxWidth,14*0.353,$dat[0]);
-			$this->SetFont("Helvetica","",10);
-			$this->Cell(0,14*0.353,$dat[1]);
-			$this->SetFont("Helvetica","B",10);
-			$this->Ln();
-		}
-		
-	}
 
 	protected function tableHeader()
 	{

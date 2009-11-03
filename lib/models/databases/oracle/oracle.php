@@ -1,6 +1,4 @@
 <?php
-require_once "lib/models/datastores/SQLDBDataStore.php";
-
 /**
  * An implementation of an oracle model. This model is used to store the oracle
  * data.
@@ -8,26 +6,28 @@ require_once "lib/models/datastores/SQLDBDataStore.php";
  * @author james
  *
  */
-class oracle extends SQLDBDataStore
+class oracle extends SQLDatabaseModel
 {
 	protected static $_conn = null;
 	protected static $_s_conn = null;
 	protected $mode = OCI_COMMIT_ON_SUCCESS;
-/*
+
 	public static function connect($info)
 	{
 		$db = "{$info["host"]}/{$info["database"]}";
 		oracle::$_s_conn = oci_connect($info["username"], $info["password"], $db);
-	}*/
+	}
 
-	public function __construct($model="",$package="",$prefix="")
+	public function __construct($model="",$package="",$prefix="",$conn=null)
 	{
 		parent::__construct($model,$package,$prefix);
-		if(oracle::$_conn==null)
+		if($conn==null)
 		{
-			require "app/config.php";
-			$db = "$db_host/$db_name";
-			oracle::$_conn = oci_connect($db_user, $db_password, $db);		
+			oracle::$_conn = oracle::$_s_conn;
+		}
+		else
+		{
+			oracle::$_conn = $conn;
 		}
 	}
 
@@ -56,7 +56,7 @@ class oracle extends SQLDBDataStore
 		$this->mode = OCI_COMMIT_ON_SUCCESS;
 	}
 
-	public function get($params=null,$mode=model::MODE_ASSOC, $explicit_relations=false,$resolve=true)
+	protected function _getModelData($params=null,$mode=model::MODE_ASSOC, $explicit_relations=false,$resolve=true)
 	{
 		$fields = $params["fields"];
 		$conditions = $params["conditions"];
@@ -75,7 +75,7 @@ class oracle extends SQLDBDataStore
 			// of the query.
 			if($resolve)
 			{
-				$references = $this->referencedFields;//getReferencedFields();
+				$references = $this->getReferencedFields();
 			}
 			else
 			{
@@ -154,7 +154,7 @@ class oracle extends SQLDBDataStore
 	public function query($query,$mode = SQLDatabaseModel::MODE_ASSOC)
 	{
 		$rows = array();
-		//if(oracle::$_conn==null) return $rows;
+		//print $query;
 		$stmt = oci_parse(oracle::$_conn, $query);
 
 		if($stmt===false)
@@ -214,7 +214,7 @@ class oracle extends SQLDBDataStore
 
 			case "number":
 			case "double":
-				$ret = "TRIM(TO_CHAR($value,'fm999,999,999,999,999,990.9000'))";
+				$ret = "TRIM(TO_CHAR($value,'fm999,999,999,990.90'))";
 				break;
 
 			case "displayReference":

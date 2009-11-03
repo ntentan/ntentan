@@ -43,10 +43,6 @@ class PDFReport extends Report
 				$pdf->Ln();
 				if(isset($content->style["bottom_margin"])) $pdf->Ln($content->style["bottom_margin"]);
 				break;
-				
-			case "attributes":
-				$pdf->attributeBox($content->data);
-				break;
 
 			case "table":
 				if($content->style["totalsBox"]==true)
@@ -76,6 +72,7 @@ class PDFReport extends Report
 				$pdf->Ln(5);
 			}
 		}
+
 		$pdf->Output();
 		die();
 	}

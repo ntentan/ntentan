@@ -1,9 +1,6 @@
 <?php
-require_once "ModelServices.php";
-
 /**
- * A model represents an abstract data storing entity. Models are used to access
- * data. Models can have hooks and 
+ * A model represents an abstract data storing entity.
  * @author james
  *
  */
@@ -12,28 +9,16 @@ abstract class Model implements ArrayAccess
 	const MODE_ASSOC = "assoc";
 	const MODE_ARRAY = "array";
 
-	/**
-	 * @todo rename this to hooks
-	 * @var unknown_type
-	 */
 	protected $services;
 
 	public $name;
 	public $prefix;
-	public $package;
-	public $database;
-	public $label;
-	public $description;
-	public $showInMenu;
-	protected $storedFields;
-	public $referencedFields;	
 
 	/**
 	 *
 	 * @var Array
 	 */
 	protected $fields;
-	public $datastore;
 
 	public function __construct($name=null, $serviceClass=null)
 	{
@@ -49,8 +34,7 @@ abstract class Model implements ArrayAccess
 	}
 
 	/**
-	 * @todo Make it possible to load other types of model objects which could
-	 * 		 also be wrapped in different objects.
+	 * 
 	 * @param $model
 	 * @param $serviceClass
 	 * @return Model
@@ -58,24 +42,18 @@ abstract class Model implements ArrayAccess
 	public static function load($model,$path=null,$serviceClass=null)
 	{
 		$model_path = $path."app/modules/".str_replace(".","/",$model)."/";
-		add_include_path($model_path);
 		$model_name = array_pop(explode(".",$model));
 		$serviceClass = $serviceClass==null?$model_path.$model_name."Services.php":$serviceClass.".php";
 		return Model::_load($model_path."model.xml",$path,$model_name,$model,$serviceClass);
 	}
-	
-	public function escape($text)
-	{
-		return $this->datastore->escape($text);
-	}
 
-	private static function _load($model_path,$path_prefix,$model_name,$model_package,$service_class_file=null)
+	private static function _load($model_path,$prefix,$model_name,$model_package,$service_class_file=null)
 	{
-		/*if(file_exists($service_class_file))
+		if(file_exists($service_class_file))
 		{
 			include_once($service_class_file);
-		}*/
-		return new SQLDatabaseModel($model_path, $model_package, $path_prefix);//SQLDatabaseModel::createDefaultDriver($model_path,$model_package,$prefix);
+		}
+		return SQLDatabaseModel::createDefaultDriver($model_path,$model_package,$prefix);
 	}
 
 	public static function resolvePath($path)
@@ -112,15 +90,44 @@ abstract class Model implements ArrayAccess
 
 	public function getData()
 	{
-		return $this->datastore->data;
+		return $this->data;
 	}
+
+	/*public function formatData()
+	{
+		$data = $this->data;
+		foreach($data as $index => $row)
+		{
+			foreach($row as $field => $value)
+			{
+				switch($this->fields[$field]["type"])
+				{
+					case "enum":
+						$data[$index][$field] = $this->fields[$field]["options"][$value];
+						break;
+					case "date":
+						$data[$index][$field] = $value > 0 ? date("l, jS F, Y",$value) : $value;
+						break;
+					case "time":
+						$data[$index][$field] = $value > 0 ? date("g:i:s A",$value) : $value;
+						break;
+					case "datetime":
+						$data[$index][$field] = $value > 0 ? date("jS F, Y g:i:s A",$value) : $value;
+						break;
+					case "boolean":
+						$data[$index][$field] = $value==1 ? "Yes":"No";
+				}
+			}
+		}
+		return $data;
+	}*/
 	
 	public function setData($data,$primary_key_field=null,$primary_key_value=null)
 	{
-		$this->datastore->data = $data;
+		$this->data = $data;
 		if($primary_key_field!="")
 		{
-			$this->datastore->tempData = $this->getWithField($primary_key_field,$primary_key_value);
+			$this->tempData = $this->getWithField($primary_key_field,$primary_key_value);
 		}
 		return $this->validate();
 	}
@@ -158,6 +165,7 @@ abstract class Model implements ArrayAccess
 
 	private function service($service_name,$field_name=null,$args=array())
 	{
+		//$args = func_get_args();
 		$this->services["instance"]->setModel($this);
 		$ret = false;
 
@@ -235,19 +243,14 @@ abstract class Model implements ArrayAccess
 	public function save()
 	{
 		$this->service("preAdd");
-		$ret = $this->datastore->save();
+		$ret = $this->_saveModelData();
 		$this->service("postAdd","key",array($ret,$this->getData()));
 		return $ret;
 	}
 
-	public function getFieldNames($key=false)
-	{
-		return array_keys($this->fields);
-	}
-	
 	public function get($params=null,$mode=Model::MODE_ASSOC,$explicit_relations=false,$resolve=true)
 	{
-		$data = $this->datastore->get($params,$mode,$explicit_relations,$resolve);
+		$data = $this->_getModelData($params,$mode,$explicit_relations,$resolve);
 		//$this->data = $data;
 		return $data;
 	}
@@ -255,14 +258,9 @@ abstract class Model implements ArrayAccess
 	public function update($field,$value)
 	{
 		$this->service("preUpdate");
-		$this->datastore->update($field,$value);
+		$this->_updateData($field,$value);
 		$this->service("postUpdate");
 	}
-	
-	public function delete($key_field,$key_value)
-	{
-		$this->datastore->delete($key_field,$key_value);
-	}	
 
 	public static function getModels($path="app/modules")
 	{
@@ -290,32 +288,126 @@ abstract class Model implements ArrayAccess
 		return $list;
 	}
 	
-	public function offsetGet($offset)
+	public static function getMulti($params,$mode=SQLDatabaseModel::MODE_ASSOC)
 	{
-		$data = $this->datastore->get(array("conditions"=>$this->getKeyField()."='$offset'"),Model::MODE_ASSOC,true);
-		return $data;
+		//Load all models
+		$fields = array();
+		$field_infos = array();
+		$models = array();
+		
+		foreach($params["fields"] as $field)
+		{
+			$fieldreferences = explode(",",$field); 
+			if(count($fieldreferences)==1)
+			{
+				$fields[]=(string)$field; 
+				$field_infos[] = Model::resolvePath((string)$field);
+			}
+			else
+			{
+				$fields[] = $fieldreferences;
+				foreach($fieldreferences as $ref)
+				{
+					$infos[] = Model::resolvePath((string)$ref); 
+				}
+				$field_infos[] = $infos;
+			}
+		}
+		
+		//var_dump($fields);
+		//var_dump($field_infos);
+		
+		foreach($fields as $i=>$field)
+		{
+			if(is_array($field))
+			{
+				foreach($field_infos[$i] as $info)
+				{
+					if(array_search($info["model"],array_keys($models))===false)
+					{
+						$models[$info["model"]] = Model::load($info["model"]);
+					}
+				}
+			}
+			else
+			{
+				if(array_search($field_infos[$i]["model"],array_keys($models))===false)
+				{
+					$models[$field_infos[$i]["model"]] = Model::load($field_infos[$i]["model"]);
+				}
+			}
+		}
+		
+		//Buld the query
+		$query = "SELECT ";
+		$fieldList = array();
+		$functions = $params["global_functions"];
+		foreach($fields as $i => $field)
+		{
+			$field_info = $field_infos[$i];
+			if(is_array($field))
+			{
+				$concatFieldList = array();
+				foreach($field_info as $info)
+				{
+					$fieldData = $models[$info["model"]]->getFields(array($info["field"]));
+					$concatFieldList[] = $models[$info["model"]]->formatField($fieldData[0],$models[$info["model"]]->getDatabase().".".$info["field"],false);
+				}
+				$fieldList[] = $models[$info["model"]]->applySqlFunctions($models[$info["model"]]->concatenate($concatFieldList),$functions);
+			}
+			else
+			{
+				$fieldData = $models[$field_infos[$i]["model"]]->getFields(array($field_info["field"]));
+				$fieldList[] = $models[$field_info["model"]]->formatField($fieldData[0],$models[$field_info["model"]]->getDatabase().".".$field_info["field"],true,$functions);
+			}
+		}
+		
+		$tableList = array();
+		foreach($models as $model)
+		{
+			$tableList[] = $model->getDatabase();
+		}
+		
+		$joinConditions = array();
+		foreach($models as $model)
+		{
+			foreach($models as $other_model)
+			{
+				if($model->name == $other_model->name) continue;
+				if($model->hasField($other_model->getKeyField()))
+				{
+					$joinConditions[] = "{$model->getDatabase()}.{$other_model->getKeyField()}={$other_model->getDatabase()}.{$other_model->getKeyField()}";
+				}
+			}
+		}
+		
+		$query.=implode(",",$fieldList)." FROM ".implode(",",$tableList);
+		
+		if(count($joinConditions)>0)
+		{
+			$query .= " WHERE (".implode(" AND ",$joinConditions).")";
+		}
+		
+		$query.=(strlen($params["conditions"])>0?" AND (".$params["conditions"].")":"");
+		
+		//print $query."<br/><hr/>";
+		if($params["sort_field"]!="")
+		{
+			$query .= " ORDER BY {$params["sort_field"]} {$params["sort_type"]}";
+		}		
+		
+		return $other_model->query($query,$mode);
 	}
 
-	public function offsetSet($offset,$value)
-	{
-
-	}
-
-	public function offsetExists($offset)
-	{
-
-	}
-
-	public function offsetUnset($offset)
-	{
-
-	}	
-	
-	public function getWithField($field,$value)
-	{
-		return $this->get(array("conditions"=>"$field='$value'"),SQLDatabaseModel::MODE_ASSOC,false,false);
-	}
-	
+	public abstract function getWithField($field,$value);
+	protected abstract function _getModelData($params=null,$mode=Model::MODE_ASSOC,$explicit_relations=false,$resolve=true);
+	protected abstract function _saveModelData();
+	protected abstract function _updateData($field,$value);
+	public abstract function delete($field,$value);
+	public abstract function escape($string);
+	public abstract function getSearch($searchValue,$field);
+	public abstract function concatenate($fields);
+	public abstract function formatField($field,$value);
 
 }
 ?>

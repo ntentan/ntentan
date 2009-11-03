@@ -1,9 +1,6 @@
 <?php
 class ModelServices
 {
-	/**
-	 * @var Model
-	 */
 	protected $model;
 	protected $data;
 	protected $fields;
@@ -30,7 +27,7 @@ class ModelServices
 	public function validator_unique($name,$parameter)
 	{
 		$data = $this->model->getWithField($name,$this->model->escape($this->data[$name]));
-		if(count($data)==0 || $this->model->datastore->checkTemp($name,$this->data[$name]))
+		if(count($data)==0 || $this->model->checkTemp($name,$this->data[$name]))
 		{
 			return true;
 		}

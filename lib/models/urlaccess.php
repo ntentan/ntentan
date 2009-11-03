@@ -2,10 +2,10 @@
 error_reporting(0);
 set_include_path(get_include_path() . PATH_SEPARATOR . "../../");
 
-include "coreutils.php";
 include "lib/models/Model.php";
 include "lib/models/SQLDatabaseModel.php";
 include "app/config.php";
+include "connection.php";
 
 $object = unserialize(base64_decode($_REQUEST["object"]));
 $model = Model::load($object["model"],"../../");

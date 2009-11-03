@@ -1,10 +1,8 @@
 <?php
-/*require_once "ModelController.php";
+require_once "ModelController.php";
 require_once "PackageController.php";
 require_once "ErrorController.php";
-require_once "ReportController.php";*/
-
-require_once "Model.php";
+require_once "lib/rapi/ReportController.php";
 
 /**
  * The Controller class represents the base class for all controllers that are
