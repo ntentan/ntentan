@@ -109,6 +109,10 @@ abstract class Model implements ArrayAccess
 				{
 					$labels[] = $this->fields[(string)$header_field]["label"];
 				}
+                else
+                {
+                    $labels[] = "Concatenated Field";
+                }
 			}
 		}
 		return $labels;

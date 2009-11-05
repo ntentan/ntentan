@@ -1,17 +1,20 @@
 <?php
 class ModelField extends SelectionList
 {
+    protected $model;
+    protected $valueField;
 	public function __construct($path,$value)
 	{
 		$info = model::resolvePath($path);
-		$model = model::load($info["model"]);
-		$field = $model->getFields(array($value));
+		$this->model = model::load($info["model"]);
+        $this->valueField=$value;
+		$field = $this->model->getFields(array($value));
 
 		$this->setLabel($field[0]["label"]);
 		$this->setDescription($field[0]["description"]);
 		$this->setName($info["field"]);
 
-		$data = $model->get(array("fields"=>array($info["field"],$value)),Model::MODE_ARRAY);
+		$data = $this->model->get(array("fields"=>array($info["field"],$value)),Model::MODE_ARRAY);
 
 		$this->addOption("","");
 

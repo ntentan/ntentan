@@ -34,8 +34,8 @@ class Application
 	//! An array of all the menus on the website.
 	public static $menus = array();
 
-	//! An array containing a list of all the adverts.
-	public static $adverts = array();
+    public static  $packagesPath;
+
 
 	/**
 	 * A method to add a stylesheet to the list of stylesheets

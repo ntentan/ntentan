@@ -63,12 +63,12 @@ class oracle extends SQLDBDataStore
 		$rows = array();
 		$joined = null;
 
-		if($params["enumerate"]===true)
+		/*if($params["enumerate"]===true)
 		{
 			$rows = $this->query('SELECT COUNT(*) AS "count" FROM '.$this->database.($conditions!=null?" WHERE ".$conditions:""));
 		}
 		else
-		{
+		{*/
 
 			// Get information about all referenced models and pull out all
 			// the required information as well as build up the join parts
@@ -105,14 +105,20 @@ class oracle extends SQLDBDataStore
 				}
 			}
 
-			$query = sprintf("SELECT ".($params["distinct"]===true?"DISTINCT":"")." $field_list FROM %s ",$this->database).($do_join?$joins:"").($conditions!=null?" WHERE ".$conditions:"").$sorting;
+            if($params["enumerate"]===true)
+            {
+                $query = sprintf("SELECT ".($params["distinct"]===true?"DISTINCT":"")." COUNT(*) as \"count\" FROM %s ",$this->database).($do_join?$joins:"").($conditions!=null?" WHERE ".$conditions:"").$sorting;
+            }
+            else
+            {
+                $query = sprintf("SELECT ".($params["distinct"]===true?"DISTINCT":"")." $field_list FROM %s ",$this->database).($do_join?$joins:"").($conditions!=null?" WHERE ".$conditions:"").$sorting;
+                if(isset($params["limit"]))
+                {
+                    //$query = "SELECT * FROM ( $query ) where rownum <= ".($params["offset"]+$params["limit"])." and rownum >= ".($params["offset"]+0);
+                    $query = "select * from ( select  a.*, ROWNUM autoremove_oracle_rnum from ( $query ) a where ROWNUM <= ".($params["offset"]+$params["limit"])." ) where autoremove_oracle_rnum  >= ".($params["offset"]+0);
 
-			if(isset($params["limit"]))
-			{
-				//$query = "SELECT * FROM ( $query ) where rownum <= ".($params["offset"]+$params["limit"])." and rownum >= ".($params["offset"]+0);
-				$query = "select * from ( select  a.*, ROWNUM autoremove_oracle_rnum from ( $query ) a where ROWNUM <= ".($params["offset"]+$params["limit"])." ) where autoremove_oracle_rnum  >= ".($params["offset"]+0);
-
-			}
+                }
+            }
 
 			//print $query;
 			$rows = $this->query($query,$mode);
@@ -131,7 +137,7 @@ class oracle extends SQLDBDataStore
 				}
 				//var_dump($rows);
 			}
-		}
+		//}
 
 		return $rows;
 	}
@@ -148,13 +154,12 @@ class oracle extends SQLDBDataStore
 
 	public function concatenate($fields)
 	{
-		return implode(" || ' ' || ",$fields);
+		return count($fields)>1?"TRIM(".implode(" || ' ' || ",$fields).")":$fields[0];
 	}
 
 	public function query($query,$mode = SQLDatabaseModel::MODE_ASSOC)
 	{
 		$rows = array();
-		//if(oracle::$_conn==null) return $rows;
 		$stmt = oci_parse(oracle::$_conn, $query);
 
 		if($stmt===false)
@@ -211,7 +216,9 @@ class oracle extends SQLDBDataStore
 				$query .= " END";// as \"{$field["name"]}\"";
 				$ret = $query;
 				break;
-
+            case "boolean":
+                $ret = "CASE WHEN $value='1' THEN 'Yes' WHEN $value='0' THEN 'No' END";
+                break;
 			case "number":
 			case "double":
 				$ret = "TRIM(TO_CHAR($value,'fm999,999,999,999,999,990.9000'))";
@@ -225,7 +232,7 @@ class oracle extends SQLDBDataStore
 				$ret = $value;
 				break;
 		}
-		
+
 		if(is_array($functions))
 		{
 			$ret = $this->applySqlFunctions($ret,$functions);

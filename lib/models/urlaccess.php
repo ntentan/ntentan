@@ -6,9 +6,14 @@ include "coreutils.php";
 include "lib/models/Model.php";
 include "lib/models/SQLDatabaseModel.php";
 include "app/config.php";
+include "lib/user/User.php";
+include "lib/Application.php";
 
 $object = unserialize(base64_decode($_REQUEST["object"]));
-$model = Model::load($object["model"],"../../");
+
+Application::$packagesPath = "../../";
+
+$model = Model::load($object["model"]);//,"../../");
 
 if(isset($_REQUEST["conditions"]))
 {
@@ -16,8 +21,16 @@ if(isset($_REQUEST["conditions"]))
 	array_pop($conditions);
 	foreach($conditions as $i => $condition)
 	{
-		$parts = explode("=",$condition);
-		$conditions[$i] = $model->getSearch($parts[1],$parts[0]);//"instr(lower({$parts[0]}),lower('".$model->escape($parts[1])."'))>0";//$parts[0] ." in '".$model->escape($parts[1])."'";
+        if(substr_count($condition,"=="))
+        {
+            $parts = explode("==",$condition);
+            $conditions[$i] = $parts[0]."=".$parts[1];
+        }
+        else
+        {
+            $parts = explode("=",$condition);
+            $conditions[$i] = $model->getSearch($parts[1],$parts[0]);//"instr(lower({$parts[0]}),lower('".$model->escape($parts[1])."'))>0";//$parts[0] ." in '".$model->escape($parts[1])."'";
+        }
 	}
 	$condition_opr = isset($_REQUEST["conditions_opr"])?$_REQUEST["conditions_opr"]:"AND";
 	$conditions = implode(" $condition_opr ",$conditions);
@@ -40,9 +53,9 @@ switch($_REQUEST["action"])
 		$ids = json_decode($_REQUEST["params"]);
 		foreach($ids as $id)
 		{
-			$data = $this->model->getWithField($this->model->getKeyField(),$id);
+			$data = $model->getWithField($model->getKeyField(),$id);
 			$model->delete($model->getKeyField("primary"),$id);
-			User::log("Deleted ".$this->model->name,$data[0]);			
+			User::log("Deleted ".$model->name,$data[0]);			
 		}
 		break;
 }
