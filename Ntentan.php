@@ -5,7 +5,6 @@
  * It contains mainly a list of static methods.
  *
  */
-
 class Ntentan
 {
     const PATH_RELATIVE_TO_BASE = "pathRelativeToBasepath";
@@ -13,6 +12,10 @@ class Ntentan
 
     public static $basePath = "ntentan/";
     public static $packagesPath = "packages/";
+    public static $cachePath = "cache/";
+
+    public static $defaultRoute = "home";
+    public static $routes = array();
 
 	/**
 	 * Outputs the site. This calls all the template files and outputs the
@@ -20,20 +23,35 @@ class Ntentan
 	 */
 	public static function boot()
 	{
-        Ntentan::addIncludePath(Ntentan::getFilePath('controllers/'));
-        Ntentan::addIncludePath(Ntentan::getFilePath('models/'));
-        Ntentan::addIncludePath(Ntentan::getFilePath('views/'));
+        Ntentan::addIncludePath(array(
+                Ntentan::getFilePath('controllers/'),
+                Ntentan::getFilePath('models/'),
+                Ntentan::getFilePath('views/'),
+                Ntentan::getFilePath('views/template_engines'),
+            )
+        );
 
 		if($_GET["q"] == "")
 		{
-			$_GET["q"]= "home";
+			$_GET["q"]= Ntentan::$defaultRoute;
 		}
+        
 		$module = Controller::load($_GET["q"]);
 	}
 
-    public static function addIncludePath($path)
+    public static function addIncludePath($paths)
     {
-        set_include_path(get_include_path(). PATH_SEPARATOR . $path);
+        if(is_array($paths))
+        {
+            foreach($paths as $path)
+            {
+                set_include_path(get_include_path() . PATH_SEPARATOR . $path);
+            }
+        }
+        else
+        {
+            set_include_path(get_include_path() . PATH_SEPARATOR . $paths);
+        }
     }
 
     public static function getFilePath($path)

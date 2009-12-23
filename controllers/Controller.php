@@ -1,8 +1,4 @@
 <?php
-/*require_once "ModelController.php";
-require_once "PackageController.php";
-require_once "ErrorController.php";
-require_once "ReportController.php";*/
 
 require_once "Model.php";
 
@@ -24,6 +20,8 @@ require_once "Model.php";
  */
 abstract class Controller
 {
+    public $defaultMethodName = "default";
+
 	/**
 	 * A copy of the path that was used to load this controller in an array
 	 * form.
@@ -75,51 +73,24 @@ abstract class Controller
 	
 		if($i != count($pathArray)-1)
 		{
-			if(method_exists($controller,$pathArray[$i+1]))
-			{
-				$controllerClass = new ReflectionClass($controllerName);
-				$method = $controllerClass->GetMethod($pathArray[$i+1]);
-				$ret = $method->invoke($controller,array_slice($pathArray,$i+2));
-			}
-        	else
-			{
-				//$ret = "<h2>Error</h2> Method does not exist. ".$pathArray[$i+1];
-    		}
+            $methodName = $pathArray[$i+1];
+        }
+        else
+        {
+            $methodName = $controller->defaultMethodName;
+        }
+
+        if(method_exists($controller, $methodName))
+		{
+			$controllerClass = new ReflectionClass($controllerName);
+			$method = $controllerClass->GetMethod($methodName);
+			$ret = $method->invoke($controller,array_slice($pathArray,$i+2));
+            $view = new View("$controllerPath/{$methodName}View.php");
 		}
-						
-		return $controller;
-	}
-
-	/**
-	 * An implementation of the default getContents method which returns a No
-	 * content string.
-	 *
-	 * @todo When the controllers are changed to return variables for template
-	 * 		 engines make this return that to.
-	 * @return string
-	 */
-	protected function getContents()
-	{
-		return "No Content";
-	}
-
-    /**
-     * 
-     * @return <type>
-     */
-	public function showInMenu()
-	{
-		return $this->_showInMenu;
-	}
-
-	public function getPermissions()
-	{
-
-	}
-
-	public function getTemplateDescription($template,$data)
-	{
-		return array("template"=>"file:/".getcwd()."/app/modules/$template","data"=>$data);
+        else
+		{
+			die("Error");
+    	}
 	}
 }
 ?>
