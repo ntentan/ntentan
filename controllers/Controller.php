@@ -25,46 +25,6 @@ require_once "Model.php";
 abstract class Controller
 {
 	/**
-	 * Check if this controller is supposed to be shown in any menus that are
-	 * created. This property is usually false for modules which are built for
-	 * internal use within the application.
-	 */
-	protected $_showInMenu = false;
-
-	/**
-	 * A descriptive label for this controler.
-	 */
-	public $label;
-
-	/**
-	 * A piece of text which briefly described the use of this model.
-	 */
-	public $description;
-
-	/**
-	 * A variable which contains the contents of a given controller after a
-	 * particular method has been called. This is what external controllers
-	 * usually use.
-	 */
-	public $content;
-
-	/**
-	 * This constant represents controllers that are loaded from modules
-	 */
-	const TYPE_MODULE = "module";
-
-	/**
-	 * This constant represents controllers that are loaded from models.
-	 * @var unknown_type
-	 */
-	const TYPE_MODEL = "model";
-
-	/**
-	 *
-	 */
-	const TYPE_REPORT = "report";
-
-	/**
 	 * A copy of the path that was used to load this controller in an array
 	 * form.
 	 * @var Array
@@ -90,117 +50,43 @@ abstract class Controller
 	 *						controller should be displayed.
 	 * @return Controller
 	 */
-	public static function load($path,$get_contents=true)
+	public static function load($path)
 	{
-		$controller_path = "";
-		$controller_name = "";
-
-		//Go through the whole path and build the folder location of the system
-		for/*each*/($i = 0; $i<count($path);$i++) //  as $p)
+        $controllerPath = '';
+        $pathArray = explode('/', $path);
+        
+		for($i = 0; $i<count($pathArray); $i++)
 		{
-			$p = $path[$i];
-			if(file_exists("app/modules/$controller_path/$p/$p.php"))
+			$p = $pathArray[$i];
+			if(file_exists(Ntentan::$packagesPath . "$controllerPath/$p/$p.php"))
 			{
-				$controller_name = $p;
-				$controller_path .= "/$p";
-				$controller_type = Controller::TYPE_MODULE;
-				break;
-			}
-			else if(file_exists("app/modules/$controller_path/$p/model.xml"))
-			{
-				$controller_name = $p;
-				$controller_path .= "/$p";
-				$controller_type = Controller::TYPE_MODEL;
-				break;
-			}
-			else if(file_exists("app/modules/$controller_path/$p/report.xml"))
-			{
-				$controller_name = $p;
-				$controller_path .= "/$p";
-				$controller_type = Controller::TYPE_REPORT;
+				$controllerName = $p;
+				$controllerPath .= "/$p";
 				break;
 			}
 			else
 			{
-				$controller_path .= "/$p";
+				$controllerPath .= "/$p";
 			}
 		}
 
-		// Check the type of controller and load it.
-		switch($controller_type)
+    	require_once Ntentan::$packagesPath . "$controllerPath/$controllerName.php";
+		$controller = new $controllerName();
+	
+		if($i != count($pathArray)-1)
 		{
-			case Controller::TYPE_MODULE:
-				// Load a module controller which would be a subclass of this
-				// class
-				require_once "app/modules$controller_path/$controller_name.php";
-				$controller = new $controller_name();
-				break;
-
-			case Controller::TYPE_MODEL;
-			// Load the ModelController wrapper around an existing model class.
-			$model = substr(str_replace("/",".",$controller_path),1);
-			$controller_name = "ModelController";
-			$controller = new ModelController($model);
-			break;
-				
-			case Controller::TYPE_REPORT:
-				$controller = new ReportController($controller_path."/report.xml");
-				$controller_name = "ReportController";
-				break;
-
-			default:
-				// Load a package controller for this folder
-				if(is_dir("app/modules$controller_path"))
-				{
-					$controller = new PackageController();
-					$controller_name = "PackageController";
-				}
-				else
-				{
-					$controller = new ErrorController();
-					$controller_name = "ErrorController";
-				}
+			if(method_exists($controller,$pathArray[$i+1]))
+			{
+				$controllerClass = new ReflectionClass($controllerName);
+				$method = $controllerClass->GetMethod($pathArray[$i+1]);
+				$ret = $method->invoke($controller,array_slice($pathArray,$i+2));
+			}
+        	else
+			{
+				//$ret = "<h2>Error</h2> Method does not exist. ".$pathArray[$i+1];
+    		}
 		}
-
-		// If the get contents flag has been set return all the contents of this
-		// controller.
-		$controller->path = $controller_path;
-		
-		if($get_contents)
-		{
-			if($i == count($path)-1)
-			{
-				$ret = $controller->getContents();
-			}
-			else
-			{
-				if(method_exists($controller,$path[$i+1]))
-				{
-					$controller_class = new ReflectionClass($controller_name);
-					$method = $controller_class->GetMethod($path[$i+1]);
-					$ret = $method->invoke($controller,array_slice($path,$i+2));
-				}
-				else
-				{
-					$ret = "<h2>Error</h2> Method does not exist. ".$path[$i+1];
-				}
-			}
-			
-			
-			if(is_array($ret))
-			{
-				$t = new template_engine();
-				$t->assign($ret["data"]);
-				//print isset($ret["template"])?$ret["template"]:$path[$i+1].".tpl";
-				//if(file_exists(isset($ret["template"])?$ret["template"]:$path[$i+1].".tpl")) print "Found!";
-				$controller->content = $t->fetch(isset($ret["template"])?$ret["template"]:$path[$i+1].".tpl");
-			}
-			else if(is_string($ret))
-			{
-				$controller->content = $ret;
-			}
-		}
-		
+						
 		return $controller;
 	}
 
