@@ -6,6 +6,14 @@
  */
 class View
 {
+    private static function create()
+    {
+        $arguments = func_get_args();
+        $className = array_shift($arguments);
+        $reflectionClass = new ReflectionClass($className);
+        return $reflectionClass->newInstanceArgs($arguments);
+    }
+
     public function addHelper($helper)
     {
         Ntentan::addIncludePath(Ntentan::getFilePath("views/helpers/$helper"));

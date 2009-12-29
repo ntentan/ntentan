@@ -28,8 +28,6 @@ class Form extends Container
 	 */
 	protected $resetValue;
 
-	//! Not used.
-	private $sendValidator;
 
 	//! The name of the callback function.
 	//private $callback;
@@ -103,7 +101,6 @@ class Form extends Container
 			$ret .= '</div>';
 		}
 		$ret .= '<input type="hidden" name="is_form_'.$this->getId().'_sent" value="yes" />';
-		$ret .= '<input type="hidden" name="is_form_sent" value="yes" />';
 		$ret .= '</form>';
 
 		if($this->ajaxSubmit)
@@ -187,4 +184,9 @@ class Form extends Container
 		$this->ajax = $validation;
 		$this->ajaxSubmit = $submit;
 	}
+
+    public function __toString()
+    {
+        return $this->render();
+    }
 }

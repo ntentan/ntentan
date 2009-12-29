@@ -405,6 +405,11 @@ abstract class Element
 		return $element->newInstanceArgs($args==null?array():$args);
 	}
 
+    public static function createFromString($class, $label, $name, $value = null)
+    {
+        return Element::create($class)->setLabel($label)->setName($name)->setValue($value);
+    }
+
     public function onRender()
     {
         

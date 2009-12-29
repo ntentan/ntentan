@@ -3,6 +3,7 @@
 class authentication extends AbstractComponent
 {
     public $authPath = "users/login";
+    public $successUrl = "/";
     public $name = __CLASS__;
 
     public function preRender()
@@ -15,6 +16,9 @@ class authentication extends AbstractComponent
 
     public function login()
     {
-        
+        if(isset($_POST["username"]) && isset($_POST["password"]))
+        {
+            die("Attempting to authenticate");
+        }
     }
 }

@@ -125,32 +125,67 @@ abstract class Container extends Element
 		return $this->renderer;
 	}
 
+    private function addElement($element)
+    {
+        //Check if the element has a parent. If it doesnt then add it
+        //to this container. If it does throw an exception.
+        if($element->parent==null)
+        {
+            array_push($this->elements, $element);
+            $element->setMethod($this->getMethod());
+            $element->setShowField($this->getShowField());
+            $element->parent = $this;
+            $element->setNameEncryption($this->getNameEncryption());
+            $element->setNameEncryptionKey($this->getNameEncryptionKey());
+            $element->ajax = $this->ajax;
+            $this->hasFile |= $element->getHasFile();
+        }
+        else
+        {
+            throw new Exception("Element added already has a parent");
+        }
+    }
+
 	/**
 	 * Method for adding an element to the form container.
-	 * @param  $element
 	 * @return Container
 	 */
-	public function add($e)
+	public function add()
 	{
-		//Check if the element has a parent. If it doesnt then add it
-		//to this container. If it does throw an exception.
-		foreach(func_get_args() as $element)
-		{
-			if($element->parent==null)
-			{
-				array_push($this->elements, $element);
-				$element->setMethod($this->getMethod());
-				$element->setShowField($this->getShowField());
-				$element->parent = $this;
-				$element->setNameEncryption($this->getNameEncryption());
-				$element->setNameEncryptionKey($this->getNameEncryptionKey());
-				$element->ajax = $this->ajax;
-				$this->hasFile |= $element->getHasFile();
-			}
-			else
-			{
-				throw new Exception("Element added already has a parent");
-			}
+        $arguments = func_get_args();
+
+        if(is_array($arguments[0]))
+        {
+            foreach($arguments[0] as $elementString)
+            {
+                $this->addElement(
+                    Element::createFromString
+                    (
+                        $elementString[0],
+                        $elementString[1],
+                        $elementString[2],
+                        $elementString[3]
+                    )
+                );
+            }
+        }
+        else if(is_string($arguments[0]))
+        {
+            $this->addElement(
+                Element::createFromString
+                (
+                    $arguments[0],
+                    $arguments[1],
+                    $arguments[2],
+                    $arguments[3])
+                );
+        }
+        else
+        {
+            foreach(func_get_args() as $element)
+            {
+                $this->addElement($element);
+            }
 		}
 		return $this;
 	}
