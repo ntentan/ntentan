@@ -1,16 +1,12 @@
 <?php
 
-require_once ("Element.php");
-require_once ("DatabaseInterface.php");
-require_once ("ValidatableInterface.php");
-
 /**
  * The form field class. This class represents a form field element.
  * Sublcasses of this class are to be used to capture information from
  * the user of the application.
  * \ingroup Form_API
  */
-abstract class Field extends Element implements DatabaseInterface, Validatable
+abstract class Field extends Element
 {
 	
 	protected $jsValidations = array();

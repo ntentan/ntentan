@@ -1,17 +1,12 @@
 <?php
 
-require_once ("Element.php");
-require_once ("DatabaseInterface.php");
-require_once ("ValidatableInterface.php");
-
-
 /**
  * The container class. This abstract class provides the necessary
  * basis for implementing form element containers. The container
  * is a special element which contains other form elements.
  *
  */
-abstract class Container extends Element implements DatabaseInterface, Validatable
+abstract class Container extends Element
 {
 	/**
 	 * Data should be stored into databases.

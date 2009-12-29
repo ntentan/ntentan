@@ -7,15 +7,13 @@
  */
 class Ntentan
 {
-    const PATH_RELATIVE_TO_BASE = "pathRelativeToBasepath";
-    const PATH_AS_IS = "pathAsIs";
-
     public static $basePath = "ntentan/";
     public static $packagesPath = "packages/";
     public static $cachePath = "cache/";
 
     public static $defaultRoute = "home";
     public static $routes = array();
+    public static $route;
 
 	/**
 	 * Outputs the site. This calls all the template files and outputs the
@@ -23,11 +21,15 @@ class Ntentan
 	 */
 	public static function boot()
 	{
-        Ntentan::addIncludePath(array(
+        Ntentan::addIncludePath(
+            array
+            (
                 Ntentan::getFilePath('controllers/'),
                 Ntentan::getFilePath('models/'),
                 Ntentan::getFilePath('views/'),
                 Ntentan::getFilePath('views/template_engines'),
+                "./",
+                Ntentan::$packagesPath
             )
         );
 
@@ -35,7 +37,7 @@ class Ntentan
 		{
 			$_GET["q"]= Ntentan::$defaultRoute;
 		}
-        
+        Ntentan::$route = $_GET["q"];
 		$module = Controller::load($_GET["q"]);
 	}
 
@@ -58,11 +60,19 @@ class Ntentan
     {
         return Ntentan::$basePath . $path;
     }
+
+    public static function getUrl($url)
+    {
+        return "/$url";
+    }
+
+    public static function redirect($path)
+    {
+        header("Location: ". Ntentan::getUrl($path));
+    }
 }
 
 function __autoload($class)
 {
     include "$class.php";
 }
-
-?>

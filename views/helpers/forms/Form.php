@@ -1,9 +1,5 @@
 <?php
 
-include_once ("Container.php");
-include_once ("HiddenField.php");
-include_once ("DefaultRenderer.php");
-
 /**
  * The form class. This class represents the overall form class. This
  * form represents the main form for collecting data from the user.
@@ -65,63 +61,6 @@ class Form extends Container
 		$this->ajax = true;
 		$this->setSubmitValue("Save");
 	}
-
-	//! Validation of the form.
-	/*public function validate()
-	{
-		if($this->getMethod()=="POST") $sent=$_POST['is_form_'.$this->getId().'_sent'];
-		if($this->getMethod()=="GET") $sent=$_GET['is_form_'.$this->getId().'_sent'];
-
-		// Check if the form was sent or it is being forced to validate
-		// some data.
-		if($sent=="yes")
-		{
-			$form_data = $this->getData($this->getStorable());
-			if($this->preSaveCallback!="")
-			{
-				$preSaveCallback = $this->preSaveCallback;
-				if($preSaveCallback($form_data, $this->errors, $this))
-				{
-						//print_r($this);
-						$this->error = true;
-						return false;
-					}
-				}
-			/*}
-			else
-			{
-
-			}*/
-
-			// Call the parent container's validation method.
-			/*if(parent::validate())
-			{
-				if($force_validation)
-				{
-					return true;
-				}
-				else
-				{
-					// If validation was successful but was not forced
-					// call the callback method and save the data.
-					$callback = $this->callback;
-					$this->saveData();
-					if($callback!="")
-					{
-						return $callback($form_data);
-					}
-				}
-			}
-		}
-
-		// If form was not sent then retrieve the data.
-		else
-		{
-			$data = $this->retrieveData();
-			if(count($data)>0) $this->setData($data);
-		}
-		return false;
-	}*/
 
 	protected function renderForm()
 	{
