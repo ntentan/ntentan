@@ -14,6 +14,7 @@ class Ntentan
     public static $defaultRoute = "home";
     public static $routes = array();
     public static $route;
+    public static $configFile = "config.php";
 
 	/**
 	 * Outputs the site. This calls all the template files and outputs the
@@ -26,8 +27,9 @@ class Ntentan
             (
                 Ntentan::getFilePath('controllers/'),
                 Ntentan::getFilePath('models/'),
+                Ntentan::getFilePath('models/datastores/'),
                 Ntentan::getFilePath('views/'),
-                Ntentan::getFilePath('views/template_engines'),
+                Ntentan::getFilePath('views/template_engines/'),
                 "./",
                 Ntentan::$packagesPath
             )
@@ -69,6 +71,12 @@ class Ntentan
     public static function redirect($path)
     {
         header("Location: ". Ntentan::getUrl($path));
+    }
+
+    public static function getDefaultDataStore()
+    {
+        include Ntentan::$configFile;
+        return $datastores["default"];
     }
 }
 

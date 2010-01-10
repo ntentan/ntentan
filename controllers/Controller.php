@@ -1,7 +1,5 @@
 <?php
 
-require_once "Model.php";
-
 /**
  * The Controller class represents the base class for all controllers that are
  * built for the ntentan framework. Controllers are used to direct the flow of
@@ -95,9 +93,10 @@ class Controller
 		for($i = 0; $i<count($pathArray); $i++)
 		{
 			$p = $pathArray[$i];
-			if(file_exists(Ntentan::$packagesPath . "$controllerPath/$p/$p.php"))
+            $pCamelized = ucfirst($p);
+			if(file_exists(Ntentan::$packagesPath . "$controllerPath/$p/{$pCamelized}Controller.php"))
 			{
-				$controllerName = $p;
+				$controllerName = $pCamelized."Controller";
 				$controllerPath .= "/$p";
 				break;
 			}

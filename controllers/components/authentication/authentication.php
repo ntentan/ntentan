@@ -18,7 +18,8 @@ class authentication extends AbstractComponent
     {
         if(isset($_POST["username"]) && isset($_POST["password"]))
         {
-            die("Attempting to authenticate");
+            $users = Model::load("users");
+            $users->get();
         }
     }
 }
