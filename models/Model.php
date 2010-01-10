@@ -25,6 +25,8 @@ class Model
             $dataStore = new $dataStoreClass($dataStoreParams);
             $model->setDataStore($dataStore);
         }
+
+        return $model;
     }
 
     public function setDataStore($dataStore)
