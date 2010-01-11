@@ -3,6 +3,7 @@
 class authentication extends AbstractComponent
 {
     public $authPath = "users/login";
+    public $redirectPath;
     public $successUrl = "";
     public $name = __CLASS__;
 
@@ -10,8 +11,7 @@ class authentication extends AbstractComponent
     {
         if($_SESSION["ntentan_logged_in"] == false && Ntentan::$route != $this->authPath)
         {
-            var_dump($_SESSION["ntentan_logged_in"], Ntentan::$route);
-            Ntentan::redirect($this->authPath);
+            Ntentan::redirect($this->authPath . "?redirect=" . urlencode(Ntentan::getRequestUri()));
         }
     }
 
@@ -24,7 +24,7 @@ class authentication extends AbstractComponent
             if($result["password"] == md5($_POST["password"]))
             {
                 $_SESSION["ntentan_logged_in"] = true;
-                Ntentan::redirect("");
+                Ntentan::redirect($_GET["redirect"] == null ? $this->redirectPath : $_GET["redirect"], true);
             }
         }
     }

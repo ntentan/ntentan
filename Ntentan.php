@@ -70,15 +70,21 @@ class Ntentan
         return "/$url";
     }
 
-    public static function redirect($path)
+    public static function redirect($path, $absolute = false)
     {
-        header("Location: ". Ntentan::getUrl($path));
+        $path = $absolute ? $path : Ntentan::getUrl($path);
+        header("Location: $path ");
     }
 
     public static function getDefaultDataStore()
     {
         include Ntentan::$configFile;
         return $datastores["default"];
+    }
+
+    public static function getRequestUri()
+    {
+        return 'http'. ($_SERVER['HTTPS'] ? 's' : null) .'://'. $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     }
 }
 
