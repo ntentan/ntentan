@@ -18,6 +18,8 @@ abstract class Element
 
 	protected $ajax = true;
 
+    protected $formId;
+
 	/**
 	 * The id of the form useful for CSS styling and DOM access.
 	 */

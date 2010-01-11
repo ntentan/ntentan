@@ -2,6 +2,7 @@
 class Model
 {
     private $_dataStoreInstance;
+    
     protected $dataStore;
 
     public static function load($model)
@@ -35,8 +36,24 @@ class Model
         $this->_dataStoreInstance->setModel($this);
     }
 
-    public function get()
+    public function get($type = 'all', $params = null)
     {
-        
+        $params["type"] = $type;
+        $result = $this->_dataStoreInstance->get($params);
+        return $result;
+    }
+
+    public function __call($method, $arguments)
+    {
+        if(substr($method, 0, 7) == "getWith")
+        {
+            $field = strtolower(substr($method, 7));
+            $type = 'first';
+            foreach($arguments as $argument)
+            {
+                $params["conditions"][$field] = $argument;
+            }
+        }
+        return $this->get($type, $params);
     }
 }

@@ -61,7 +61,7 @@ class Controller
      * @param mixed $params1
      * @param string $params2
      */
-    protected function out($params1, $params2 = null)
+    protected function set($params1, $params2 = null)
     {
         if(is_array($params1))
         {

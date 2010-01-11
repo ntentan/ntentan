@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 /**
  * Main class for managing the page. The whole website runs through this class.
  * It contains mainly a list of static methods.

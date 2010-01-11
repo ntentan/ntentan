@@ -8,25 +8,6 @@
  */
 abstract class Container extends Element
 {
-	/**
-	 * Data should be stored into databases.
-	 */
-	const STORE_DATABASE = "database";
-
-	/**
-	 * Data should be stored into models.
-	 */
-	const STORE_MODEL = "model";
-
-	/**
-	 * Data should not be stored anywhere.
-	 */
-	const STORE_NONE = "none";
-
-	/**
-	 * Variable which determines where data from the database should be stored.
-	 */
-	protected $store = Container::STORE_NONE;
 
 	/**
 	 * The array which holds all the elements contained in this container.
@@ -96,7 +77,7 @@ abstract class Container extends Element
 	public $isContainer = true;
     protected $runValidations = true;
 
-	public function __construct($renderer="table")
+	public function __construct($renderer="default")
 	{
 		$this->setRenderer($renderer);
 	}
@@ -131,6 +112,7 @@ abstract class Container extends Element
         //to this container. If it does throw an exception.
         if($element->parent==null)
         {
+            $element->formId = $this->formId;
             array_push($this->elements, $element);
             $element->setMethod($this->getMethod());
             $element->setShowField($this->getShowField());
@@ -217,8 +199,8 @@ abstract class Container extends Element
 
 	public function isFormSent()
 	{
-		if($this->getMethod()=="POST") $sent=$_POST['is_form_sent'];
-		if($this->getMethod()=="GET") $sent=$_GET['is_form_sent'];
+		if($this->getMethod()=="POST") $sent=$_POST["is_form_{$this->formId}_sent"];
+		if($this->getMethod()=="GET") $sent=$_GET["is_form_{$this->formId}_sent"];
 		if($sent=="yes") return true; else return false;
 	}
 
@@ -233,10 +215,7 @@ abstract class Container extends Element
 	{
 		$data = array();
 
-		if($this->getMethod()=="POST") $sent=$_POST['is_form_sent'];
-		if($this->getMethod()=="GET") $sent=$_GET['is_form_sent'];
-
-		if($sent=="yes")
+		if($this->isFormSent())
 		{
 			foreach($this->elements as $element)
 			{

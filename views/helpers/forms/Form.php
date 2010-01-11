@@ -47,6 +47,8 @@ class Form extends Container
 	public $ajaxAction = "lib/fapi/ajax.php?action=save_data";
 
 	public $successUrl;
+
+    public $formId;
 	
 	//! Constructor for initialising the forms. This constructor accepts
 	//! the method of the form.
@@ -188,5 +190,12 @@ class Form extends Container
     public function __toString()
     {
         return $this->render();
+    }
+
+    public function setId($id)
+    {
+        $this->formId = $id;
+        $this->setId($id);
+        return $this;
     }
 }

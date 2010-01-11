@@ -8,8 +8,9 @@ class authentication extends AbstractComponent
 
     public function preRender()
     {
-        if(!isset($_SESSION["ntentan_logged_in"]) && Ntentan::$route != $this->authPath)
+        if($_SESSION["ntentan_logged_in"] == false && Ntentan::$route != $this->authPath)
         {
+            var_dump($_SESSION["ntentan_logged_in"], Ntentan::$route);
             Ntentan::redirect($this->authPath);
         }
     }
@@ -19,7 +20,12 @@ class authentication extends AbstractComponent
         if(isset($_POST["username"]) && isset($_POST["password"]))
         {
             $users = Model::load("users");
-            $users->get();
+            $result = $users->getWithUsername($_POST["username"]);
+            if($result["password"] == md5($_POST["password"]))
+            {
+                $_SESSION["ntentan_logged_in"] = true;
+                Ntentan::redirect("");
+            }
         }
     }
 }

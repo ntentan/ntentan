@@ -5,7 +5,7 @@
 //! \ingroup Form_API
 class PasswordField extends TextField
 {
-	protected $md5 = true;
+	protected $md5 = false;
 	
 	public function __construct($label="",$name="",$description="")
 	{
