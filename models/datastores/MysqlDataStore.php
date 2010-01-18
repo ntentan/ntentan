@@ -26,13 +26,14 @@ class MysqlDataStore extends DataStore
 
     public function setModel($model)
     {
+        parent::setModel($model);
         $modelInformation = new ReflectionObject($model);
         $modelName = $modelInformation->getName();
         $modelName = strtolower($modelName);
         $this->table = substr($modelName, 0, strlen($modelName)-5);
     }
 
-    public function get($params)
+    protected function _get($params)
     {
         // Get a list of fields
         if($params["fields"] == null)
@@ -78,12 +79,7 @@ class MysqlDataStore extends DataStore
         return $params["type"] == 'first' ? $result[0] : $result;
     }
 
-    public function put($queryParameters)
-    {
-    
-    }
-    
-    public function update($queryParameters)
+    protected function _put($queryParameters)
     {
     
     }
@@ -92,9 +88,14 @@ class MysqlDataStore extends DataStore
     {
     
     }
-    
-    public function delete($queryParameters)
-    {
 
+    protected function _update($queryParameters)
+    {
+        
+    }
+    
+    protected function _delete($queryParameters)
+    {
+        
     }
 }

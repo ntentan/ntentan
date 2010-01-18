@@ -1,17 +1,20 @@
 <?php
 
 /**
- * Template engine subclass which contains all the initial settings
- * that the smarty engine needs to work.
+ * Template engine subclass. 
  */
 class View
 {
-    private static function create()
+    protected $layout;
+
+    public function __call ($method, $arguments)
     {
-        $arguments = func_get_args();
-        $className = array_shift($arguments);
-        $reflectionClass = new ReflectionClass($className);
-        return $reflectionClass->newInstanceArgs($arguments);
+        if(substr($method, 0, 6) == "create")
+        {
+            $class = substr($method, 6);
+            $reflectionClass = new ReflectionClass($class);
+            return $reflectionClass->newInstanceArgs($arguments);
+        }
     }
 
     public function addHelper($helper)
@@ -19,8 +22,16 @@ class View
         Ntentan::addIncludePath(Ntentan::getFilePath("views/helpers/$helper"));
     }
 
-    public function out($template)
+    public function out($template, $data)
     {
+        if(is_array($data))
+        {
+            foreach($data as $key => $value)
+            {
+                $$key = $value;
+            }
+        }
+
         ob_start();
         if(file_exists( Ntentan::$packagesPath . $template ))
         {

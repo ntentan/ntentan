@@ -1,49 +1,32 @@
 <?php
 
-/**
- * 
- */
 abstract class AbstractComponent extends Controller
 {
-    /**
-     *
-     * @var string
-     */
-    private $controller;
-    private $controllerPath;
+    protected $controllerName;
+    protected $controller;
 
     public function setController($controller)
     {
         $this->controller = $controller;
     }
 
-    public function setControllerPath($controllerPath)
+    public function setControllerName($controllerName)
     {
-        $this->controllerPath = $controllerPath;
+        $this->controllerName = $controllerName;
     }
 
-    public function runPath($path, $params)
+    public function setControllerPath($controllerPath)
     {
-        if(method_exists($this, $path))
-        {
-            $this->mainPreRender();
-            $controllerClass = new ReflectionClass($this->name);
-            $method = $controllerClass->GetMethod($path);
-            $ret = $method->invoke($this, $params); //array_slice($pathArray,$i+2));
-            $view = new View();
-            $ret = $view->out("{$this->controllerPath}/{$path}.tpl.php");
-            $this->mainPostRender();
-        }
-        else
-        {
-            foreach($this->components as $component)
-            {
-                if($component->hasPath($path))
-                {
-                    $component->runPath($path, $params);
-                }
-            }
-        }
-        print $ret;
+        $this->path = $controllerPath;
+    }
+
+    protected function set($params1, $params2)
+    {
+        $this->controller->set($params1, $params2);
+    }
+
+    protected function get()
+    {
+        return $this->controller->get();
     }
 }

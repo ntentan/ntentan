@@ -1,10 +1,32 @@
 <?php
-class Model
+/**
+ * The Model class 
+ */
+class Model implements ArrayAccess
 {
+    /**
+     * 
+     * @var array
+     */
+    private $data;
+
+    /**
+     * An instance of the datastore.
+     * @var DataStore
+     */
     private $_dataStoreInstance;
-    
+
+    /**
+     * The name of the current datastore 
+     * @var string
+     */
     protected $dataStore;
 
+    /**
+     * Loads a model.
+     * @param string $model
+     * @return Model
+     */
     public static function load($model)
     {
         $pathComponents = explode(".", $model);
@@ -26,8 +48,12 @@ class Model
             $dataStore = new $dataStoreClass($dataStoreParams);
             $model->setDataStore($dataStore);
         }
-
         return $model;
+    }
+
+    public function setData($data)
+    {
+        $this->data = $data;
     }
 
     public function setDataStore($dataStore)
@@ -55,5 +81,37 @@ class Model
             }
         }
         return $this->get($type, $params);
+    }
+
+    public function __set($variable, $value)
+    {
+        $this->data[$variable] = $value;
+    }
+
+    public function __get($variable)
+    {
+        return $this->data[$variable];
+    }
+
+    public function offsetExists($offset)
+    {
+        return isset($this->data[$offset]);
+    }
+
+    public function offsetGet($offset)
+    {
+        $newModel = clone $this;
+        $newModel->setData($this->data[$offset]);
+        return $newModel;
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        $this->data[$offset] = $value;
+    }
+
+    public function offsetUnset($offset)
+    {
+        unset($this->data[$offset]);
     }
 }

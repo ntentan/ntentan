@@ -9,7 +9,7 @@
  * The methods called by the controllers are expected to generate HTML output
  * which should be directly displayed to the screen.
  *
- * All the controllers you build must extend this class end implement
+ * All the controllers you build must extend this class and implement 
  *
  * @todo Controllers must output data that can be passed to some kind of template
  *       engine like smarty.
@@ -45,6 +45,8 @@ class Controller
      */
     private $components = array();
 
+    protected $layout;
+
     /**
      * Adds a component to the controller.
      * @param string $component Name of the component
@@ -53,6 +55,7 @@ class Controller
     {
         Ntentan::addIncludePath(Ntentan::getFilePath("controllers/components/$component"));
         $component = new $component();
+        $component->setController($this);
         $this->components[] = $component;
     }
 
@@ -71,6 +74,11 @@ class Controller
         {
             $this->data[$params1] = $params2;
         }
+    }
+
+    protected function get()
+    {
+        return $this->data;
     }
 
 	/**
@@ -106,27 +114,34 @@ class Controller
 			}
 		}
 
-    	require_once Ntentan::$packagesPath . "$controllerPath/$controllerName.php";
-		$controller = new $controllerName();
-        $controller->setPath($controllerPath);
-        $controller->setName($controllerName);
-	
-		if($i != count($pathArray)-1)
-		{
-            $methodName = $pathArray[$i+1];
+        if($controllerName == "")
+        {
+            die("Path not found!");
         }
         else
         {
-            $methodName = $controller->defaultMethodName;
-        }
+            require_once Ntentan::$packagesPath . "$controllerPath/$controllerName.php";
+            $controller = new $controllerName();
+            $controller->setPath($controllerPath);
+            $controller->setName($controllerName);
 
-        if($controller->hasPath($methodName))
-        {
-            $ret = $controller->runPath($methodName, array_slice($pathArray,$i+2));
-        }
-        else
-        {
-            die("Error!");
+            if($i != count($pathArray)-1)
+            {
+                $methodName = $pathArray[$i+1];
+            }
+            else
+            {
+                $methodName = $controller->defaultMethodName;
+            }
+
+            if($controller->hasPath($methodName))
+            {
+                $ret = $controller->runPath($methodName, array_slice($pathArray,$i+2));
+            }
+            else
+            {
+                die("Error!");
+            }
         }
 	}
     
@@ -135,7 +150,7 @@ class Controller
         $this->name = $name;
         foreach($this->components as $component)
         {
-            $component->setController($name);
+            $component->setControllerName($name);
         }
     }
 
@@ -178,7 +193,7 @@ class Controller
             $method = $controllerClass->GetMethod($path);
             $ret = $method->invoke($this, $params); //array_slice($pathArray,$i+2));
             $view = new View();
-            $ret = $view->out("{$this->path}/{$path}.tpl.php");
+            $ret = $view->out("{$this->path}/{$path}.tpl.php", $this->get());
             $this->mainPostRender();
         }
         else
@@ -187,6 +202,7 @@ class Controller
             {
                 if($component->hasPath($path))
                 {
+                    $component->data = $this->data;
                     $component->runPath($path, $params);
                 }
             }
