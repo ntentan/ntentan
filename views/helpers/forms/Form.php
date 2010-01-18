@@ -52,14 +52,14 @@ class Form extends Container
 	
 	//! Constructor for initialising the forms. This constructor accepts
 	//! the method of the form.
-	public function __construct($method="")
+	public function __construct($id="", $method="")
 	{
 		parent::__construct();
-
 		if($method=="") $method="POST";
 		$this->setMethod($method);
 		$this->ajax = true;
 		$this->setSubmitValue("Save");
+        $this->setId($id);
 	}
 
 	protected function renderForm()
@@ -195,7 +195,7 @@ class Form extends Container
     public function setId($id)
     {
         $this->formId = $id;
-        $this->setId($id);
+        parent::setId($id);
         return $this;
     }
 }

@@ -29,4 +29,18 @@ abstract class AbstractComponent extends Controller
     {
         return $this->controller->get();
     }
+
+    public function __get($property)
+    {
+        switch ($property)
+        {
+            case "view":
+                return $this->controller->viewInstance;
+                break;
+
+            default:
+                return parent::__get($property);
+        }
+    }
+
 }

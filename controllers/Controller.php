@@ -28,7 +28,7 @@ class Controller
 	public $path;
 
 	/**
-	 * A short machine readable name for this label.
+	 * A short machine readable name for this controller.
 	 * @var string
 	 */
 	public $name;
@@ -45,7 +45,16 @@ class Controller
      */
     private $components = array();
 
-    protected $layout;
+    public $viewInstance;
+
+    public function __get($property)
+    {
+        switch ($property)
+        {
+            case "view":
+                return $this->viewInstance;
+        }
+    }
 
     /**
      * Adds a component to the controller.
@@ -122,6 +131,11 @@ class Controller
         {
             require_once Ntentan::$packagesPath . "$controllerPath/$controllerName.php";
             $controller = new $controllerName();
+
+            $view = new View();
+            $view->layout = "main";
+            
+            $controller->setView($view);
             $controller->setPath($controllerPath);
             $controller->setName($controllerName);
 
@@ -184,6 +198,11 @@ class Controller
         return $ret;
     }
 
+    public function setView($view)
+    {
+        $this->viewInstance = $view;
+    }
+
     public function runPath($path, $params)
     {
         if(method_exists($this, $path))
@@ -191,9 +210,8 @@ class Controller
             $this->mainPreRender();
             $controllerClass = new ReflectionClass($this->name);
             $method = $controllerClass->GetMethod($path);
-            $ret = $method->invoke($this, $params); //array_slice($pathArray,$i+2));
-            $view = new View();
-            $ret = $view->out("{$this->path}/{$path}.tpl.php", $this->get());
+            $ret = $method->invoke($this, $params);
+            $ret = $this->view->out("{$this->path}/{$path}.tpl.php", $this->get());
             $this->mainPostRender();
         }
         else

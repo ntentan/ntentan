@@ -1,25 +1,43 @@
 <?php
 
-/**
- * Template engine subclass. 
- */
 class View
 {
-    protected $layout;
+    private $_layout;
+    private $_helpers = array();
 
-    public function __call ($method, $arguments)
+    public function __construct()
     {
-        if(substr($method, 0, 6) == "create")
+        $this->_layout = new Layout();
+    }
+    
+    public function __get($property)
+    {
+        switch($property)
         {
-            $class = substr($method, 6);
-            $reflectionClass = new ReflectionClass($class);
-            return $reflectionClass->newInstanceArgs($arguments);
+            case "layout":
+                return $this->_layout;
+                break;
+            
+            default:
+                return $this->_helpers[$property];
+        }
+    }
+
+    public function __set($property, $value)
+    {
+        switch($property)
+        {
+            case "layout":
+                $this->layout->name = $value;
+                break;
         }
     }
 
     public function addHelper($helper)
     {
         Ntentan::addIncludePath(Ntentan::getFilePath("views/helpers/$helper"));
+        $helperClass = ucfirst($helper."Helper");
+        $this->_helpers[$helper] = new $helperClass();
     }
 
     public function out($template, $data)
@@ -42,6 +60,11 @@ class View
             die("View template not Found!");
         }
         $data = ob_get_clean();
+
+        ob_start();
+        $this->_layout->out($data);
+        $data = ob_get_clean();
+
         return $data;
     }
 }

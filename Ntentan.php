@@ -11,6 +11,7 @@ class Ntentan
     public static $basePath = "ntentan/";
     public static $packagesPath = "packages/";
     public static $cachePath = "cache/";
+    public static $layoutsPath = "layouts/";
 
     public static $defaultRoute = "home";
     public static $routes = array();
