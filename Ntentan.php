@@ -12,6 +12,7 @@ class Ntentan
     public static $packagesPath = "packages/";
     public static $cachePath = "cache/";
     public static $layoutsPath = "layouts/";
+    public static $blocksPath = "blocks/";
 
     public static $defaultRoute = "home";
     public static $routes = array();
@@ -32,6 +33,7 @@ class Ntentan
                 Ntentan::getFilePath('models/datastores/'),
                 Ntentan::getFilePath('views/'),
                 Ntentan::getFilePath('views/template_engines/'),
+                Ntentan::getFilePath('blocks/'),
                 "./",
                 Ntentan::$packagesPath
             )
@@ -86,6 +88,7 @@ class Ntentan
     {
         return 'http'. ($_SERVER['HTTPS'] ? 's' : null) .'://'. $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     }
+
 }
 
 function __autoload($class)

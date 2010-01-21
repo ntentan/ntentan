@@ -1,9 +1,8 @@
 <?php
 
-class View
+class View extends Presentation
 {
     private $_layout;
-    private $_helpers = array();
 
     public function __construct()
     {
@@ -17,9 +16,8 @@ class View
             case "layout":
                 return $this->_layout;
                 break;
-            
             default:
-                return $this->_helpers[$property];
+                return parent::__get($property);
         }
     }
 
@@ -33,15 +31,10 @@ class View
         }
     }
 
-    public function addHelper($helper)
-    {
-        Ntentan::addIncludePath(Ntentan::getFilePath("views/helpers/$helper"));
-        $helperClass = ucfirst($helper."Helper");
-        $this->_helpers[$helper] = new $helperClass();
-    }
-
     public function out($template, $data)
     {
+        // Convert all keys of the data array into variables
+        xdebug_start_trace("/tmp/trace.out");
         if(is_array($data))
         {
             foreach($data as $key => $value)
@@ -64,6 +57,7 @@ class View
         ob_start();
         $this->_layout->out($data);
         $data = ob_get_clean();
+        xdebug_stop_trace();
 
         return $data;
     }

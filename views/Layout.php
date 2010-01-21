@@ -8,6 +8,7 @@ class Layout
     public $title;
     private $javaScripts = array();
     private $styleSheets = array();
+    public $blocks = array();
 
     public function __construct($name = null)
     {
@@ -39,6 +40,13 @@ class Layout
         foreach($this->styleSheets as $styleSheet)
         {
             $stylesheets .= "<link rel='stylesheet' type='text/css' href='{$styleSheet["src"]}' media='{$styleSheet["media"]}' >";
+        }
+
+        // Render all the blocks into string variables
+        foreach($this->blocks as $alias => $block)
+        {
+            $blockName = $alias."Block";
+            $$blockName = (string)$block;
         }
 
         $title = $this->title;

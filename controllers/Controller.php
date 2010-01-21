@@ -47,12 +47,20 @@ class Controller
 
     public $viewInstance;
 
+    protected $blocks = array();
+
     public function __get($property)
     {
         switch ($property)
         {
-            case "view":
-                return $this->viewInstance;
+        case "view":
+            return $this->viewInstance;
+        default:
+            if(substr($property, -5) == "Block")
+            {
+                $block = substr($property, 0, strlen($property) - 5);
+                return $this->blocks[$block];
+            }
         }
     }
 
@@ -66,6 +74,14 @@ class Controller
         $component = new $component();
         $component->setController($this);
         $this->components[] = $component;
+    }
+
+    public function addBlock($block, $alias)
+    {
+        Ntentan::addIncludePath(Ntentan::$blocksPath . "$block");
+        $block = ucfirst($block);
+        $blockInstance = new $block();
+        $this->blocks[$alias] = $blockInstance;
     }
 
     /**
@@ -210,7 +226,8 @@ class Controller
             $this->mainPreRender();
             $controllerClass = new ReflectionClass($this->name);
             $method = $controllerClass->GetMethod($path);
-            $ret = $method->invoke($this, $params);
+            $method->invoke($this, $params);
+            $this->view->layout->blocks = $this->blocks;
             $ret = $this->view->out("{$this->path}/{$path}.tpl.php", $this->get());
             $this->mainPostRender();
         }
