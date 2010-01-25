@@ -56,6 +56,11 @@ class Model implements ArrayAccess
         $this->data = $data;
     }
 
+    public function getData()
+    {
+        return $this->data;
+    }
+
     public function setDataStore($dataStore)
     {
         $this->_dataStoreInstance = $dataStore;
@@ -67,6 +72,11 @@ class Model implements ArrayAccess
         $params["type"] = $type;
         $result = $this->_dataStoreInstance->get($params);
         return $result;
+    }
+
+    public function save()
+    {
+        $this->_dataStoreInstance->put();
     }
 
     public function __call($method, $arguments)
@@ -113,5 +123,10 @@ class Model implements ArrayAccess
     public function offsetUnset($offset)
     {
         unset($this->data[$offset]);
+    }
+
+    public function describe()
+    {
+        return $this->_dataStoreInstance->describe();
     }
 }

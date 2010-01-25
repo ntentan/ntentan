@@ -47,7 +47,15 @@ class Controller
 
     public $viewInstance;
 
+    public $viewTemplate;
+
     protected $blocks = array();
+
+    public function getName()
+    {
+        $object = new ReflectionObject($this);
+        return $object->getName();
+    }
 
     public function __get($property)
     {
@@ -224,11 +232,12 @@ class Controller
         if(method_exists($this, $path))
         {
             $this->mainPreRender();
-            $controllerClass = new ReflectionClass($this->name);
+            $controllerClass = new ReflectionClass($this->getName());
             $method = $controllerClass->GetMethod($path);
-            $method->invoke($this, $params);
+            $this->viewTemplate = $path;
+            $method->invokeArgs($this, $params);
             $this->view->layout->blocks = $this->blocks;
-            $ret = $this->view->out("{$this->path}/{$path}.tpl.php", $this->get());
+            $ret = $this->view->out("{$this->path}/{$this->viewTemplate}.tpl.php", $this->get());
             $this->mainPostRender();
         }
         else
@@ -238,6 +247,7 @@ class Controller
                 if($component->hasPath($path))
                 {
                     $component->data = $this->data;
+                    $component->blocks = $this->blocks;
                     $component->runPath($path, $params);
                 }
             }

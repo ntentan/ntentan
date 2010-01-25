@@ -54,12 +54,12 @@ class Form extends Container
 	//! the method of the form.
 	public function __construct($id="", $method="")
 	{
-		parent::__construct();
+		/*parent::__construct();
 		if($method=="") $method="POST";
 		$this->setMethod($method);
 		$this->ajax = true;
 		$this->setSubmitValue("Save");
-        $this->setId($id);
+        $this->setId($id);*/
 	}
 
 	protected function renderForm()

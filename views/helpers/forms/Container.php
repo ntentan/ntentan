@@ -17,7 +17,7 @@ abstract class Container extends Element
 	/**
 	 * The name of the renderer currently in use.
 	 */
-	protected $renderer;
+	protected $renderer = "default";
 
 	/**
 	 * The header function for the current renderer. This function contains the
@@ -77,10 +77,10 @@ abstract class Container extends Element
 	public $isContainer = true;
     protected $runValidations = true;
 
-	public function __construct($renderer="default")
+	/*public function __construct($renderer="default")
 	{
 		$this->setRenderer($renderer);
-	}
+	}*/
 
 	/**
 	 * Sets the current renderer being used by the container. The renderer
@@ -527,6 +527,7 @@ abstract class Container extends Element
 	//! are rendered using the current renderer.
 	protected function renderElements()
 	{
+        $this->setRenderer($this->renderer);
 		$renderer_head = $this->renderer_head;
 		$renderer_foot = $this->renderer_foot;
 		$renderer_element = $this->renderer_element;

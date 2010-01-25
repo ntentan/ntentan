@@ -34,7 +34,6 @@ class View extends Presentation
     public function out($template, $data)
     {
         // Convert all keys of the data array into variables
-        xdebug_start_trace("/tmp/trace.out");
         if(is_array($data))
         {
             foreach($data as $key => $value)
@@ -50,14 +49,13 @@ class View extends Presentation
         }
         else
         {
-            die("View template not Found!");
+            die("View template [$template] not Found!");
         }
         $data = ob_get_clean();
 
         ob_start();
         $this->_layout->out($data);
         $data = ob_get_clean();
-        xdebug_stop_trace();
 
         return $data;
     }

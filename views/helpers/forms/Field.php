@@ -16,7 +16,7 @@ abstract class Field extends Element
 	 * is set as true then the form would not be validated if there is
 	 * no value entered into this field.
 	 */
-	protected $required = false;
+	public $required = false;
 
 	/**
 	 * The value of the form field.

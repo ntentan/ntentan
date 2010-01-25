@@ -22,6 +22,12 @@ abstract class DataStore
         return $newModel;
     }
 
+    public function put()
+    {
+        $data = $this->model->getData();
+        $this->_put($data);
+    }
+
     protected abstract function _get($queryParameters);
 
     protected abstract function _put($queryParameters);
@@ -30,5 +36,5 @@ abstract class DataStore
     
     protected abstract function _delete($queryParameters);
 
-    public abstract function getDataStoreInfo();
+    public abstract function describe();
 }

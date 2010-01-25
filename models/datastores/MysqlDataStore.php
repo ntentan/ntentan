@@ -5,6 +5,7 @@
 class MysqlDataStore extends DataStore
 {
     private static $db;
+    private $table;
     
     private static function connect($parameters)
     {
@@ -79,9 +80,15 @@ class MysqlDataStore extends DataStore
         return $params["type"] == 'first' ? $result[0] : $result;
     }
 
-    protected function _put($queryParameters)
+    protected function _put($data)
     {
-    
+        $fields = array_keys($data);
+        foreach($data as $value)
+        {
+            $values[] = MysqlDataStore::$db->escape_string($value);
+        }
+        $query = "INSERT INTO {$this->table} (`" . implode("`, `", $fields) . "`) VALUES ('" . implode("', '", $values) . "')";
+        MysqlDataStore::$db->query($query);
     }
 
     public function getDataStoreInfo()
@@ -97,5 +104,49 @@ class MysqlDataStore extends DataStore
     protected function _delete($queryParameters)
     {
         
+    }
+
+    private function describeType($type)
+    {
+        preg_match('/(?<type>int|varchar|text)(\((?<lenght>[0-9]*)\))?[ ]?(?<signed>unsigned)?/', $type, $matches);
+        switch($matches["type"])
+        {
+            case "int":
+                $return["type"] = "integer";
+                $return["signed"] = $matches["signed"] == "unsigned" ? false : true;
+                break;
+            
+            case "varchar":
+                $return["type"] = "string";
+                $return["lenght"] = $matches["lenght"];
+                break;
+
+            case "text":
+                $return["type"] = "string";
+                break;
+        }
+        return $return;
+    }
+
+    public function describe()
+    {
+        $fields = array();
+        $result = MysqlDataStore::$db->query("DESCRIBE {$this->table}");
+        if($result === false) throw new Exception("Mysql Query Error");
+        while($row = $result->fetch_assoc())
+        {
+            $field["name"] = $row["Field"];
+            $type = $this->describeType($row["Type"]);
+            $field["type"] = $type["type"];
+            if($type["lenght"] != null) $field["lenght"] = $type["lenght"];
+            if($type["signed"]) $field["signed"] = true;
+            if($row["Null"] == "NO") $field["required"] = true;
+            if($row["Key"] == "PRI") $field["primary_key"] = true;
+            $fields[] = $field;
+            unset($field);
+        }
+        $description["name"] = $this->table;
+        $description["fields"] = $fields;
+        return $description;
     }
 }

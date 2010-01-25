@@ -87,7 +87,7 @@ abstract class Element
 	 * algorithm. However internally the Field may still be referenced
 	 * bu the unmangled name.
 	 */
-	protected $name;
+	public $name;
 
 	//! A value which determines whether this element contains file data;
 	protected $hasFile = false;
