@@ -45,9 +45,11 @@ class Controller
      */
     private $components = array();
 
+    /**
+     *
+     * @var View
+     */
     public $viewInstance;
-
-    public $viewTemplate;
 
     protected $blocks = array();
 
@@ -57,12 +59,32 @@ class Controller
         return $object->getName();
     }
 
+    public function __set($property, $value)
+    {
+        switch($property)
+        {
+        case "layout":
+            $this->view->layout = $value;
+            break;
+        }
+    }
+
     public function __get($property)
     {
         switch ($property)
         {
         case "view":
+            if($this->viewInstance == null)
+            {
+                $this->viewInstance = new View();
+                $this->viewInstance->layout = "main";
+                $this->viewInstance->template = $path;
+            }
             return $this->viewInstance;
+
+        case "layout":
+            return $this->view->layout;
+            
         default:
             if(substr($property, -5) == "Block")
             {
@@ -87,7 +109,7 @@ class Controller
     public function addBlock($block, $alias)
     {
         Ntentan::addIncludePath(Ntentan::$blocksPath . "$block");
-        $block = ucfirst($block);
+        $block = ucfirst($block."Block");
         $blockInstance = new $block();
         $this->blocks[$alias] = $blockInstance;
     }
@@ -156,10 +178,10 @@ class Controller
             require_once Ntentan::$packagesPath . "$controllerPath/$controllerName.php";
             $controller = new $controllerName();
 
-            $view = new View();
+            /*$view = new View();
             $view->layout = "main";
             
-            $controller->setView($view);
+            $controller->setView($view);*/
             $controller->setPath($controllerPath);
             $controller->setName($controllerName);
 
@@ -234,10 +256,10 @@ class Controller
             $this->mainPreRender();
             $controllerClass = new ReflectionClass($this->getName());
             $method = $controllerClass->GetMethod($path);
-            $this->viewTemplate = $path;
+            $this->view->template = $path;
             $method->invokeArgs($this, $params);
             $this->view->layout->blocks = $this->blocks;
-            $ret = $this->view->out("{$this->path}/{$this->viewTemplate}.tpl.php", $this->get());
+            $ret = $this->view->out("{$this->path}/{$this->view->template}.tpl.php", $this->get());
             $this->mainPostRender();
         }
         else

@@ -89,6 +89,11 @@ class Ntentan
         return 'http'. ($_SERVER['HTTPS'] ? 's' : null) .'://'. $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     }
 
+    public static function toSentence($string)
+    {
+        return ucwords(str_replace("_", " ", $string));
+    }
+
 }
 
 function __autoload($class)

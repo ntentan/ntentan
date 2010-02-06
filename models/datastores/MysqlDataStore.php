@@ -36,10 +36,17 @@ class MysqlDataStore extends DataStore
 
     protected function _get($params)
     {
-        // Get a list of fields
-        if($params["fields"] == null)
+        // Get a list of fields convert it to a count if that is what is needed
+        if($params["type"] == "count")
         {
-            $fields = "*";
+            $fields = "COUNT(*)";
+        }
+        else
+        {
+            if($params["fields"] == null)
+            {
+                $fields = "*";
+            }
         }
 
         // Generate the base query
@@ -77,7 +84,20 @@ class MysqlDataStore extends DataStore
             $result[] = $row;
         }
 
-        return $params["type"] == 'first' ? $result[0] : $result;
+        // Generate the data to be returned
+        if($params["type"] == 'first')
+        {
+            $return = $result[0];
+        }
+        else if($params["type"] == 'count')
+        {
+            $return = reset($result[0]);
+        }
+        else
+        {
+            $return = $result;
+        }
+        return $return;
     }
 
     protected function _put($data)

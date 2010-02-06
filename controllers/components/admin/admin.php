@@ -27,15 +27,27 @@ class admin extends AbstractComponent
 
     protected function listItems()
     {
-        $this->viewTemplate = "list";
+        $this->view->template = "list";
         $data = $this->model->get();
-        $this->set("data", $data->getData());
+        $count = $this->model->get('count');
+        $this->set("list_data", $data->getData());
+        $this->set("num_list_data", (int)(string)$count);
+        $this->set
+        (
+            "operations",
+            array(
+                array("path" => "add", "label" => "Add"),
+                array("path" => "export", "label" => "Export"),
+                array("path" => "template", "label" => "Template"),
+                array("path" => "import", "label" => "Import"),
+            )
+        );
     }
 
     protected function addItem()
     {
         $save = false;
-        $this->viewTemplate = "add";
+        $this->view->template = "add";
         $description = $this->model->describe();
         $this->set("fields", $description["fields"]);
         $this->set("name", $description["name"]);
@@ -55,7 +67,12 @@ class admin extends AbstractComponent
                 if($field["primary_key"]) continue;
                 $this->model[$field["name"]] = $_REQUEST[$field["name"]];
             }
-            $this->model->save();
+            
+            if($this->model->validate())
+            {
+                $this->model->save();
+                Ntentan::redirect(Ntentan::$route);
+            }
         }
     }
 

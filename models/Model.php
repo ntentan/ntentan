@@ -129,4 +129,22 @@ class Model implements ArrayAccess
     {
         return $this->_dataStoreInstance->describe();
     }
+
+    public function __toString()
+    {
+        if(is_string($this->data))
+        {
+            return $this->data;
+        }
+        else if(is_array($this->data))
+        {
+            return print_r($this->data, true);
+        }
+    }
+
+    public function validate()
+    {
+        $description = $this->describe();
+        var_dump($description);
+    }
 }

@@ -3,6 +3,7 @@
 class View extends Presentation
 {
     private $_layout;
+    public $template;
 
     public function __construct()
     {

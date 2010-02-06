@@ -35,7 +35,7 @@ abstract class AbstractComponent extends Controller
         switch ($property)
         {
             case "view":
-                return $this->controller->viewInstance;
+                return $this->controller->view;//Instance;
                 break;
 
             default:
