@@ -54,23 +54,26 @@ class Form extends Container
 	//! the method of the form.
 	public function __construct($id="", $method="")
 	{
-		/*parent::__construct();
-		if($method=="") $method="POST";
-		$this->setMethod($method);
-		$this->ajax = true;
-		$this->setSubmitValue("Save");
-        $this->setId($id);*/
+		$this->setId($id);
+        $this->setMethod($method);
 	}
 
-	protected function renderForm()
+	public function render()
 	{
 		$this->addAttribute("method",$this->getMethod());
 		$this->addAttribute("id",$this->getId());
 		$this->addAttribute("class","fapi-form");
-		if($this->getHasFile()) $this->addAttribute("enctype","multipart/form-data");
+
+		//if($this->getHasFile()) $this->addAttribute("enctype","multipart/form-data");
+
+		if($this->isFormSent())
+		{
+			$this->getData();
+            $this->executeCallback();
+        }
 
 		$ret = '<form '.$this->getAttributes().'>';
-		if($this->getHasFile())
+		/*if($this->getHasFile())
 		{
 			$ret .= "<input type='hidden' name='MAX_FILE_SIZE' value='10485760' />";
 		}
@@ -82,11 +85,11 @@ class Form extends Container
 				$ret .= "<li>$error</li>";
 			}
 			$ret .= "</ul></div>";
-		}
+		}*/
 		$ret .= $this->renderElements();
 
-		$onclickFunction = "fapi_ajax_submit_".$this->getId()."()";
-		$onclickFunction = str_replace("-","_",$onclickFunction);
+		//$onclickFunction = "fapi_ajax_submit_".$this->getId()."()";
+		//$onclickFunction = str_replace("-","_",$onclickFunction);
 
 		if($this->getShowSubmit())
 		{
@@ -105,7 +108,7 @@ class Form extends Container
 		$ret .= '<input type="hidden" name="is_form_'.$this->getId().'_sent" value="yes" />';
 		$ret .= '</form>';
 
-		if($this->ajaxSubmit)
+		/*if($this->ajaxSubmit)
 		{
 			$elements = $this->getFields();
 			$ajaxData = array();
@@ -138,12 +141,12 @@ class Form extends Container
 				}
 			}
 			</script>";
-		}
+		}*/
 		return $ret;
 	}
 
 	//! Display all the form elements.
-	public function render()
+	/*public function render()
 	{
 		if($this->isFormSent())
 		{
@@ -155,7 +158,7 @@ class Form extends Container
 			}
 		}
 		return $this->renderForm();
-	}
+	}*/
 
 	/**
      * Sets the value that is written on the submit button.

@@ -145,6 +145,16 @@ class Model implements ArrayAccess
     public function validate()
     {
         $description = $this->describe();
-        var_dump($description);
+        $errors = array();
+        foreach($description["fields"] as $field)
+        {
+            if($field["primary_key"]) continue;
+            // Validate Required
+            if($this->data[$field["name"]] == "" && $field["required"])
+            {
+                $errors[$field["name"]][] = "This field is required";
+            }
+        }
+        if(count($errors) == 0) return true; else return $errors;
     }
 }

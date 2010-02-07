@@ -89,7 +89,7 @@ class TextField extends Field
 	 * @todo rewrite this whole validation
 	 * @see lib/fapi/Forms/Field#validate()
 	 */
-	public function validate()
+	/*public function validate()
 	{
 
 		//Perform validation on the parent class.
@@ -152,6 +152,6 @@ class TextField extends Field
 				return false;
 			}
 		}
-	}
+	}*/
 }
 ?>

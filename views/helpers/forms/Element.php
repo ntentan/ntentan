@@ -382,10 +382,18 @@ abstract class Element
 		return $this->hasFile;
 	}
 
-	public function addError($error)
+	public function addErrors($error)
 	{
-		$this->error = true;
-		$this->errors[] = $error;
+        if(is_array($error))
+        {
+            $this->errors = array_merge($this->errors, $error);
+            $this->error = true;
+        }
+        else
+        {
+            $this->error = true;
+            $this->errors[] = $error;
+        }
 	}
 
 	public function clearErrors()

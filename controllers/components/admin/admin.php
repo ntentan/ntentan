@@ -67,11 +67,17 @@ class admin extends AbstractComponent
                 if($field["primary_key"]) continue;
                 $this->model[$field["name"]] = $_REQUEST[$field["name"]];
             }
+
+            $validate = $this->model->validate();
             
-            if($this->model->validate())
+            if($validate === true)
             {
                 $this->model->save();
                 Ntentan::redirect(Ntentan::$route);
+            }
+            else
+            {
+                $this->set("form_errors", $validate);
             }
         }
     }
