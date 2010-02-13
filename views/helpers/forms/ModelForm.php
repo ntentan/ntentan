@@ -34,4 +34,10 @@ class ModelForm extends Form
             $element = null;
         }
     }
+
+    public function setFieldAs()
+    {
+        $parameters = func_get_args();
+        
+    }
 }

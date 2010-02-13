@@ -30,6 +30,17 @@ abstract class AbstractComponent extends Controller
         return $this->controller->get();
     }
 
+    protected function callControllerMethod()
+    {
+        $arguments = func_get_args();
+        $method = array_shift($arguments);
+        if(method_exists($this->controller, $method))
+        {
+            $reflectionMethod = new ReflectionMethod($this->controller, $method);
+            $reflectionMethod->invokeArgs($this->controller, $arguments);
+        }
+    }
+
     public function __get($property)
     {
         switch ($property)

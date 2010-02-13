@@ -73,9 +73,6 @@ abstract class Element
 	//! exposed in any way.
 	protected $nameEncryption = false;
 
-	//! The encryption key if some form of key based encryption is used.
-	protected $nameEncryptionKey;
-
 	//! A value which determines whether this field is to be used in
 	//! constructing database queries
 	protected $storable = true;

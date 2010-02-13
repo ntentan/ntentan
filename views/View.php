@@ -32,7 +32,7 @@ class View extends Presentation
         }
     }
 
-    public function out($template, $data)
+    public function out($data)
     {
         // Convert all keys of the data array into variables
         if(is_array($data))
@@ -44,13 +44,13 @@ class View extends Presentation
         }
 
         ob_start();
-        if(file_exists( Ntentan::$packagesPath . $template ))
+        if(file_exists( $this->template ))
         {
-            include Ntentan::$packagesPath . $template;
+            include $this->template;
         }
         else
         {
-            die("View template [$template] not Found!");
+            die("View template [{$this->template}] not Found!");
         }
         $data = ob_get_clean();
 

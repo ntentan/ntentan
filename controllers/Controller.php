@@ -176,12 +176,8 @@ class Controller
         else
         {
             require_once Ntentan::$packagesPath . "$controllerPath/$controllerName.php";
-            $controller = new $controllerName();
-
-            /*$view = new View();
-            $view->layout = "main";
             
-            $controller->setView($view);*/
+            $controller = new $controllerName();
             $controller->setPath($controllerPath);
             $controller->setName($controllerName);
 
@@ -256,10 +252,10 @@ class Controller
             $this->mainPreRender();
             $controllerClass = new ReflectionClass($this->getName());
             $method = $controllerClass->GetMethod($path);
-            $this->view->template = $path;
+            $this->view->template = Ntentan::$packagesPath . "$this->path/$path.tpl.php";
             $method->invokeArgs($this, $params);
             $this->view->layout->blocks = $this->blocks;
-            $ret = $this->view->out("{$this->path}/{$this->view->template}.tpl.php", $this->get());
+            $ret = $this->view->out($this->get());
             $this->mainPostRender();
         }
         else

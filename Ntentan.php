@@ -69,7 +69,7 @@ class Ntentan
 
     public static function getUrl($url)
     {
-        return "/$url";
+        if($url[0]!="/") return "/$url"; else return $url;
     }
 
     public static function redirect($path, $absolute = false)
