@@ -28,18 +28,6 @@ class Form extends Container
 	 */
 	protected $resetValue;
 
-
-	//! The name of the callback function.
-	//private $callback;
-
-	//! The callback function to be called before submitting the form data.
-	//! This function can be seen as the last point of validation. If it
-	//! does not exist, it is ignored.
-	//private $preSaveCallback;
-
-	//! The renderer that is used for rendering this form.
-	//protected $renderer;
-
 	protected $showSubmit = true;
 
 	public $submitAttributes;

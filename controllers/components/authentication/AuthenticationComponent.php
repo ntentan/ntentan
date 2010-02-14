@@ -2,7 +2,7 @@
 /**
  * 
  */
-class authentication extends AbstractComponent
+class AuthenticationComponent extends AbstractComponent
 {
     public $loginPath = "users/login";
     public $logoutPath = "users/logout";

@@ -37,8 +37,13 @@ abstract class AbstractComponent extends Controller
         if(method_exists($this->controller, $method))
         {
             $reflectionMethod = new ReflectionMethod($this->controller, $method);
-            $reflectionMethod->invokeArgs($this->controller, $arguments);
+            $ret = $reflectionMethod->invokeArgs($this->controller, $arguments);
         }
+//        else
+//        {
+//            throw new ControllerMethodNotFoundException($this->controllerName, $method);
+//        }
+        return $ret;
     }
 
     public function __get($property)

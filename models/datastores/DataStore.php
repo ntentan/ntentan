@@ -28,6 +28,18 @@ abstract class DataStore
         $this->_put($data);
     }
 
+    public function update()
+    {
+        $data = $this->model->getData();
+        $this->_update($data);
+    }
+
+    public function delete()
+    {
+        $data = $this->model->getData();
+        $this->_delete($data["id"]);
+    }
+
     protected abstract function _get($queryParameters);
 
     protected abstract function _put($queryParameters);

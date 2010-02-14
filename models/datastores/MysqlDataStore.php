@@ -116,14 +116,22 @@ class MysqlDataStore extends DataStore
     
     }
 
-    protected function _update($queryParameters)
+    protected function _update($data)
     {
-        
+        $fields = array_keys($data);
+        foreach($data as $field => $value)
+        {
+            if($field == "id") continue;
+            $values[] = "`$field` = '".MysqlDataStore::$db->escape_string($value)."'";
+        }
+        $query = "UPDATE {$this->table} SET " . implode(", ", $values) . " WHERE id = '{$data["id"]}'";
+        MysqlDataStore::$db->query($query);
     }
     
-    protected function _delete($queryParameters)
+    protected function _delete($key)
     {
-        
+        $query = "DELETE FROM {$this->table} WHERE id = '{$key}'";
+        MysqlDataStore::$db->query($query);
     }
 
     private function describeType($type)

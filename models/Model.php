@@ -79,6 +79,17 @@ class Model implements ArrayAccess
         $this->_dataStoreInstance->put();
     }
 
+    public function update()
+    {
+        $this->_dataStoreInstance->update();
+    }
+
+    public function delete()
+    {
+        $this->_dataStoreInstance->setModel($this);
+        $this->_dataStoreInstance->delete();
+    }
+
     public function __call($method, $arguments)
     {
         if(substr($method, 0, 7) == "getWith")

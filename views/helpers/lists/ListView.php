@@ -28,8 +28,26 @@ class ListView
                         $this->_columns[] = array("name"=>$field, "label"=>Ntentan::toSentence($field));
                     }
                 }
+                else
+                {
+                    $this->_columns = $value;
+                }
                 break;
         }
+    }
+
+    public function operationsRenderer($data, $column)
+    {
+        foreach($column["operations"] as $operation)
+        {
+            $return .= "<a href='{$operation["path"]}/$data'>{$operation["label"]}</a> ";
+        }
+        return $return;
+    }
+
+    public function textRenderer($data, $column)
+    {
+        return $data;
     }
 
     public function __get($parameter)
@@ -39,6 +57,28 @@ class ListView
             case "columns":
                 return $this->_columns;
         }
+    }
+
+    private function render($data, $column)
+    {
+        if(isset($column["renderer"]))
+        {
+            try
+            {
+                $methodName = "{$column["renderer"]}Renderer";
+                $methodReflection = new ReflectionMethod($this, $methodName);
+                $ret = $methodReflection->invokeArgs($this, array($data, $column));
+            }
+            catch(Exception $e)
+            {
+                var_dump($e->getMessage());
+            }
+        }
+        else
+        {
+            $ret = $this->textRenderer($data, $column);
+        }
+        return $ret;
     }
 
     public function __toString()
@@ -56,7 +96,7 @@ class ListView
             echo "<tr " . ($fill ? 'class="even-stripe"' : "") . ">";
             foreach($this->_columns as $column)
             {
-                echo "<td>{$data[$column["name"]]}</td>";
+                echo "<td>".$this->render($data[$column["name"]], $column)."</td>";
             }
             $fill = !$fill;
             echo "</tr>";

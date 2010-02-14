@@ -37,7 +37,7 @@ class Controller
      *
      * @var Array
      */
-    public $data;
+    public $variables;
 
     /**
      *
@@ -50,6 +50,8 @@ class Controller
      * @var View
      */
     public $viewInstance;
+
+    public $data;
 
     protected $blocks = array();
 
@@ -91,6 +93,11 @@ class Controller
                 $block = substr($property, 0, strlen($property) - 5);
                 return $this->blocks[$block];
             }
+            else if(substr($property, -9) == "Component")
+            {
+                $component = substr($property, 0, strlen($property) - 9);
+                return $this->components[$component];
+            }
         }
     }
 
@@ -101,9 +108,10 @@ class Controller
     public function addComponent($component)
     {
         Ntentan::addIncludePath(Ntentan::getFilePath("controllers/components/$component"));
-        $component = new $component();
-        $component->setController($this);
-        $this->components[] = $component;
+        $componentName = ucfirst($component) . "Component";
+        $componentInstance = new $componentName();
+        $componentInstance->setController($this);
+        $this->components[$component] = $componentInstance;
     }
 
     public function addBlock($block, $alias)
@@ -123,17 +131,17 @@ class Controller
     {
         if(is_array($params1))
         {
-            $this->data = array_merge($this->data, $params1);
+            $this->variables = array_merge($this->variables, $params1);
         }
         else
         {
-            $this->data[$params1] = $params2;
+            $this->variables[$params1] = $params2;
         }
     }
 
     protected function get()
     {
-        return $this->data;
+        return $this->variables;
     }
 
 	/**
@@ -264,7 +272,7 @@ class Controller
             {
                 if($component->hasPath($path))
                 {
-                    $component->data = $this->data;
+                    $component->variables = $this->variables;
                     $component->blocks = $this->blocks;
                     $component->runPath($path, $params);
                 }

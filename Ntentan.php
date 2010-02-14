@@ -47,6 +47,10 @@ class Ntentan
 		$module = Controller::load($_GET["q"]);
 	}
 
+    /**
+     * 
+     * @param <type> $paths 
+     */
     public static function addIncludePath($paths)
     {
         if(is_array($paths))
