@@ -190,10 +190,13 @@ abstract class Container extends Element
 	//! and the values as value.
 	public function setData($data)
 	{
-		foreach($this->elements as $element)
-		{
-			$element->setData($data);
-		}
+        if(is_array($data))
+        {
+            foreach($this->elements as $element)
+            {
+                $element->setData($data);
+            }
+        }
 		return $this;
 	}
 

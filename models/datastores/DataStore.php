@@ -8,7 +8,7 @@ abstract class DataStore
      * The instance of the model utilizing this datastore.
      * @var Model
      */
-    private $model;
+    protected $model;
 
     public function setModel($model)
     {

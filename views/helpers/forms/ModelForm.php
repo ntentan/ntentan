@@ -8,22 +8,8 @@ class ModelForm extends Form
         foreach($fields as $field)
         {
             if($field["primary_key"]) continue;
-            switch($field["type"])
-            {
-                case "integer":
-                    $element = new TextField(uc_words(str_replace("_", " ", $field["name"])));
-                    $element->setAsNumeric();
 
-                case "string":
-                    if($field["lenght"] == 0)
-                    {
-                        $element = new TextArea(ucwords(str_replace("_", " ", $field["name"])));
-                    }
-                    else
-                    {
-                        $element = new TextField(ucwords(str_replace("_", " ", $field["name"])));
-                    }
-            }
+            $element = FormsHelper::getFieldElement($field);
 
             if($element!=null)
             {
@@ -38,6 +24,5 @@ class ModelForm extends Form
     public function setFieldAs()
     {
         $parameters = func_get_args();
-        
     }
 }

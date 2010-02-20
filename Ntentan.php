@@ -98,6 +98,17 @@ class Ntentan
         return ucwords(str_replace("_", " ", $string));
     }
 
+    public static function singular($string)
+    {
+        if(substr($string,-3) == "ies")
+        {
+            return substr($string, 0, strlen($string) - 3) . "y";
+        }
+        else if(substr($string, -1) == "s")
+        {
+            return substr($string, 0, strlen($string) - 1);
+        }
+    }
 }
 
 function __autoload($class)

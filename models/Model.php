@@ -8,7 +8,7 @@ class Model implements ArrayAccess
      * 
      * @var array
      */
-    private $data;
+    protected $data;
 
     /**
      * An instance of the datastore.
@@ -23,6 +23,21 @@ class Model implements ArrayAccess
     protected $dataStore;
 
     /**
+     * Field for checking the relationship between two different models
+     * @var string
+     */
+    public $belongsTo;
+    public $belongsToModelInstances;
+
+    public function __construct()
+    {
+        if($this->belongsTo != null)
+        {
+            $this->belongsToModelInstances = Model::load($this->belongsTo);
+        }
+    }
+
+    /**
      * Loads a model.
      * @param string $model
      * @return Model
@@ -31,6 +46,12 @@ class Model implements ArrayAccess
     {
         $pathComponents = explode(".", $model);
         $modelClass = ucfirst($pathComponents[0]) . "Model";
+        $modelFile = Ntentan::$packagesPath . implode("/", $pathComponents) . "/$modelClass.php";
+
+        if(!file_exists($modelFile))
+        {
+            throw new ModelNotFoundException("Cannot find [$modelFile]");
+        }
 
         require_once
         (
@@ -95,12 +116,23 @@ class Model implements ArrayAccess
         if(substr($method, 0, 7) == "getWith")
         {
             $field = strtolower(substr($method, 7));
+            $type = 'all';
+            foreach($arguments as $argument)
+            {
+                $params["conditions"][$field] = $argument;
+            }
+        }
+
+        if(substr($method, 0, 12) == "getFirstWith")
+        {
+            $field = strtolower(substr($method, 12));
             $type = 'first';
             foreach($arguments as $argument)
             {
                 $params["conditions"][$field] = $argument;
             }
         }
+
         return $this->get($type, $params);
     }
 
@@ -121,9 +153,17 @@ class Model implements ArrayAccess
 
     public function offsetGet($offset)
     {
-        $newModel = clone $this;
-        $newModel->setData($this->data[$offset]);
-        return $newModel;
+        if(is_array($this->data[$offset]))
+        {
+            $newModel = clone $this;
+            $newModel->setData($this->data[$offset]);
+            $ret = $newModel;
+        }
+        else
+        {
+            $ret = $this->data[$offset];
+        }
+        return $ret;
     }
 
     public function offsetSet($offset, $value)
@@ -136,9 +176,28 @@ class Model implements ArrayAccess
         unset($this->data[$offset]);
     }
 
+    public function length()
+    {
+        return count($this->data);
+    }
+
     public function describe()
     {
-        return $this->_dataStoreInstance->describe();
+        $description = $this->_dataStoreInstance->describe();
+        if($this->belongsTo != "")
+        {
+            $description["belongs_to"] = $this->belongsTo;
+            $fieldName = strtolower(Ntentan::singular($this->belongsTo)) . "_id";
+            foreach($description["fields"] as $i => $field)
+            {
+                if($field["name"] == $fieldName)
+                {
+                    $description["fields"][$i]["model"] = $this->belongsTo;
+                    $description["fields"][$i]["foreing_key"] = true;
+                }
+            }
+        }
+        return $description;
     }
 
     public function __toString()

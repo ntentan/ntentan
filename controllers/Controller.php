@@ -159,7 +159,14 @@ class Controller
 	public static function load($path)
 	{
         $controllerPath = '';
-        $pathArray = explode('/', $path);
+        $controllerPathArray = explode('/', $path);
+
+        // Remove all empty paths from the query
+        foreach($controllerPathArray as $value)
+        {
+            if($value == "") continue;
+            $pathArray[] = $value;
+        }
         
 		for($i = 0; $i<count($pathArray); $i++)
 		{

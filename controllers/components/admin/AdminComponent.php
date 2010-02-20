@@ -72,6 +72,7 @@ class AdminComponent extends AbstractComponent
         $this->set("util_class_name", $this->utilClassName);
         $this->set("base_class_name", $this->baseClassName);
         $this->set("controller_path", $this->path);
+        $this->set("model_description", $this->model->describe());
     }
 
     protected function listItems()
@@ -86,9 +87,9 @@ class AdminComponent extends AbstractComponent
             "operations",
             array(
                 array("path" => Ntentan::getUrl(Ntentan::$route . "add"), "label" => "Add"),
-                array("path" => Ntentan::getUrl(Ntentan::$route . "export"), "label" => "Export"),
+                /*array("path" => Ntentan::getUrl(Ntentan::$route . "export"), "label" => "Export"),
                 array("path" => Ntentan::getUrl(Ntentan::$route . "template"), "label" => "Template"),
-                array("path" => Ntentan::getUrl(Ntentan::$route . "import"), "label" => "Import"),
+                array("path" => Ntentan::getUrl(Ntentan::$route . "import"), "label" => "Import"),*/
             )
         );
         $this->set(
@@ -165,8 +166,8 @@ class AdminComponent extends AbstractComponent
         $description = $this->model->describe();
         $this->set("fields", $description["fields"]);
         $this->set("name", $description["name"]);
-        $data = $this->model->getWithId($key);
-        $this->set("data", $data->getData());
+        $data = $this->model->getFirstWithId($key);
+        $this->set("form_data", $data->getData());
 
         foreach($description["fields"] as $field)
         {

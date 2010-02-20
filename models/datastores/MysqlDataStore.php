@@ -47,10 +47,14 @@ class MysqlDataStore extends DataStore
             {
                 $fields = "*";
             }
+            else
+            {
+                $fields = implode(",", $params["fields"]);
+            }
         }
 
         // Generate the base query
-        $query = "select $fields from {$this->table} ";
+        $query = "SELECT $fields FROM {$this->table} ";
 
         // Generate conditions
         if($params["conditions"] !== null)
@@ -74,14 +78,31 @@ class MysqlDataStore extends DataStore
             $query .= " WHERE " . implode(" AND ", $conditions);
         }
 
+
         // Add the limiting clauses
         $query .= ($params["type"] == 'first' ? " LIMIT 1" : "" );
 
         // 
-        $queryResult = MysqlDataStore::$db->query($query) or die(MysqlDataStore::$db->error);
+        $queryResult = MysqlDataStore::$db->query($query);
+        if($queryResult === false)
+        {
+            throw new DataStoreException ("MySQL Says : ".MysqlDataStore::$db->error);
+        }
         while($row = $queryResult->fetch_assoc())
         {
             $result[] = $row;
+        }
+
+        // Retrieve all related data
+        if($this->model->belongsToModelInstances != null)
+        {
+            $relationName = Ntentan::singular($this->model->belongsTo);
+            $foreignKey = $relationName . "_id";
+            foreach($result as $key => $row)
+            {
+                $reference = $this->model->belongsToModelInstances->getFirstWithId($row[$foreignKey]);
+                $result[$key][$relationName] = $reference;
+            }
         }
 
         // Generate the data to be returned
@@ -97,6 +118,7 @@ class MysqlDataStore extends DataStore
         {
             $return = $result;
         }
+
         return $return;
     }
 
@@ -136,12 +158,16 @@ class MysqlDataStore extends DataStore
 
     private function describeType($type)
     {
-        preg_match('/(?<type>int|varchar|text)(\((?<lenght>[0-9]*)\))?[ ]?(?<signed>unsigned)?/', $type, $matches);
+        preg_match('/(?<type>int|varchar|text|double)(\((?<lenght>[0-9]*)\))?[ ]?(?<signed>unsigned)?/', $type, $matches);
         switch($matches["type"])
         {
             case "int":
                 $return["type"] = "integer";
                 $return["signed"] = $matches["signed"] == "unsigned" ? false : true;
+                break;
+
+            case "double":
+                $return["type"] = "double";
                 break;
             
             case "varchar":
@@ -166,11 +192,13 @@ class MysqlDataStore extends DataStore
             $field["name"] = $row["Field"];
             $type = $this->describeType($row["Type"]);
             $field["type"] = $type["type"];
+
             if($type["lenght"] != null) $field["lenght"] = $type["lenght"];
             if($type["signed"]) $field["signed"] = true;
             if($row["Null"] == "NO") $field["required"] = true;
             if($row["Key"] == "PRI") $field["primary_key"] = true;
-            $fields[] = $field;
+            
+            $fields[$row["Field"]] = $field;
             unset($field);
         }
         $description["name"] = $this->table;

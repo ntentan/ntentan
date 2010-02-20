@@ -50,6 +50,18 @@ class ListView
         return $data;
     }
 
+    public function imageRenderer($data, $column)
+    {
+        if($data != "")
+        {
+            $width = $column["image_options"]["width"] == 0 ? 50 : $column["image_options"]["width"];
+            $height = $column["image_options"]["height"] == 0 ? 50 : $column["image_options"]["height"];
+
+            $imgSrc = ImageCache::thumbnail($data, $width, $height, true);
+            return "<img src='/$imgSrc' width='$width' height='$height' />";
+        }
+    }
+
     public function __get($parameter)
     {
         switch($parameter)
