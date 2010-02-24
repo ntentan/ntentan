@@ -2,7 +2,7 @@
 
 class ModelForm extends Form
 {
-    public function __construct($fields, $id)
+    public function __construct($fields, $id = "form")
     {
         $this->setId($id);
         foreach($fields as $field)

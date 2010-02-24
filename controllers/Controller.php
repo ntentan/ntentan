@@ -186,7 +186,7 @@ class Controller
 
         if($controllerName == "")
         {
-            die("Path not found!");
+            die("Path not found! [$path]");
         }
         else
         {
@@ -211,7 +211,7 @@ class Controller
             }
             else
             {
-                die("Error!");
+                die("Error! method not found $methodName");
             }
         }
 	}

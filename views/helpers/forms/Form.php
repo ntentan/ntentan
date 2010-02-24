@@ -12,11 +12,7 @@
  */
 class Form extends Container
 {
-	protected $ajaxSubmit;
-	/**
-	 * The value to be printed on the submit form.
-	 */
-	protected $submitValue;
+	public $submitValue;
 
 	/**
 	 * Flag to show wether this form has a reset button.

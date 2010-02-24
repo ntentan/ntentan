@@ -44,7 +44,9 @@ class Ntentan
 			$_GET["q"]= Ntentan::$defaultRoute;
 		}
         Ntentan::$route = $_GET["q"];
-		$module = Controller::load($_GET["q"]);
+        unset($_GET["q"]);
+        unset($_REQUEST["q"]);
+		$module = Controller::load(Ntentan::$route);
 	}
 
     /**

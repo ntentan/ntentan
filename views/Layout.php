@@ -30,6 +30,18 @@ class Layout
         $this->styleSheets[] = array("src"=>$styleSheet, "media"=>$media);
     }
 
+    public function removeStyleSheet($styleSheet, $media = "all")
+    {
+        foreach($this->styleSheets as $key=>$style)
+        {
+            if($style["src"]==$styleSheet && $styleSheet["media"]==$media)
+            {
+                unset($this->styleSheets[$key]);
+                break;
+            }
+        }
+    }
+
     public function out($contents)
     {
         foreach($this->javaScripts as $javaScript)

@@ -2,19 +2,30 @@
 /**
  * 
  */
-class AuthenticationComponent extends AbstractComponent
+class AuthComponent extends AbstractComponent
 {
     public $loginPath = "users/login";
     public $logoutPath = "users/logout";
-    public $redirectPath;
-    public $successUrl = "";
+    public $redirectPath = "/";
+    public $excludedPaths = array();
     public $name = __CLASS__;
 
     public function preRender()
     {
+        $redirect = true;
+        foreach($this->excludedPaths as $excludedPath)
+        {
+            if(Ntentan::$route == $excludedPath)
+            {
+                $redirect = false;
+            }
+        }
+
         if($_SESSION["ntentan_logged_in"] == false && 
             Ntentan::$route != $this->loginPath &&
-            Ntentan::$route != $this->logoutPath)
+            Ntentan::$route != $this->logoutPath &&
+            $redirect
+        )
         {
             Ntentan::redirect($this->loginPath . "?redirect=" . urlencode(Ntentan::getRequestUri()));
         }
@@ -25,10 +36,12 @@ class AuthenticationComponent extends AbstractComponent
         if(isset($_POST["username"]) && isset($_POST["password"]))
         {
             $users = Model::load("users");
-            $result = $users->getWithUsername($_POST["username"]);
+            $result = $users->getFirstWithUsername($_POST["username"]);
             if($result->password == md5($_POST["password"]))
             {
                 $_SESSION["ntentan_logged_in"] = true;
+                $_SESSION["username"] = $_POST["username"];
+                $_SESSION["user_id"] = $result["id"];
                 Ntentan::redirect($_GET["redirect"] == null ? $this->redirectPath : $_GET["redirect"], true);
             }
             else
