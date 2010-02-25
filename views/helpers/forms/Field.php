@@ -123,22 +123,6 @@ abstract class Field extends Element
 		return $this->required;
 	}
 
-	//! Sets whether the value of this field is unique in the database.
-	public function setUnique($unique,$param=null,$url="lib/fapi/ajax.php",$extra=null)
-	{
-		if($param!=null)
-		{
-			$this->addJsValidation
-			(array(
-				"func"=>"fapiCheckUnique",
-				"url"=>Field::prepareMessage("lib/fapi/ajax.php"),
-				"params"=>Field::prepareMessage(sprintf("action=check_unique&t=%s&f=%s",urlencode($param),$this->getName()).($extra!=null?"&":"").$extra)
-				)
-			);
-		}
-		$this->unique = $unique;
-	}
-
 	//! Returns the data held by this field. This data is returned as a
 	//! key value pair. The key is the name of the field and the value
 	//! represents the value of the field.

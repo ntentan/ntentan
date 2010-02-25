@@ -349,6 +349,11 @@ abstract class Container extends Element
 		return $this->onRenderCallback;
 	}
 
+    public function get($name)
+    {
+        return $this->getElementByName($name);
+    }
+
 	//! Returns an element in the container with a particular name.
 	//! \param $name The name of the element to be retrieved.
 	public function getElementByName($name)

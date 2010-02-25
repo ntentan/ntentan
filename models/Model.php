@@ -27,7 +27,9 @@ class Model implements ArrayAccess
      * @var string
      */
     public $belongsTo;
+    public $mustBeUnique;
     public $belongsToModelInstances;
+    public $modelPath;
 
     public function __construct()
     {
@@ -42,9 +44,9 @@ class Model implements ArrayAccess
      * @param string $model
      * @return Model
      */
-    public static function load($model)
+    public static function load($modelPath)
     {
-        $pathComponents = explode(".", $model);
+        $pathComponents = explode(".", $modelPath);
         $modelClass = ucfirst($pathComponents[0]) . "Model";
         $modelFile = Ntentan::$packagesPath . implode("/", $pathComponents) . "/$modelClass.php";
 
@@ -61,6 +63,7 @@ class Model implements ArrayAccess
         );
 
         $model = new $modelClass();
+        $model->modelPath = $modelPath;
 
         if($model->datastore == null)
         {
@@ -184,6 +187,43 @@ class Model implements ArrayAccess
     public function describe()
     {
         $description = $this->_dataStoreInstance->describe();
+        if(is_array($this->mustBeUnique))
+        {
+            foreach($description["fields"] as $i => $field)
+            {
+                $uniqueField = false;
+                
+                foreach($this->mustBeUnique as $unique)
+                {
+                    if(is_array($unique))
+                    {
+                        if($field["name"] == $unique["field"])
+                        {
+                            $uniqueField = true;
+                            $uniqueMessage = $unique["message"];
+                        }
+                    }
+                    else
+                    {
+                        if($field["name"] == $unique)
+                        {
+                            $uniqueField = true;
+                            $uniqueMessage = null;
+                        }
+                    }
+                }
+                
+                if($uniqueField)
+                {
+                    $description["fields"][$i]["unique"] = true;
+                    if($uniqueMessage != null)
+                    {
+                        $description["fields"][$i]["unique_violation_message"] = $uniqueMessage;
+                    }
+                }
+            }
+        }
+
         if($this->belongsTo != "")
         {
             $description["belongs_to"] = $this->belongsTo;
@@ -215,14 +255,28 @@ class Model implements ArrayAccess
     public function validate()
     {
         $description = $this->describe();
+
         $errors = array();
         foreach($description["fields"] as $field)
         {
             if($field["primary_key"]) continue;
+
             // Validate Required
             if($this->data[$field["name"]] == "" && $field["required"])
             {
                 $errors[$field["name"]][] = "This field is required";
+            }
+
+            // Validate unique
+            if($field["unique"] === true)
+            {
+                $value = $this->get('first', array("conditions"=>array($field["name"] => $this->data[$field["name"]])));
+                if(count($value->getData()))
+                {
+                    $errors[$field["name"]][] = isset($field["unique_violation_message"]) ? 
+                        $field["unique_violation_message"] :
+                        "This field must be unique";
+                }
             }
         }
         if(count($errors) == 0) return true; else return $errors;

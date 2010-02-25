@@ -5,7 +5,7 @@ class AdminComponent extends AbstractComponent
      * 
      * @var Model
      */
-    protected $model;
+    //protected $adminModel;
     private $basePath;
     private $modelName;
     private $utilClassName;

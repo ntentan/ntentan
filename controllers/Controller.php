@@ -37,7 +37,7 @@ class Controller
      *
      * @var Array
      */
-    public $variables;
+    public $variables = array();
 
     /**
      *
@@ -52,6 +52,8 @@ class Controller
     public $viewInstance;
 
     public $data;
+
+    public $model;
 
     protected $blocks = array();
 
@@ -176,13 +178,17 @@ class Controller
 			{
 				$controllerName = $pCamelized."Controller";
 				$controllerPath .= "/$p";
+                $modelPath .= ".$p";
 				break;
 			}
 			else
 			{
 				$controllerPath .= "/$p";
+                $modelPath .= ".$p";
 			}
 		}
+
+        $controllerPath = substr($controllerPath,1);
 
         if($controllerName == "")
         {
@@ -195,6 +201,13 @@ class Controller
             $controller = new $controllerName();
             $controller->setPath($controllerPath);
             $controller->setName($controllerName);
+
+            try {
+                $controller->model = Model::load(str_replace("/", ".", $controllerPath));
+            } catch (Exception $e) {
+                
+            }
+
 
             if($i != count($pathArray)-1)
             {
