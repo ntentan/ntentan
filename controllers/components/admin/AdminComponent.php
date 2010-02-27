@@ -1,5 +1,5 @@
 <?php
-class AdminComponent extends AbstractComponent
+class AdminComponent extends Component
 {
     /**
      * 

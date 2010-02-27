@@ -2,15 +2,15 @@
 /**
  * 
  */
-class AuthComponent extends AbstractComponent
+class AuthComponent extends Component
 {
     public $loginPath = "users/login";
     public $logoutPath = "users/logout";
     public $redirectPath = "/";
-    public $excludedPaths = array();
+    //public $excludedPaths = array();
     public $name = __CLASS__;
 
-    public function preRender()
+    /*public function preRender()
     {
         $redirect = true;
         foreach($this->excludedPaths as $excludedPath)
@@ -29,7 +29,7 @@ class AuthComponent extends AbstractComponent
         {
             Ntentan::redirect($this->loginPath . "?redirect=" . urlencode(Ntentan::getRequestUri()));
         }
-    }
+    }*/
 
     public function login()
     {
@@ -39,7 +39,7 @@ class AuthComponent extends AbstractComponent
             $result = $users->getFirstWithUsername($_POST["username"]);
             if($result->password == md5($_POST["password"]))
             {
-                $_SESSION["ntentan_logged_in"] = true;
+                $_SESSION["logged_in"] = true;
                 $_SESSION["username"] = $_POST["username"];
                 $_SESSION["user_id"] = $result["id"];
                 Ntentan::redirect($_GET["redirect"] == null ? $this->redirectPath : $_GET["redirect"], true);

@@ -1,6 +1,6 @@
 <?php
 
-abstract class AbstractComponent extends Controller
+abstract class Component extends Controller
 {
     protected $controllerName;
     protected $controller;
