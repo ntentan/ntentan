@@ -1,24 +1,31 @@
 <?php
 class RolesComponent extends Component
 {
+    public $anonymous;
+    public $authenticated;
+
     public function preRender()
     {
-        $redirect = true;
-        foreach($this->excludedPaths as $excludedPath)
+        if($_SESSION["logged_in"] == false)
         {
-            if(Ntentan::$route == $excludedPath)
+            foreach($this->anonymous as $anonymous)
             {
-                $redirect = false;
+                if(preg_match("/{$anonymous["path"]}/", Ntentan::$route) > 0)
+                {
+                    if($anonymous["access"] == "DISALLOW")
+                    {
+                        if(isset($anonymous["fallback"]))
+                        {
+                            Ntentan::redirect($anonymous["fallback"]);
+                        }
+                        else
+                        {
+                            header("HTTP/1.0 404 Not Found");
+                            die();
+                        }
+                    }
+                }
             }
-        }
-
-        if($_SESSION["ntentan_logged_in"] == false &&
-            Ntentan::$route != $this->loginPath &&
-            Ntentan::$route != $this->logoutPath &&
-            $redirect
-        )
-        {
-            Ntentan::redirect($this->loginPath . "?redirect=" . urlencode(Ntentan::getRequestUri()));
         }
     }
 }

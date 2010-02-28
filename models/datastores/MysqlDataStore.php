@@ -1,7 +1,4 @@
 <?php
-/**
- * 
- */
 class MysqlDataStore extends DataStore
 {
     private static $db;
@@ -78,7 +75,6 @@ class MysqlDataStore extends DataStore
             $query .= " WHERE " . implode(" AND ", $conditions);
         }
 
-
         // Add the limiting clauses
         $query .= ($params["type"] == 'first' ? " LIMIT 1" : "" );
 
@@ -88,19 +84,20 @@ class MysqlDataStore extends DataStore
         {
             throw new DataStoreException ("MySQL Says : ".MysqlDataStore::$db->error);
         }
+        $result = array();
         while($row = $queryResult->fetch_assoc())
         {
             $result[] = $row;
         }
 
         // Retrieve all related data
-        if($this->model->belongsToModelInstances != null)
+        foreach($this->model->belongsToModelInstances as $key => $belongsToInstance)
         {
-            $relationName = Ntentan::singular($this->model->belongsTo);
+            $relationName = Ntentan::singular(is_array($this->model->belongsTo)?$this->model->belongsTo[$key]:$this->model->belongsTo);
             $foreignKey = $relationName . "_id";
             foreach($result as $key => $row)
             {
-                $reference = $this->model->belongsToModelInstances->getFirstWithId($row[$foreignKey]);
+                $reference = $belongsToInstance->getFirstWithId($row[$foreignKey]);
                 $result[$key][$relationName] = $reference;
             }
         }

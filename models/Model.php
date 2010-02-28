@@ -28,14 +28,24 @@ class Model implements ArrayAccess
      */
     public $belongsTo;
     public $mustBeUnique;
-    public $belongsToModelInstances;
+    public $belongsToModelInstances = array();
     public $modelPath;
 
     public function __construct()
     {
         if($this->belongsTo != null)
         {
-            $this->belongsToModelInstances = Model::load($this->belongsTo);
+            if(is_array($this->belongsTo))
+            {
+                foreach($this->belongsTo as $belongsTo)
+                {
+                    $this->belongsToModelInstances[] = Model::load($belongsTo);
+                }
+            }
+            else
+            {
+                $this->belongsToModelInstances[] = Model::load($this->belongsTo);
+            }
         }
     }
 
@@ -224,16 +234,35 @@ class Model implements ArrayAccess
             }
         }
 
-        if($this->belongsTo != "")
+        if(is_array($this->belongsTo))
         {
-            $description["belongs_to"] = $this->belongsTo;
-            $fieldName = strtolower(Ntentan::singular($this->belongsTo)) . "_id";
-            foreach($description["fields"] as $i => $field)
+            foreach($this->belongsTo as $belongsTo)
             {
-                if($field["name"] == $fieldName)
+                $description["belongs_to"][] = $belongsTo;
+                $fieldName = strtolower(Ntentan::singular($belongsTo)) . "_id";
+                foreach($description["fields"] as $i => $field)
                 {
-                    $description["fields"][$i]["model"] = $this->belongsTo;
-                    $description["fields"][$i]["foreing_key"] = true;
+                    if($field["name"] == $fieldName)
+                    {
+                        $description["fields"][$i]["model"] = $belongsTo;
+                        $description["fields"][$i]["foreing_key"] = true;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if($this->belongsTo != "")
+            {
+                $description["belongs_to"][] = $this->belongsTo;
+                $fieldName = strtolower(Ntentan::singular($this->belongsTo)) . "_id";
+                foreach($description["fields"] as $i => $field)
+                {
+                    if($field["name"] == $fieldName)
+                    {
+                        $description["fields"][$i]["model"] = $this->belongsTo;
+                        $description["fields"][$i]["foreing_key"] = true;
+                    }
                 }
             }
         }
