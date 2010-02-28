@@ -10,27 +10,6 @@ class AuthComponent extends Component
     //public $excludedPaths = array();
     public $name = __CLASS__;
 
-    /*public function preRender()
-    {
-        $redirect = true;
-        foreach($this->excludedPaths as $excludedPath)
-        {
-            if(Ntentan::$route == $excludedPath)
-            {
-                $redirect = false;
-            }
-        }
-
-        if($_SESSION["ntentan_logged_in"] == false && 
-            Ntentan::$route != $this->loginPath &&
-            Ntentan::$route != $this->logoutPath &&
-            $redirect
-        )
-        {
-            Ntentan::redirect($this->loginPath . "?redirect=" . urlencode(Ntentan::getRequestUri()));
-        }
-    }*/
-
     public function login()
     {
         if(isset($_POST["username"]) && isset($_POST["password"]))

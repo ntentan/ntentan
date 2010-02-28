@@ -122,12 +122,35 @@ class MysqlDataStore extends DataStore
     protected function _put($data)
     {
         $fields = array_keys($data);
-        foreach($data as $value)
+        if($fields[0] == "0")
         {
-            $values[] = MysqlDataStore::$db->escape_string($value);
+            $fields = array_keys($data[0]);
+            $query = "INSERT INTO {$this->table} (`".implode("`,`", $fields)."`) VALUES ";
+            $baseQueries = array();
+            foreach($data as $row)
+            {
+                $values = array();
+                foreach($row as $value)
+                {
+                    $values[] = MysqlDataStore::$db->escape_string($value);
+                }
+                $baseQueries[] = "('".implode("','", $values)."')";
+            }
+            $query .= implode(",", $baseQueries);
         }
-        $query = "INSERT INTO {$this->table} (`" . implode("`, `", $fields) . "`) VALUES ('" . implode("', '", $values) . "')";
+        else
+        {
+            //$fields = array_keys($data);
+            foreach($data as $value)
+            {
+                $values[] = MysqlDataStore::$db->escape_string($value);
+            }
+            $query = "INSERT INTO {$this->table} (`" . implode("`, `", $fields) . "`) VALUES ('" . implode("', '", $values) . "')";
+        }
+
         MysqlDataStore::$db->query($query);
+        return MysqlDataStore::$db->insert_id;
+        
     }
 
     public function getDataStoreInfo()

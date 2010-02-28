@@ -27,9 +27,11 @@ class Model implements ArrayAccess
      * @var string
      */
     public $belongsTo;
+    public $hasMany;
     public $mustBeUnique;
     public $belongsToModelInstances = array();
     public $modelPath;
+    public $name;
 
     public function __construct()
     {
@@ -47,6 +49,9 @@ class Model implements ArrayAccess
                 $this->belongsToModelInstances[] = Model::load($this->belongsTo);
             }
         }
+        $modelInformation = new ReflectionObject($this);
+        $modelName = $modelInformation->getName();
+        $this->name = strtolower(substr($modelName, 0, strlen($modelName) - 5));
     }
 
     /**
@@ -108,9 +113,22 @@ class Model implements ArrayAccess
         return $result;
     }
 
+    public function preSaveCallback()
+    {
+
+    }
+
+    public function postSaveCallback($id)
+    {
+        
+    }
+
     public function save()
     {
-        $this->_dataStoreInstance->put();
+        $this->preSaveCallback();
+        $id = $this->_dataStoreInstance->put();
+        $this->postSaveCallback($id);
+        return $id;
     }
 
     public function update()
@@ -126,6 +144,7 @@ class Model implements ArrayAccess
 
     public function __call($method, $arguments)
     {
+        $executed = false;
         if(substr($method, 0, 7) == "getWith")
         {
             $field = strtolower(substr($method, 7));
@@ -134,6 +153,7 @@ class Model implements ArrayAccess
             {
                 $params["conditions"][$field] = $argument;
             }
+            return $this->get($type, $params);
         }
 
         if(substr($method, 0, 12) == "getFirstWith")
@@ -144,9 +164,43 @@ class Model implements ArrayAccess
             {
                 $params["conditions"][$field] = $argument;
             }
+            return $this->get($type, $params);
         }
 
-        return $this->get($type, $params);
+        if(substr($method, 0, 3) == "get")
+        {
+            $modelName = strtolower(substr($method,3));
+            if(is_array($this->hasMany))
+            {
+                $key = array_search($modelName, $this->hasMany);
+                $model = Model::load($this->hasMany[$key]);
+            }
+            else
+            {
+                $model = Model::load($this->hasMany);
+            }
+            $modelMethod = new ReflectionMethod($model, "get");
+            $foreingKey = $this->name . "_id";
+            //$arguments[1]["conditions"] = array($this->name . "_id" => $this->data["id"]);
+
+            $keys = array_keys($this->data);
+            if($keys[0] == "0")
+            {
+                foreach($this->data as $key => $row)
+                {
+                    $arguments[0] = isset($arguments[0]) ? $arguments[0] : 'all' ;
+                    $arguments[1]["conditions"] = array(Ntentan::singular($this->name) . "_id" => $row["id"]);
+
+                    $this->data[$key][$model->name] = $modelMethod->invokeArgs($model, $arguments);
+                }
+            }
+            else
+            {
+
+            }
+
+            return $modelMethod->invokeArgs($model, $arguments);
+        }
     }
 
     public function __set($variable, $value)
@@ -279,6 +333,40 @@ class Model implements ArrayAccess
         {
             return print_r($this->data, true);
         }
+    }
+
+    public function toArray()
+    {
+        $keys = array_keys($this->data);
+
+        $returnData = array();
+        
+        if($keys[0] == '0')
+        {
+            foreach($this->data as $index => $row)
+            {
+                foreach($row as $key => $value)
+                {
+                    $returnData[$index][$key] = is_object($value) ? $value->toArray() : $value;
+                }
+            }
+        }
+        else
+        {
+            var_dump($this->data);
+            foreach($this->data as $key => $row)
+            {
+                if(is_object($this->data[$key]))
+                {
+                    $returnData[$key] = $this->data[$key]->toArray();
+                }
+                else
+                {
+                    $returnData[$key] = $row;
+                }
+            }
+        }
+        return $returnData;
     }
 
     public function validate()

@@ -25,7 +25,7 @@ abstract class DataStore
     public function put()
     {
         $data = $this->model->getData();
-        $this->_put($data);
+        return $this->_put($data);
     }
 
     public function update()
