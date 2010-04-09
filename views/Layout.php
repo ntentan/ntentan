@@ -62,7 +62,15 @@ class Layout
         }
 
         $title = $this->title;
-
-        include Ntentan::$layoutsPath . "{$this->name}.tpl.php";
+        $layoutPath = Ntentan::$layoutsPath . "{$this->name}.tpl.php"; 
+        if(file_exists($layoutPath))
+        {
+            include $layoutPath;
+        }
+        else
+        {
+            echo Ntentan::message("Layout path does not exist <code><b>$layoutPath</b></code>");
+            die();
+        }
     }
 }

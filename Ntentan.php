@@ -1,10 +1,31 @@
 <?php
+/**
+ * Copyright 2008-2010 James Ainooson
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
 session_start();
 
 /**
- * Main class for managing the page. The whole website runs through this class.
- * It contains mainly a list of static methods. 
+ * A utility class for the Ntentan framework. This class initializes all the 
+ * routing and is the boilerplate code on which the entire Ntentan Framework
+ * application operates.
+ * 
+ *  @author     James Ainooson <jainooson-at-gmail-dot-com>
+ *  @license    Apache License, Version 2.0
+ *  @package    ntentan
  */
 class Ntentan
 {
@@ -110,6 +131,49 @@ class Ntentan
         {
             return substr($string, 0, strlen($string) - 1);
         }
+    }
+    
+    public static function camelize($string, $delimiter=".", $baseDelimiter = "")
+    {
+        if($baseDelimiter == "") $baseDelimiter = $delimiter;
+        $parts = explode($delimiter, $string);
+        $ret = "";
+        foreach($parts as $part)
+        {
+            $ret .= $delimiter == $baseDelimiter ? ucfirst(Ntentan::camelize($part, "_", $baseDelimiter)) : ucfirst($part);
+        }
+        return $ret;
+    }
+        
+    public static function message($message) 
+    {
+        return 
+        "<html>
+        <head>
+            <style>
+            #border
+            {
+                width:500px;
+                margin-top:5px;
+                margin-left:auto;
+                margin-right:auto;
+                border:1px solid #808080;
+                background-color:#f0f0f0;
+                padding:10px;
+            }
+            
+            #border h1
+            {
+                margin:0px;
+            }
+            </style>
+            <title>Ntentan Error!</title>
+        </head>
+        <div id='border'>
+            <h1>Ntentan</h1>
+            <p>$message</p>
+         </div>
+         </html>";   
     }
 }
 

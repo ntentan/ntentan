@@ -18,7 +18,7 @@
  */
 class Controller
 {
-    public $defaultMethodName = "contents";
+    public $defaultMethodName = "run";
 
 	/**
 	 * A copy of the path that was used to load this controller in an array
@@ -38,12 +38,14 @@ class Controller
      * @var Array
      */
     public $variables = array();
+    
+    protected $components = array();
 
     /**
      *
      * @var Array
      */
-    private $components = array();
+    private $componentInstances = array();
 
     /**
      *
@@ -56,6 +58,14 @@ class Controller
     public $model;
 
     protected $blocks = array();
+    
+    public function __construct()
+    {
+        foreach($this->components as $component)
+        {
+            $this->addComponent($component);
+        }
+    }
 
     public function getName()
     {
@@ -98,7 +108,7 @@ class Controller
             else if(substr($property, -9) == "Component")
             {
                 $component = substr($property, 0, strlen($property) - 9);
-                return $this->components[$component];
+                return $this->componentInstances[$component];
             }
         }
     }
@@ -113,7 +123,7 @@ class Controller
         $componentName = ucfirst($component) . "Component";
         $componentInstance = new $componentName();
         $componentInstance->setController($this);
-        $this->components[$component] = $componentInstance;
+        $this->componentInstances[$component] = $componentInstance;
     }
 
     public function addBlock($block, $alias)
@@ -192,7 +202,8 @@ class Controller
 
         if($controllerName == "")
         {
-            die("Path not found! [$path]");
+            echo Ntentan::message("Path not found! [$path]");
+            die();
         }
         else
         {
@@ -224,7 +235,8 @@ class Controller
             }
             else
             {
-                die("Error! method not found $methodName");
+                echo Ntentan::message("Method not found <code><b>$controllerName::$methodName()</b></code>");
+                die();
             }
         }
 	}
@@ -232,7 +244,7 @@ class Controller
     public function setName($name)
     {
         $this->name = $name;
-        foreach($this->components as $component)
+        foreach($this->componentInstances as $component)
         {
             $component->setControllerName($name);
         }
@@ -241,7 +253,7 @@ class Controller
     public function setPath($path)
     {
         $this->path = $path;
-        foreach($this->components as $component)
+        foreach($this->componentInstances as $component)
         {
             $component->setControllerPath($path);
         }
@@ -256,7 +268,7 @@ class Controller
         }
         else
         {
-            foreach($this->components as $component)
+            foreach($this->componentInstances as $component)
             {
                 $ret = $component->hasPath($path);
                 if($ret)
@@ -288,7 +300,7 @@ class Controller
         }
         else
         {
-            foreach($this->components as $component)
+            foreach($this->componentInstances as $component)
             {
                 if($component->hasPath($path))
                 {
@@ -303,7 +315,7 @@ class Controller
 
     public function mainPreRender()
     {
-        foreach($this->components as $component)
+        foreach($this->componentInstances as $component)
         {
             $component->preRender();
         }
@@ -312,7 +324,7 @@ class Controller
 
     public function mainPostRender()
     {
-        foreach($this->components as $component)
+        foreach($this->componentInstances as $component)
         {
             $component->postRender();
         }
@@ -327,5 +339,17 @@ class Controller
     public function postRender()
     {
         
+    }
+    
+    public function hasComponent($component)
+    {
+        if(array_search($component, $this->components) !== false)
+        {
+            return true;        
+        }
+        else
+        {
+            return false;
+        }
     }
 }

@@ -20,6 +20,7 @@ class RolesComponent extends Component
                         }
                         else
                         {
+                            $this->controller->authComponent->login();
                             header("HTTP/1.0 404 Not Found");
                             die();
                         }
