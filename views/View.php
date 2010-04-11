@@ -32,12 +32,12 @@ class View extends Presentation
         }
     }
 
-    public function out($data)
+    public function out($viewData)
     {
         // Convert all keys of the data array into variables
-        if(is_array($data))
+        if(is_array($viewData))
         {
-            foreach($data as $key => $value)
+            foreach($viewData as $key => $value)
             {
                 $$key = $value;
             }
@@ -50,14 +50,18 @@ class View extends Presentation
         }
         else
         {
-            die("View template [{$this->template}] not Found!");
+            print Ntentan::message("View template <b><code>{$this->template}</code></b> not Found!");
+            die();
         }
         $data = ob_get_clean();
 
-        ob_start();
-        $this->_layout->out($data);
-        $data = ob_get_clean();
-
+        if(!Ntentan::isAjax())
+        {
+            ob_start();
+            $this->_layout->out($data);
+            $data = ob_get_clean();
+        }
+        
         return $data;
     }
 }

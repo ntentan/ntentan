@@ -46,7 +46,7 @@ class Layout
     {
         foreach($this->javaScripts as $javaScript)
         {
-            $scripts .= "<script type='text/javascript' src='$javaScript'></script>";
+            $javascripts .= "<script type='text/javascript' src='$javaScript'></script>";
         }
 
         foreach($this->styleSheets as $styleSheet)
@@ -62,7 +62,7 @@ class Layout
         }
 
         $title = $this->title;
-        $layoutPath = Ntentan::$layoutsPath . "{$this->name}.tpl.php"; 
+        $layoutPath = Ntentan::$layoutsPath . "{$this->name}.tpl.php";
         if(file_exists($layoutPath))
         {
             include $layoutPath;

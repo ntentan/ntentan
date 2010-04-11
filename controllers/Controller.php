@@ -183,7 +183,7 @@ class Controller
 		for($i = 0; $i<count($pathArray); $i++)
 		{
 			$p = $pathArray[$i];
-            $pCamelized = ucfirst($p);
+            $pCamelized .= ucfirst($p);
 			if(file_exists(Ntentan::$packagesPath . "$controllerPath/$p/{$pCamelized}Controller.php"))
 			{
 				$controllerName = $pCamelized."Controller";

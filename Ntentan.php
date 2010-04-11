@@ -39,7 +39,7 @@ class Ntentan
     public static $routes = array();
     public static $route;
     public static $configFile = "config.php";
-
+    
 	/**
 	 * Outputs the site. This calls all the template files and outputs the
 	 * final website.
@@ -64,10 +64,19 @@ class Ntentan
 		{
 			$_GET["q"]= Ntentan::$defaultRoute;
 		}
+		
         Ntentan::$route = $_GET["q"];
+        $requestedRoute = $_GET["q"]; 
+		foreach(Ntentan::$routes as $route)
+		{
+            if(preg_match($route[0], $_GET["q"], $matches) == 1)
+		    {
+		        $requestedRoute = $route[1];
+            }
+		}		
         unset($_GET["q"]);
         unset($_REQUEST["q"]);
-		$module = Controller::load(Ntentan::$route);
+		$module = Controller::load($requestedRoute);
 	}
 
     /**
@@ -101,6 +110,7 @@ class Ntentan
 
     public static function redirect($path, $absolute = false)
     {
+        $path = isset($_GET["redirect"]) ? $_GET["redirect"] : $path;
         $path = $absolute ? $path : Ntentan::getUrl($path);
         header("Location: $path ");
     }
@@ -143,6 +153,16 @@ class Ntentan
             $ret .= $delimiter == $baseDelimiter ? ucfirst(Ntentan::camelize($part, "_", $baseDelimiter)) : ucfirst($part);
         }
         return $ret;
+    }
+    
+    public static function addRoute($source, $dest)
+    {
+        Ntentan::$routes[] = array($source, $dest);
+    }
+    
+    public static function isAjax()
+    {
+        if($_SERVER['X_REQUESTED_WITH'] == 'XMLHttpRequest') return true; else return false;
     }
         
     public static function message($message) 

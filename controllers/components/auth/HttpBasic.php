@@ -1,5 +1,5 @@
 <?php
-class HttpBasic
+class HttpBasic extends AuthMethod
 {
     public function login()
     {

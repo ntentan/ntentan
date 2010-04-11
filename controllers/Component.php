@@ -20,12 +20,12 @@ abstract class Component extends Controller
         $this->path = $controllerPath;
     }
 
-    protected function set($params1, $params2)
+    public function set($params1, $params2)
     {
         $this->controller->set($params1, $params2);
     }
 
-    protected function get()
+    public function get()
     {
         return $this->controller->get();
     }
