@@ -26,12 +26,13 @@ class Model implements ArrayAccess
      * Field for checking the relationship between two different models
      * @var string
      */
-    public $belongsTo;
-    public $hasMany;
+    public $belongsTo = array();
+    public $hasMany = array();
     public $mustBeUnique;
     public $belongsToModelInstances = array();
     public $modelPath;
     public $name;
+    private static $modelCache;
 
     public function __construct()
     {
@@ -41,17 +42,22 @@ class Model implements ArrayAccess
             {
                 foreach($this->belongsTo as $belongsTo)
                 {
-                    $this->belongsToModelInstances[] = Model::load($belongsTo);
+                    $this->belongsToModelInstances[] = Model::load(Model::getBelongsTo($belongsTo));
                 }
             }
             else
             {
-                $this->belongsToModelInstances[] = Model::load($this->belongsTo);
+                $this->belongsToModelInstances[] = Model::load(Model::getBelongsTo($this->belongsTo));
             }
         }
         $modelInformation = new ReflectionObject($this);
         $modelName = $modelInformation->getName();
         $this->name = strtolower(substr($modelName, 0, strlen($modelName) - 5));
+    }
+    
+    public static function getBelongsTo($belongsTo)
+    {
+        return is_array($belongsTo) ? $belongsTo[0] : $belongsTo;
     }
 
     /**
@@ -61,33 +67,37 @@ class Model implements ArrayAccess
      */
     public static function load($modelPath)
     {
-        $pathComponents = explode(".", $modelPath);
-        $modelClass = ucfirst($pathComponents[0]) . "Model";
-        $modelFile = Ntentan::$packagesPath . implode("/", $pathComponents) . "/$modelClass.php";
-
-        if(!file_exists($modelFile))
+        if(!isset(Model::$modelCache[$modelPath]))
         {
-            throw new ModelNotFoundException("Cannot find [$modelFile]");
+            $pathComponents = explode(".", $modelPath);
+            $modelClass = Ntentan::camelize($modelPath) . "Model";//ucfirst($pathComponents[0]) . "Model";
+            $modelFile = Ntentan::$packagesPath . implode("/", $pathComponents) . "/$modelClass.php";
+    
+            if(!file_exists($modelFile))
+            {
+                throw new ModelNotFoundException("Cannot find [$modelFile]");
+            }
+    
+            require_once
+            (
+                Ntentan::$packagesPath
+                . implode("/", $pathComponents)
+                . "/$modelClass.php"
+            );
+    
+            $model = new $modelClass();
+            $model->modelPath = $modelPath;
+    
+            if($model->datastore == null)
+            {
+                $dataStoreParams = Ntentan::getDefaultDataStore();
+                $dataStoreClass = ucfirst($dataStoreParams["datastore"]) . "DataStore";
+                $dataStore = new $dataStoreClass($dataStoreParams);
+                $model->setDataStore($dataStore);
+            }
+            Model::$modelCache[$modelPath] = $model;
         }
-
-        require_once
-        (
-            Ntentan::$packagesPath
-            . implode("/", $pathComponents)
-            . "/$modelClass.php"
-        );
-
-        $model = new $modelClass();
-        $model->modelPath = $modelPath;
-
-        if($model->datastore == null)
-        {
-            $dataStoreParams = Ntentan::getDefaultDataStore();
-            $dataStoreClass = ucfirst($dataStoreParams["datastore"]) . "DataStore";
-            $dataStore = new $dataStoreClass($dataStoreParams);
-            $model->setDataStore($dataStore);
-        }
-        return $model;
+        return Model::$modelCache[$modelPath];
     }
 
     public function setData($data)
@@ -104,6 +114,18 @@ class Model implements ArrayAccess
     {
         $this->_dataStoreInstance = $dataStore;
         $this->_dataStoreInstance->setModel($this);
+    }
+    
+    public function getDataStore($instance = false)
+    {
+        if($instance)
+        {
+            return $this->_dataStoreInstance;
+        }
+        else
+        {
+            return $this->dataStore;
+        }
     }
 
     public function get($type = 'all', $params = null)
@@ -147,22 +169,22 @@ class Model implements ArrayAccess
         $executed = false;
         if(substr($method, 0, 7) == "getWith")
         {
-            $field = strtolower(substr($method, 7));
+            $field = Ntentan::deCamelize(substr($method, 7));
             $type = 'all';
             foreach($arguments as $argument)
             {
-                $params["conditions"][$field] = $argument;
+                $params["conditions"][$this->modelPath . "." . $field] = $argument;
             }
             return $this->get($type, $params);
         }
 
         if(substr($method, 0, 12) == "getFirstWith")
         {
-            $field = strtolower(substr($method, 12));
+            $field = Ntentan::deCamelize(substr($method, 12));
             $type = 'first';
             foreach($arguments as $argument)
             {
-                $params["conditions"][$field] = $argument;
+                $params["conditions"][$this->modelPath . "." . $field] = $argument;
             }
             return $this->get($type, $params);
         }
@@ -201,6 +223,7 @@ class Model implements ArrayAccess
 
             return $modelMethod->invokeArgs($model, $arguments);
         }
+        throw new MethodNotFoundException();
     }
 
     public function __set($variable, $value)
@@ -243,7 +266,7 @@ class Model implements ArrayAccess
         unset($this->data[$offset]);
     }
 
-    public function length()
+    public function count()
     {
         return count($this->data);
     }

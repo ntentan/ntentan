@@ -155,6 +155,21 @@ class Ntentan
         return $ret;
     }
     
+    public static function deCamelize($string)
+    {
+        $deCamelized = "";
+        for($i = 0; $i < strlen($string); $i++)
+        {
+            $char = substr($string, $i, 1);
+            if(ctype_upper($char) && $i > 0)
+            {
+                $deCamelized .= "_";
+            }
+            $deCamelized .= strtolower($char);
+        }
+        return $deCamelized;
+    }
+    
     public static function addRoute($source, $dest)
     {
         Ntentan::$routes[] = array($source, $dest);

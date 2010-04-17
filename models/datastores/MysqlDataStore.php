@@ -2,7 +2,7 @@
 class MysqlDataStore extends DataStore
 {
     private static $db;
-    private $table;
+    public $table;
     
     private static function connect($parameters)
     {
@@ -22,13 +22,27 @@ class MysqlDataStore extends DataStore
         }
     }
 
+    /**
+     * 
+     * @param Model $model
+     */
     public function setModel($model)
     {
         parent::setModel($model);
-        $modelInformation = new ReflectionObject($model);
+        /*$modelInformation = new ReflectionObject($model);
         $modelName = $modelInformation->getName();
-        $modelName = strtolower($modelName);
-        $this->table = substr($modelName, 0, strlen($modelName)-5);
+        $modelName = Ntentan::deCamelize($modelName);//strtolower($modelName);
+        $this->table = substr($modelName, 0, strlen($modelName)-5);*/
+        $this->table = end(explode(".", $model->modelPath));
+    }
+    
+    private function resolveName($fieldPath)
+    {
+        $modelPathArray = explode(".", $fieldPath);
+        $fieldName = array_pop($modelPathArray);
+        $modelPath = implode(".", $modelPathArray);
+        $model = Model::load($modelPath);
+        return "{$model->getDataStore(true)->table}.$fieldName";
     }
 
     protected function _get($params)
@@ -52,6 +66,25 @@ class MysqlDataStore extends DataStore
 
         // Generate the base query
         $query = "SELECT $fields FROM {$this->table} ";
+        
+        // Generate joins
+        foreach($this->model->belongsTo as $relatedModel)
+        {
+            if(is_array($relatedModel))
+            {
+                $firstRelatedModel = Model::load($relatedModel[0]);
+                $firstDatastore = $firstRelatedModel->getDataStore(true);
+                $secondRelatedModel = Model::load($relatedModel["through"]);
+                $secondDatastore = $secondRelatedModel->getDataStore(true);
+                $query .= "JOIN {$firstDatastore->table} ON {$firstDatastore->table}.id = {$secondDatastore->table}." . Ntentan::singular($firstDatastore->table) . "_id ";
+            }
+            else
+            {
+                $model = Model::load($relatedModel);
+                $datastore = $model->getDataStore(true);
+                $query .= "JOIN {$datastore->table} ON {$datastore->table}.id = {$this->table}." . Ntentan::singular($datastore->table) . "_id ";
+            }
+        }
 
         // Generate conditions
         if($params["conditions"] !== null)
@@ -69,7 +102,9 @@ class MysqlDataStore extends DataStore
                 }
                 else
                 {
-                    $conditions[] = "$field = '$condition'";
+                    preg_match("/(?<field>[a-zA-Z1-9_.]*)\w*(?<operator>\<\>|\<|\>|)?/", $field, $matches);
+                    $databaseField = $this->resolveName($matches["field"]);
+                    $conditions[] = "$databaseField ".($matches["operator"]==""?"=":$matches["operator"])." '$condition'";
                 }
             }
             $query .= " WHERE " . implode(" AND ", $conditions);
@@ -93,7 +128,13 @@ class MysqlDataStore extends DataStore
         // Retrieve all related data
         foreach($this->model->belongsToModelInstances as $key => $belongsToInstance)
         {
-            $relationName = Ntentan::singular(is_array($this->model->belongsTo)?$this->model->belongsTo[$key]:$this->model->belongsTo);
+            $relationName = Ntentan::singular(
+                Model::getBelongsTo(
+                    is_array($this->model->belongsTo) ? 
+                    $this->model->belongsTo[$key] :
+                    $this->model->belongsTo
+                )
+            );
             $foreignKey = $relationName . "_id";
             foreach($result as $key => $row)
             {

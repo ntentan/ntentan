@@ -5,7 +5,7 @@ class HttpRequest extends AuthMethod
     {
         if(isset($_REQUEST["username"]) && isset($_REQUEST["password"]))
         {
-            $users = Model::load("users");
+            $users = Model::load($this->auth->usersModel);
             $result = $users->getFirstWithUsername($_REQUEST["username"]);
             if($result->password == md5($_REQUEST["password"]))
             {
@@ -14,7 +14,13 @@ class HttpRequest extends AuthMethod
                 $_SESSION["user_id"] = $result["id"];
                 $this->auth->set("login_message", "Successful login" );
                 $this->auth->set("login_status", true);
-                if($this->auth->redirectOnSuccess === true) Ntentan::redirect( $this->auth->redirectPath, true);
+                if($this->auth->redirectOnSuccess === true) 
+                {
+                    Ntentan::redirect( 
+                        Ntentan::getUrl($this->auth->redirectPath), 
+                        true
+                    );
+                }
             }
             else
             {

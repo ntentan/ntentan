@@ -10,6 +10,7 @@ class AuthComponent extends Component
     public $redirectOnSuccess = true;
     public $name = __CLASS__;
     public $authMethod = "http_request";
+    public $usersModel = "users";
     protected $authMethodInstance;
     
     public function preRender()
