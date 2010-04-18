@@ -17,9 +17,17 @@ abstract class DataStore
 
     public function get($queryParameters)
     {
-        $newModel = clone $this->model;
-        $newModel->setData($this->_get($queryParameters));
-        return $newModel;
+        $return = null;
+        if($queryParameters['type']=='count')
+        {
+            $return = (int)$this->_get($queryParameters);
+        }
+        else
+        {
+            $return = clone $this->model;
+            $return->setData($this->_get($queryParameters));
+        }
+        return $return;
     }
 
     public function put()

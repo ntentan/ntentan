@@ -17,6 +17,7 @@
  */
 
 session_start();
+date_default_timezone_set("Africa/Accra");
 
 /**
  * A utility class for the Ntentan framework. This class initializes all the 

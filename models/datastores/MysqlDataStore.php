@@ -56,7 +56,15 @@ class MysqlDataStore extends DataStore
         {
             if($params["fields"] == null)
             {
-                $fields = "*";
+                $fieldList = $this->model->describe();
+                $fieldList = array_keys($fieldList["fields"]);
+                
+                foreach($fieldList as $key => $field)
+                {
+                    $fieldList[$key] = $this->table . "." . $field;
+                }
+                
+                $fields = implode(",", $fieldList);
             }
             else
             {
@@ -115,6 +123,7 @@ class MysqlDataStore extends DataStore
 
         // 
         $queryResult = MysqlDataStore::$db->query($query);
+        
         if($queryResult === false)
         {
             throw new DataStoreException ("MySQL Says : ".MysqlDataStore::$db->error);
@@ -126,20 +135,23 @@ class MysqlDataStore extends DataStore
         }
 
         // Retrieve all related data
-        foreach($this->model->belongsToModelInstances as $key => $belongsToInstance)
+        if($params["fetch_related"] === true)
         {
-            $relationName = Ntentan::singular(
-                Model::getBelongsTo(
-                    is_array($this->model->belongsTo) ? 
-                    $this->model->belongsTo[$key] :
-                    $this->model->belongsTo
-                )
-            );
-            $foreignKey = $relationName . "_id";
-            foreach($result as $key => $row)
+            foreach($this->model->belongsToModelInstances as $key => $belongsToInstance)
             {
-                $reference = $belongsToInstance->getFirstWithId($row[$foreignKey]);
-                $result[$key][$relationName] = $reference;
+                $relationName = Ntentan::singular(
+                    Model::getBelongsTo(
+                        is_array($this->model->belongsTo) ? 
+                        $this->model->belongsTo[$key] :
+                        $this->model->belongsTo
+                    )
+                );
+                $foreignKey = $relationName . "_id";
+                foreach($result as $key => $row)
+                {
+                    $reference = $belongsToInstance->getFirstWithId($row[$foreignKey]);
+                    $result[$key][$relationName] = $reference;
+                }
             }
         }
 

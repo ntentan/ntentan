@@ -2,13 +2,13 @@
 /**
  * The Model class 
  */
-class Model implements ArrayAccess
+class Model implements ArrayAccess, Iterator
 {
     /**
      * 
      * @var array
      */
-    protected $data;
+    protected $data = array();
 
     /**
      * An instance of the datastore.
@@ -33,6 +33,8 @@ class Model implements ArrayAccess
     public $modelPath;
     public $name;
     private static $modelCache;
+    private $iteratorPosition;
+    private $_description;
 
     public function __construct()
     {
@@ -53,6 +55,7 @@ class Model implements ArrayAccess
         $modelInformation = new ReflectionObject($this);
         $modelName = $modelInformation->getName();
         $this->name = strtolower(substr($modelName, 0, strlen($modelName) - 5));
+        $this->iteratorPosition = 0;
     }
     
     public static function getBelongsTo($belongsTo)
@@ -144,10 +147,21 @@ class Model implements ArrayAccess
     {
         
     }
+    
+    public function preUpdateCallback()
+    {
+        
+    }
+    
+    public function postUpdateCallback()
+    {
+        
+    }
 
     public function save()
     {
         $this->preSaveCallback();
+        $this->_dataStoreInstance->setModel($this);
         $id = $this->_dataStoreInstance->put();
         $this->postSaveCallback($id);
         return $id;
@@ -155,7 +169,10 @@ class Model implements ArrayAccess
 
     public function update()
     {
+        $this->preUpdateCallback();
+        $this->_dataStoreInstance->setModel($this);
         $this->_dataStoreInstance->update();
+        $this->postUpdateCallback();
     }
 
     public function delete()
@@ -270,80 +287,111 @@ class Model implements ArrayAccess
     {
         return count($this->data);
     }
+    
+    public function rewind()
+    {
+        $this->iteratorPosition = 0;
+    }
+    
+    public function current()
+    {
+        $newModel = clone $this;
+        $newModel->setData($this->data[$this->iteratorPosition]);
+        return $newModel;
+    }
+    
+    public function key()
+    {
+        return $this->iteratorPosition;
+    }
+    
+    public function next()
+    {
+        $this->iteratorPosition++;
+    }
+    
+    public function valid()
+    {
+        return isset($this->data[$this->iteratorPosition]);
+    }
 
     public function describe()
     {
-        $description = $this->_dataStoreInstance->describe();
-        if(is_array($this->mustBeUnique))
+        if($this->_description == null)
         {
-            foreach($description["fields"] as $i => $field)
+            $description = $this->_dataStoreInstance->describe();
+            if(is_array($this->mustBeUnique))
             {
-                $uniqueField = false;
-                
-                foreach($this->mustBeUnique as $unique)
-                {
-                    if(is_array($unique))
-                    {
-                        if($field["name"] == $unique["field"])
-                        {
-                            $uniqueField = true;
-                            $uniqueMessage = $unique["message"];
-                        }
-                    }
-                    else
-                    {
-                        if($field["name"] == $unique)
-                        {
-                            $uniqueField = true;
-                            $uniqueMessage = null;
-                        }
-                    }
-                }
-                
-                if($uniqueField)
-                {
-                    $description["fields"][$i]["unique"] = true;
-                    if($uniqueMessage != null)
-                    {
-                        $description["fields"][$i]["unique_violation_message"] = $uniqueMessage;
-                    }
-                }
-            }
-        }
-
-        if(is_array($this->belongsTo))
-        {
-            foreach($this->belongsTo as $belongsTo)
-            {
-                $description["belongs_to"][] = $belongsTo;
-                $fieldName = strtolower(Ntentan::singular($belongsTo)) . "_id";
                 foreach($description["fields"] as $i => $field)
                 {
-                    if($field["name"] == $fieldName)
+                    $uniqueField = false;
+                    
+                    foreach($this->mustBeUnique as $unique)
                     {
-                        $description["fields"][$i]["model"] = $belongsTo;
-                        $description["fields"][$i]["foreing_key"] = true;
+                        if(is_array($unique))
+                        {
+                            if($field["name"] == $unique["field"])
+                            {
+                                $uniqueField = true;
+                                $uniqueMessage = $unique["message"];
+                            }
+                        }
+                        else
+                        {
+                            if($field["name"] == $unique)
+                            {
+                                $uniqueField = true;
+                                $uniqueMessage = null;
+                            }
+                        }
+                    }
+                    
+                    if($uniqueField)
+                    {
+                        $description["fields"][$i]["unique"] = true;
+                        if($uniqueMessage != null)
+                        {
+                            $description["fields"][$i]["unique_violation_message"] = $uniqueMessage;
+                        }
                     }
                 }
             }
-        }
-        else
-        {
-            if($this->belongsTo != "")
+    
+            if(is_array($this->belongsTo))
             {
-                $description["belongs_to"][] = $this->belongsTo;
-                $fieldName = strtolower(Ntentan::singular($this->belongsTo)) . "_id";
-                foreach($description["fields"] as $i => $field)
+                foreach($this->belongsTo as $belongsTo)
                 {
-                    if($field["name"] == $fieldName)
+                    $description["belongs_to"][] = $belongsTo;
+                    $fieldName = strtolower(Ntentan::singular($belongsTo)) . "_id";
+                    foreach($description["fields"] as $i => $field)
                     {
-                        $description["fields"][$i]["model"] = $this->belongsTo;
-                        $description["fields"][$i]["foreing_key"] = true;
+                        if($field["name"] == $fieldName)
+                        {
+                            $description["fields"][$i]["model"] = $belongsTo;
+                            $description["fields"][$i]["foreing_key"] = true;
+                        }
                     }
                 }
             }
+            else
+            {
+                if($this->belongsTo != "")
+                {
+                    $description["belongs_to"][] = $this->belongsTo;
+                    $fieldName = strtolower(Ntentan::singular($this->belongsTo)) . "_id";
+                    foreach($description["fields"] as $i => $field)
+                    {
+                        if($field["name"] == $fieldName)
+                        {
+                            $description["fields"][$i]["model"] = $this->belongsTo;
+                            $description["fields"][$i]["foreing_key"] = true;
+                        }
+                    }
+                }
+            }
+            $this->_description = $description;
         }
-        return $description;
+        return $this->_description;
     }
 
     public function __toString()
@@ -376,7 +424,6 @@ class Model implements ArrayAccess
         }
         else
         {
-            var_dump($this->data);
             foreach($this->data as $key => $row)
             {
                 if(is_object($this->data[$key]))
@@ -391,7 +438,7 @@ class Model implements ArrayAccess
         }
         return $returnData;
     }
-
+    
     public function validate()
     {
         $description = $this->describe();
