@@ -362,7 +362,7 @@ class Model implements ArrayAccess, Iterator
                 foreach($this->belongsTo as $belongsTo)
                 {
                     $description["belongs_to"][] = $belongsTo;
-                    $fieldName = strtolower(Ntentan::singular($belongsTo)) . "_id";
+                    $fieldName = strtolower(Ntentan::singular($this->getBelongsTo($belongsTo))) . "_id";
                     foreach($description["fields"] as $i => $field)
                     {
                         if($field["name"] == $fieldName)
@@ -391,6 +391,7 @@ class Model implements ArrayAccess, Iterator
             }
             $this->_description = $description;
         }
+        
         return $this->_description;
     }
 
