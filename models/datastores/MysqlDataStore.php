@@ -29,20 +29,23 @@ class MysqlDataStore extends DataStore
     public function setModel($model)
     {
         parent::setModel($model);
-        /*$modelInformation = new ReflectionObject($model);
-        $modelName = $modelInformation->getName();
-        $modelName = Ntentan::deCamelize($modelName);//strtolower($modelName);
-        $this->table = substr($modelName, 0, strlen($modelName)-5);*/
         $this->table = end(explode(".", $model->modelPath));
     }
     
     private function resolveName($fieldPath)
     {
-        $modelPathArray = explode(".", $fieldPath);
-        $fieldName = array_pop($modelPathArray);
-        $modelPath = implode(".", $modelPathArray);
-        $model = Model::load($modelPath);
-        return "{$model->getDataStore(true)->table}.$fieldName";
+        if(strpos($fieldPath, ".") === false)
+        {
+            return $this->table . "." . $fieldPath;
+        }
+        else
+        {
+            $modelPathArray = explode(".", $fieldPath);
+            $fieldName = array_pop($modelPathArray);
+            $modelPath = implode(".", $modelPathArray);
+            $model = Model::load($modelPath);
+            return "{$model->getDataStore(true)->table}.$fieldName";
+        }
     }
 
     protected function _get($params)
