@@ -120,6 +120,19 @@ class MysqlDataStore extends DataStore
             }
             $query .= " WHERE " . implode(" AND ", $conditions);
         }
+        
+        // Add the sorting queries
+        if(isset($params['sort']))
+        {
+            if(is_array($params['sort']))
+            {
+                
+            }
+            else
+            {
+                $query .= " ORDER BY {$params["sort"]} ";
+            }
+        }
 
         // Add the limiting clauses
         $query .= ($params["type"] == 'first' ? " LIMIT 1" : "" );

@@ -9,6 +9,8 @@ abstract class DataStore
      * @var Model
      */
     protected $model;
+    
+    public $debug = false;
 
     public function setModel($model)
     {
