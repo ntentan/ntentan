@@ -178,7 +178,7 @@ class Ntentan
     
     public static function isAjax()
     {
-        if($_SERVER['X_REQUESTED_WITH'] == 'XMLHttpRequest') return true; else return false;
+        if($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') return true; else return false;
     }
         
     public static function message($message) 

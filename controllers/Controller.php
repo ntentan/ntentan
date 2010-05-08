@@ -99,6 +99,9 @@ class Controller
         case "layout":
             return $this->view->layout;
             
+        case "directory":
+            return Ntentan::$packagesPath . $this->path . "/";
+            
         default:
             if(substr($property, -5) == "Block")
             {
@@ -352,4 +355,5 @@ class Controller
             return false;
         }
     }
+    
 }

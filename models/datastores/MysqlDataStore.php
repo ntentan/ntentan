@@ -170,6 +170,7 @@ class MysqlDataStore extends DataStore
                 }
             }
         }
+        
 
         // Generate the data to be returned
         if($params["type"] == 'first')

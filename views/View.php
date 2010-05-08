@@ -8,6 +8,7 @@ class View extends Presentation
     public function __construct()
     {
         $this->_layout = new Layout();
+        
     }
     
     public function __get($property)
