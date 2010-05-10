@@ -3,9 +3,11 @@ class MysqlDataStore extends DataStore
 {
     private static $db;
     public $table;
+    private static $defaultSchema;
     
     private static function connect($parameters)
     {
+        MysqlDataStore::$defaultSchema = $parameters["database"];
         return new mysqli(
             $parameters["hostname"],
             $parameters["username"],
@@ -202,9 +204,9 @@ class MysqlDataStore extends DataStore
                 $values = array();
                 foreach($row as $value)
                 {
-                    $values[] = MysqlDataStore::$db->escape_string($value);
+                    $values[] = $value === "" ? "NULL" : "'". MysqlDataStore::$db->escape_string($value) . "'";
                 }
-                $baseQueries[] = "('".implode("','", $values)."')";
+                $baseQueries[] = "( ".implode(", ", $values)." )";
             }
             $query .= implode(",", $baseQueries);
         }
@@ -213,9 +215,9 @@ class MysqlDataStore extends DataStore
             //$fields = array_keys($data);
             foreach($data as $value)
             {
-                $values[] = MysqlDataStore::$db->escape_string($value);
+                $values[] = $value === "" ? "NULL" : "'" . MysqlDataStore::$db->escape_string($value) . "'";
             }
-            $query = "INSERT INTO {$this->table} (`" . implode("`, `", $fields) . "`) VALUES ('" . implode("', '", $values) . "')";
+            $query = "INSERT INTO {$this->table} (`" . implode("`, `", $fields) . "`) VALUES (" . implode(", ", $values) . ")";
         }
 
         MysqlDataStore::$db->query($query);
@@ -271,6 +273,23 @@ class MysqlDataStore extends DataStore
         }
         return $return;
     }
+    
+    protected function query($query)
+    {
+        $queryResult = MysqlDataStore::$db->query($query);
+        
+        if($queryResult === false)
+        {
+            throw new DataStoreException ("MySQL Says : ".MysqlDataStore::$db->error);
+        }
+        $result = array();
+        while($row = $queryResult->fetch_assoc())
+        {
+            $result[] = $row;
+        }
+        
+        return $result;
+    }
 
     public function describe()
     {
@@ -291,8 +310,26 @@ class MysqlDataStore extends DataStore
             $fields[$row["Field"]] = $field;
             unset($field);
         }
+        
+        $uniqueFields = $this->query(
+            "select column_name from 
+             information_schema.table_constraints pk 
+             join information_schema.key_column_usage c on 
+             c.table_name = pk.table_name and 
+             c.constraint_name = pk.constraint_name
+             where pk.table_name = '{$this->table}' 
+                and pk.table_schema='" . MysqlDataStore::$defaultSchema . "'
+             and constraint_type = 'UNIQUE'"
+        );
+        
+        foreach($uniqueFields as $uniqueField)
+        {
+            $fields[$uniqueField["column_name"]]["unique"] = true;
+        }
+        
         $description["name"] = $this->table;
         $description["fields"] = $fields;
+        
         return $description;
     }
 }

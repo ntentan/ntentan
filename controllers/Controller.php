@@ -21,8 +21,7 @@ class Controller
     public $defaultMethodName = "run";
 
 	/**
-	 * A copy of the path that was used to load this controller in an array
-	 * form.
+	 * A copy of the path that was used to load this controller.
 	 * @var String
 	 */
 	public $path;
@@ -52,10 +51,12 @@ class Controller
      * @var View
      */
     public $viewInstance;
+    
+    private $modelInstance;
+    
+    private $modelPath;
 
     public $data;
-
-    public $model;
 
     protected $blocks = array();
     
@@ -98,6 +99,13 @@ class Controller
 
         case "layout":
             return $this->view->layout;
+            
+        case "model":
+            if($this->modelInstance == null)
+            {
+                $this->modelInstance = Model::load($this->modelPath);
+            }
+            return $this->modelInstance;
             
         case "directory":
             return Ntentan::$packagesPath . $this->path . "/";
@@ -215,13 +223,7 @@ class Controller
             $controller = new $controllerName();
             $controller->setPath($controllerPath);
             $controller->setName($controllerName);
-
-            try {
-                $controller->model = Model::load(str_replace("/", ".", $controllerPath));
-            } catch (Exception $e) {
-                
-            }
-
+            $controller->modelPath = $modelPath;
 
             if($i != count($pathArray)-1)
             {

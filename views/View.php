@@ -49,6 +49,10 @@ class View extends Presentation
         {
             include $this->template;
         }
+        else if($this->template === false)
+        {
+            // Do nothing
+        }
         else
         {
             print Ntentan::message("View template <b><code>{$this->template}</code></b> not Found!");

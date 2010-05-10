@@ -32,6 +32,7 @@ class Model implements ArrayAccess, Iterator
     public $belongsToModelInstances = array();
     public $modelPath;
     public $name;
+    public $invalidFields = array();
     private static $modelCache;
     private $iteratorPosition;
     private $_description;
@@ -160,11 +161,18 @@ class Model implements ArrayAccess, Iterator
 
     public function save()
     {
-        $this->preSaveCallback();
-        $this->_dataStoreInstance->setModel($this);
-        $id = $this->_dataStoreInstance->put();
-        $this->postSaveCallback($id);
-        return $id;
+        if($this->validate())
+        {
+            $this->preSaveCallback();
+            $this->_dataStoreInstance->setModel($this);
+            $id = $this->_dataStoreInstance->put();
+            $this->postSaveCallback($id);
+            return $id;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function update()
@@ -240,7 +248,7 @@ class Model implements ArrayAccess, Iterator
 
             return $modelMethod->invokeArgs($model, $arguments);
         }
-        throw new MethodNotFoundException();
+        throw new MethodNotFoundException($method);
     }
 
     public function __set($variable, $value)
@@ -444,7 +452,6 @@ class Model implements ArrayAccess, Iterator
     {
         $description = $this->describe();
 
-        $errors = array();
         foreach($description["fields"] as $field)
         {
             if($field["primary_key"]) continue;
@@ -452,7 +459,7 @@ class Model implements ArrayAccess, Iterator
             // Validate Required
             if($this->data[$field["name"]] == "" && $field["required"])
             {
-                $errors[$field["name"]][] = "This field is required";
+                $this->invalidFields[$field["name"]][] = "This field is required";
             }
 
             // Validate unique
@@ -461,12 +468,17 @@ class Model implements ArrayAccess, Iterator
                 $value = $this->get('first', array("conditions"=>array($field["name"] => $this->data[$field["name"]])));
                 if(count($value->getData()))
                 {
-                    $errors[$field["name"]][] = isset($field["unique_violation_message"]) ? 
+                    $this->invalidFields[$field["name"]][] = isset($field["unique_violation_message"]) ? 
                         $field["unique_violation_message"] :
                         "This field must be unique";
                 }
             }
         }
-        if(count($errors) == 0) return true; else return $errors;
+        if(count($this->invalidFields) == 0) 
+            return true; 
+        else 
+        {
+            return false;    
+        }
     }
 }
