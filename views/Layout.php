@@ -67,6 +67,10 @@ class Layout
         {
             include $layoutPath;
         }
+        else if($this->name === false)
+        {
+            echo $contents;
+        }
         else
         {
             echo Ntentan::message("Layout path does not exist <code><b>$layoutPath</b></code>");
