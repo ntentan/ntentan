@@ -3,6 +3,6 @@ class MethodNotFoundException extends Exception
 {
     public function __construct($method)
     {
-        parent::__construct("Method doesn't exist <code>$method</code>");
+        parent::__construct("Method <code>[$method]</code> doesn't exist ");
     }
 }
