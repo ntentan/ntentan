@@ -60,23 +60,29 @@ class Ntentan
                 Ntentan::$packagesPath
             )
         );
-
-		if($_GET["q"] == "")
-		{
-			$_GET["q"]= Ntentan::$defaultRoute;
-		}
+        
+        if(isset($_GET["q"])) {
+        	$query = $_GET["q"];
+            unset($_GET["q"]);
+            unset($_REQUEST["q"]);
+			if($query == "") {
+				$query = Ntentan::$defaultRoute;
+			}
+        } else {
+        	$query = Ntentan::$defaultRoute;
+        }
 		
-        Ntentan::$route = $_GET["q"];
-        $requestedRoute = $_GET["q"]; 
+        Ntentan::$route = $query;
+        $requestedRoute = $query; 
 		foreach(Ntentan::$routes as $route)
 		{
-            if(preg_match($route[0], $_GET["q"], $matches) == 1)
+            if(preg_match($route[0], $query, $matches) == 1)
 		    {
 		        $requestedRoute = $route[1];
             }
 		}		
-        unset($_GET["q"]);
-        unset($_REQUEST["q"]);
+        unset($query);
+        unset($query);
 		$module = Controller::load($requestedRoute);
 	}
 
@@ -118,8 +124,18 @@ class Ntentan
 
     public static function getDefaultDataStore()
     {
-        include Ntentan::$configFile;
-        return $datastores["default"];
+    	if(file_exists(Ntentan::$configFile)) {
+            include Ntentan::$configFile;
+            if(isset($datastores["default"])) { 
+                return $datastores["default"];
+            } else {
+            	echo Ntentan::message("Invalid datastore specified. Please specify a default datastore");
+            	die();
+            }
+    	} else {
+    		echo Ntentan::message("Could not locate <b>config.php</b> file");
+    		die();
+    	}
     }
 
     public static function getRequestUri()
@@ -180,9 +196,13 @@ class Ntentan
     {
         if($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') return true; else return false;
     }
+    
+    public static function error($message, $subTitle = null, $type = null) {
+    	echo Ntentan::message($message, $subTitle);
+    	die();
+    }
         
-    public static function message($message) 
-    {
+    public static function message($message, $subTitle = null, $type = null) {
         return 
         "<html>
         <head>
