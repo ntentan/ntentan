@@ -55,8 +55,7 @@ class View extends Presentation
         }
         else
         {
-            print Ntentan::message("View template <b><code>{$this->template}</code></b> not Found!");
-            die();
+            Ntentan::error("View template <b><code>{$this->template}</code></b> not Found!");
         }
         $data = ob_get_clean();
 
