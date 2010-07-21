@@ -96,8 +96,12 @@ class Model implements ArrayAccess, Iterator
             {
                 $dataStoreParams = Ntentan::getDefaultDataStore();
                 $dataStoreClass = ucfirst($dataStoreParams["datastore"]) . "DataStore";
-                $dataStore = new $dataStoreClass($dataStoreParams);
-                $model->setDataStore($dataStore);
+                if(class_exists($dataStoreClass)) {
+                    $dataStore = new $dataStoreClass($dataStoreParams);
+                    $model->setDataStore($dataStore);
+                } else {
+                	Ntentan::error("Datastore <b><code>{$dataStoreClass}</code></b> doesn't exist.");
+                }
             }
             Model::$modelCache[$modelPath] = $model;
         }
