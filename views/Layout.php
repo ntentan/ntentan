@@ -57,7 +57,7 @@ class Layout
         // Render all the blocks into string variables
         foreach($this->blocks as $alias => $block)
         {
-            $blockName = $alias."Block";
+            $blockName = $alias."_block";
             $$blockName = (string)$block;
         }
 
