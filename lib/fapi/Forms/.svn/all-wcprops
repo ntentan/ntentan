@@ -1,0 +1,227 @@
+K 25
+svn:wc:ra_dav:version-url
+V 37
+/svn/!svn/ver/26/trunk/lib/fapi/Forms
+END
+ValidatableInterface.php
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/ValidatableInterface.php
+END
+RadioButton.php
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/RadioButton.php
+END
+PasswordVerifyField.php
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/PasswordVerifyField.php
+END
+SubmitButton.php
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/SubmitButton.php
+END
+ButtonBar.php
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/24/trunk/lib/fapi/Forms/ButtonBar.php
+END
+MultiForms.php
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/24/trunk/lib/fapi/Forms/MultiForms.php
+END
+DayHoursField.php
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/DayHoursField.php
+END
+Form.php
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/26/trunk/lib/fapi/Forms/Form.php
+END
+ModelField.php
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/24/trunk/lib/fapi/Forms/ModelField.php
+END
+DatabaseColumnField2.php
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/DatabaseColumnField2.php
+END
+Button.php
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/24/trunk/lib/fapi/Forms/Button.php
+END
+TextArea.php
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/TextArea.php
+END
+Label.php
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/Label.php
+END
+DatabaseInterface.php
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/DatabaseInterface.php
+END
+Checkbox.php
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/24/trunk/lib/fapi/Forms/Checkbox.php
+END
+MonthField.php
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/MonthField.php
+END
+Element.php
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/24/trunk/lib/fapi/Forms/Element.php
+END
+EmailField.php
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/EmailField.php
+END
+BoxContainer.php
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/24/trunk/lib/fapi/Forms/BoxContainer.php
+END
+HiddenField.php
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/HiddenField.php
+END
+Fieldset.php
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/Fieldset.php
+END
+ColumnContainer.php
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/24/trunk/lib/fapi/Forms/ColumnContainer.php
+END
+Attribute.php
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/24/trunk/lib/fapi/Forms/Attribute.php
+END
+TabLayout.php
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/TabLayout.php
+END
+PasswordField.php
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/PasswordField.php
+END
+Tab.php
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/Tab.php
+END
+DefaultRenderer.php
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/DefaultRenderer.php
+END
+RadioGroup.php
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/RadioGroup.php
+END
+DateField.php
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/26/trunk/lib/fapi/Forms/DateField.php
+END
+SelectionList.php
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/24/trunk/lib/fapi/Forms/SelectionList.php
+END
+Container.php
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/24/trunk/lib/fapi/Forms/Container.php
+END
+Field.php
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/24/trunk/lib/fapi/Forms/Field.php
+END
+TableLayout.php
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/24/trunk/lib/fapi/Forms/TableLayout.php
+END
+DatabaseColumnField.php
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/24/trunk/lib/fapi/Forms/DatabaseColumnField.php
+END
+fapi.inc.php
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/22/trunk/lib/fapi/Forms/fapi.inc.php
+END
+FileUploadField.php
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/26/trunk/lib/fapi/Forms/FileUploadField.php
+END
+TextField.php
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/24/trunk/lib/fapi/Forms/TextField.php
+END
