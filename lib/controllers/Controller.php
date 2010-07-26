@@ -1,8 +1,10 @@
 <?php
-require_once "ModelController.php";
+/*require_once "ModelController.php";
 require_once "PackageController.php";
 require_once "ErrorController.php";
-require_once "lib/rapi/ReportController.php";
+require_once "ReportController.php";*/
+
+require_once "Model.php";
 
 /**
  * The Controller class represents the base class for all controllers that are
@@ -150,7 +152,7 @@ abstract class Controller
 				// Load a package controller for this folder
 				if(is_dir("app/modules$controller_path"))
 				{
-					$controller = new Packagecontroller();
+					$controller = new PackageController();
 					$controller_name = "PackageController";
 				}
 				else
@@ -215,6 +217,10 @@ abstract class Controller
 		return "No Content";
 	}
 
+    /**
+     * 
+     * @return <type>
+     */
 	public function showInMenu()
 	{
 		return $this->_showInMenu;

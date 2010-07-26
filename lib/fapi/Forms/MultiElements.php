@@ -119,7 +119,7 @@ class MultiElements extends Container
 			if($element->getType()=="Field")
 			{
 				$element->setId($element->getId()==""?$element->getName():$element->getId());
-				$element->setName($template->getId().".".$element->getName()."[]");
+				$element->setName($template->getName().".".$element->getName()."[]");
 			}
 
 			$element->setId($element->getId()."_--index--");

@@ -99,6 +99,7 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 	protected $validatorCallback;
 	protected $validatorCallbackData;
 	public $isContainer = true;
+    protected $runValidations = true;
 
 	public function __construct($renderer="table")
 	{
@@ -254,13 +255,16 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 	public function validate()
 	{
 		$retval = true;
-		foreach($this->elements as $element)
-		{
-			if($element->validate()==false)
-			{
-				$retval=false;
-			}
-		}
+        if($this->runValidations)
+        {
+            foreach($this->elements as $element)
+            {
+                if($element->validate()===false)
+                {
+                    $retval=false;
+                }
+            }
+        }
 		return $retval;
 	}
 
@@ -520,12 +524,14 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 		$ret = "";
 
 		// Call the callback function for the container.
-		if($this->onRenderCallback!="")
+		/*if($this->onRenderCallback!="")
 		{
 			$callback = $this->onRenderCallback;
 			$data = $this->getData();
 			$callback($this,$data);
-		}
+		}*/
+
+        $this->onRender();
 
 		if($renderer_head!="") $ret .= $renderer_head();
 		foreach($this->elements as $element)
