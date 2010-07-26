@@ -107,6 +107,11 @@ abstract class SQLDBDataStore extends DataStore
 		
 	}*/
 
+    /*private function getExpandedFieldListElement()
+    {
+        
+    }*/
+
 	public function getExpandedFieldList($fields,$references,$resolve=true)
 	{
 		if($fields == null) $fields = array_keys($this->storedFields);
@@ -117,29 +122,69 @@ abstract class SQLDBDataStore extends DataStore
 		//Go through all the fields in the system.
 		foreach($fields as $field)
 		{
-			$referred = false;
-			foreach($references as $reference)
-			{
-				//print (string)$field."<br/>";
-				//var_dump($reference);die();
-				if($reference["referencing_field"] == (string)$field)
-				{
-					$do_join = true;
-					$referred = true;
-					$r_expanded_fields[$field] = $reference["table"].".".$reference["referenced_value_field"];
-					$expanded_fields[$field] = $reference["table"].".".$reference["referenced_value_field"]." as \"{$reference["referencing_field"]}\"";
-					break;
-				}
-			}
-			if(!$referred)
-			{
-				$r_expanded_fields[$field]=(count($references)>0?$this->database.".":"").(string)$field;
-				if($resolve)
-					$expanded_fields[$field]= $this->formatField($this->fields[$field],(count($references)>0?$this->database.".":"").(string)$field);
-				else
-					$expanded_fields[$field]=$r_expanded_fields[$field]." as \"{$this->fields[$field]["name"]}\"";
-				//var_dump($this->fields[$field]['type']);
-			}
+            $subFields = explode(",",$field);
+            if(count($subFields)==1)
+            {
+    			$referred = false;
+                foreach($references as $reference)
+                {
+                    //print (string)$field."<br/>";
+                    //var_dump($reference);die();
+                    if($reference["referencing_field"] == (string)$field)
+                    {
+                        $do_join = true;
+    					$referred = true;
+        				$r_expanded_fields[$field] = $reference["table"].".".$reference["referenced_value_field"];
+            			$expanded_fields[$field] = $reference["table"].".".$reference["referenced_value_field"]." as \"{$reference["referenced_value_field"]}\"";
+                		break;
+                    }
+                }
+                if(!$referred)
+                {
+                    $r_expanded_fields[$field]=(count($references)>0?$this->database.".":"").(string)$field;
+                    if($resolve)
+                        $expanded_fields[$field]= $this->formatField($this->fields[$field],(count($references)>0?$this->database.".":"").(string)$field);
+                    else
+                        $expanded_fields[$field]=$r_expanded_fields[$field]." as \"{$this->fields[$field]["name"]}\"";
+                    //var_dump($this->fields[$field]['type']);
+                }
+            }
+            else
+            {
+                foreach($subFields as $subField)
+                {
+                    $referred = false;
+                    /*foreach($references as $reference)
+                    {
+                        //print (string)$field."<br/>";
+                        //var_dump($reference);die();
+                        if($reference["referencing_field"] == (string)$field)
+                        {
+                            $do_join = true;
+                            $referred = true;
+                            $r_expanded_fields[$subField] = $reference["table"].".".$reference["referenced_value_field"];
+                            $expanded_fields[$subField] = $reference["table"].".".$reference["referenced_value_field"]." as \"{$reference["referencing_field"]}\"";
+                            break;
+                        }
+                    }*/
+                    if(!$referred)
+                    {
+                        $r_expanded_subFields[$subField]=(count($references)>0?$this->database.".":"").(string)$subField;
+                        if($resolve)
+                        {
+                            $expanded_subFields[$subField]= $this->formatField($this->fields[$subField],(count($references)>0?$this->database.".":"").(string)$subField,false);
+                        }
+                        else
+                        {
+                            $expanded_subFields[$subField]=$r_expanded_fields[$subField]." as \"{$this->fields[$subField]["name"]}\"";
+                        }
+                        //var_dump($this->fields[$field]['type']);
+                    }   
+                }
+                //var_dump($expanded_subFields);
+                $r_expanded_fields[$field] = $this->concatenate($expanded_subFields);
+                $expanded_fields[$field]=$this->concatenate($expanded_subFields);
+            }
 		}
 		$field_list = implode(",",$expanded_fields);
 		return array("fields"=>$field_list,"expandedFields"=>$r_expanded_fields,"doJoin"=>$do_join);

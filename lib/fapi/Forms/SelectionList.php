@@ -84,6 +84,7 @@ class SelectionList extends Field
 				return $option->label;
 			}
 		}
+        return $this->value;
 	}
 
 	public function hasOptions()

@@ -11,18 +11,32 @@ class ModelTable extends Table
 	protected $fields;
 	private $searchScript;
 	protected $fieldInfo;
+    protected $conditions;
 	
 	public function __construct($prefix)
 	{
 		parent::__construct($prefix);
 	}
 	
-	public function setModel($model,$params)
+	public function setModel($model,$params,$concatenatedLabels=null)
 	{
-		$headers = $model->getLabels($params["fields"]);		
+        //var_dump($concatenatedLabels);
+		$headers = $model->getLabels($params["fields"]);
 		array_shift($headers);
 		$this->data = $model->get($params);
 		//$this->data = $model->formatData();
+
+        if(count($concatenatedLabels)>0)
+        {
+            foreach($headers as $key=>$header)
+            {
+                if($header == "Concatenated Field")
+                {
+                    $headers[$key] = (string)array_shift($concatenatedLabels);
+                }
+            }
+        }
+
 		$this->headers = $headers;		
 		$this->model = $model;
 		$this->params = $params;
@@ -39,8 +53,20 @@ class ModelTable extends Table
 				case "integer":
 				case "double":
 					$this->headerParams[$field["name"]]["type"] = "number";
+                    if(isset($field["value"]))
+                    {
+                       $this->conditions.="{$field["name"]}=='".(string)$field["value"]."',";
+                    }
 					break;
-			}
+                
+                case "enum":
+					$this->headerParams[$field["name"]]["type"] = "number";
+                    if(isset($field["value"]))
+                    {
+                       $this->conditions.=$this->model->database.".{$field["name"]}=='{$field["value"]}',";
+                    }
+					break;
+            }
 		}
 	}
 	
@@ -80,12 +106,27 @@ class ModelTable extends Table
 					$name = $fields[$i]["name"];
 					$this->searchScript .= "if($('#$name').val()!='') condition += escape('$name='+$('#$name').val()+',');";
 					break;
-				/*case "reference":
-					$list = new ModelField($fields[$i]["reference"],$fields[$i]["referenceValue"]);
-					$list->setId($fields[$i]["name"]);
-					$table .= $list->render();
+				case "reference":
+					$text = new TextField();
+					$text->setId($fields[$i]["name"]);
+					$text->addAttribute("onkeyup",$searchFunction);
+					$table .= $text->render();
+                    $modelInfo = Model::resolvePath($fields[$i]["reference"]);
+                    $model = Model::load($modelInfo["model"]);
+                    $fieldName = $model->database.".".$fields[$i]["referenceValue"];
+                    $this->searchScript .= "if($('#{$fields[$i]["name"]}').val()!='') condition += escape('$fieldName='+$('#{$fields[$i]["name"]}').val()+',');";
 					break;
-				case "enum":
+                    /*$list = new ModelSearchField($fields[$i]["reference"],$fields[$i]["referenceValue"]);
+                    $list->boldFirst = false;
+					$list->setId($fields[$i]["name"]);
+                    $list->addAttribute("onChange",$searchFunction);
+					$table .= $list->render();
+                    $modelInfo = Model::resolvePath($fields[$i]["reference"]);
+                    $model = Model::load($modelInfo["model"]);
+                    $fieldName = $model->database.".".$field[$i]["name"];
+                    $this->searchScript .= "if($('#{$field["name"]}').val()!='') condition += escape('$fieldName='+$('#{$field["name"]}').val()+',');";
+					break;*/
+				/*case "enum":
 					$list = new SelectionList();
 					foreach($fields[$i]["options"] as $value => $label)
 					{
@@ -181,7 +222,7 @@ class ModelTable extends Table
 				"sortField"=>$this->params["fields"][1],
 				"page"=>0,
 				"id"=>$this->name,
-				"conditions"=>""
+				"conditions"=>$this->conditions
 			);
 			
 			$path = Application::$prefix."/lib/models/urlaccess.php";

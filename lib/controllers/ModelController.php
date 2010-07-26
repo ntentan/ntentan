@@ -1,5 +1,5 @@
 <?php
-require_once "ControllerPermissions.php";
+//require_once "ControllerPermissions.php";
 
 /**
  * A controller for interacting with the data in models. This controller is loaded
@@ -22,7 +22,7 @@ require_once "ControllerPermissions.php";
  *
  * @author james
  */
-class ModelController extends Controller implements ControllerPermissions
+class ModelController extends Controller// implements ControllerPermissions
 {
 	/**
 	 * An instance of the model that this controller is linked to.
@@ -103,9 +103,6 @@ class ModelController extends Controller implements ControllerPermissions
 		{
 			$this->app = simplexml_load_file($this->localPath."/app.xml");
 		}
-		//$this->action;
-		//$this->setupList();
-		
 	}
 	
 	
@@ -158,6 +155,7 @@ class ModelController extends Controller implements ControllerPermissions
 		else
 		{
 			$fieldNames = $this->app->xpath("/app:app/app:list/app:field");
+            $concatenatedLabels = $this->app->xpath("/app:app/app:list/app:field/@label");
 		}
 		
 		foreach($fieldNames as $i => $fieldName)
@@ -169,7 +167,7 @@ class ModelController extends Controller implements ControllerPermissions
 		
 		$this->setupList();
 		
-		$this->table->setModel($this->model,array("fields"=>$fieldNames,"conditions"=>$this->listConditions));
+		$this->table->setModel($this->model,array("fields"=>$fieldNames,"conditions"=>$this->listConditions),$concatenatedLabels);
 		return $this->toolbar->render().$this->table->render();
 	}
 
@@ -220,7 +218,7 @@ class ModelController extends Controller implements ControllerPermissions
 						switch($field["type"])
 						{
 							case "boolean":
-								$element = new CheckBox($field["label"],$field["name"],$field["description"],1);
+								$element = new Checkbox($field["label"],$field["name"],$field["description"],1);
 								break;
 
 							case "enum":
@@ -300,7 +298,7 @@ class ModelController extends Controller implements ControllerPermissions
 			if($return===true)
 			{
 				$id = $c["instance"]->model->save();
-				User::log($c["success_message"],serialize($data));
+				User::log($c["success_message"],$data);
 				if($redirect)
 				{
 					header("Location: ".$c["instance"]->urlPath."?notification=".$c["success_message"]);
@@ -329,7 +327,7 @@ class ModelController extends Controller implements ControllerPermissions
 			if($return===true)
 			{
 				$c["instance"]->model->update($c["key_field"],$c["key_value"]);
-				User::log($c["success_message"],serialize($data));
+				User::log($c["success_message"],$data);
 				if($redirect)
 				{
 					header("Location: ".$c["instance"]->urlPath."?notification=".$c["success_message"]);
@@ -388,7 +386,7 @@ class ModelController extends Controller implements ControllerPermissions
 	{
 		$form = $this->getForm();
 		$form->setShowField(false);
-		$data = $this->model->get(array("conditions"=>$this->model->getKeyField()."='".$params[0]."'"),SQLDatabaseModel::MODE_ASSOC,true);
+		$data = $this->model->get(array("conditions"=>$this->model->getKeyField()."='".$params[0]."'"),SQLDatabaseModel::MODE_ASSOC,true,false);
 		$form->setData($data[0]);
 		$this->label = "View ".$this->label;
 		return $form->render(); //ModelController::frameText(400,$form->render());

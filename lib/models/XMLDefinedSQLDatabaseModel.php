@@ -27,7 +27,7 @@ class XMLDefinedSQLDatabaseModel extends SQLDatabaseModel
         {
             $hooksClass = "XMLDefinedSQLDatabaseModelHooks";
         }
-        return new XMLDefinedSQLDatabaseModel($model_path."model.xml", $model_package, $path_prefix,$hooksClass);
+        return new XMLDefinedSQLDatabaseModel(Application::$packagesPath.$model_path."model.xml", $model_package, $path_prefix,$hooksClass);
     }
 
     public function __construct($model,$package,$path,$hooksClass)
@@ -80,6 +80,11 @@ class XMLDefinedSQLDatabaseModel extends SQLDatabaseModel
 				"validators"=>$validators,
 				"options"=>$options
 				);
+
+                if(isset($field["value"]))
+                {
+                    $fieldInfo["value"] = $field["value"];
+                }
 
 				$this->fields[(string)$field["name"]] = $fieldInfo;
 

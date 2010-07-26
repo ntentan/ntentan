@@ -14,6 +14,11 @@
             //$this->setValue(time());
         }
 
+        public function getDisplayValue()
+        {
+            return $this->value==""?"":date("jS F, Y",$this->value);
+        }
+
         public function render()
         {
         	$this->addCSSClass( "fapi-textfield");

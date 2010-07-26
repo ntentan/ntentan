@@ -15,7 +15,7 @@ abstract class Element
 {
 	const SCOPE_ELEMENT = "";
 	const SCOPE_WRAPPER = "_wrapper";
-		
+
 	protected $ajax = true;
 
 	/**
@@ -45,6 +45,7 @@ abstract class Element
 	//! objects of the Attribute class.
 	//! \see Attribute
 	protected $attributes = array();
+	protected $wrapperAttributes = array();
 
 	//! An array of all error messages associated with this element.
 	//! Error messages are setup during validation, when any element
@@ -76,7 +77,7 @@ abstract class Element
 	//! A value which determines whether this field is to be used in
 	//! constructing database queries
 	protected $storable = true;
-	
+
 	/**
 	 * The name of the form field. This is what is to be outputed as
 	 * the HTML name attribute of the field. If name encryption is
@@ -84,7 +85,7 @@ abstract class Element
 	 * algorithm. However internally the Field may still be referenced
 	 * bu the unmangled name.
 	 */
-	protected $name;	
+	protected $name;
 
 	//! A value which determines whether this element contains file data;
 	protected $hasFile = false;
@@ -114,7 +115,7 @@ abstract class Element
 	{
 		return $this->id;
 	}
-	
+
 
 	/**
 	 * Public accessor for setting the name property of the field.
@@ -142,7 +143,7 @@ abstract class Element
 		{
 			return $this->name;
 		}
-	}	
+	}
 
 	//! Sets the label which is attached to this element.
 	public function setLabel($label)
@@ -179,9 +180,9 @@ abstract class Element
 	}
 
 	/**
-     * Gets the method being used by the form. The method could be either
-     * "GET" or "POST".
-     */
+	 * Gets the method being used by the form. The method could be either
+	 * "GET" or "POST".
+	 */
 	public function getMethod()
 	{
 		return $this->method;
@@ -234,26 +235,43 @@ abstract class Element
 	//! \see Attribute
 	public function addAttributeObject($attribute)
 	{
-		array_push($this->attributes, $attribute);
+		$this->attributes[] = $attribute;
 	}
 
 	//! Adds an attribute to the list of attributes of this element.
 	//! This method internally creates a new Attribute object and appends
 	//! it to the list of attributes.
 	//! \see Attribute
-	public function addAttribute($attribute,$value)
+	public function addAttribute($attribute,$value,$scope = Element::SCOPE_ELEMENT)
 	{
 		// Force the setting of the attribute.
-		foreach($this->attributes as $attribute_obj)
+		if($scope==Element::SCOPE_ELEMENT)
 		{
-			if($attribute_obj->getAttribute()==$attribute)
+			foreach($this->attributes as $attribute_obj)
 			{
-				$attribute_obj->setValue($value);
-				return;
+				if($attribute_obj->getAttribute()==$attribute)
+				{
+					$attribute_obj->setValue($value);
+					return;
+				}
 			}
+			$attribute = new Attribute($attribute, $value);
+			$this->attributes[] = $attribute;
+			//$this->addAttributeObject($attribute);
 		}
-		$attribute = new Attribute($attribute, $value);
-		$this->addAttributeObject($attribute);
+		else if($scope = Element::SCOPE_WRAPPER)
+		{
+			foreach($this->wrapperAttributes as $attribute_obj)
+			{
+				if($attribute_obj->getAttribute()==$attribute)
+				{
+					$attribute_obj->setValue($value);
+					return;
+				}
+			}
+			$attribute = new Attribute($attribute, $value);
+			$this->wrapperAttributes[] = $attribute;
+		}
 		return $this;
 	}
 
@@ -285,10 +303,15 @@ abstract class Element
 
 	//! Returns an HTML representation of all the attributes. This method
 	//! is normally called when rendering the HTML for the element.
-	public function getAttributes()
+	public function getAttributes($scope=Element::SCOPE_ELEMENT)
 	{
+		switch($scope)
+		{
+			case Element::SCOPE_ELEMENT: $attributes = $this->attributes; break;
+			case Element::SCOPE_WRAPPER: $attributes = $this->wrapperAttributes; break;
+		}
 		$ret = "";
-		foreach($this->attributes as $attribute)
+		foreach($attributes as $attribute)
 		{
 			$ret .= $attribute->getHTML()." ";
 		}

@@ -164,19 +164,19 @@ class MultiElements extends Container
 				<input type='hidden' id='multiform-numitems-{$this->index}' value='$count'/>
 					<div id='multiform-contents-{$this->index}'>
 					$contents
-					</div>
-					<div class='fapi-multiform-bar'><span onclick='fapiMultiFormAdd({$this->index})' style='font-size:smaller;cursor:pointer'>Add New</span></div>
-				</div>
+					</div>";
+		$ret .= $this->getShowField()?"<div class='fapi-multiform-bar'><span onclick='fapiMultiFormAdd({$this->index})' style='font-size:smaller;cursor:pointer'>Add New</span></div>":"";
+		$ret .="</div>
 				<div id='multiform-template-{$this->index}' style='display:none'>
 					$template
 				</div>";
 		return $ret;
 	}
 
-	/*public function setShowField($showField)
+	public function setShowField($showField)
 	{
-		$this->showfield = $showField;
+		parent::setShowField($showField);
 		$this->template->setShowField($showField);
-	}*/
+	}
 }
 ?>

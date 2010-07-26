@@ -3,7 +3,7 @@ class User
 {
 	public static function log($activity,$data=null)
 	{
-		$model = model::load("system.logs");
+		$model = Model::load("system.logs");
 		$model->setData(array
 			(
 				"time"=>time(),
@@ -11,7 +11,7 @@ class User
 				"ip_address"=>$_SERVER["REMOTE_ADDR"],
 				"machine_name"=>$_SERVER["REMOTE_HOST"],
 				"action_performed"=>$activity,
-				"data"=>base64_encode($data)
+				"data"=>base64_encode(serialize($data))
 			)
 		);
 		$model->save();
