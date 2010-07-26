@@ -210,54 +210,13 @@ class Form extends Container
 		if($this->isFormSent())
 		{
 			$data = $this->getData();
-			$validated = $this->validate() + $this->executeCallback($this->validatorCallback,$data,$this,$this->validatorCallbackData);
+			$validated = $this->validate() * ($this->validatorCallback==""?1:$this->executeCallback($this->validatorCallback,$data,$this,$this->validatorCallbackData));
 			if($validated)
 			{
 				$this->executeCallback($this->callback,$data,$this,$this->callbackData);
 			}
 		}
 		return $this->renderForm();
-		/*if($this->store == Container::STORE_DATABASE || $this->store == Container::STORE_NONE)
-		{
-			$validate = $this->validate();
-			if($validate===true)
-			{
-				return;
-			}
-			else if($validate!="")
-			{
-				return $validate;
-			}
-			else
-			{
-				return $this->renderForm();
-			}
-		}
-		else
-		{
-			if($this->isFormSent())
-			{
-				$errors = $this->saveData();
-				if($errors===true)
-				{
-					if($this->successUrl!="") header("Location: {$this->successUrl}");
-				}
-				else
-				{
-					$fields = array_keys($errors["errors"]);
-					foreach($fields as $field)
-					{
-						foreach($errors["errors"][$field] as $error)
-						{
-							$element = $this->getElementByName($field);
-							$element->addError(str_replace("%field_name%",$element->getLabel(),$error));
-						}
-					}
-				}
-			}
-			$this->retrieveModelData();
-			return $this->renderForm();
-		}*/
 	}
 
 	/**
@@ -267,19 +226,6 @@ class Form extends Container
 	{
 		$this->submitValue = $submitValue;
 	}
-
-	//! Set the callback function.
-	/*public function setCallback($callback)
-	{
-		$this->callback = $callback;
-	}*/
-
-	//! Set the pre save callback. This callback function is called
-	//! before the form data is saved.
-	/*public function setPreSaveCallback($callback)
-	{
-		$this->preSaveCallback = $callback;
-	}*/
 
 	public function setShowSubmit($showSubmit)
 	{

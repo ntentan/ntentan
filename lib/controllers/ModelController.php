@@ -434,7 +434,7 @@ class ModelController extends Controller implements ControllerPermissions
 
 		$fieldNames = $this->model->getFieldNames();
 		array_shift($fieldNames);
-		$this->model->get(array("fields"=>$fieldNames));
+		$data = $this->model->get(array("fields"=>$fieldNames));
 		//$data = $this->model->formatData();
 		$table = new TableContent($headers,$data);
 		$table->style["decoration"] = true;
