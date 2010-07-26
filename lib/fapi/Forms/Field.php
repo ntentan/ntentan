@@ -12,15 +12,8 @@ require_once ("ValidatableInterface.php");
  */
 abstract class Field extends Element implements DatabaseInterface, Validatable
 {
+	
 	protected $jsValidations = array();
-	/**
-	 * The name of the form field. This is what is to be outputed as
-	 * the HTML name attribute of the field. If name encryption is
-	 * enabled the outputed name to HTML is mangled by the encryption
-	 * algorithm. However internally the Field may still be referenced
-	 * bu the unmangled name.
-	 */
-	protected $name;
 
 	/**
 	 * A flag for setting the required state of the form. If this value
@@ -46,6 +39,10 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 	//! A validation constraint which expects that the value entered in
 	//! this field is unique in the database.
 	protected $unique;
+	
+	protected $jsOnChangeParams = array();
+	
+	public $isField = true;
 
 	public static function prepareMessage($text)
 	{
@@ -57,7 +54,7 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 		$id = parent::getId();
 		if($id == "" && $this->ajax)
 		{
-			$id = $this->getName();
+			$id = str_replace(".","_",$this->getName());
 		}
 		return $id;
 	}
@@ -69,34 +66,6 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 	{
 		$this->name = $name;
 		$this->value = $value;
-	}
-
-	/**
-	 * Public accessor for setting the name property of the field.
-	 *
-	 * @param  $name The name to assign to the form element.
-	 */
-	public function setName($name)
-	{
-		$this->name = $name;
-		return $this;
-	}
-
-	/**
-	 * Public accessor for getting the name property of the field.
-	 *
-	 * @return The name of the form field.
-	 */
-	public function getName($encrypt=true)
-	{
-		if($this->getNameEncryption() && $encrypt)
-		{
-			return md5($this->name);
-		}
-		else
-		{
-			return $this->name;
-		}
 	}
 
 	/**
@@ -357,6 +326,41 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 	public function getJsValidations()
 	{
 		return "[".implode($this->jsValidations,",")."]";
+	}
+	
+	public function setJsOnChange($params)
+	{
+		$this->jsOnChangeParams = $params;
+		return $this;
+	}
+	
+	public function addJsOnChangeParameter($thisValue,$element,$scope,$property,$propertyValue)
+	{
+		$this->jsOnChangeParams[$thisValue][] = array("element"=>$element,"scope"=>$scope,"property"=>$property,"propertyValue"=>$propertyValue);
+		return $this;
+	}
+	
+	protected function getJsOnChangeScript()
+	{
+		if(count($this->jsOnChangeParams)==0) return;
+		$id = $this->getId();
+		$function = "{$id}OnChangeFunction()";
+		$ret = "<script type='text/javascript'>";
+		$ret .= "function $function {";
+		foreach($this->jsOnChangeParams as $value =>$params)
+		{
+			foreach($params as $param)
+			{
+				$ret .= "if(document.getElementById('$id').value=='$value') {";
+				$targetValue = $param["propertyValue"];
+				$targetId = $param["element"]->getId().$param["scope"];
+				$ret .= " document.getElementById('$targetId').{$param["property"]} = {$param["propertyValue"]};";
+				$ret .= "}";
+			}
+		}
+		$ret .= "}";
+		$ret .= "</script>";
+		return $ret;
 	}
 }
 ?>

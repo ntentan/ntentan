@@ -16,6 +16,7 @@ class ReportController extends Controller
 	protected $xml;
 	public $referencedFields;
 	private $widths;
+	private $types = array();
 	private $headings=array();
 	private $tableRendered;
 
@@ -29,7 +30,14 @@ class ReportController extends Controller
 		$this->_showInMenu = true;
 
 		$baseModel = $this->xml["baseModel"];
-		$baseModel = Model::load((string)$baseModel);
+		try
+		{
+			$baseModel = Model::load((string)$baseModel);
+		}
+		catch(Exception $e)
+		{
+			throw new Exception("Base model could not be loaded");
+		}
 		$this->referencedFields = array();
 
 		foreach($baseModel->getReferencedFields() as $field)
@@ -45,9 +53,9 @@ class ReportController extends Controller
 		if(count($multipleFields)>1)
 		{
 			$data = Model::getMulti(
-			array(
+				array(
 					"fields"=>array($params["grouping_fields"][$params["grouping_level"]],
-			)
+				)
 			),SQLDatabaseModel::MODE_ARRAY);
 			$g1Model = $params["models"][array_rand($params["models"])];
 			$fields = array();
@@ -80,11 +88,11 @@ class ReportController extends Controller
 			$dataParams["total"][$index] = array_search($total,$params["fields"]);
 		}
 
-		foreach($data as $dat)
+		foreach($data as $key=>$dat)
 		{
 			$filters_copy = $params["filters"];
 			$filters_copy[] = $conditionField."='".$g1Model->escape($dat[0])."'";
-
+			
 			switch($g1FieldInfo[0]["type"])
 			{
 				case "enum":
@@ -123,8 +131,6 @@ class ReportController extends Controller
 					$params["global_functions"] = array("MAX","LENGTH");
 					$params["global_functions_set"] = true;
 
-					//var_dump($params["fields"]);
-
 					$this->widths = Model::getMulti($params,SQLDatabaseModel::MODE_ARRAY);
 					$this->widths = $this->widths[0];
 
@@ -134,19 +140,24 @@ class ReportController extends Controller
 						{
 							$this->widths[$i] = strlen($header);
 						}
+						if($params["field_infos"][$params["fields"][$i]]["type"]=="integer" ||$params["field_infos"][$params["fields"][$i]]["type"]=="double")
+						{
+							$this->types[$i] = "number";
+						}
 					}
 
 					$tWidths = array_sum($this->widths);
+					
 					foreach($this->widths as $i => $width)
 					{
 						$this->widths[$i] = $width/$tWidths;
 					}
-				}
-				
+				}				
 
 				if(count($data)>0)
 				{
 					$dataParams["widths"] = $this->widths;
+					$dataParams["type"] = $this->types;
 					$table = new TableContent($params["headers"],$data,$dataParams);
 					foreach($this->headings as $previous_heading)
 					{
@@ -156,7 +167,6 @@ class ReportController extends Controller
 					$params["report"]->add($heading);
 					$params["report"]->add($table);
 					$total = $table->getTotals();
-					//$params["report"]->add(new TextContent("Inner - ".serialize($total)));
 
 					foreach($total as $i=>$value)
 					{
@@ -166,29 +176,18 @@ class ReportController extends Controller
 					$totalTable->data_params = array("widths"=>$this->widths);
 					$total[0] = $dat[0]." Totals";
 					$totalTable->setData($total);
-					//$params["report"]->add($totalTitle);
 					$params["report"]->add($totalTable);
 				}
 				$this->tableRendered = true;
 			}
 			else
-			{
-				/*print "level";
-				var_dump($params["grouping_level"]);
-				print "num headings";
-				var_dump(count($this->headings));
-				print "headings";
-				var_dump($this->headings);
-				print "new header";
-				var_dump($dat[0]);*/
-				
+			{				
 				if($this->tableRendered===true && ($params["grouping_level"]-1)<count($this->headings))
 				{
-					/*var_dump("popped");*/
 					$this->tableRendered = false;
 					array_pop($this->headings);
 				}
-			/*	print "************************<br/><br/>";*/
+
 				$this->headings[]=$heading;
 				$params_copy = $params;
 				$params_copy["grouping_level"]++;
@@ -246,25 +245,25 @@ class ReportController extends Controller
 					break;
 
 				case "rapi:text";
-				$text = new TextContent();
-				$reader->moveToAttribute("style");
-				switch($reader->value)
-				{
-					case "heading":
-						$text->style["size"] = 16;
-						$text->style["font"] = "Helvetica";
-						$text->style["bold"] = true;
-						break;
+					$text = new TextContent();
+					$reader->moveToAttribute("style");
+					switch($reader->value)
+					{
+						case "heading":
+							$text->style["size"] = 16;
+							$text->style["font"] = "Helvetica";
+							$text->style["bold"] = true;
+							break;
 							
-					default:
-						$text->style["size"] = $reader->moveToAttribute("size")?$reader->value:12;
-						$text->style["font"] = $reader->value?$reader->moveToAttribute("font"):"Helvetica";
-						break;
-				}
-				$reader->read();
-				$text->setText($reader->value);
-				$report->add($text);
-				break;
+						default:
+							$text->style["size"] = $reader->moveToAttribute("size")?$reader->value:12;
+							$text->style["font"] = $reader->value?$reader->moveToAttribute("font"):"Helvetica";
+							break;
+					}
+					$reader->read();
+					$text->setText($reader->value);
+					$report->add($text);
+					break;
 					
 				case "rapi:table":
 					$reader->moveToAttribute("name");
@@ -275,6 +274,7 @@ class ReportController extends Controller
 					$dataParams["total"] = array();
 
 					$models = array();
+					$fieldInfos = array();
 
 					// Generate filter conditions
 					$filters = array();
@@ -297,6 +297,8 @@ class ReportController extends Controller
 							$model = $models[$modelInfo["model"]];
 							$fieldInfo = $models[$modelInfo["model"]]->getFields(array($modelInfo["field"]));
 							$fieldInfo = $fieldInfo[0];
+							$fieldInfos[$field] = $fieldInfo;
+							
 							if(array_search($model->getKeyField(),$this->referencedFields)=== false || $fieldInfo["type"]=="double")
 							{
 								switch($fieldInfo["type"])
@@ -394,6 +396,33 @@ class ReportController extends Controller
 						{
 							$dataParams["total"][$index] = array_search($total,$params["fields"]);
 						}
+						
+						$wparams = $params;
+						$wparams["global_functions"] = array("MAX","LENGTH");
+						$wparams["global_functions_set"] = true;
+						$this->widths = Model::getMulti($wparams,SQLDatabaseModel::MODE_ARRAY);
+						$this->widths = $this->widths[0];
+						
+						foreach($headers as $i=>$header)
+						{
+							if(strlen($header)>$this->widths[$i])
+							{
+								$this->widths[$i] = strlen($header);
+							}
+							if($fieldInfos[$fields[$i]]["type"]=="integer" ||$fieldInfos[$fields[$i]]["type"]=="double")
+							{
+								$dataParams["type"][$i] = "number";
+							}
+						}						
+						
+						$tWidths = array_sum($this->widths);
+						foreach($this->widths as $i => $width)
+						{
+							$this->widths[$i] = $width/$tWidths;
+						}
+
+						$dataParams["widths"] = $this->widths;
+											
 						$table = new TableContent($headers,Model::getMulti($params),$dataParams);
 						$total = $table->getTotals();
 						$report->add($table);
@@ -410,22 +439,26 @@ class ReportController extends Controller
 								"filters"=>$filters,
 								"report"=>$report,
 								"data_params"=>$dataParams,
-								"totals"=>array()
+								"totals"=>array(),
+								"field_infos"=>$fieldInfos
 						);
 						$total = $this->generateTable($params);
 					}
 					
-					$total[0] = "Overall Total";
-					$totalTable = new TableContent(null,$total,array("widths"=>$this->widths));
-					$totalTable->style["totalsBox"] = true;
+					if(count($total)>0)
+					{
+						$total[0] = "Overall Total";
+						$totalTable = new TableContent(null,$total,array("widths"=>$this->widths));
+						$totalTable->style["totalsBox"] = true;
 
-					$totalTitle = new TextContent("");
-					$totalTitle->style["bold"] = true;
-					$totalTitle->style["italics"] = true;
-					$totalTitle->style["size"] = 4;
-					$totalTitle->style["top_margin"]=3;
-					$report->add($totalTitle);
-					$report->add($totalTable);
+						$totalTitle = new TextContent("");
+						$totalTitle->style["bold"] = true;
+						$totalTitle->style["italics"] = true;
+						$totalTitle->style["size"] = 4;
+						$totalTitle->style["top_margin"]=3;
+						$report->add($totalTitle);
+						$report->add($totalTable);
+					}
 					break;
 			}
 		}
@@ -520,20 +553,18 @@ class ReportController extends Controller
 					}
 					else
 					{
-						//@todo Instead of pulling everything out of the database, just pull what is necessary.
-						$enum_list = new SelectionList("","{$table["name"]}.{$fieldInfo["name"]}_value");
-						$enum_list->setMultiple(true);
-						$data = $model->get(array("fields"=>array($model->getKeyField(),$fieldInfo["name"])),SQLDatabaseModel::MODE_ARRAY);
-						foreach($data as $value)
-						{
-							$enum_list->addOption($value[1]);// ,$value[0]);
-						}
+						$enum_list = new ModelSearchField();
+						$enum_list->setName("{$table["name"]}.{$fieldInfo["name"]}_value");
+						$enum_list->setModel($model,$fieldInfo["name"]);
+						$enum_list->addSearchField($fieldInfo["name"]);
+						$enum_list->boldFirst = false;
 						$filters
 						->add(Element::create("Label",(string)$labels[$key]),$i,0)
 						->add(Element::create("SelectionList","","{$table["name"]}.{$fieldInfo["name"]}_option")
 						->addOption("Is any of","IS_ANY_OF")
 						->addOption("Is none of","IS_NONE_OF"),$i,1)
-						->add($enum_list,$i,2);
+						->add(Element::create("MultiFields")->setTemplate($enum_list),$i,2);
+						
 					}
 				}
 				else
@@ -574,7 +605,7 @@ class ReportController extends Controller
 			 $groupingTable->add($g3Logo,2,2);*/
 
 			$container = new FieldSet($table["name"]);
-			$container->addAttribute("style","width:80%");
+			//$container->addAttribute("style","width:60%");
 			$container->add(
 			Element::create("FieldSet","Filters")->add($filters),
 			Element::create("FieldSet","Sorting")->add($sortingField,Element::create("SelectionList","Direction","{$table["name"]}.sorting_direction")->addOption("Ascending","ASC")->addOption("Descending","DESC")),

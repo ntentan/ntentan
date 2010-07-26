@@ -64,12 +64,14 @@ class SelectionList extends Field
 			$this->addAttribute("onblur","fapiValidate('".$this->getId()."',$validations)");
 		}
 		$this->addAttribute("id",$this->getId());
+		$this->addAttribute("onchange",$this->getId()."OnChangeFunction()");
 		$ret = "<select {$this->getAttributes()} class='fapi-list ".$this->getCSSClasses()."' name='".$this->getName()."' ".($this->multiple?"multiple='multiple'":"").">";
 		foreach($this->options as $option)
 		{
 			$ret .= "<option value='$option->value' ".($this->getValue()===$option->value?"selected='selected'":"").">$option->label</option>";
 		}
 		$ret .= "</select>";
+		$ret .= $this->getJsOnChangeScript();
 		return $ret;
 	}
 

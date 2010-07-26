@@ -33,6 +33,8 @@ class ColumnContainer extends TableLayout
 
 	public function render()
 	{
+		//print count($this->elements)."<br/>";
+		$num_elements = count($this->elements);
 		if(!$this->reArranged)
 		{
 			$elements_per_col = ceil(count($this->elements)/$this->num_columns);
@@ -41,7 +43,7 @@ class ColumnContainer extends TableLayout
 				for($i=0;$i<$elements_per_col;$i++,$k++)
 				{
 
-					if($k<count($this->elements))
+					if($k<$num_elements)
 					{
 						$this->elements[$k]->parent = null;
 						parent::add($this->elements[$k],0,$j);
