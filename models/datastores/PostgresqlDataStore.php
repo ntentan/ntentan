@@ -8,15 +8,13 @@ class PostgresqlDataStore extends SqlDatabaseDataStore {
 	    	$this->defaultSchema = $parameters["schema"];
 	    } else {
 	    	$this->defaultSchema = "public";
-	    }
-	    
+	    }	    
         $this->db = pg_connect(
             "host={$parameters["host"]} dbname={$parameters["database"]} user={$parameters["username"]} password={$parameters["password"]}"
         );
 	}
 	
     protected function setTable($table) {
-    	
         $this->_table = "{$this->defaultSchema}.{$table}";
     }	
 	
