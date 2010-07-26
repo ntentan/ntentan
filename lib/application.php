@@ -1,13 +1,10 @@
 <?php
 
-include "controllers/Controller.php";
-
 /**
  * Main class for managing the page. The whole website runs through this class.
  * It contains mainly a list of static methods.
  *
  */
-
 class Application
 {
 	const TYPE_MODULE = "type_module";
