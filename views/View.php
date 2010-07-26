@@ -32,6 +32,10 @@ class View extends Presentation
                 break;
         }
     }
+    
+    public static function nl2br($text) {
+    	return str_replace("\n", "<br/>", $text);
+    } 
 
     public function out($viewData)
     {

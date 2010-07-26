@@ -71,16 +71,8 @@ abstract class Container extends Element
 
 	protected $callback;
 	protected $callbackData;
-
-	//protected $validatorCallback;
-	//protected $validatorCallbackData;
 	public $isContainer = true;
-    //protected $runValidations = true;
 
-	/*public function __construct($renderer="default")
-	{
-		$this->setRenderer($renderer);
-	}*/
 
 	/**
 	 * Sets the current renderer being used by the container. The renderer
@@ -252,11 +244,9 @@ abstract class Container extends Element
 
 	//! This method sets the method of transfer for this container. The method
 	//! could either be "GET" or "POST".
-	public function setMethod($method)
-	{
+	public function setMethod($method) {
 		$this->method = strtoupper($method);
-		foreach($this->elements as $element)
-		{
+		foreach($this->elements as $element) {
 			$element->setMethod($method);
 		}
 	}
@@ -275,14 +265,6 @@ abstract class Container extends Element
 		$renderer_foot = $this->renderer_foot;
 		$renderer_element = $this->renderer_element;
 		$ret = "";
-
-		// Call the callback function for the container.
-		/*if($this->onRenderCallback!="")
-		{
-			$callback = $this->onRenderCallback;
-			$data = $this->getData();
-			$callback($this,$data);
-		}*/
 
         $this->onRender();
 
