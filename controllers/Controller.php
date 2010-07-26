@@ -137,11 +137,13 @@ class Controller
         $this->componentInstances[$component] = $componentInstance;
     }
 
-    public function addBlock($block, $alias)
+    public function addBlock($blockName, $alias = null)
     {
-        Ntentan::addIncludePath(Ntentan::$blocksPath . "$block");
-        $block = ucfirst($block."Block");
-        $blockInstance = new $block();
+        Ntentan::addIncludePath(Ntentan::$blocksPath . "$blockName");
+        $blockClass = Ntentan::camelize($blockName)."Block";
+        $blockInstance = new $blockClass();
+        $blockInstance->setName($blockName);
+        if($alias == null) $alias = $blockName;
         $this->blocks[$alias] = $blockInstance;
     }
 
@@ -213,17 +215,22 @@ class Controller
 
         if($controllerName == "")
         {
-            echo Ntentan::message("Path not found! [$path]");
-            die();
+            Ntentan::error("Path not found! [$path]");
         }
         else
         {
             require_once Ntentan::$packagesPath . "$controllerPath/$controllerName.php";
-            
-            $controller = new $controllerName();
-            $controller->setPath($controllerPath);
-            $controller->setName($controllerName);
-            $controller->modelPath = $modelPath;
+            if(class_exists($controllerName))
+            {
+                $controller = new $controllerName();
+                $controller->setPath($controllerPath);
+                $controller->setName($controllerName);
+                $controller->modelPath = $modelPath;
+            }
+            else
+            {
+            	Ntentan::error("Controller class <b><code>$controllerName</code></b> not found.");
+            }
 
             if($i != count($pathArray)-1)
             {
@@ -246,6 +253,10 @@ class Controller
         }
 	}
     
+	/**
+	 * Set the name of this controller
+	 * @param string $name
+	 */
     public function setName($name)
     {
         $this->name = $name;
@@ -315,7 +326,7 @@ class Controller
                 }
             }
         }
-        print $ret;
+        echo $ret;
     }
 
     public function mainPreRender()

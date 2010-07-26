@@ -3,15 +3,21 @@ class Block extends Presentation
 {
     protected $data = array();
     protected $template;
+    protected $name;
+    
+    public function getName() {
+    	return $this->name;
+    }
+    
+    public function setName($name) {
+    	$this->name = $name;
+    }
 
-    protected function set($params1, $params2 = null)
-    {
-        if(is_array($params1))
-        {
+    protected function set($params1, $params2 = null) {
+    	
+        if(is_array($params1)) {
             $this->data = array_merge($this->data, $params1);
-        }
-        else
-        {
+        } else {
             $this->data[$params1] = $params2;
         }
     }
@@ -40,9 +46,7 @@ class Block extends Presentation
         }
         if($this->template == "")
         {
-            $block = new ReflectionObject($this);
-            $blockName = strtolower($block->getName());
-            $block = substr($blockName, 0, strlen(blockName) - 5);
+            $block = $this->getName();
             $this->template = Ntentan::$blocksPath . "$block/$block.tpl.php";
         }
         ob_start();

@@ -54,8 +54,6 @@ class Ntentan
                 Ntentan::getFilePath('models/'),
                 Ntentan::getFilePath('models/datastores/'),
                 Ntentan::getFilePath('views/'),
-                Ntentan::getFilePath('views/template_engines/'),
-                Ntentan::getFilePath('blocks/'),
                 "./",
                 Ntentan::$packagesPath
             )
