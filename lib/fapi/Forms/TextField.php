@@ -81,6 +81,7 @@ class TextField extends Field
 		$this->type = "NUMERIC";
 		$this->min_val = $min_val;
 		$this->max_val = $max_val;
+		return $this;
 	}
 
 	/**

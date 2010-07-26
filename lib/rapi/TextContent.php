@@ -5,9 +5,9 @@
 class TextContent extends ReportContent
 {
 	protected $text;
-	protected $style = array();
+	public $style = array();
 	
-	public function __construct($text)
+	public function __construct($text=null)
 	{
 		$this->setStyle();
 		$this->text = $text;
@@ -28,13 +28,9 @@ class TextContent extends ReportContent
 		return $this->text;
 	}
 	
-	public function setStyle($font="Helvetica",$size=12,$bold=false,$underline=false,$italics=false)
+	public function setStyle($style=array("font"=>"Helvetica","size"=>12,"bold"=>false,"underline"=>false,"italics"=>false))
 	{
-		$this->style["font"] = $font;
-		$this->style["size"] = $size;
-		$this->style["bold"] = $bold;
-		$this->style["underline"] = $underline;
-		$this->style["italics"] = $italics;
+		$this->style = $style;
 	}
 	
 	public function getStyle()

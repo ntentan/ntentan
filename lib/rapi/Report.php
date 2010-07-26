@@ -10,7 +10,8 @@ abstract class Report
 	
 	public function add()
 	{
-		$this->contents += func_get_args();
+		//$this->contents += func_get_args();
+		$this->contents = array_merge($this->contents,func_get_args());
 		return $this;
 	}
 }

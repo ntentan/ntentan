@@ -79,6 +79,7 @@ abstract class Field extends Element implements DatabaseInterface, Validatable
 	public function setName($name)
 	{
 		$this->name = $name;
+		return $this;
 	}
 
 	/**

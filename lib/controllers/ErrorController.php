@@ -1,6 +1,9 @@
 <?php
 /**
- * A controller used to show error messages.
+ * A controller used to show error messages. This controller is automatically
+ * loaded whenever another controller requested does not exist or does not
+ * contain the method that is being requested.
+ * 
  * @todo Let this return controllers.
  * @author james
  *

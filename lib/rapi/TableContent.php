@@ -3,11 +3,13 @@ class TableContent extends ReportContent
 {
 	protected $headers;
 	protected $data;
+	public $style;
 	
 	public function __construct($headers, $data)
 	{
 		$this->headers = $headers;
 		$this->data = $data;
+		$this->style["decoration"] = true;
 	}
 	
 	public function getHeaders()

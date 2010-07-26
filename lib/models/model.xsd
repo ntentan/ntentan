@@ -2,8 +2,7 @@
 <xs:schema 
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xmlns:model="http://www.example.org/model" 
-	targetNamespace="http://www.example.org/model" 
-	xmlns:tns="http://www.example.org/model" 
+	targetNamespace="http://www.example.org/model"  
 	elementFormDefault="qualified">
 	
     <xs:element name="model" type="model:Model" />
