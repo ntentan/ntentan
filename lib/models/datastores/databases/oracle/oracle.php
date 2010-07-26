@@ -1,4 +1,6 @@
 <?php
+require_once "lib/models/datastores/SQLDBDataStore.php";
+
 /**
  * An implementation of an oracle model. This model is used to store the oracle
  * data.
@@ -6,28 +8,26 @@
  * @author james
  *
  */
-class oracle extends SQLDatabaseModel
+class oracle extends SQLDBDataStore
 {
 	protected static $_conn = null;
 	protected static $_s_conn = null;
 	protected $mode = OCI_COMMIT_ON_SUCCESS;
-
+/*
 	public static function connect($info)
 	{
 		$db = "{$info["host"]}/{$info["database"]}";
 		oracle::$_s_conn = oci_connect($info["username"], $info["password"], $db);
-	}
+	}*/
 
-	public function __construct($model="",$package="",$prefix="",$conn=null)
+	public function __construct($model="",$package="",$prefix="")
 	{
 		parent::__construct($model,$package,$prefix);
-		if($conn==null)
+		if(oracle::$_conn==null)
 		{
-			oracle::$_conn = oracle::$_s_conn;
-		}
-		else
-		{
-			oracle::$_conn = $conn;
+			require "app/config.php";
+			$db = "$db_host/$db_name";
+			oracle::$_conn = oci_connect($db_user, $db_password, $db);		
 		}
 	}
 
@@ -56,7 +56,7 @@ class oracle extends SQLDatabaseModel
 		$this->mode = OCI_COMMIT_ON_SUCCESS;
 	}
 
-	protected function _getModelData($params=null,$mode=model::MODE_ASSOC, $explicit_relations=false,$resolve=true)
+	public function get($params=null,$mode=model::MODE_ASSOC, $explicit_relations=false,$resolve=true)
 	{
 		$fields = $params["fields"];
 		$conditions = $params["conditions"];
@@ -75,7 +75,7 @@ class oracle extends SQLDatabaseModel
 			// of the query.
 			if($resolve)
 			{
-				$references = $this->getReferencedFields();
+				$references = $this->referencedFields;//getReferencedFields();
 			}
 			else
 			{
@@ -154,7 +154,7 @@ class oracle extends SQLDatabaseModel
 	public function query($query,$mode = SQLDatabaseModel::MODE_ASSOC)
 	{
 		$rows = array();
-		//print $query;
+		//if(oracle::$_conn==null) return $rows;
 		$stmt = oci_parse(oracle::$_conn, $query);
 
 		if($stmt===false)
@@ -214,7 +214,7 @@ class oracle extends SQLDatabaseModel
 
 			case "number":
 			case "double":
-				$ret = "TRIM(TO_CHAR($value,'fm999,999,999,990.90'))";
+				$ret = "TRIM(TO_CHAR($value,'fm999,999,999,999,999,990.9000'))";
 				break;
 
 			case "displayReference":

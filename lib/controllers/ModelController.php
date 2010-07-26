@@ -108,6 +108,7 @@ class ModelController extends Controller implements ControllerPermissions
 		
 	}
 	
+	
 	private function setupList()
 	{
 		if(User::getPermission($this->name."_can_add"))
@@ -167,7 +168,7 @@ class ModelController extends Controller implements ControllerPermissions
 		if(count($this->fieldNames)>0) $fieldNames = $this->fieldNames;
 		
 		$this->setupList();
-
+		
 		$this->table->setModel($this->model,array("fields"=>$fieldNames,"conditions"=>$this->listConditions));
 		return $this->toolbar->render().$this->table->render();
 	}

@@ -40,7 +40,7 @@ class ReportController extends Controller
 		}
 		$this->referencedFields = array();
 
-		foreach($baseModel->getReferencedFields() as $field)
+		foreach($baseModel->referencedFields as $field)
 		{
 			$this->referencedFields[] = $field["referencing_field"];
 		}
@@ -52,7 +52,7 @@ class ReportController extends Controller
 		$multipleFields = explode(",",$field);
 		if(count($multipleFields)>1)
 		{
-			$data = Model::getMulti(
+			$data = SQLDBDataStore::getMulti(
 				array(
 					"fields"=>array($params["grouping_fields"][$params["grouping_level"]],
 				)
@@ -124,14 +124,14 @@ class ReportController extends Controller
 
 			if($params["grouping_fields"][$params["grouping_level"]+1]=="")
 			{
-				$data = Model::getMulti($query_params);
+				$data = SQLDBDataStore::getMulti($query_params);
 
 				if(!is_array($this->widths))
 				{
 					$params["global_functions"] = array("MAX","LENGTH");
 					$params["global_functions_set"] = true;
 
-					$this->widths = Model::getMulti($params,SQLDatabaseModel::MODE_ARRAY);
+					$this->widths = SQLDBDataStore::getMulti($params,SQLDatabaseModel::MODE_ARRAY);
 					$this->widths = $this->widths[0];
 
 					foreach($params["headers"] as $i=>$header)
@@ -400,7 +400,7 @@ class ReportController extends Controller
 						$wparams = $params;
 						$wparams["global_functions"] = array("MAX","LENGTH");
 						$wparams["global_functions_set"] = true;
-						$this->widths = Model::getMulti($wparams,SQLDatabaseModel::MODE_ARRAY);
+						$this->widths = SQLDBDataStore::getMulti($wparams,SQLDatabaseModel::MODE_ARRAY);
 						$this->widths = $this->widths[0];
 						
 						foreach($headers as $i=>$header)
@@ -423,7 +423,7 @@ class ReportController extends Controller
 
 						$dataParams["widths"] = $this->widths;
 											
-						$table = new TableContent($headers,Model::getMulti($params),$dataParams);
+						$table = new TableContent($headers,SQLDBDataStore::getMulti($params),$dataParams);
 						$total = $table->getTotals();
 						$report->add($table);
 					}
@@ -576,18 +576,18 @@ class ReportController extends Controller
 
 			//$grouping1 = clone $sortingField;
 			$grouping1->setName("{$table["name"]}_grouping[]")->setLabel("Grouping Field 1");
-			$g1Paging = new CheckBox("Start on a new page","grouping_1_newpage","","1");
-			$g1Logo = new CheckBox("Repeat Logos","grouping_1_logo","","1");
+			$g1Paging = new Checkbox("Start on a new page","grouping_1_newpage","","1");
+			$g1Logo = new Checkbox("Repeat Logos","grouping_1_logo","","1");
 
 			$grouping2 = clone $grouping1;
 			$grouping2->setName("{$table["name"]}_grouping[]")->setLabel("Grouping Field 2");
-			$g2Paging = new CheckBox("Start on a new page","grouping_1_newpage","","1");
-			$g2Logo = new CheckBox("Repeat Logos","grouping_2_logo","","1");
+			$g2Paging = new Checkbox("Start on a new page","grouping_1_newpage","","1");
+			$g2Logo = new Checkbox("Repeat Logos","grouping_2_logo","","1");
 
 			$grouping3 = clone $grouping1;
 			$grouping3->setName("{$table["name"]}_grouping[]")->setLabel("Grouping Field 3");
-			$g3Paging = new CheckBox("Start on a new page","grouping_1_newpage","","1");
-			$g3Logo = new CheckBox("Repeat Logos","grouping_3_logo","","1");
+			$g3Paging = new Checkbox("Start on a new page","grouping_1_newpage","","1");
+			$g3Logo = new Checkbox("Repeat Logos","grouping_3_logo","","1");
 
 			$sortingField->setLabel("Sorting Field");
 			$sortingField->setName($table["name"]."_sorting");
@@ -627,7 +627,7 @@ class ReportController extends Controller
 			"filters"=>$form->render()
 		);
 
-		return array("template"=>"file:".getcwd()."/lib/rapi/reports.tpl","data"=>$data);
+		return array("template"=>"file:".getcwd()."/lib/controllers/reports.tpl","data"=>$data);
 	}
 
 	public function getPermissions()

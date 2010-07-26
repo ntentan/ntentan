@@ -256,7 +256,7 @@ abstract class Container extends Element implements DatabaseInterface, Validatab
 		$retval = true;
 		foreach($this->elements as $element)
 		{
-			if($element->validate()==false)
+			if($element->validate()===false)
 			{
 				$retval=false;
 			}

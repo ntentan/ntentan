@@ -28,6 +28,8 @@ class ModelTable extends Table
 		$this->params = $params;
 		$this->fields = $params["fields"];
 		$this->fieldInfo = $this->model->getFields($this->fields);
+		
+		//var_dump($this->fields);
 		array_shift($this->fields);		
 		
 		foreach($this->fieldInfo as $field)
