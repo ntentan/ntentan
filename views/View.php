@@ -32,10 +32,6 @@ class View extends Presentation
                 break;
         }
     }
-    
-    public static function nl2br($text) {
-    	return str_replace("\n", "<br/>", $text);
-    } 
 
     public function out($viewData)
     {
@@ -71,5 +67,13 @@ class View extends Presentation
         }
         
         return $data;
+    }
+    
+    public static function nl2br($text) {
+        return str_replace("\n", "<br/>", $text);
+    }
+
+    public static function truncate($text, $size, $ending = "...") {
+    	return substr($text, 0, $size) . $ending;
     }
 }
