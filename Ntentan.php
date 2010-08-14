@@ -81,7 +81,7 @@ class Ntentan
 		}		
         unset($query);
         unset($query);
-        
+
 		$module = Controller::load($requestedRoute);
 	}
 
