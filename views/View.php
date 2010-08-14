@@ -32,6 +32,11 @@ class View extends Presentation
                 break;
         }
     }
+    
+    public function setContentType($contentType, $encoding="utf-8")
+    {
+    	header("Content-type: $contentType; charset=$encoding");
+    }
 
     public function out($viewData)
     {
