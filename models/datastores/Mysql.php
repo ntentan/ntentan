@@ -45,7 +45,8 @@ class Mysql extends SqlDatabase
              information_schema.table_constraints pk 
              join information_schema.key_column_usage c on 
                 c.table_name = pk.table_name and 
-                c.constraint_name = pk.constraint_name
+                c.constraint_name = pk.constraint_name and
+                c.table_schema = pk.table_schema
              where pk.table_name = '{$this->table}' and pk.table_schema='{$this->defaultSchema}'
              and constraint_type = 'PRIMARY KEY'"
         );
@@ -55,11 +56,12 @@ class Mysql extends SqlDatabase
              information_schema.table_constraints pk 
              join information_schema.key_column_usage c on 
                 c.table_name = pk.table_name and 
-                c.constraint_name = pk.constraint_name
+                c.constraint_name = pk.constraint_name and
+                c.table_schema = pk.table_schema
              where pk.table_name = '{$this->table}' and pk.table_schema='{$this->defaultSchema}'
              and constraint_type = 'UNIQUE'"
         );
-                
+        
         $mysqlFields = $this->query("select * from information_schema.columns where table_schema='{$this->defaultSchema}' and table_name='{$this->table}'");
 
         
@@ -113,19 +115,18 @@ class Mysql extends SqlDatabase
             }
             
             $field = array(
-                "name" => strtolower($mysqlField["column_name"]),
+                "name" => strtolower($mysqlField["COLUMN_NAME"]),
                 "type" => $type,
-                "required" => $mysqlField["is_nullable"] == "NO" ? true : false
+                "required" => $mysqlField["IS_NULLABLE"] == "NO" ? true : false
             );
-            
-            if($mysqlField["column_name"] == $primaryKey[0]["column_name"])
+            if($mysqlField["COLUMN_NAME"] == $primaryKey[0]["column_name"])
             {
                 $field["primary_key"] = true;
             }
             
             foreach($uniqueKeys as $uniqueKey)
             {
-                if($mysqlField["column_name"] == $uniqueKey["column_name"])
+                if($mysqlField["COLUMN_NAME"] == $uniqueKey["column_name"])
                 {
                     $field["unique"] = true;
                 }

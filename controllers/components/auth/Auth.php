@@ -30,7 +30,6 @@ class Auth extends Component
         else
         {
             print Ntentan::message("Authenticator class <code>$authenticatorClass</code> not found.");
-            die();
         }       
         
         // Allow the roles component to activate the authentication if it is

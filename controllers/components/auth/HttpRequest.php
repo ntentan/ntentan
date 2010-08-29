@@ -25,7 +25,7 @@ class HttpRequest extends AuthMethod
                     Ntentan::redirect( 
                         Ntentan::getUrl($this->auth->redirectPath), 
                         true
-                    );
+                  );
                 }
             }
             else
