@@ -1,5 +1,8 @@
 <?php
-/*
+/**
+ * Utility file with lots of classes which perform simple utilities in place.
+ *
+ * LICENSE:
  * Copyright 2010 James Ekow Abaka Ainooson
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,10 +17,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * @package    ntentan
+ * @author     James Ekow Abaka Ainooson <jainooson@gmail.com>
+ * @copyright  2010 James Ekow Abaka Ainooson
+ * @license    http://www.apache.org/licenses/LICENSE-2.0
  */
+
+namespace ntentan;
+
+include "autoload.php";
 
 session_start();
 date_default_timezone_set("Africa/Accra");
+
 
 /**
  * A utility class for the Ntentan framework. This class initializes all the 
@@ -31,7 +43,7 @@ date_default_timezone_set("Africa/Accra");
 class Ntentan
 {
     public static $basePath = "ntentan/";
-    public static $packagesPath = "packages/";
+    public static $modulesPath = "modules/";
     public static $cachePath = "cache/";
     public static $layoutsPath = "layouts/";
     public static $blocksPath = "blocks/";
@@ -55,7 +67,7 @@ class Ntentan
                 Ntentan::getFilePath('models/datastores/'),
                 Ntentan::getFilePath('views/'),
                 "./",
-                Ntentan::$packagesPath
+                Ntentan::$modulesPath
             )
         );
         
@@ -82,7 +94,7 @@ class Ntentan
         unset($query);
         unset($query);
 
-		$module = Controller::load($requestedRoute);
+		$module = controllers\Controller::load($requestedRoute);
 	}
 
     /**
@@ -230,9 +242,4 @@ class Ntentan
          </div>
          </html>";   
     }
-}
-
-function __autoload($class)
-{
-    include "$class.php";
 }

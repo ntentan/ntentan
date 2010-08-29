@@ -1,5 +1,7 @@
 <?php
 
+namespace ntentan\views\helpers\forms;
+
 /**
  * The container class. This abstract class provides the necessary
  * basis for implementing form element containers. The container

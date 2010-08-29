@@ -1,11 +1,17 @@
 <?php
+namespace ntentan\controllers\components\auth;
+
+use \ntentan\Ntentan;
+use \ntentan\models\Model;
+
 class HttpRequest extends AuthMethod
 {
     public function login()
     {
         if(isset($_REQUEST["username"]) && isset($_REQUEST["password"]))
         {
-            $users = Model::load($this->auth->usersModel);
+            $usersModelClass = Model::getClassName($this->auth->usersModel);
+            $users = new $usersModelClass();
             $result = $users->getFirstWithUsername($_REQUEST["username"]);
             if($result->password == md5($_REQUEST["password"]))
             {

@@ -1,8 +1,41 @@
 <?php
 
-class FormsHelper extends Helper
+namespace ntentan\views\helpers\forms;
+
+use \ntentan\views\helpers\Helper;
+use \ntentan\Ntentan;
+use \ReflectionMethod;
+
+/**
+ * Enter description here ...
+ * @author ekow
+ *
+ */
+class Forms extends Helper
 {
-    public static function getFieldElement($field)
+    private $container;
+    public function __construct()
+    {
+        $this->container = new FormContainer();
+    }
+    
+    public function __toString()
+    {
+        return (string)$this->container;
+    }
+    
+    public function add()
+    {
+        $args = func_get_args();
+        if(is_string($args[0]))
+        {
+            $method = new ReflectionMethod(__NAMESPACE__ . "\\Element", "create");
+            $element = $method->invokeArgs(null, $args);
+            $this->container->add($element);
+        }
+    }
+    
+    public function addFieldElement($field)
     {
         switch($field["type"])
         {
@@ -40,7 +73,7 @@ class FormsHelper extends Helper
 
     public function getField($field)
     {
-        return FormsHelper::getFieldElement($field);
+        return $this->getFieldElement($field);
     }
 
 }

@@ -1,5 +1,9 @@
 <?php
-abstract class SqlDatabaseDataStore extends DataStore
+namespace ntentan\models\datastores;
+
+use \ntentan\models\Model;
+
+abstract class SqlDatabase extends DataStore
 {
     protected $_table;
     
@@ -44,7 +48,7 @@ abstract class SqlDatabaseDataStore extends DataStore
     public function setModel($model)
     {
         parent::setModel($model);
-        $this->table = end(explode(".", $model->modelPath));
+        $this->table = end(explode(".", $model->name));
     }
     
     private function resolveName($fieldPath)
@@ -115,8 +119,7 @@ abstract class SqlDatabaseDataStore extends DataStore
         // Generate conditions
         if($params["conditions"] !== null)
         {
-            // Go through the array of conditions and generate a condition
-            // statement for MySQL
+            // Go through the array of conditions and generate an SQL condition
             foreach($params["conditions"] as $field => $condition)
             {
                 if(is_array($condition))
@@ -127,7 +130,7 @@ abstract class SqlDatabaseDataStore extends DataStore
                     }
                 }
                 else
-                {
+              {
                     preg_match("/(?<field>[a-zA-Z1-9_.]*)\w*(?<operator>\<\>|\<|\>|)?/", $field, $matches);
                     $databaseField = $this->resolveName($matches["field"]);
                     $conditions[] = "$databaseField ".($matches["operator"]==""?"=":$matches["operator"])." '$condition'";

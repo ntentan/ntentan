@@ -1,8 +1,13 @@
 <?php
+namespace ntentan\controllers\components\auth;
+
+use \ntentan\Ntentan;
+use \ntentan\controllers\components\Component;
+
 /**
  * 
  */
-class AuthComponent extends Component
+class Auth extends Component
 {
     public $loginPath = "users/login";
     public $logoutPath = "users/logout";
@@ -10,13 +15,13 @@ class AuthComponent extends Component
     public $redirectOnSuccess = true;
     public $name = __CLASS__;
     public $authMethod = "http_request";
-    public $usersModel = "users";
+    public $usersModel = "asembisa.users";
     protected $authMethodInstance;
     
     public function preRender()
     {
         // Load the authenticator
-        $authenticatorClass = Ntentan::camelize($this->authMethod);
+        $authenticatorClass = __NAMESPACE__ . '\\' . Ntentan::camelize($this->authMethod);
         if(class_exists($authenticatorClass))
         {
             $this->authMethodInstance = new $authenticatorClass();

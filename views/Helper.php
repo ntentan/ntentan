@@ -1,5 +1,7 @@
 <?php
 
+namespace ntentan\views\helpers;
+
 class Helper
 {
     public function __call ($method, $arguments)

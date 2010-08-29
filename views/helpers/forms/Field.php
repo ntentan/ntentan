@@ -1,4 +1,5 @@
 <?php
+namespace ntentan\views\helpers\forms;
 
 /**
  * The form field class. This class represents a form field element.

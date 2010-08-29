@@ -1,8 +1,8 @@
 <?php
-//! The PasswordField is a TextField which obscures the data in it. It is
-//! used for recieving and displaying passwords. The value it returns 
-//! on submission is the MD5 check sum of the actual password.
-//! \ingroup Form_API
+namespace ntentan\views\helpers\forms;
+
+use \ntentan\views\helpers\forms\TextField;
+
 class PasswordField extends TextField
 {
 	protected $md5 = false;

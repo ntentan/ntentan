@@ -11,7 +11,7 @@ $toolbar = $this->menus->createMenu($operations);
 ?>
 <div id="toolbar"><?php echo $toolbar?></div>
 <div id="list"><?php
-$listFile = Ntentan::$packagesPath . "$controller_path/{$base_class_name}list.inc.php";
+$listFile = Ntentan::$modulesPath . "$controller_path/{$base_class_name}list.inc.php";
 
 if(file_exists($listFile))
 {

@@ -1,5 +1,9 @@
 <?php
 
+namespace ntentan\controllers\components;
+
+use \ntentan\controllers\Controller;
+
 abstract class Component extends Controller
 {
     protected $controllerName;
@@ -58,5 +62,4 @@ abstract class Component extends Controller
                 return parent::__get($property);
         }
     }
-
 }

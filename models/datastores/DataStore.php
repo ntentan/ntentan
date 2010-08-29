@@ -1,4 +1,7 @@
 <?php
+
+namespace ntentan\models\datastores;
+
 /**
  * 
  */

@@ -23,15 +23,12 @@ function default_renderer_element($element, $showfields=true)
 
     $ret .= "<div class='fapi-element-div' ".($element->getId()==""?"":"id='".$element->getId()."_wrapper'").">";
 
-    if($element->getType()=="Field")
+    $ret .= "<label class='fapi-label'>".$element->getLabel();
+    if($element->getRequired() && $element->getLabel()!="" && $element->getShowField())
     {
-        $ret .= "<label class='fapi-label'>".$element->getLabel();
-        if($element->getRequired() && $element->getLabel()!="" && $element->getShowField())
-        {
-            $ret .= "<span class='fapi-required'>*</span>";
-        }
-        $ret .= "</label>";
+        $ret .= "<span class='fapi-required'>*</span>";
     }
+    $ret .= "</label>";
 
 	$ret .= "<div class='fapi-message' id='".$element->getId()."-fapi-message'></div>";
 

@@ -16,6 +16,15 @@
  * @author james
  *
  */
+
+namespace ntentan\controllers;
+
+use \ReflectionClass;
+use \ReflectionObject;
+
+use \ntentan\Ntentan;
+use \ntentan\views\View;
+
 class Controller
 {
     public $defaultMethodName = "run";
@@ -108,7 +117,7 @@ class Controller
             return $this->modelInstance;
             
         case "directory":
-            return Ntentan::$packagesPath . $this->path . "/";
+            return Ntentan::$modulesPath . $this->path . "/";
             
         default:
             if(substr($property, -5) == "Block")
@@ -131,7 +140,7 @@ class Controller
     public function addComponent($component)
     {
         Ntentan::addIncludePath(Ntentan::getFilePath("controllers/components/$component"));
-        $componentName = ucfirst($component) . "Component";
+        $componentName = "\\ntentan\\controllers\\components\\$component\\" . ucfirst($component);
         $componentInstance = new $componentName();
         $componentInstance->setController($this);
         $this->componentInstances[$component] = $componentInstance;
@@ -186,18 +195,19 @@ class Controller
         $controllerPath = '';
         $controllerPathArray = explode('/', $path);
 
-        // Remove all empty paths from the query
+        // Filter out all empty paths from the query
         foreach($controllerPathArray as $value)
         {
             if($value == "") continue;
             $pathArray[] = $value;
         }
         
+        // Loop through the filtered path and extract the controller class
 		for($i = 0; $i<count($pathArray); $i++)
 		{
 			$p = $pathArray[$i];
             $pCamelized .= Ntentan::camelize($p);
-			if(file_exists(Ntentan::$packagesPath . "$controllerPath/$p/{$pCamelized}Controller.php"))
+			if(file_exists(Ntentan::$modulesPath . "$controllerPath/$p/{$pCamelized}Controller.php"))
 			{
 				$controllerName = $pCamelized."Controller";
 				$controllerPath .= "/$p";
@@ -218,8 +228,10 @@ class Controller
             Ntentan::error("Path not found! [$path]");
         }
         else
-        {
-            require_once Ntentan::$packagesPath . "$controllerPath/$controllerName.php";
+       {
+            Ntentan::addIncludePath(Ntentan::$modulesPath . "/$controllerPath/"); //$controllerName.php";
+            $controllerNamespace = "\\" . str_replace("/", "\\", Ntentan::$modulesPath . "/$controllerPath/");
+            $controllerName = $controllerNamespace . $controllerName;
             if(class_exists($controllerName))
             {
                 $controller = new $controllerName();
@@ -228,7 +240,7 @@ class Controller
                 $controller->modelPath = $modelPath;
             }
             else
-            {
+          {
             	Ntentan::error("Controller class <b><code>$controllerName</code></b> not found.");
             }
 
@@ -308,7 +320,7 @@ class Controller
             $this->mainPreRender();
             $controllerClass = new ReflectionClass($this->getName());
             $method = $controllerClass->GetMethod($path);
-            $this->view->template = Ntentan::$packagesPath . "$this->path/$path.tpl.php";
+            $this->view->template = Ntentan::$modulesPath . "/$this->path/$path.tpl.php";
             $method->invokeArgs($this, $params);
             $this->view->layout->blocks = $this->blocks;
             $ret = $this->view->out($this->get());

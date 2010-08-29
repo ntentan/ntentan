@@ -1,5 +1,8 @@
 <?php
-include_once "Attribute.php";
+namespace ntentan\views\helpers\forms;
+
+use \ReflectionClass;
+
 
 /**
  * The form element class. An element can be anything from the form
@@ -406,8 +409,7 @@ abstract class Element
 	public static function create()
 	{
 		$args = func_get_args();
-		$element = array_shift($args);
-		//if(!class_exists($element)) throw new Exception("Class requested doesn't exist");
+		$element = __NAMESPACE__ . "\\" . array_shift($args);
 		$element = new ReflectionClass($element);
 		return $element->newInstanceArgs($args==null?array():$args);
 	}

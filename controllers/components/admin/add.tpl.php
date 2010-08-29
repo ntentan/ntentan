@@ -1,7 +1,7 @@
 <h2>Add <?php echo $model_name ?></h2>
 <?php
 $this->addHelper("forms");
-$formFile = Ntentan::$packagesPath . "$controller_path/{$base_class_name}form.inc.php";
+$formFile = Ntentan::$modulesPath . "$controller_path/{$base_class_name}form.inc.php";
 if(file_exists($formFile))
 {
     include $formFile;

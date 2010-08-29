@@ -1,5 +1,5 @@
 <?php
-include_once "Field.php";
+namespace ntentan\views\helpers\forms;
 
 /**
  * Implementation of a regular text field. This field is used to

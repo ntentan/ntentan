@@ -1,4 +1,11 @@
 <?php
+namespace ntentan\models;
+
+use \ntentan\Ntentan;
+use \ArrayAccess;
+use \Iterator;
+use \ReflectionObject;
+
 /**
  * The Model class 
  */
@@ -54,14 +61,31 @@ class Model implements ArrayAccess, Iterator
             }
         }
         $modelInformation = new ReflectionObject($this);
-        $modelName = $modelInformation->getName();
+        $modelName = end(explode("\\", $modelInformation->getName()));
         $this->name = strtolower(substr($modelName, 0, strlen($modelName) - 5));
         $this->iteratorPosition = 0;
+        $this->modelPath = implode(".",array_slice(explode("\\", $modelInformation->getName()),0 , -1));
+        
+        $dataStoreParams = Ntentan::getDefaultDataStore();
+        $dataStoreClass = __NAMESPACE__ . "\\datastores\\" . Ntentan::camelize($dataStoreParams["datastore"]);
+        if(class_exists($dataStoreClass)) {
+            $dataStore = new $dataStoreClass($dataStoreParams);
+            $this->setDataStore($dataStore);
+        } else {
+            Ntentan::error("Datastore <b><code>{$dataStoreClass}</code></b> doesn't exist.");
+        }
     }
     
     public static function getBelongsTo($belongsTo)
     {
         return is_array($belongsTo) ? $belongsTo[0] : $belongsTo;
+    }
+    
+    
+    public static function getClassName($className)
+    {
+        $name = "\\" . str_replace(".", "\\", $className) . "\\" . Ntentan::camelize(end(explode(".", $className))) . "Model";
+        return $name;
     }
 
     /**
@@ -71,11 +95,16 @@ class Model implements ArrayAccess, Iterator
      */
     public static function load($modelPath)
     {
+        $className = Model::getClassName($modelPath);
+        return new $className();
+    }
+    /*public static function load($modelPath)
+    {
         if(!isset(Model::$modelCache[$modelPath]))
         {
             $pathComponents = explode(".", $modelPath);
             $modelClass = Ntentan::camelize($modelPath) . "Model";//ucfirst($pathComponents[0]) . "Model";
-            $modelFile = Ntentan::$packagesPath . implode("/", $pathComponents) . "/$modelClass.php";
+            $modelFile = Ntentan::$modulesPath . implode("/", $pathComponents) . "/$modelClass.php";
     
             if(!file_exists($modelFile))
             {
@@ -84,7 +113,7 @@ class Model implements ArrayAccess, Iterator
     
             require_once
             (
-                Ntentan::$packagesPath
+                Ntentan::$modulesPath
                 . implode("/", $pathComponents)
                 . "/$modelClass.php"
             );
@@ -106,7 +135,7 @@ class Model implements ArrayAccess, Iterator
             Model::$modelCache[$modelPath] = $model;
         }
         return Model::$modelCache[$modelPath];
-    }
+    }*/
 
     public function setData($data)
     {

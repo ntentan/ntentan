@@ -16,6 +16,10 @@
  *
  */
 
+namespace ntentan\views;
+
+use \ntentan\Ntentan;
+
 /**
  * An extension of the presentation class for the purposes of rendering views.
  * 
@@ -80,7 +84,7 @@ class View extends Presentation
             // Do nothing
         }
         else
-        {
+       {
             Ntentan::error("View template <b><code>{$this->template}</code></b> not Found!");
         }
         $data = ob_get_clean();

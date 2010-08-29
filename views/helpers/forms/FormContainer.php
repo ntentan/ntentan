@@ -1,5 +1,7 @@
 <?php
 
+namespace ntentan\views\helpers\forms;
+
 /**
  * The form class. This class represents the overall form class. This
  * form represents the main form for collecting data from the user.
@@ -10,25 +12,11 @@
  * @ingroup Form_API
  *
  */
-class Form extends Container
+class FormContainer extends Container
 {
 	public $submitValue;
 
-	/**
-	 * Flag to show wether this form has a reset button.
-	 */
-	protected $hasReset;
-
-	/**
-	 * The value to display on the reset button.
-	 */
-	protected $resetValue;
-
 	protected $showSubmit = true;
-
-	public $submitAttributes;
-
-	public $ajaxAction = "lib/fapi/ajax.php?action=save_data";
 
 	public $successUrl;
 

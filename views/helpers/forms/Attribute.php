@@ -1,4 +1,7 @@
 <?php
+
+namespace ntentan\views\helpers\forms;
+
 /**
  * The Attribute class is used for storing and rendering HTML attributes.
  */

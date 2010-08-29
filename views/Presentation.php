@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Copyright 2010 James Ekow Abaka Ainooson
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,22 @@
  *
  */
 
+/**
+ * Enter description here ...
+ * @author ekow
+ *
+ */
+namespace ntentan\views;
+
+use \ntentan\Ntentan;
+
+
 class Presentation
 {
-    private $_helpers = array();
-
-    public function __get($property)
-    {
-        return $this->_helpers[$property];
-    }
-
-    public function addHelper($helper)
+    public function loadHelper($helper)
     {
         Ntentan::addIncludePath(Ntentan::getFilePath("views/helpers/$helper"));
-        $helperClass = ucfirst($helper."Helper");
-        $this->_helpers[$helper] = new $helperClass();
+        $helperClass = "\\ntentan\\views\\helpers\\$helper\\" . ucfirst($helper);
+        return new $helperClass();
     }
 }

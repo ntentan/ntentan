@@ -1,4 +1,6 @@
 <?php
+namespace ntentan\controllers\components\auth;
+
 abstract class AuthMethod
 {
     protected $auth;

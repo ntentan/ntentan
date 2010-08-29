@@ -1,4 +1,9 @@
 <?php
+
+namespace ntentan\views;
+
+use \ntentan\Ntentan;
+
 /**
  * 
  */
