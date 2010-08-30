@@ -1,5 +1,9 @@
 <?php
-class TimeHelper extends Helper
+namespace ntentan\views\helpers\time;
+
+use ntentan\views\helpers\Helper;
+
+class Time extends Helper
 {
 	private $timestamp;
 	

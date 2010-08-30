@@ -1,4 +1,9 @@
 <?php
+namespace ntentan\views\blocks;
+
+use \ntentan\Ntentan;
+use \ntentan\views\Presentation;
+
 class Block extends Presentation
 {
     protected $data = array();

@@ -149,7 +149,7 @@ class Controller
     public function addBlock($blockName, $alias = null)
     {
         Ntentan::addIncludePath(Ntentan::$blocksPath . "$blockName");
-        $blockClass = Ntentan::camelize($blockName)."Block";
+        $blockClass = "\\ntentan\\application\\blocks\\" . Ntentan::camelize($blockName);
         $blockInstance = new $blockClass();
         $blockInstance->setName($blockName);
         if($alias == null) $alias = $blockName;
