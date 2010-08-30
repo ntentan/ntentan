@@ -1,5 +1,7 @@
 <?php
-class PostgresqlDataStore extends SqlDatabaseDataStore {
+namespace ntentan\models\datastores;
+
+class Postgresql extends SqlDatabase {
 	private $db;
 	
 	public function connect($parameters) {
@@ -53,6 +55,7 @@ class PostgresqlDataStore extends SqlDatabaseDataStore {
              information_schema.table_constraints pk 
              join information_schema.key_column_usage c on 
                 c.table_name = pk.table_name and 
+                c.table_schema = pk.table_schema and
                 c.constraint_name = pk.constraint_name
              where pk.table_name = '{$databaseInfo[1]}' and pk.table_schema='{$databaseInfo[0]}'
              and constraint_type = 'PRIMARY KEY'"
@@ -63,6 +66,7 @@ class PostgresqlDataStore extends SqlDatabaseDataStore {
              information_schema.table_constraints pk 
              join information_schema.key_column_usage c on 
                 c.table_name = pk.table_name and 
+                c.table_schema = pk.table_schema and
                 c.constraint_name = pk.constraint_name
              where pk.table_name = '{$databaseInfo[1]}' and pk.table_schema='{$databaseInfo[0]}'
              and constraint_type = 'UNIQUE'"

@@ -1,4 +1,6 @@
 <?php
+namespace ntentan\views\helpers\time;
+
 class TimeObject
 {
 	private $timestamp;
