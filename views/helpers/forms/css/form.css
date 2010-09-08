@@ -1,0 +1,20 @@
+input[type='text'],
+input[type='password']
+{
+    font-size:large;
+    border:1px solid #a0a0a0;
+    width:100%;
+    margin-bottom:10px;
+}
+
+input[type='text']:focus,
+input[type='password']:focus
+{
+    border:1px solid orange;
+}
+
+label
+{
+    font-size:large;
+    font-weight:bold;
+}

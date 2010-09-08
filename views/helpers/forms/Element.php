@@ -38,11 +38,6 @@ abstract class Element
 	 */
 	protected $description;
 
-	/**
-	 * The method by which the form should be submitted.
-	 */
-	protected $method = "POST";
-
 	//! An array of all the CSS classes associated with this element.
 	protected $classes = array();
 
@@ -171,23 +166,6 @@ abstract class Element
 	{
 		$this->description = $description;
         return $this;
-	}
-
-	/**
-	 * Sets the method for the form.
-	 */
-	public function setMethod($method)
-	{
-		$this->method = strtoupper($method);
-	}
-
-	/**
-	 * Gets the method being used by the form. The method could be either
-	 * "GET" or "POST".
-	 */
-	public function getMethod()
-	{
-		return $this->method;
 	}
 
 	//! Returns all the arrays associated with this document.
@@ -322,9 +300,9 @@ abstract class Element
 
 	//! Sets whether the field should be shown or hidden.
 	//! \see $showfield
-	public function setShowField($showfield)
+	public function setShowFields($showfield)
 	{
-		$this->showfield = $showfield;
+		$this->showfields = $showfield;
 	}
 
 	//! Gets the value of the $showfield property.

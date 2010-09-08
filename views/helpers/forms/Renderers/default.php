@@ -48,7 +48,7 @@ function default_renderer_element($element, $showfields=true)
     {
         if($element->getShowField())
         {
-            $ret .= $element->render();
+            $ret .= "<div>" . $element->render() . "</div>";
         }
         else
         {
@@ -63,7 +63,10 @@ function default_renderer_element($element, $showfields=true)
 
     if($element->getType()!="Container" && $element->getShowField())
     {
-        $ret .= "<div ".($element->getId()==""?"":"id='".$element->getId()."_desc'")." class='fapi-description'>".$element->getDescription()."</div>";
+        if($element->getDescription() != "")
+        {
+            $ret .= "<div ".($element->getId()==""?"":"id='".$element->getId()."_desc'")." class='fapi-description'>".$element->getDescription()."</div>";
+        }
     }
     $ret .= "</div>";
 
