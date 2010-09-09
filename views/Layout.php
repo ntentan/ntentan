@@ -14,7 +14,6 @@ class Layout
     public $title;
     private $javaScripts = array();
     private $styleSheets = array();
-    public $blocks = array();
 
     public function __construct($name = null)
     {
@@ -48,7 +47,7 @@ class Layout
         }
     }
 
-    public function out($contents)
+    public function out($contents, $blocks = array())
     {
         foreach($this->javaScripts as $javaScript)
         {
@@ -72,10 +71,9 @@ class Layout
         }
 
         // Render all the blocks into string variables
-        foreach($this->blocks as $alias => $block)
+        foreach($blocks as $name => $block)
         {
-            $blockName = $alias."_block";
-            $$blockName = (string)$block;
+            $$name = $block;
         }
 
         $title = $this->title;

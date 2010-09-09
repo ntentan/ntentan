@@ -29,6 +29,7 @@ class View extends Presentation
 {
     private $_layout;
     public $template;
+    public $blocks;
 
     public function __construct()
     {
@@ -73,6 +74,15 @@ class View extends Presentation
                 $$key = $value;
             }
         }
+        
+        // Render all the blocks into string variables
+        $blocks = array();
+        foreach($this->blocks as $alias => $block)
+        {
+            $blockName = $alias."_block";
+            $$blockName = (string)$block;
+            $blocks[$blockName] = $$blockName;
+        }
 
         ob_start();
         if(file_exists( $this->template ))
@@ -92,7 +102,7 @@ class View extends Presentation
         if(!Ntentan::isAjax())
         {
             ob_start();
-            $this->_layout->out($data);
+            $this->_layout->out($data, $blocks);
             $data = ob_get_clean();
         }
         
