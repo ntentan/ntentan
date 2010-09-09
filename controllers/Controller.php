@@ -21,9 +21,8 @@ namespace ntentan\controllers;
 
 use \ReflectionClass;
 use \ReflectionObject;
-
-use \ntentan\Ntentan;
-use \ntentan\views\View;
+use ntentan\Ntentan;
+use ntentan\views\View;
 
 class Controller
 {
@@ -122,7 +121,7 @@ class Controller
         default:
             if(substr($property, -5) == "Block")
             {
-                $block = substr($property, 0, strlen($property) - 5);
+                $block = Ntentan::deCamelize(substr($property, 0, strlen($property) - 5));
                 return $this->blocks[$block];
             }
             else if(substr($property, -9) == "Component")
@@ -148,10 +147,26 @@ class Controller
 
     public function addBlock($blockName, $alias = null)
     {
-        Ntentan::addIncludePath(Ntentan::$blocksPath . "$blockName");
-        $blockClass = "\\ntentan\\application\\blocks\\" . Ntentan::camelize($blockName);
+        $blockFile = "blocks/$blockName/" . Ntentan::camelize($blockName) . ".php";
+        if(file_exists($blockFile))
+        {
+            Ntentan::addIncludePath(Ntentan::$blocksPath . "$blockName");
+            $path = "blocks/$blockName"; 
+        }
+        else if(file_exists(Ntentan::getFilePath("views/blocks/$blockName/" . Ntentan::camelize($blockName) . ".php")))
+        {
+            Ntentan::addIncludePath(Ntentan::getFilePath("views/blocks/$blockName"));
+            $blockClass = "\\ntentan\\views\\blocks\\$blockName\\" . Ntentan::camelize($blockName);
+            $path = Ntentan::getFilePath("views/blocks/$blockName"); 
+        }
+        else
+        {
+            Ntentan::message("Block <code>$blockname</code> not found");
+        }
+
         $blockInstance = new $blockClass();
         $blockInstance->setName($blockName);
+        $blockInstance->setPath($path);
         if($alias == null) $alias = $blockName;
         $this->blocks[$alias] = $blockInstance;
     }
