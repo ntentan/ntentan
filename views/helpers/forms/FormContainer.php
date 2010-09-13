@@ -12,22 +12,24 @@ namespace ntentan\views\helpers\forms;
  * @ingroup Form_API
  *
  */
+use ntentan\Ntentan;
+
 class FormContainer extends Container
 {
-	public $submitValue;
-
-	protected $showSubmit = true;
-
+    public $submitValue;
+	public $showSubmit = true;
 	public $successUrl;
-
-    public $formId;
+    protected $method = "POST";
+    
+    private static $numForms;
 	
 	//! Constructor for initialising the forms. This constructor accepts
 	//! the method of the form.
 	public function __construct($id="", $method="POST")
 	{
 		$this->setId($id);
-        $this->setMethod($method);
+        $this->method = $method;
+        $this->addAttribute("action", Ntentan::getUrl(Ntentan::$route));
 	}
 
     public function addFileUploadSupport($maxFileSize = "")
@@ -38,24 +40,18 @@ class FormContainer extends Container
 
 	public function render()
 	{
-		$this->addAttribute("method",$this->getMethod());
+		$this->addAttribute("method",$this->method);
 		$this->addAttribute("id",$this->getId());
 		$this->addAttribute("class","fapi-form");
-
-		if($this->isFormSent())
-		{
-			$this->getData();
-            $this->executeCallback();
-        }
 
 		$ret = '<form '.$this->getAttributes().'>';
 
 		$ret .= $this->renderElements();
 
-		if($this->getShowSubmit())
+		if($this->showSubmit)
 		{
 			$ret .= '<div id="fapi-submit-area">';
-			$submitValue = $this->submitValue?('value="'.$this->submitValue.'"'):"";
+			$submitValue = $this->submitValue?("value='{$this->submitValue}'"):"";
 			if($this->ajaxSubmit)
 			{
 				$ret .= sprintf('<input class="fapi-submit" type="button" %s onclick="%s"  />',$submitValue,$onclickFunction);
@@ -66,41 +62,20 @@ class FormContainer extends Container
 			}
 			$ret .= '</div>';
 		}
-		$ret .= '<input type="hidden" name="is_form_'.$this->getId().'_sent" value="yes" />';
 		$ret .= '</form>';
-
 		return $ret;
 	}
 
-	/**
-     * Sets the value that is written on the submit button.
-     */
-	public function setSubmitValue($submitValue)
-	{
-		$this->submitValue = $submitValue;
-	}
-
-	public function setShowSubmit($showSubmit)
-	{
-		$this->showSubmit = $showSubmit;
-	}
-
-	public function getShowSubmit()
-	{
-		return $this->showSubmit;
-	}
-
-	public function setShowField($show_field)
+	public function setShowFields($show_field)
 	{
 		Container::setShowField($show_field);
 		$this->setShowSubmit($show_field);
 	}
-
-	public function useAjax($validation=true,$submit=true)
+	/*public function setSubmitValue($submitValue)
 	{
-		$this->ajax = $validation;
-		$this->ajaxSubmit = $submit;
-	}
+	    die("w");
+	    $this->submitValue = $submitValue;
+	}*/
 
     public function __toString()
     {
@@ -109,8 +84,7 @@ class FormContainer extends Container
 
     public function setId($id)
     {
-        $this->formId = $id;
-        parent::setId($id);
+        parent::setId($id == "" ? "form" . FormContainer::$numForms++ : $id);
         return $this;
     }
 }

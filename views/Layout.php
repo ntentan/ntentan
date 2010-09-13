@@ -2,7 +2,8 @@
 
 namespace ntentan\views;
 
-use \ntentan\Ntentan;
+use ntentan\Ntentan;
+
 
 /**
  * 
@@ -32,7 +33,7 @@ class Layout
 
     public function addStyleSheet($styleSheet, $media = "all")
     {
-        $this->styleSheets[] = array("src"=>$styleSheet, "media"=>$media);
+        $this->styleSheets[] = array("path"=>$styleSheet, "media"=>$media);
     }
 
     public function removeStyleSheet($styleSheet, $media = "all")
@@ -56,7 +57,18 @@ class Layout
 
         foreach($this->styleSheets as $styleSheet)
         {
-            $stylesheets .= "<link rel='stylesheet' type='text/css' href='{$styleSheet["src"]}' media='{$styleSheet["media"]}' >";
+            $sheets[$styleSheet["media"]][] = $styleSheet;
+        }
+
+        foreach(array_keys($sheets) as $media)
+        {
+            foreach($sheets[$media] as $sheet)
+            {
+                $$media .= file_get_contents($sheet["path"]);
+            }
+            $path = Ntentan::$resourcesPath . $media . ".css";
+            file_put_contents($path, $$media);
+            $stylesheets .= "<link rel='stylesheet' type='text/css' href='/$path' media='$media'>";
         }
 
         // Render all the blocks into string variables

@@ -106,15 +106,9 @@ abstract class Container extends Element
         //to this container. If it does throw an exception.
         if($element->parent==null)
         {
-            $element->formId = $this->formId;
-            array_push($this->elements, $element);
-            $element->setMethod($this->getMethod());
-            $element->setShowField($this->getShowField());
+            $this->elements[] = $element;
+            $element->setShowFields($this->getShowField());
             $element->parent = $this;
-            $element->setNameEncryption($this->getNameEncryption());
-            $element->setNameEncryptionKey($this->getNameEncryptionKey());
-            $element->ajax = $this->ajax;
-            $this->hasFile |= $element->getHasFile();
         }
         else
         {
@@ -282,12 +276,12 @@ abstract class Container extends Element
 	//! Sets whether the fields should be exposed for editing. If this
 	//! field is set as true then the values of the fields as retrieved
 	//! from the database are showed.
-	public function setShowField($showfield)
+	public function setShowFields($showfield)
 	{
-		Element::setShowField($showfield);
+		Element::setShowFields($showfield);
 		foreach($this->getElements() as $element)
 		{
-			$element->setShowField($showfield);
+			$element->setShowFields($showfield);
 		}
 	}
 

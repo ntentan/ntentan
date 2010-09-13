@@ -14,6 +14,11 @@ use \ReflectionMethod;
 class Forms extends Helper
 {
     private $container;
+    
+    public $submitValue;
+    
+    public $id;
+    
     public function __construct()
     {
         $this->container = new FormContainer();
@@ -21,6 +26,8 @@ class Forms extends Helper
     
     public function __toString()
     {
+        $this->container->submitValue = $this->submitValue;
+        $this->container->setId($this->id);
         return (string)$this->container;
     }
     
