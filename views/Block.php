@@ -9,7 +9,13 @@ class Block extends Presentation
     protected $data = array();
     protected $template;
     protected $name;
+    private $path;
     
+    public function setPath($path)
+    {
+        $this->path = $path;
+    }
+
     public function getName() {
     	return $this->name;
     }
@@ -52,7 +58,7 @@ class Block extends Presentation
         if($this->template == "")
         {
             $block = $this->getName();
-            $this->template = Ntentan::$blocksPath . "$block/$block.tpl.php";
+            $this->template = $this->path . "/$block.tpl.php";
         }
         ob_start();
         include $this->template;

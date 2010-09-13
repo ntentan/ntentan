@@ -66,7 +66,7 @@ class Layout
             {
                 $$media .= file_get_contents($sheet["path"]);
             }
-            $path = Ntentan::$resourcesPath . $media . ".css";
+            $path = Ntentan::$resourcesPath . "css/" . $media . ".css";
             file_put_contents($path, $$media);
             $stylesheets .= "<link rel='stylesheet' type='text/css' href='/$path' media='$media'>";
         }
