@@ -243,7 +243,7 @@ abstract class SqlDatabase extends DataStore
         foreach($data as $field => $value)
         {
             if($field == "id") continue;
-            $values[] = "`$field` = '".MysqlDataStore::$db->escape_string($value)."'";
+            $values[] = $this->quote($field) . " = '". $this->escape($value) . "'";
         }
         $query = "UPDATE {$this->table} SET " . implode(", ", $values) . " WHERE id = '{$data["id"]}'";
         $this->query($query);
