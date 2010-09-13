@@ -1,4 +1,6 @@
 <?php
+use \ntentan\views\helpers\forms\Element;
+
 function table_renderer_head()
 {
 	return "<table class='fapi-layout-table'>";

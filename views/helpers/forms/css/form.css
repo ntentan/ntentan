@@ -4,7 +4,6 @@ input[type='password']
     font-size:large;
     border:1px solid #a0a0a0;
     width:100%;
-    margin-bottom:10px;
 }
 
 input[type='text']:focus,
@@ -13,8 +12,56 @@ input[type='password']:focus
     border:1px solid orange;
 }
 
+input[type='submit']
+{
+	font-size:large;
+	font-weight:bold;
+}
+
 label
 {
     font-size:large;
     font-weight:bold;
+    color:#808080;
+}
+
+div.fapi-element-div
+{
+	margin-bottom:10px;
+}
+
+div.fapi-description
+{
+	color:#a0a0a0;
+}
+
+div.fapi-submit-area
+{
+	background-color:#f0f0f0;
+	padding:10px;
+}
+
+span.fapi-required
+{
+	color:orange;
+}
+
+input[type='text'].fapi-error
+{
+	border:1px solid red;
+}
+
+div.fapi-error
+{
+	background-color:pink;
+    border-radius:5px;
+    -moz-border-radius:5px;
+    margin-bottom:5px;
+}
+
+div.fapi-error > ul
+{
+	list-style:none;
+	padding:5px;
+	margin:0px;
 }

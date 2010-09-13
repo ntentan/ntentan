@@ -1,4 +1,7 @@
 <?php
+use \ntentan\views\helpers\forms\Element;
+
+
 /**
  * The default renderer head function
  *
@@ -21,7 +24,7 @@ function default_renderer_element($element, $showfields=true)
 		return $element->render();
 	}
 
-    $ret .= "<div class='fapi-element-div' ".($element->getId()==""?"":"id='".$element->getId()."_wrapper'").">";
+    $ret .= "<div class='fapi-element-div' ".($element->getId()==""?"":"id='".$element->getId()."_wrapper'")." ".$element->getAttributes(Element::SCOPE_WRAPPER).">";
 
     $ret .= "<label class='fapi-label'>".$element->getLabel();
     if($element->getRequired() && $element->getLabel()!="" && $element->getShowField())

@@ -99,44 +99,6 @@ class Model implements ArrayAccess, Iterator
         $className = Model::getClassName($modelPath);
         return new $className();
     }
-    /*public static function load($modelPath)
-    {
-        if(!isset(Model::$modelCache[$modelPath]))
-        {
-            $pathComponents = explode(".", $modelPath);
-            $modelClass = Ntentan::camelize($modelPath) . "Model";//ucfirst($pathComponents[0]) . "Model";
-            $modelFile = Ntentan::$modulesPath . implode("/", $pathComponents) . "/$modelClass.php";
-    
-            if(!file_exists($modelFile))
-            {
-                throw new ModelNotFoundException("Cannot find [$modelFile]");
-            }
-    
-            require_once
-            (
-                Ntentan::$modulesPath
-                . implode("/", $pathComponents)
-                . "/$modelClass.php"
-            );
-    
-            $model = new $modelClass();
-            $model->modelPath = $modelPath;
-    
-            if($model->datastore == null)
-            {
-                $dataStoreParams = Ntentan::getDefaultDataStore();
-                $dataStoreClass = ucfirst($dataStoreParams["datastore"]) . "DataStore";
-                if(class_exists($dataStoreClass)) {
-                    $dataStore = new $dataStoreClass($dataStoreParams);
-                    $model->setDataStore($dataStore);
-                } else {
-                	Ntentan::error("Datastore <b><code>{$dataStoreClass}</code></b> doesn't exist.");
-                }
-            }
-            Model::$modelCache[$modelPath] = $model;
-        }
-        return Model::$modelCache[$modelPath];
-    }*/
 
     public function setData($data)
     {
@@ -153,7 +115,7 @@ class Model implements ArrayAccess, Iterator
         $this->_dataStoreInstance = $dataStore;
         $this->_dataStoreInstance->setModel($this);
     }
-    
+
     public function getDataStore($instance = false)
     {
         if($instance)
@@ -222,7 +184,7 @@ class Model implements ArrayAccess, Iterator
         $this->_dataStoreInstance->setModel($this);
         $this->_dataStoreInstance->delete();
     }
-
+    
     public function __call($method, $arguments)
     {
         $executed = false;

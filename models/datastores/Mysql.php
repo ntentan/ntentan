@@ -26,12 +26,18 @@ class Mysql extends SqlDatabase
         {
             throw new DataStoreException ("MySQL Says : ". Mysql::$db->error . "[$query]");
         }
-        $result = array();
-        while($row = $queryResult->fetch_assoc())
+        else if($queryResult === true)
         {
-            $result[] = $row;
+            $result = true;
         }
-        
+        else
+        {
+            $result = array();
+            while($row = $queryResult->fetch_assoc())
+            {
+                $result[] = $row;
+            }
+        }
         return $result;
     }
 
@@ -75,6 +81,7 @@ class Mysql extends SqlDatabase
             switch($mysqlField["DATA_TYPE"])
             {
                 case "boolean":
+                case "tinyint":
                 case "integer":
                     $type = $mysqlField["DATA_TYPE"];
                     break;

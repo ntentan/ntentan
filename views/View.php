@@ -102,7 +102,7 @@ class View extends Presentation
         if(!Ntentan::isAjax())
         {
             ob_start();
-            $this->_layout->out($data, $blocks);
+            $this->_layout->out($data, $blocks, $viewData);
             $data = ob_get_clean();
         }
         
