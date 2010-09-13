@@ -30,7 +30,7 @@ abstract class DataStore
         else
         {
             $return = clone $this->model;
-            $return->setData($this->_get($queryParameters));
+            $return->setData($this->_get($queryParameters), true);
         }
         return $return;
     }

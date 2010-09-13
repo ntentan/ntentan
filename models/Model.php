@@ -5,6 +5,7 @@ use \ntentan\Ntentan;
 use \ArrayAccess;
 use \Iterator;
 use \ReflectionObject;
+use \ReflectionMethod;
 
 /**
  * The Model class 
@@ -16,6 +17,12 @@ class Model implements ArrayAccess, Iterator
      * @var array
      */
     protected $data = array();
+    
+    /**
+     * Previous data kept for validation purposes. 
+     * @var unknown_type
+     */
+    private $previousData;
 
     /**
      * An instance of the datastore.
@@ -43,7 +50,7 @@ class Model implements ArrayAccess, Iterator
     private static $modelCache;
     private $iteratorPosition;
     private $_description;
-
+    
     public function __construct()
     {
         if($this->belongsTo != null)
@@ -100,9 +107,31 @@ class Model implements ArrayAccess, Iterator
         return new $className();
     }
 
-    public function setData($data)
+    public function setData($data, $overwrite = false)
     {
-        $this->data = $data;
+        if($overwrite === true)
+        {
+            if(count($this->data) > 0)
+            {
+                $this->previousData = $this->data;
+            }
+            else
+            {
+                $this->previousData = $data;
+            }
+            $this->data = $data;
+        }
+        else
+        {
+            if(is_array($data))
+            {
+                foreach($data as $field => $value)
+                {
+                    $this->previousData[$field] = $this->data[$field];
+                    $this->data[$field] = $value;
+                }
+            }
+        }
     }
 
     public function getData()
@@ -173,16 +202,31 @@ class Model implements ArrayAccess, Iterator
 
     public function update()
     {
-        $this->preUpdateCallback();
-        $this->_dataStoreInstance->setModel($this);
-        $this->_dataStoreInstance->update();
-        $this->postUpdateCallback();
+        if($this->validate())
+        {
+            $this->preUpdateCallback();
+            $this->_dataStoreInstance->setModel($this);
+            $this->_dataStoreInstance->update();
+            $this->postUpdateCallback();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function delete()
     {
         $this->_dataStoreInstance->setModel($this);
         $this->_dataStoreInstance->delete();
+    }
+    
+    public static function __callstatic($method, $arguments)
+    {
+        $class = get_called_class();
+        $object = new $class();
+        return $object->__call($method, $arguments);
     }
     
     public function __call($method, $arguments)
@@ -249,6 +293,7 @@ class Model implements ArrayAccess, Iterator
 
     public function __set($variable, $value)
     {
+        $this->previousData[$variable] = $this->data[$variable];
         $this->data[$variable] = $value;
     }
 
@@ -459,7 +504,7 @@ class Model implements ArrayAccess, Iterator
             }
 
             // Validate unique
-            if($field["unique"] === true)
+            if($field["unique"] === true && ($this->data[$field["name"]] != $this->previousData[$field["name"]]))
             {
                 $value = $this->get('first', array("conditions"=>array($field["name"] => $this->data[$field["name"]])));
                 if(count($value->getData()))
