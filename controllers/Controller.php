@@ -337,7 +337,7 @@ class Controller
             $method = $controllerClass->GetMethod($path);
             $this->view->template = Ntentan::$modulesPath . "/$this->path/$path.tpl.php";
             $method->invokeArgs($this, $params);
-            $this->view->layout->blocks = $this->blocks;
+            $this->view->blocks = $this->blocks;
             $ret = $this->view->out($this->get());
             $this->mainPostRender();
         }
