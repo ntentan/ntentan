@@ -40,6 +40,22 @@ class Forms extends Helper
             $element = $method->invokeArgs(null, $args);
             $this->container->add($element);
         }
+        return $element;
+    }
+    
+    public function generateForm($description)
+    {
+        
+    }
+    
+    public function setErrors($errors)
+    {
+        $this->container->setErrors($errors);
+    }
+    
+    public function setData($data)
+    {
+        $this->container->setData($data);
     }
     
     public function addFieldElement($field)

@@ -47,7 +47,7 @@ class Layout
         }
     }
 
-    public function out($contents, $blocks = array())
+    public function out($contents, $blocks = array(), $viewData = array())
     {
         foreach($this->javaScripts as $javaScript)
         {
@@ -57,6 +57,12 @@ class Layout
         foreach($this->styleSheets as $styleSheet)
         {
             $sheets[$styleSheet["media"]][] = $styleSheet;
+        }
+        
+        
+        foreach($viewData as $key => $value)
+        {
+            $$key = $value;
         }
 
         foreach(array_keys($sheets) as $media)

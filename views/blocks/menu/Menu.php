@@ -1,6 +1,8 @@
 <?php
 namespace ntentan\views\blocks\menu;
 
+use ntentan\Ntentan;
+
 use ntentan\views\blocks\Block;
 
 class Menu extends Block {
@@ -15,12 +17,13 @@ class Menu extends Block {
         {
             if(is_string($item) || is_numeric($item))
             {
-                $this->items[] = array("label" => $item);
+                $item = array(
+                    "label" => $item,
+                    "path" => strtolower(str_replace(" ", "_",$item))
+                );
             }
-            else if(is_array($item))
-            {
-                $this->items[] = $item;
-            }
+            $item["selected"] = $item["path"] == Ntentan::$route;
+            $this->items[] = $item;
         }
         $this->set("items", $this->items);
     }

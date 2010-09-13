@@ -2,6 +2,8 @@
 
 namespace ntentan\views\helpers\forms;
 
+use \Exception;
+
 /**
  * The container class. This abstract class provides the necessary
  * basis for implementing form element containers. The container

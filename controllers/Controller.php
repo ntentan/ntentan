@@ -91,6 +91,18 @@ class Controller
             break;
         }
     }
+    
+    /*public function __call($method, $arguments)
+    {
+        if(substr($method, 0, ))
+        {
+            
+        }
+        else
+        {
+            throw new Exception("Method not found!");
+        }
+    }*/
 
     public function __get($property)
     {
@@ -243,7 +255,7 @@ class Controller
             Ntentan::error("Path not found! [$path]");
         }
         else
-       {
+        {
             Ntentan::addIncludePath(Ntentan::$modulesPath . "/$controllerPath/"); //$controllerName.php";
             $controllerNamespace = "\\" . str_replace("/", "\\", Ntentan::$modulesPath . "/$controllerPath/");
             $controllerName = $controllerNamespace . $controllerName;
@@ -255,7 +267,7 @@ class Controller
                 $controller->modelPath = $modelPath;
             }
             else
-          {
+            {
             	Ntentan::error("Controller class <b><code>$controllerName</code></b> not found.");
             }
 

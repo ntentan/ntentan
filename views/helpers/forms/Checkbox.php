@@ -1,4 +1,6 @@
 <?php
+namespace ntentan\views\helpers\forms;
+
 include_once "Field.php";
 
 /**
@@ -35,6 +37,7 @@ class Checkbox extends Field
 	public function setCheckedValue($checkedValue)
 	{
 		$this->checkedValue = $checkedValue;
+		$this->addAttribute("id", $this->getId());
 		return $this;
     }
 
@@ -50,10 +53,8 @@ class Checkbox extends Field
 	public function render()
 	{
 		$ret = "";
-		$ret .= '<input class="fapi-checkbox" type="checkbox" name="'.$this->getName().'" id="'.$this->getId().'" value="'.$this->getCheckedValue().'" '.
+		$ret .= '<input class="fapi-checkbox" type="checkbox" name="'.$this->getName().'" value="'.$this->getCheckedValue().'" '.
 		      (($this->getValue()==$this->getCheckedValue())?"checked='checked'":"").' '.$this->getAttributes().' />';
-
-		/*$ret .= '<span class="fapi-label">'.$this->getLabel()."</span>";*/
 		return $ret;
 	}
 
@@ -73,11 +74,5 @@ class Checkbox extends Field
 	{
 		return false;
 	}
-
-	/*public function getType()
-	{
-		return __CLASS__;
-	}*/
 }
 
-?>

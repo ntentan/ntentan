@@ -50,7 +50,7 @@ class FormContainer extends Container
 
 		if($this->showSubmit)
 		{
-			$ret .= '<div id="fapi-submit-area">';
+			$ret .= '<div class="fapi-submit-area">';
 			$submitValue = $this->submitValue?("value='{$this->submitValue}'"):"";
 			if($this->ajaxSubmit)
 			{

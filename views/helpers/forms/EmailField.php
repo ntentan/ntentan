@@ -1,4 +1,7 @@
 <?php
+
+namespace ntentan\views\helpers\forms;
+
 include_once("TextField.php");
 /**
  * A text field for accepting email addresses. This field validates

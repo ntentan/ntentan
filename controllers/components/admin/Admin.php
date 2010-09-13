@@ -1,11 +1,15 @@
 <?php
-class AdminComponent extends Component
+namespace ntentan\controllers\components\admin;
+
+use ntentan\controllers\components\Component;
+use ntentan\models\Model;
+
+class Admin extends Component
 {
     /**
      * 
      * @var Model
      */
-    //protected $adminModel;
     private $basePath;
     private $modelName;
     private $utilClassName;
