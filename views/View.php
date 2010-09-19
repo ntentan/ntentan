@@ -18,11 +18,10 @@
 
 namespace ntentan\views;
 
-use \ntentan\Ntentan;
+use ntentan\Ntentan;
 
 /**
  * An extension of the presentation class for the purposes of rendering views.
- * 
  * @author ekow
  */
 class View extends Presentation
@@ -87,6 +86,7 @@ class View extends Presentation
         ob_start();
         if(file_exists( $this->template ))
         {
+            include "view_utils.php";
             include $this->template;
         }
         else if($this->template === false)

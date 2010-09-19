@@ -215,29 +215,37 @@ class Ntentan
     }
         
     public static function message($message, $subTitle = null, $type = null) {
+        debug_print_backtrace();
         return 
         "<html>
         <head>
             <style>
-            #border
+            #message
             {
-                width:500px;
-                margin-top:5px;
+                width:40%;
+                margin-top:50px;
                 margin-left:auto;
                 margin-right:auto;
-                border:1px solid #808080;
                 background-color:#f0f0f0;
                 padding:10px;
+                border-radius:10px;
+                -moz-border-radius:10px;
+                font-family:sans-serif;
+                color:#404040;
+                box-shadow: 0px 1px 2px rgba(0, 0, 0, .5);
+                -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, .5);
+                -moz-box-shadow: 0px 1px 2px rgba(0, 0, 0, .5);
             }
             
-            #border h1
+            #message h1
             {
                 margin:0px;
+                color:black;
             }
             </style>
             <title>Ntentan Error!</title>
         </head>
-        <div id='border'>
+        <div id='message'>
             <h1>Ntentan</h1>
             <p>$message</p>
          </div>
