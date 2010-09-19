@@ -75,23 +75,15 @@ abstract class SqlDatabase extends DataStore
             $fields = "COUNT(*)";
         }
         else
-       {
+        {
             if($params["fields"] == null)
             {
-                /*$fieldList = $this->model->describe();
-                $fieldList = array_keys($fieldList["fields"]);
-                foreach($fieldList as $key => $field)
-                {
-                    $fieldList[$key] = $this->table . "." . $field;
-                }
-                
-                $fields = implode(", ", $fieldList);*/
                 $fields = " * ";
             }
             else
-          {
+            {
                 $fields = implode(", ", is_array($params["fields"]) ? $params["fields"] : explode(",", $params["fields"]));
-           }
+            }
         }
 
         // Generate the base query
@@ -147,6 +139,11 @@ abstract class SqlDatabase extends DataStore
                 $query .= " ORDER BY {$params["sort"]} ";
             }
         }
+        
+        if(isset($params["offset"]))
+        {
+            $offset = $params["offset"] . ", ";
+        }
 
         // Add the limiting clauses
         if($params["type"] == 'first')
@@ -155,7 +152,7 @@ abstract class SqlDatabase extends DataStore
         }
         else if(is_numeric($params["type"]))
         {
-        	$query .= "LIMIT {$params["type"]}";
+        	$query .= "LIMIT $offset {$params["type"]}";
         }
 
         // Execute the query

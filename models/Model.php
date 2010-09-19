@@ -49,6 +49,11 @@ class Model implements ArrayAccess, Iterator
     public $invalidFields = array();
     private static $modelCache;
     private $iteratorPosition;
+    
+    /**
+     * Description
+     * @var unknown_type
+     */
     private $_description;
     
     public function __construct()

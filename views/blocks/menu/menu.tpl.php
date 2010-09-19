@@ -1,3 +1,4 @@
+<?php if(count($items) > 0):?>
 <ul class='menu <?php echo $alias ?>'>
 <?php foreach($items as $item): ?>
 <li class='menu-item <?php echo \ntentan\Ntentan::$route == $item["path"] ? "menu-selected" : "" ?> <?php echo str_replace(" ","_",strtolower($item["label"])) ?>'>
@@ -7,3 +8,4 @@
 </li>
 <?php endforeach;?>
 </ul>
+<?php endif ?>

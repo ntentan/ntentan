@@ -2,7 +2,6 @@
 namespace ntentan\views\blocks\menu;
 
 use ntentan\Ntentan;
-
 use ntentan\views\blocks\Block;
 
 class Menu extends Block {
@@ -19,7 +18,7 @@ class Menu extends Block {
             {
                 $item = array(
                     "label" => $item,
-                    "path" => strtolower(str_replace(" ", "_",$item))
+                    "path" => Ntentan::getUrl(strtolower(str_replace(" ", "_",$item)))
                 );
             }
             $item["selected"] = $item["path"] == Ntentan::$route;

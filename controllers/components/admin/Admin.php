@@ -1,242 +1,162 @@
 <?php
+/**
+ * The file for the Administration Component
+ *
+ * LICENSE:
+ * Copyright 2010 James Ekow Abaka Ainooson
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @package    ntentan.contorllers.components.admin
+ * @author     James Ekow Abaka Ainooson <jainooson@gmail.com>
+ * @copyright  2010 James Ekow Abaka Ainooson
+ * @license    http://www.apache.org/licenses/LICENSE-2.0
+ */
+
+
 namespace ntentan\controllers\components\admin;
 
+use ntentan\Ntentan; 
 use ntentan\controllers\components\Component;
 use ntentan\models\Model;
 
 class Admin extends Component
 {
-    /**
-     * 
-     * @var Model
-     */
-    private $basePath;
-    private $modelName;
-    private $utilClassName;
-    private $baseClassName;
-    public $tempData;
-
-    public function manage()
+    private $modelPath;
+    public $listFields = array();
+    public $extraOperations = array();
+    private $operations;
+    
+    public function init()
     {
-        $arguments = func_get_args();
-        end($arguments);
-        $last = current($arguments);
-        $lastButOne = prev($arguments);
-
-        if(!is_numeric($last) && $last != "add")
-        {
-            $this->model = Model::load(implode(".", $arguments));
-            foreach($arguments as $argument)
-            {
-                $this->modelName .= ucfirst($argument) . " ";
-                $this->utilClassName .= ucfirst($argument);
-                $this->baseClassName .= strtolower($argument) . "_";
-            }
-            $this->listItems();
-        }
-        else if($last == "add")
-        {
-            array_pop($arguments);
-            $this->model = Model::load(implode(".", $arguments));
-            $this->basePath = $this->path . "/manage/" . implode("/", $arguments) . "/";
-            foreach($arguments as $argument)
-            {
-                $this->modelName .= ucfirst($argument) . " ";
-                $this->utilClassName .= ucfirst($argument);
-                $this->baseClassName .= strtolower($argument) . "_";
-            }
-            $this->addItem();
-        }
-        else if(is_numeric($last) && $lastButOne == "edit")
-        {
-            $key = $last;
-            array_pop($arguments);
-            array_pop($arguments);
-            $this->model = Model::load(implode(".", $arguments));
-            $this->basePath = $this->path . "/manage/" . implode("/", $arguments) . "/";
-            foreach($arguments as $argument)
-            {
-                $this->modelName .= ucfirst($argument) . " ";
-                $this->utilClassName .= ucfirst($argument);
-                $this->baseClassName .= strtolower($argument) . "_";
-            }
-            $this->editItem($key);
-        }
-        else if(is_numeric($last) && $lastButOne = "delete")
-        {
-            $key = $last;
-            array_pop($arguments);
-            array_pop($arguments);
-            $this->model = Model::load(implode(".", $arguments));
-            $this->basePath = $this->path . "/manage/" . implode("/", $arguments) . "/";
-            $this->deleteItem($key);
-        }
-
-        $this->set("model_name", $this->modelName);
-        $this->set("util_class_name", $this->utilClassName);
-        $this->set("base_class_name", $this->baseClassName);
-        $this->set("controller_path", $this->path);
-        $this->set("model_description", $this->model->describe());
-    }
-
-    protected function listItems()
-    {
-        $this->view->template = Ntentan::getFilePath("controllers/components/admin/list.tpl.php");
-        $data = $this->model->get();
-        $count = $this->model->get('count');
-        $this->set("list_data", $data->getData());
-        $this->set("num_list_data", (int)(string)$count);
-        $this->set
-        (
-            "operations",
+        $this->addOperation(
             array(
-                array("path" => Ntentan::getUrl(Ntentan::$route . "add"), "label" => "Add"),
-                /*array("path" => Ntentan::getUrl(Ntentan::$route . "export"), "label" => "Export"),
-                array("path" => Ntentan::getUrl(Ntentan::$route . "template"), "label" => "Template"),
-                array("path" => Ntentan::getUrl(Ntentan::$route . "import"), "label" => "Import"),*/
-            )
+                "label"=> "Edit", 
+                "controller" => $this->controller->path,
+                "operation" => "edit"
+            )        
         );
-        $this->set(
-            "side_operations",
+        
+        $this->addOperation(
             array(
-                array("path" => Ntentan::getUrl(Ntentan::$route . "edit"), "label" => "Edit"),
-                array("path" => Ntentan::getUrl(Ntentan::$route . "delete"), "label" => "Delete"),
+                "label"=> "Delete", 
+                "controller" => $this->controller->path,
+                "operation" => "delete",
+                "confirm_message" => "Are you sure you want to delete <b>%item%</b>?"
             )
         );
     }
 
-    protected function addItem()
+    public function addOperation($operation)
     {
-        $this->view->template = Ntentan::getFilePath("controllers/components/admin/add.tpl.php");
-        $save = false;
-        $description = $this->model->describe();
-        $this->set("fields", $description["fields"]);
-        $this->set("name", $description["name"]);
-
-        foreach($description["fields"] as $field)
+        if(!isset($operation["controller"]))
         {
-            if(isset($_REQUEST[$field["name"]]))
-            {
-                $save = true;
-            }
+            $operation["controller"] = $this->controller->path;
         }
+        $this->operations[$operation["operation"]] = array(
+            "label" => $operation["label"],
+            "link" => 
+                $operation["confirm_message"] == "" ? 
+                    Ntentan::getUrl("{$operation["controller"]}/{$operation["operation"]}/") :
+                    Ntentan::getUrl("{$operation["controller"]}/confirm/{$operation["operation"]}/"),
+            "confirm_message" => $operation["confirm_message"]
+        );
+    }
 
-        if($save)
+    public function page($pageNumber)
+    {
+        $itemsPerPage = 10;
+        $model = $this->controller->model;
+        $operations = array();
+        $this->useTemplate("page.tpl.php");
+        
+        $data = $model->get($itemsPerPage, array("offset"=>($pageNumber-1) * $itemsPerPage));
+        $count = $model->get('count');
+        $this->set("data", $data->getData());
+        $numPages = ceil($count / $itemsPerPage);
+        $pagingLinks = array();
+        
+        $this->set("operations", $this->operations);
+        
+        if(count($this->listFields) == 0)
         {
-            foreach($description["fields"] as $field)
+            $modelFields = $model->describe();
+        }
+        
+        $this->set("list_fields", $this->listFields);
+        
+        if($count > $itemsPerPage)
+        {
+            if($pageNumber > 1)
             {
-                if($field["primary_key"]) continue;
-                $this->tempData[$field["name"]] = $_REQUEST[$field["name"]];
+                $pagingLinks[] = array(
+                    "link" => Ntentan::getUrl("users/page/" . $i - 1),
+                    "label" => "< Prev"
+                );
             }
-
-            $this->callControllerMethod("preValidate");
-            $this->callControllerMethod("preValidate{$this->utilClassName}");
-
-            $this->model->setData($this->tempData);
-            $validate = $this->model->validate();
-            
-            if($validate === true)
-            {
-                try
-                {
-                    $this->callControllerMethod("postValidate");
-                    $this->callControllerMethod("postValidate{$this->utilClassName}");
-
-                    $this->callControllerMethod("preAdd");
-                    $this->callControllerMethod("preAdd{$this->utilClassName}");
-
-                    $this->model->save();
-
-                    $this->callControllerMethod("postAdd");
-                    $this->callControllerMethod("postAdd{$this->utilClassName}");
-                }
-                catch (ControllerMethodNotFoundException $exception)
-                {
                     
-                }
-
-                Ntentan::redirect($this->basePath);
+            for($i = 1; $i <= $numPages; $i++)
+            {
+                $pagingLinks[] = array( 
+                    "link" => Ntentan::getUrl("users/page/$i"),
+                    "label" => "$i"
+                );
+            }
+            
+            if($pageNumber < $numPages)
+            {
+                $pagingLinks[] = array(
+                    "link" => Ntentan::getUrl("users/page/" . $i + 1),
+                    "label" => "Next >"
+                );
+            }
+            $this->set("pages", $pagingLinks);
+        }
+    }
+    
+    public function run()
+    {
+        $this->page(1);
+    }
+    
+    public function confirm($operation, $id)
+    {
+        $this->useTemplate("confirm.tpl.php");
+        $item = $this->controller->model->getFirstWithId($id);
+        $this->set("item", (string)$item);
+        $this->set("message", $this->operations[$operation]["confirm_message"]);
+        $this->set("positive_path", Ntentan::getUrl("{$this->controller->path}/$operation/$id"));
+        $this->set("negative_path", Ntentan::getUrl($this->controller->path));
+    }
+    
+    public function add()
+    {
+        if(count($_POST) > 0)
+        {
+            $model = new UsersModel();
+            unset($_POST["password_2"]);
+            $model->setData($_POST);
+            if($model->save())
+            {
+                Ntentan::redirect(
+                    Ntentan::getUrl("users") . "?n=" . 
+                    urlencode("Successfully added new user <b>{$model["username"]}</b>")
+                );
             }
             else
             {
-                $this->set("form_errors", $validate);
+                $this->set("errors", $model->invalidFields);
             }
-        }
-    }
-
-    protected function editItem($key)
-    {
-        $this->view->template = Ntentan::getFilePath("controllers/components/admin/edit.tpl.php");
-        $description = $this->model->describe();
-        $this->set("fields", $description["fields"]);
-        $this->set("name", $description["name"]);
-        $data = $this->model->getFirstWithId($key);
-        $this->set("form_data", $data->getData());
-
-        foreach($description["fields"] as $field)
-        {
-            if(isset($_REQUEST[$field["name"]]))
-            {
-                $save = true;
-            }
-        }
-
-        if($save)
-        {
-            foreach($description["fields"] as $field)
-            {
-                if($field["primary_key"]) continue;
-                $this->tempData[$field["name"]] = $_REQUEST[$field["name"]];
-            }
-            $this->tempData["id"] = $key;
-
-            $this->callControllerMethod("preValidate");
-            $this->callControllerMethod("preValidate{$this->utilClassName}");
-
-            $this->model->getWithId($key);
-            $this->model->setData($this->tempData);
-            $validate = $this->model->validate();
-
-            if($validate === true)
-            {
-                try
-                {
-                    $this->callControllerMethod("postValidate");
-                    $this->callControllerMethod("postValidate{$this->utilClassName}");
-
-                    $this->callControllerMethod("preUpdate");
-                    $this->callControllerMethod("preUpdate{$this->utilClassName}");
-
-                    $this->model->update();
-
-                    $this->callControllerMethod("postUpdate");
-                    $this->callControllerMethod("postUpdate{$this->utilClassName}");
-                }
-                catch (ControllerMethodNotFoundException $exception)
-                {
-
-                }
-
-                Ntentan::redirect($this->basePath);
-            }
-            else
-            {
-                $this->set("form_errors", $validate);
-            }
-        }
-    }
-
-    protected function deleteItem($key)
-    {
-        if($_REQUEST["confirm"] == "yes")
-        {
-            $item = $this->model->getWithId($key);
-            $item->delete();
-            Ntentan::redirect($this->basePath);
-        }
-        else
-        {
-            $this->view->template = Ntentan::getFilePath("controllers/components/admin/delete.tpl.php");
         }
     }
 }
