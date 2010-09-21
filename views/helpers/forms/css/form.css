@@ -12,6 +12,19 @@ input[type='password']:focus
     border:1px solid orange;
 }
 
+textarea
+{
+    border:1px solid #a0a0a0;
+    width:100%;
+    font-size:large;
+    font-family:"Helvetica", sans-serif
+}
+
+textarea:focus
+{
+    border:1px solid orange;
+}
+
 input[type='submit']
 {
 	font-size:large;
@@ -20,7 +33,7 @@ input[type='submit']
 
 label
 {
-    font-size:large;
+	font-size:larger;
     font-weight:bold;
     color:#808080;
 }

@@ -1,6 +1,6 @@
 <?php
-//! A special field for accepting multiline text input.
-//! \ingroup Form_API
+namespace ntentan\views\helpers\forms;
+
 class TextArea extends Field
 {
 	public function __construct($label="",$name="",$description="")
@@ -15,4 +15,3 @@ class TextArea extends Field
 		return "<textarea ".$this->getAttributes()." class='fapi-textarea ".$this->getCSSClasses()."' name='".$this->getName()."'>".$this->getValue()."</textarea>";
 	}
 }
-?>
