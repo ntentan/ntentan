@@ -80,7 +80,14 @@ class Admin extends Component
         $operations = array();
         $this->useTemplate("page.tpl.php");
         
-        $data = $model->get($itemsPerPage, array("offset"=>($pageNumber-1) * $itemsPerPage));
+        $data = $model->get(
+            $itemsPerPage, 
+            array(
+                "offset"=>($pageNumber-1) * $itemsPerPage,
+                "sort" => "id desc"
+            )
+        );
+        
         $count = $model->get('count');
         $this->set("data", $data->getData());
         $numPages = ceil($count / $itemsPerPage);
@@ -90,7 +97,12 @@ class Admin extends Component
         
         if(count($this->listFields) == 0)
         {
-            $modelFields = $model->describe();
+            $description = $model->describe();
+            foreach($description["fields"] as $field)
+            {
+                if($field["primary_key"] == true) continue;
+                $this->listFields[] = $field["name"];
+            }
         }
         
         $this->set("list_fields", $this->listFields);
@@ -139,18 +151,65 @@ class Admin extends Component
         $this->set("negative_path", Ntentan::getUrl($this->controller->path));
     }
     
-    public function add()
+    public function delete($id)
     {
+        $this->view = false;
+        $item = $this->controller->model->getFirstWithId($id);
+        $item->delete();
+        Ntentan::redirect(
+            $this->controller->path . "?n=" . 
+            urlencode(
+                "Successfully deleted " . 
+                Ntentan::singular($this->controller->model->name) . 
+                " <b>" . $item . "</b>"
+            )
+        );
+    }    
+    
+    public function edit($id)
+    {
+        $this->useTemplate("edit.tpl.php");
+        
+        $description = $this->controller->model->describe();
+        $this->set("fields", $description["fields"]);
+        
+        $data = $this->controller->model->getFirstWithId($id);
+        $this->set("data", $data->getData());
+        
         if(count($_POST) > 0)
         {
-            $model = new UsersModel();
+            $data->setData($_POST);
+            if($data->update())
+            {
+                Ntentan::redirect(
+                    $this->controller->path . "?n=" . 
+                    urlencode("Successfully updated " . Ntentan::singular($this->controller->model->name) . " <b>" . $data ."</b>")
+                );
+            }
+            else
+            {
+                $this->set('errors', $user->invalidFields);
+            }
+        }
+    }
+    
+    public function add()
+    {
+        $this->useTemplate("add.tpl.php");
+        $model = $this->controller->model;
+        $description = $model->describe();
+        $this->set("fields", $description["fields"]);
+        $this->set("model", ucfirst(Ntentan::singular($this->controller->model->name)));
+        
+        if(count($_POST) > 0)
+        {
             unset($_POST["password_2"]);
             $model->setData($_POST);
             if($model->save())
             {
                 Ntentan::redirect(
-                    Ntentan::getUrl("users") . "?n=" . 
-                    urlencode("Successfully added new user <b>{$model["username"]}</b>")
+                    $this->controller->path . "?n=" . 
+                    urlencode("Successfully added new ".$this->controller->model->name." <b>". (string)$model. "</b>")
                 );
             }
             else

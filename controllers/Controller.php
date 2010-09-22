@@ -294,7 +294,6 @@ class Controller
             {
             	Ntentan::error("Controller class <b><code>$controllerName</code></b> not found.");
             }
-
             if($i != count($pathArray)-1)
             {
                 $controller->method = $pathArray[$i+1];
@@ -311,7 +310,7 @@ class Controller
             }
             else
             {
-                echo Ntentan::message("Method not found <code><b>$controllerName::$methodName()</b></code>");
+                echo Ntentan::message("Method not found <code><b>$controllerName::{$controller->method}()</b></code>");
                 die();
             }
         }

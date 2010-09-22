@@ -58,7 +58,7 @@ class Forms extends Helper
         $this->container->setData($data);
     }
     
-    public function addFieldElement($field)
+    public function addModelField($field, $return = false)
     {
         switch($field["type"])
         {
@@ -81,22 +81,27 @@ class Forms extends Helper
                 break;
 
             case "string":
-                if($field["lenght"] == 0)
-                {
-                    $element = new TextArea(ucwords(str_replace("_", " ", $field["name"])));
-                }
-                else
-                {
-                    $element = new TextField(ucwords(str_replace("_", " ", $field["name"])));
-                }
+               $element = new TextField(Ntentan::toSentence($field["name"]), $field["name"]);
                 break;
+            case "text":
+                $element = new TextArea(Ntentan::toSentence($field["name"]), $field["name"]);
+                break;
+            case "boolean":
+                $element = new Checkbox(Ntentan::toSentence($field["name"]), $field["name"]);
+                break;
+                
+            default:
+                throw new \Exception("Unknown data type {$field["type"]}");
         }
-        return $element;
+        if($field["required"]) $element->setRequired(true);
+        $element->setDescription($field["comment"]);
+        if($return)
+        {
+            return $element;
+        }
+        else
+        {
+            $this->container->add($element);
+        }
     }
-
-    public function getField($field)
-    {
-        return $this->getFieldElement($field);
-    }
-
 }

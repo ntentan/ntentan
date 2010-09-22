@@ -82,6 +82,8 @@ class Mysql extends SqlDatabase
             {
                 case "boolean":
                 case "tinyint":
+                    $type = "boolean";
+                    break;
                 case "integer":
                     $type = $mysqlField["DATA_TYPE"];
                     break;
@@ -120,12 +122,15 @@ class Mysql extends SqlDatabase
                 default:
                     throw new Exception("Unknown MySQL data type [{$mysqlField["DATA_TYPE"]}] for field[{$mysqlField["COLUMN_NAME"]}] in table [{$this->table}]");
             }
-            
+
             $field = array(
                 "name" => strtolower($mysqlField["COLUMN_NAME"]),
                 "type" => $type,
-                "required" => $mysqlField["IS_NULLABLE"] == "NO" ? true : false
+                "required" => $mysqlField["IS_NULLABLE"] == "NO" ? true : false,
+                "lenght" => $mysqlField["CHARACTER_MAXIMUM_LENGHT"],
+                "comment" => $mysqlField["COLUMN_COMMENT"]
             );
+
             if($mysqlField["COLUMN_NAME"] == $primaryKey[0]["column_name"])
             {
                 $field["primary_key"] = true;
@@ -157,28 +162,4 @@ class Mysql extends SqlDatabase
     {
         return mysql_escape_string($string);
     }
-    
-    private function describeType($type) {
-        preg_match('/(?<type>int|varchar|text|double)(\((?<lenght>[0-9]*)\))?[ ]?(?<signed>unsigned)?/', $type, $matches);
-        switch($matches["type"]) {
-            case "int":
-                $return["type"] = "integer";
-                $return["signed"] = $matches["signed"] == "unsigned" ? false : true;
-                break;
-
-            case "double":
-                $return["type"] = "double";
-                break;
-            
-            case "varchar":
-                $return["type"] = "string";
-                $return["lenght"] = $matches["lenght"];
-                break;
-
-            case "text":
-                $return["type"] = "string";
-                break;
-        }
-        return $return;
-    }    
 }
