@@ -30,6 +30,14 @@ use ntentan\Ntentan;
 use ntentan\controllers\components\Component;
 use ntentan\models\Model;
 
+/**
+ * Admin component provides an interface through which data in a model could be
+ * manipulated. Adding this component to any controller automatically provides
+ * the interface for adding, editing and deleting items in the model class found
+ * within the attached controllers package or namespace.
+ * 
+ * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
+ */
 class Admin extends Component
 {
     private $modelPath;
