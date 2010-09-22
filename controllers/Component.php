@@ -17,7 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * @package    ntentan
+ * @package    ntentan.controllers.components
  * @author     James Ekow Abaka Ainooson <jainooson@gmail.com>
  * @copyright  2010 James Ekow Abaka Ainooson
  * @license    http://www.apache.org/licenses/LICENSE-2.0
@@ -39,7 +39,7 @@ use ntentan\Ntentan;
  * @author James Ekow Abaka Ainooson
  * @abstract
  */
-abstract class Component extends Controller
+class Component extends Controller
 {
     /**
      * The name of the controller this instance of the comonent is attached to.
@@ -81,16 +81,27 @@ abstract class Component extends Controller
         $this->path = $controllerPath;
     }
 
+    /**
+     * (non-PHPdoc)
+     * @see controllers/ntentan\controllers.Controller::set()
+     */
     public function set($params1, $params2)
     {
         $this->controller->set($params1, $params2);
     }
 
+    /**
+     * (non-PHPdoc)
+     * @see controllers/ntentan\controllers.Controller::get()
+     */
     public function get()
     {
         return $this->controller->get();
     }
 
+    /**
+     * Calls a method from the controller to which this component is attached.
+     */
     protected function callControllerMethod()
     {
         $arguments = func_get_args();
@@ -103,6 +114,10 @@ abstract class Component extends Controller
         return $ret;
     }
 
+    /**
+     * (non-PHPdoc)
+     * @see controllers/ntentan\controllers.Controller::__get()
+     */
     public function __get($property)
     {
         switch ($property)
@@ -116,6 +131,19 @@ abstract class Component extends Controller
         }
     }
     
+    /**
+     * Selects a template be used for rendering the output. This method allows
+     * the component to use template files found within its directory to render
+     * the output. If for some reason the controller using the component has a
+     * template file with the same name, the file found in the controller is
+     * used instead. In this way a mechanism is provided where the default templates
+     * provided with the components could be overidden by those in the controller.
+     * Note that all the views rendered by the component are also rendered using
+     * the View class.
+     *  
+     * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
+     * @param $file
+     */
     public function useTemplate($file)
     {
         $templateFile = $this->controller->filePath . $file;
