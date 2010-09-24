@@ -28,6 +28,7 @@ namespace ntentan\controllers\components;
 
 use ntentan\controllers\Controller;
 use ntentan\Ntentan;
+use \ReflectionMethod;
 
 /**
  * The base class for all Componets. Components are little plugins which could
@@ -113,6 +114,25 @@ class Component extends Controller
         }
         return $ret;
     }
+    
+    /**
+     * 
+     */
+    protected function executeCallbackMethod()
+    {
+        $arguments = func_get_args();
+        $method = array_shift($arguments);
+        if(method_exists($this->controller, $method))
+        {
+            $reflectionMethod = new ReflectionMethod($this->controller, $method);
+            $reflectionMethod->invokeArgs($this->controller, $arguments);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
     /**
      * (non-PHPdoc)
@@ -155,5 +175,5 @@ class Component extends Controller
         {
             $this->view->template = $this->filePath . "/$file";
         }
-    }
+    }    
 }

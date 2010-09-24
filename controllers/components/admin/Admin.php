@@ -23,7 +23,6 @@
  * @license    http://www.apache.org/licenses/LICENSE-2.0
  */
 
-
 namespace ntentan\controllers\components\admin;
 
 use ntentan\Ntentan; 
@@ -40,9 +39,19 @@ use ntentan\models\Model;
  */
 class Admin extends Component
 {
-    private $modelPath;
+    /**
+     * An array which holds a list of all the fields which would be displayed in
+     * the list.
+     * @var array
+     */
     public $listFields = array();
     public $extraOperations = array();
+    public $preAddCallback;
+    public $postAddCallback;
+    public $preEditCallback;
+    public $postEditCallback;
+    public $preDeleteCallback;
+    public $postDeleteCallback;
     private $operations;
     
     public function init()
@@ -112,9 +121,9 @@ class Admin extends Component
                 $this->listFields[] = $field["name"];
             }
         }
-        
+
         $this->set("list_fields", $this->listFields);
-        
+
         if($count > $itemsPerPage)
         {
             if($pageNumber > 1)
@@ -143,12 +152,12 @@ class Admin extends Component
             $this->set("pages", $pagingLinks);
         }
     }
-    
+
     public function run()
     {
         $this->page(1);
     }
-    
+
     public function confirm($operation, $id)
     {
         $this->useTemplate("confirm.tpl.php");
@@ -158,7 +167,7 @@ class Admin extends Component
         $this->set("positive_path", Ntentan::getUrl("{$this->controller->path}/$operation/$id"));
         $this->set("negative_path", Ntentan::getUrl($this->controller->path));
     }
-    
+
     public function delete($id)
     {
         $this->view = false;
@@ -172,8 +181,8 @@ class Admin extends Component
                 " <b>" . $item . "</b>"
             )
         );
-    }    
-    
+    }
+
     public function edit($id)
     {
         $this->useTemplate("edit.tpl.php");
@@ -200,7 +209,7 @@ class Admin extends Component
             }
         }
     }
-    
+
     public function add()
     {
         $this->useTemplate("add.tpl.php");
@@ -211,17 +220,22 @@ class Admin extends Component
         
         if(count($_POST) > 0)
         {
-            unset($_POST["password_2"]);
+            $this->executeCallbackMethod($this->preAddCallback);
             $model->setData($_POST);
-            if($model->save())
+            $id = $model->save();
+            if($id > 0)
             {
-                Ntentan::redirect(
-                    $this->controller->path . "?n=" . 
-                    urlencode("Successfully added new ".$this->controller->model->name." <b>". (string)$model. "</b>")
-                );
+                if(!$this->executeCallbackMethod($this->postAddCallback, $id, $model))
+                {
+                    Ntentan::redirect(
+                        $this->controller->path . "?n=" . 
+                        urlencode("Successfully added new ".$this->controller->model->name." <b>". (string)$model. "</b>")
+                    );
+                }
             }
             else
             {
+                $this->set("data", $_POST);
                 $this->set("errors", $model->invalidFields);
             }
         }

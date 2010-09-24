@@ -52,14 +52,20 @@ abstract class DataStore
         $data = $this->model->getData();
         $this->_delete($data["id"]);
     }
+    
+    public function begin()
+    {
+        
+    }
+    
+    public function end()
+    {
+        
+    }
 
     protected abstract function _get($queryParameters);
-
     protected abstract function _put($queryParameters);
-
     protected abstract function _update($queryParameters);
-    
     protected abstract function _delete($queryParameters);
-
     public abstract function describe();
 }

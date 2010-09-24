@@ -18,7 +18,8 @@ use ntentan\models\Model;
  * which are later rendered as output to the end user through views.
  *
  * @author James Ekow Abaka Ainooson
- * @todo Controllers must output data that can be passed to some kind of template engine like smarty.
+ * @todo Controllers must output data that can be passed to some kind of template
+ *       engine like smarty.
  * 
  */
 class Controller
@@ -134,6 +135,7 @@ class Controller
                 $this->viewInstance = new View();
                 $this->viewInstance->layout = "main";
                 $this->viewInstance->template = $path;
+                $this->viewInstance->defaultTemplatePath = $this->filePath;
             }
             return $this->viewInstance;
 
@@ -220,6 +222,16 @@ class Controller
         {
             $this->variables[$params1] = $params2;
         }
+    }
+    
+    /**
+     * Appends a string to an already setup template variable.
+     * @param string $params1
+     * @param string $params2
+     */
+    protected function append($params1, $params2)
+    {
+        $this->variables[$params1] .= $params2;
     }
 
     protected function get()

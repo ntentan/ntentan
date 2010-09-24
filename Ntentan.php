@@ -172,6 +172,14 @@ class Ntentan
         }
     }
     
+    public static function plural($string)
+    {
+        if(substr($string, -1) != "s")
+        {
+            return $string . "s";
+        }
+    }
+    
     public static function camelize($string, $delimiter=".", $baseDelimiter = "")
     {
         if($baseDelimiter == "") $baseDelimiter = $delimiter;
@@ -214,41 +222,15 @@ class Ntentan
     	die();
     }
         
-    public static function message($message, $subTitle = null, $type = null) {
-        debug_print_backtrace();
-        return 
-        "<html>
-        <head>
-            <style>
-            #message
-            {
-                width:40%;
-                margin-top:50px;
-                margin-left:auto;
-                margin-right:auto;
-                background-color:#f0f0f0;
-                padding:10px;
-                border-radius:10px;
-                -moz-border-radius:10px;
-                font-family:sans-serif;
-                color:#404040;
-                box-shadow: 0px 1px 2px rgba(0, 0, 0, .5);
-                -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, .5);
-                -moz-box-shadow: 0px 1px 2px rgba(0, 0, 0, .5);
-            }
-            
-            #message h1
-            {
-                margin:0px;
-                color:black;
-            }
-            </style>
-            <title>Ntentan Error!</title>
-        </head>
-        <div id='message'>
-            <h1>Ntentan</h1>
-            <p>$message</p>
-         </div>
-         </html>";   
+    public static function message($message, $subTitle = null, $type = null, $showTrace = true) 
+    {
+        if($showTrace === true)
+        {
+            $trace = debug_backtrace();
+        }
+        ob_start();
+        include "templates/message.tpl.php";
+        $message = ob_get_clean();
+        return $message;
     }
 }

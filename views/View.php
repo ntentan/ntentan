@@ -29,6 +29,7 @@ class View extends Presentation
     private $_layout;
     public $template;
     public $blocks;
+    public $defaultTemplatePath;
 
     public function __construct()
     {
@@ -82,19 +83,23 @@ class View extends Presentation
             $$blockName = (string)$block;
             $blocks[$blockName] = $$blockName;
         }
-
         ob_start();
         if(file_exists( $this->template ))
         {
             include "view_utils.php";
             include $this->template;
         }
+        else if(file_exists($this->defaultTemplatePath . $this->template))
+        {
+            include "view_utils.php";
+            include $this->defaultTemplatePath . $this->template;
+        }
         else if($this->template === false)
         {
             // Do nothing
         }
         else
-       {
+        {
             Ntentan::error("View template <b><code>{$this->template}</code></b> not Found!");
         }
         $data = ob_get_clean();
