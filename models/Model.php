@@ -1,7 +1,7 @@
 <?php
 namespace ntentan\models;
 
-use \ntentan\Ntentan;
+use ntentan\Ntentan;
 use \ArrayAccess;
 use \Iterator;
 use \ReflectionObject;
@@ -45,7 +45,7 @@ class Model implements ArrayAccess, Iterator
     public $mustBeUnique;
     public $belongsToModelInstances = array();
     public $modelPath;
-    public $name;
+    private $name;
     public $invalidFields = array();
     private static $modelCache;
     private $iteratorPosition;
@@ -90,7 +90,7 @@ class Model implements ArrayAccess, Iterator
     
     public static function getBelongsTo($belongsTo)
     {
-        return is_array($belongsTo) ? $belongsTo[0] : $belongsTo;
+        return Ntentan::plural(is_array($belongsTo) ? $belongsTo[0] : $belongsTo);
     }
     
     
@@ -161,6 +161,11 @@ class Model implements ArrayAccess, Iterator
             return $this->dataStore;
         }
     }
+    
+    public function getName()
+    {
+        return $this->name;
+    }
 
     public function get($type = 'all', $params = null)
     {
@@ -171,7 +176,7 @@ class Model implements ArrayAccess, Iterator
 
     public function preSaveCallback()
     {
-
+        
     }
 
     public function postSaveCallback($id)
@@ -191,12 +196,14 @@ class Model implements ArrayAccess, Iterator
 
     public function save()
     {
-        if($this->validate())
+        if($this->validate(true))
         {
+            $this->_dataStoreInstance->begin();
             $this->preSaveCallback();
             $this->_dataStoreInstance->setModel($this);
             $id = $this->_dataStoreInstance->put();
             $this->postSaveCallback($id);
+            $this->_dataStoreInstance->end();
             return $id;
         }
         else
@@ -304,7 +311,14 @@ class Model implements ArrayAccess, Iterator
 
     public function __get($variable)
     {
-        return $this->data[$variable];
+        if(isset($this->data[$variable]))
+        {
+            return $this->data[$variable];
+        }
+        else
+        {
+            throw new FieldNotFoundException("Field [$variable] not found in Model");
+        }
     }
 
     public function offsetExists($offset)
@@ -494,7 +508,7 @@ class Model implements ArrayAccess, Iterator
         return $returnData;
     }
     
-    public function validate()
+    public function validate($inserting = false)
     {
         $description = $this->describe();
 
@@ -505,7 +519,10 @@ class Model implements ArrayAccess, Iterator
             // Validate Required
             if($this->data[$field["name"]] == "" && $field["required"])
             {
-                $this->invalidFields[$field["name"]][] = "This field is required";
+                if(!($inserting && isset($field["default"])))
+                {
+                    $this->invalidFields[$field["name"]][] = "This field is required";
+                }
             }
 
             // Validate unique

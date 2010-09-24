@@ -1,4 +1,5 @@
 <?php
+
 namespace ntentan\models\datastores;
 
 use \mysqli;
@@ -87,18 +88,19 @@ class Mysql extends SqlDatabase
                 case "integer":
                     $type = $mysqlField["DATA_TYPE"];
                     break;
+
                 case "int":
                     $type = "integer";
                     break;
-                    
+
                 case "double":
                     $type = "double";
                     break;
-                    
+
                 case "date":
                     $type = "date";
                     break;
-                
+
                 case "timestamp":
                 case "timestamp without time zone":
                     $type = "datetime";
@@ -136,6 +138,11 @@ class Mysql extends SqlDatabase
                 $field["primary_key"] = true;
             }
             
+            if($mysqlField["COLUMN_DEFAULT"] !== null)
+            {
+                $field["default"] = $mysqlField["COLUMN_DEFAULT"];
+            }
+            
             foreach($uniqueKeys as $uniqueKey)
             {
                 if($mysqlField["COLUMN_NAME"] == $uniqueKey["column_name"])
@@ -161,5 +168,20 @@ class Mysql extends SqlDatabase
     protected function escape($string)
     {
         return mysql_escape_string($string);
+    }
+    
+    protected function getLastInsertId()
+    {
+        return Mysql::$db->insert_id;
+    }
+    
+    public function begin()
+    {
+        //Mysql::$db->autocommit(false);
+    }
+    
+    public function end()
+    {
+        //Mysql::$db->commit();
     }
 }

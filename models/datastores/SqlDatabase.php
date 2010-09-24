@@ -1,7 +1,9 @@
 <?php
 namespace ntentan\models\datastores;
 
-use \ntentan\models\Model;
+use ntentan\Ntentan;
+
+use ntentan\models\Model;
 
 abstract class SqlDatabase extends DataStore
 {
@@ -48,7 +50,7 @@ abstract class SqlDatabase extends DataStore
     public function setModel($model)
     {
         parent::setModel($model);
-        $this->table = end(explode(".", $model->name));
+        $this->table = end(explode(".", $model->getName()));
     }
     
     private function resolveName($fieldPath)
@@ -200,6 +202,7 @@ abstract class SqlDatabase extends DataStore
     protected function _put($data)
     {
         $fields = array_keys($data);
+        $subData = array();
         if($fields[0] == "0")
         {
             $fields = array_keys($data[0]);
@@ -215,18 +218,50 @@ abstract class SqlDatabase extends DataStore
                 $baseQueries[] = "( ".implode(", ", $values)." )";
             }
             $query .= implode(",", $baseQueries);
+            $this->query($query);
+            $id = true;
         }
         else
         {
-            //$fields = array_keys($data);
-            foreach($data as $value)
+            $dataFields = array();
+            foreach($data as $field => $value)
             {
-                $values[] = $value === "" ? "NULL" : "'" . $this->escape($value) . "'";
+                if(is_array($value))
+                {
+                    $subData[$field] = $value; 
+                }
+                else
+                {
+                    $values[] = $value === "" ? "NULL" : "'" . $this->escape($value) . "'";
+                    $dataFields[] = $field;
+                }
             }
-            $query = "INSERT INTO {$this->table} (" . implode(", ", $fields) . ") VALUES (" . implode(", ", $values) . ")";
+            $query = "INSERT INTO {$this->table} (" . implode(", ", $dataFields) . ") VALUES (" . implode(", ", $values) . ")";
+            $this->query($query);
+            $id = $this->getLastInsertId();
+            foreach($subData as $modelName => $data)
+            {
+                $model = Model::load($modelName);
+                $table = $model->getDataStore(true)->table;
+                $fields = array_keys($data[0]);
+                $fields[] = Ntentan::singular($this->model->name) . "_id";
+                $query = "INSERT INTO $table (" . implode(", ", $fields) . ") VALUES ";
+                $dataQueries = array();
+                foreach($data as $newEntry)
+                {
+                    $values = array();
+                    foreach($newEntry as $value)
+                    {
+                        $values[] =  $value = "" ? "NULL" : "'" . $this->escape($value) . "'";
+                    }
+                    $values[] = $id;
+                    $dataQueries[] = "(" . implode(", ", $values) . ")";
+                }
+                $query .= implode(", ", $dataQueries);
+                $this->query($query);
+            }
         }
-        return $this->query($query); 
-        
+        return $id;
     }
 
     public function getDataStoreInfo()
@@ -256,5 +291,6 @@ abstract class SqlDatabase extends DataStore
     protected abstract function query($query);
     protected abstract function escape($query);
     protected abstract function quote($field);
+    protected abstract function getLastInsertId();
 }
 
