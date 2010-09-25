@@ -2,7 +2,6 @@
 namespace ntentan\models\datastores;
 
 use ntentan\Ntentan;
-
 use ntentan\models\Model;
 
 abstract class SqlDatabase extends DataStore
@@ -124,7 +123,7 @@ abstract class SqlDatabase extends DataStore
                     }
                 }
                 else
-              {
+                {
                     preg_match("/(?<field>[a-zA-Z1-9_.]*)\w*(?<operator>\<\>|\<|\>|)?/", $field, $matches);
                     $databaseField = $this->resolveName($matches["field"]);
                     $conditions[] = "$databaseField ".($matches["operator"]==""?"=":$matches["operator"])." '$condition'";
