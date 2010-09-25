@@ -111,4 +111,9 @@ class Auth extends Component
         $_SESSION = array();
         Ntentan::redirect($this->loginPath);
     }
+    
+    public static function userId()
+    {
+        return $_SESSION["user_id"];
+    }
 }
