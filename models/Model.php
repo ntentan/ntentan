@@ -74,7 +74,7 @@ class Model implements ArrayAccess, Iterator
         }
         $modelInformation = new ReflectionObject($this);
         $modelName = end(explode("\\", $modelInformation->getName()));
-        $this->name = strtolower(substr($modelName, 0, strlen($modelName) - 5));
+        $this->name = strtolower(Ntentan::deCamelize(substr($modelName, 0, strlen($modelName) - 5)));
         $this->iteratorPosition = 0;
         $this->modelPath = implode(".",array_slice(explode("\\", $modelInformation->getName()),1 , -1));
         
@@ -264,6 +264,22 @@ class Model implements ArrayAccess, Iterator
                 $params["conditions"][$this->modelPath . "." . $field] = $argument;
             }
             return $this->get($type, $params);
+        }
+        
+        if(substr($method, 0, 10) == "getAllWith")
+        {
+            $field = Ntenan::deCamelize(substr($method, 10));
+            $type = 'all';
+            foreach($arguments as $argument)
+            {
+                $params["conditions"][$this->modelPath . "." . $field] = $argument;
+            }
+            return $this->get($type, $params);
+        }
+        
+        if($method == "getAll")
+        {
+            return $this->get('all', $arguments[0]);
         }
 
         if(substr($method, 0, 3) == "get")
