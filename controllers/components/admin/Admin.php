@@ -92,7 +92,7 @@ class Admin extends Component
 
     public function page($pageNumber)
     {
-        $itemsPerPage = 10;
+        $itemsPerPage = 5;
         $model = $this->controller->model;
         $operations = array();
         $this->useTemplate("page.tpl.php");
@@ -129,7 +129,7 @@ class Admin extends Component
             if($pageNumber > 1)
             {
                 $pagingLinks[] = array(
-                    "link" => Ntentan::getUrl("users/page/" . $i - 1),
+                    "link" => Ntentan::getUrl("{$this->controller->path}/page/" . ($pageNumber - 1)),
                     "label" => "< Prev"
                 );
             }
@@ -137,7 +137,7 @@ class Admin extends Component
             for($i = 1; $i <= $numPages; $i++)
             {
                 $pagingLinks[] = array( 
-                    "link" => Ntentan::getUrl("users/page/$i"),
+                    "link" => Ntentan::getUrl("{$this->controller->path}/page/$i"),
                     "label" => "$i"
                 );
             }
@@ -145,7 +145,7 @@ class Admin extends Component
             if($pageNumber < $numPages)
             {
                 $pagingLinks[] = array(
-                    "link" => Ntentan::getUrl("users/page/" . $i + 1),
+                    "link" => Ntentan::getUrl("{$this->controller->path}/page/" . ($pageNumber + 1)),
                     "label" => "Next >"
                 );
             }
@@ -216,7 +216,7 @@ class Admin extends Component
         $model = $this->controller->model;
         $description = $model->describe();
         $this->set("fields", $description["fields"]);
-        $this->set("model", ucfirst(Ntentan::singular($this->controller->model->name)));
+        $this->set("model", ucfirst(Ntentan::singular($this->controller->model->getName())));
         
         if(count($_POST) > 0)
         {
@@ -229,7 +229,7 @@ class Admin extends Component
                 {
                     Ntentan::redirect(
                         $this->controller->path . "?n=" . 
-                        urlencode("Successfully added new ".$this->controller->model->name." <b>". (string)$model. "</b>")
+                        urlencode("Successfully added new ".$this->controller->model->getName()." <b>". (string)$model. "</b>")
                     );
                 }
             }
