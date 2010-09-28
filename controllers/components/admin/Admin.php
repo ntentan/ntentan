@@ -52,6 +52,7 @@ class Admin extends Component
     public $postEditCallback;
     public $preDeleteCallback;
     public $postDeleteCallback;
+    public $prefix;
     private $operations;
     
     public function init()
@@ -84,8 +85,8 @@ class Admin extends Component
             "label" => $operation["label"],
             "link" => 
                 $operation["confirm_message"] == "" ? 
-                    Ntentan::getUrl("{$operation["controller"]}/{$operation["operation"]}/") :
-                    Ntentan::getUrl("{$operation["controller"]}/confirm/{$operation["operation"]}/"),
+                    Ntentan::getUrl("{$this->prefix}/{$operation["controller"]}/{$operation["operation"]}/") :
+                    Ntentan::getUrl("{$this->prefix}/{$operation["controller"]}/confirm/{$operation["operation"]}/"),
             "confirm_message" => $operation["confirm_message"]
         );
     }
@@ -129,15 +130,15 @@ class Admin extends Component
             if($pageNumber > 1)
             {
                 $pagingLinks[] = array(
-                    "link" => Ntentan::getUrl("{$this->controller->path}/page/" . ($pageNumber - 1)),
+                    "link" => Ntentan::getUrl("{$this->prefix}/{$this->controller->path}/page/" . ($pageNumber - 1)),
                     "label" => "< Prev"
                 );
             }
-                    
+
             for($i = 1; $i <= $numPages; $i++)
             {
                 $pagingLinks[] = array( 
-                    "link" => Ntentan::getUrl("{$this->controller->path}/page/$i"),
+                    "link" => Ntentan::getUrl("{$this->prefix}/{$this->controller->path}/page/$i"),
                     "label" => "$i"
                 );
             }
@@ -145,7 +146,7 @@ class Admin extends Component
             if($pageNumber < $numPages)
             {
                 $pagingLinks[] = array(
-                    "link" => Ntentan::getUrl("{$this->controller->path}/page/" . ($pageNumber + 1)),
+                    "link" => Ntentan::getUrl("{$this->prefix}/{$this->controller->path}/page/" . ($pageNumber + 1)),
                     "label" => "Next >"
                 );
             }
@@ -164,8 +165,8 @@ class Admin extends Component
         $item = $this->controller->model->getFirstWithId($id);
         $this->set("item", (string)$item);
         $this->set("message", $this->operations[$operation]["confirm_message"]);
-        $this->set("positive_path", Ntentan::getUrl("{$this->controller->path}/$operation/$id"));
-        $this->set("negative_path", Ntentan::getUrl($this->controller->path));
+        $this->set("positive_path", Ntentan::getUrl("{$this->prefix}/{$this->controller->path}/$operation/$id"));
+        $this->set("negative_path", Ntentan::getUrl("{$this->prefix}/{$this->controller->path}"));
     }
 
     public function delete($id)
@@ -174,7 +175,7 @@ class Admin extends Component
         $item = $this->controller->model->getFirstWithId($id);
         $item->delete();
         Ntentan::redirect(
-            $this->controller->path . "?n=" . 
+            "{$this->prefix}/{$this->controller->path}?n=" . 
             urlencode(
                 "Successfully deleted " . 
                 Ntentan::singular($this->controller->model->name) . 
@@ -199,7 +200,7 @@ class Admin extends Component
             if($data->update())
             {
                 Ntentan::redirect(
-                    $this->controller->path . "?n=" . 
+                    "{$this->prefix}/{$this->controller->path}?n=" . 
                     urlencode("Successfully updated " . Ntentan::singular($this->controller->model->name) . " <b>" . $data ."</b>")
                 );
             }
@@ -228,7 +229,7 @@ class Admin extends Component
                 if(!$this->executeCallbackMethod($this->postAddCallback, $id, $model))
                 {
                     Ntentan::redirect(
-                        $this->controller->path . "?n=" . 
+                        "{$this->prefix}/$this->controller->path?n=" . 
                         urlencode("Successfully added new ".$this->controller->model->getName()." <b>". (string)$model. "</b>")
                     );
                 }

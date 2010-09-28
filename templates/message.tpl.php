@@ -55,18 +55,54 @@ body {
 margin:0px;
 padding:0px;
 }
+
+#trace table
+{
+width:100%;
+border-collapse:collapse;
+}
+
+#trace table > thead > tr > th
+{
+    text-align:left;
+    background-color:#e0e0e0;
+    padding:5px;
+}
+
+#trace table > tbody > tr > td
+{
+    text-align:left;
+    background-color:#f8f8f8;
+    padding:5px;
+}
+
 </style>
 <title>Ntentan Error!</title>
 </head>
 <div id='message'>
-<h1>Ntentan</h1>
+<h1>Ntentan Error</h1>
 <p><?php echo $message ?></p>
 <?php if($showTrace===true):?>
 <div id='trace'>
 <h2>Debug Trace</h2>
-<?php 
-var_dump($trace);
-?>
+<table>
+<thead>
+    <tr><th>File</th><th>Line</th><th>Function</th></tr>
+</thead>
+<tbody>
+<?php foreach($trace as $trace_item):?>
+    <tr>
+        <td><code><?php echo $trace_item["file"]?></code></td>
+        <td><code><?php echo $trace_item["line"]?></code></td>
+        <td>
+            <code>
+                <?php echo $trace_item["class"].$trace_item["type"].$trace_item["function"]; ?>
+            </code>
+        </td>
+    </tr>
+<?php endforeach ?>
+</tbody>
+</table>
 </div>
 <?php endif ?>
 </div>

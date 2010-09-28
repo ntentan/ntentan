@@ -101,7 +101,7 @@ class Auth extends Component
             $this->set("login_status", false);
             if(Ntentan::$route != $this->loginPath)
             {
-                Ntentan::redirect($this->loginPath);
+                Ntentan::redirect(Ntentan::getUrl($this->loginPath));
             }
         }
     }

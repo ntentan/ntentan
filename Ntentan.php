@@ -29,6 +29,7 @@ include "autoload.php";
 
 session_start();
 date_default_timezone_set("Africa/Accra");
+set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
 
 
 /**
@@ -50,6 +51,7 @@ class Ntentan
     public static $resourcesPath = "resources/";
 
     public static $defaultRoute = "home";
+    public static $requestedRoute;
     public static $routes = array();
     public static $route;
     public static $configFile = "config.php";
@@ -72,7 +74,7 @@ class Ntentan
             )
         );
         
-        if(isset($_GET["q"])) {
+        /*if(isset($_GET["q"])) {
         	$query = $_GET["q"];
             unset($_GET["q"]);
             unset($_REQUEST["q"]);
@@ -81,26 +83,37 @@ class Ntentan
 			}
         } else {
         	$query = Ntentan::$defaultRoute;
-        }
-		
-        Ntentan::$route = $query;
-        $requestedRoute = $query; 
-		foreach(Ntentan::$routes as $route)
-		{
-            if(preg_match($route[0], $query, $matches) == 1)
-		    {
-		        $requestedRoute = $route[1];
-            }
-		}		
-        unset($query);
-        unset($query);
+        }*/
 
-		$module = controllers\Controller::load($requestedRoute);
+        Ntentan::$requestedRoute = $_GET["q"];
+        Ntentan::$route = $_GET["q"];
+        unset($_GET["q"]);
+        unset($_REQUEST["q"]);
+
+        foreach(Ntentan::$routes as $route)
+		{
+            if(preg_match($route["pattern"], Ntentan::$route, $matches) == 1)
+		    {
+		        $newRoute = $route["route"];
+		        foreach($matches as $key => $value)
+		        {
+		            $newRoute = str_replace("::$key", $value, $newRoute);
+		        }
+		        Ntentan::$route = $newRoute;
+		        break;
+            }
+		}
+		
+        if(Ntentan::$route == "") {
+            Ntentan::$route = Ntentan::$defaultRoute;
+        }
+        
+		$module = controllers\Controller::load(Ntentan::$route);
 	}
 
     /**
      * 
-     * @param <type> $paths 
+     * @param array $paths 
      */
     public static function addIncludePath($paths)
     {
@@ -232,5 +245,14 @@ class Ntentan
         include "templates/message.tpl.php";
         $message = ob_get_clean();
         return $message;
+    }
+    
+    /**
+     * Default call back for displaying exceptions.
+     * @param Exception $exception
+     */
+    public static function exceptionHandler($exception)
+    {
+        echo Ntentan::message($exception->getMessage());
     }
 }
