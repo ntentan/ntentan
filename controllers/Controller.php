@@ -170,11 +170,14 @@ class Controller
      * Adds a component to the controller.
      * @param string $component Name of the component
      */
-    public function addComponent($component)
+    public function addComponent()
     {
+        $arguments = func_get_args();
+        $component = array_shift($arguments);
         Ntentan::addIncludePath(Ntentan::getFilePath("controllers/components/$component"));
         $componentName = "\\ntentan\\controllers\\components\\$component\\" . ucfirst($component);
-        $componentInstance = new $componentName();
+        $componentClass = new ReflectionClass($componentName);
+        $componentInstance = $componentClass->newInstanceArgs($arguments);
         $componentInstance->filePath = Ntentan::getFilePath("controllers/components/$component");
         $componentInstance->setController($this);
         $componentInstance->init();
@@ -187,6 +190,7 @@ class Controller
         if(file_exists($blockFile))
         {
             Ntentan::addIncludePath(Ntentan::$blocksPath . "$blockName");
+            $blockClass = "\\" . Ntentan::$modulesPath . "\\blocks\\$blockName\\" . Ntentan::camelize($blockName);
             $path = "blocks/$blockName"; 
         }
         else if(file_exists(Ntentan::getFilePath("views/blocks/$blockName/" . Ntentan::camelize($blockName) . ".php")))
@@ -199,7 +203,7 @@ class Controller
         {
             Ntentan::message("Block <code>$blockname</code> not found");
         }
-
+        
         $blockInstance = new $blockClass();
         $blockInstance->setName($blockName);
         $blockInstance->setPath($path);
