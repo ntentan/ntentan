@@ -57,8 +57,7 @@ class Ntentan
     public static $configFile = "config.php";
     
 	/**
-	 * Outputs the site. This calls all the template files and outputs the
-	 * final website.
+	 * The main entry point of the Ntentan application.
 	 */
 	public static function boot()
 	{
@@ -73,17 +72,6 @@ class Ntentan
                 Ntentan::$modulesPath
             )
         );
-        
-        /*if(isset($_GET["q"])) {
-        	$query = $_GET["q"];
-            unset($_GET["q"]);
-            unset($_REQUEST["q"]);
-			if($query == "") {
-				$query = Ntentan::$defaultRoute;
-			}
-        } else {
-        	$query = Ntentan::$defaultRoute;
-        }*/
 
         Ntentan::$requestedRoute = $_GET["q"];
         Ntentan::$route = $_GET["q"];
@@ -94,20 +82,31 @@ class Ntentan
 		{
             if(preg_match($route["pattern"], Ntentan::$route, $matches) == 1)
 		    {
-		        $newRoute = $route["route"];
-		        foreach($matches as $key => $value)
+		        if(isset($route["route"]))
 		        {
-		            $newRoute = str_replace("::$key", $value, $newRoute);
+		            $parts = array();
+                    $newRoute = $route["route"];
+                    foreach($matches as $key => $value)
+                    {
+                        $newRoute = str_replace("::$key", $value, $newRoute);
+                        $parts["::$key"] = $value;
+                    }
+                    Ntentan::$route = $newRoute;
 		        }
-		        Ntentan::$route = $newRoute;
-		        break;
+		        if(is_array($route["globals"]))
+		        {
+		            foreach($route["globals"] as $key => $value)
+		            {
+		                define($key, str_replace(array_keys($parts), $parts, $value));
+		            }
+		        }
+                break;
             }
 		}
 		
         if(Ntentan::$route == "") {
             Ntentan::$route = Ntentan::$defaultRoute;
         }
-        
 		$module = controllers\Controller::load(Ntentan::$route);
 	}
 

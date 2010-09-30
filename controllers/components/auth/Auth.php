@@ -42,14 +42,19 @@ use \ntentan\controllers\components\Component;
 class Auth extends Component
 {
     /**
-     * The URL route through wich the login component should be invoked. This 
-     * path should point to a controller which exists and implements the required
-     * method.
+     * The route through which the login method of the auth component should be
+     * invoked. This path should point to a controller which exists and implements 
+     * the required method.
      * @var string
      */
     public $loginPath = "users/login";
     
-    
+    /**
+     * The route through wich the logout method of the auth component should be
+     * invoked. This path should point to a controller which exists and
+     * implements the required method. 
+     * @var string
+     */
     public $logoutPath = "users/logout";
     public $redirectPath = "/";
     public $redirectOnSuccess = true;

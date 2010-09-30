@@ -55,6 +55,11 @@ class Admin extends Component
     public $prefix;
     private $operations;
     
+    public function __construct($prefix = "admin")
+    {
+        $this->prefix = $prefix;
+    }
+    
     public function init()
     {
         $this->addOperation(
@@ -95,7 +100,6 @@ class Admin extends Component
     {
         $itemsPerPage = 5;
         $model = $this->controller->model;
-        $operations = array();
         $this->useTemplate("page.tpl.php");
         
         $data = $model->get(
