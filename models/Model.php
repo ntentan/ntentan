@@ -268,8 +268,9 @@ class Model implements ArrayAccess, Iterator
         
         if(substr($method, 0, 10) == "getAllWith")
         {
-            $field = Ntenan::deCamelize(substr($method, 10));
+            $field = Ntentan::deCamelize(substr($method, 10));
             $type = 'all';
+            $params["fetch_related"] = true;
             foreach($arguments as $argument)
             {
                 $params["conditions"][$this->modelPath . "." . $field] = $argument;
@@ -347,7 +348,7 @@ class Model implements ArrayAccess, Iterator
         if(is_array($this->data[$offset]))
         {
             $newModel = clone $this;
-            $newModel->setData($this->data[$offset]);
+            $newModel->setData($this->data[$offset], true);
             $ret = $newModel;
         }
         else
@@ -380,7 +381,7 @@ class Model implements ArrayAccess, Iterator
     public function current()
     {
         $newModel = clone $this;
-        $newModel->setData($this->data[$this->iteratorPosition]);
+        $newModel->setData($this->data[$this->iteratorPosition], true);
         return $newModel;
     }
     

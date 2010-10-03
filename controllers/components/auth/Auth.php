@@ -121,4 +121,9 @@ class Auth extends Component
     {
         return $_SESSION["user_id"];
     }
+    
+    public static function getProfile()
+    {
+        return $_SESSION["user"];
+    }
 }
