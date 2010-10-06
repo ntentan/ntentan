@@ -53,6 +53,7 @@ class Admin extends Component
     public $preDeleteCallback;
     public $postDeleteCallback;
     public $prefix;
+    public $managerMode = false;
     private $operations;
     
     public function __construct($prefix = "admin")
@@ -157,10 +158,23 @@ class Admin extends Component
             $this->set("pages", $pagingLinks);
         }
     }
+    
+    public function manage()
+    {
+        $this->useLayout("manage.tpl.php");
+        $this->useTemplate("run.tpl.php");
+    }
 
     public function run()
     {
-        $this->page(1);
+        if($this->managerMode)
+        {
+            $this->manage();
+        }
+        else
+        {
+            $this->page(1);
+        }
     }
 
     public function confirm($operation, $id)

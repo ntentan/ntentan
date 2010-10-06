@@ -173,7 +173,20 @@ class Component extends Controller
         }
         else
         {
-            $this->view->template = $this->filePath . "/$file";
+            $this->view->template = $this->filePath . "/templates/$file";
         }
-    }    
+    }
+    
+    public function useLayout($file)
+    {
+        $layoutFile = Ntentan::$layoutsPath . $file;
+        if(file_exists($layoutFile))
+        {
+            $this->view->layoutFile = $layoutFile;
+        }
+        else
+        {
+            $this->view->layoutFile = $this->filePath . "/layouts/$file";
+        }
+    }
 }

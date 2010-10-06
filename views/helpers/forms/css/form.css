@@ -50,8 +50,8 @@ div.fapi-description
 
 div.fapi-submit-area
 {
-	background-color:#f0f0f0;
-	padding:10px;
+	padding-top:10px;
+	border-top:1px solid #808080;
 }
 
 span.fapi-required

@@ -106,7 +106,7 @@ class Auth extends Component
             $this->set("login_status", false);
             if(Ntentan::$route != $this->loginPath)
             {
-                Ntentan::redirect(Ntentan::getUrl($this->loginPath));
+                Ntentan::redirect(Ntentan::getUrl($this->loginPath . "?redirect=" . urlencode(Ntentan::$requestedRoute) ));
             }
         }
     }
@@ -116,7 +116,7 @@ class Auth extends Component
         $_SESSION = array();
         Ntentan::redirect($this->loginPath);
     }
-    
+
     public static function userId()
     {
         return $_SESSION["user_id"];

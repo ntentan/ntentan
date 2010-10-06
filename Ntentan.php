@@ -54,7 +54,7 @@ class Ntentan
     public static $requestedRoute;
     public static $routes = array();
     public static $route;
-    public static $configFile = "config.php";
+    public static $dbConfigFile = "config/db.php";
     
 	/**
 	 * The main entry point of the Ntentan application.
@@ -148,8 +148,8 @@ class Ntentan
 
     public static function getDefaultDataStore()
     {
-    	if(file_exists(Ntentan::$configFile)) {
-            include Ntentan::$configFile;
+    	if(file_exists(Ntentan::$dbConfigFile)) {
+            include Ntentan::$dbConfigFile;
             if(isset($datastores["default"])) { 
                 return $datastores["default"];
             } else {

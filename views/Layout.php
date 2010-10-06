@@ -10,8 +10,8 @@ use ntentan\Ntentan;
  */
 class Layout
 {
-    public $name;
     public $title;
+    public $layoutPath;
     private $javaScripts = array();
     private $styleSheets = array();
 
@@ -23,6 +23,19 @@ class Layout
     public function __toString()
     {
         return $this->name;
+    }
+    
+    public function __set($variable, $value)
+    {
+        switch($variable)
+        {
+            case "name":
+                $this->layoutPath = Ntentan::$layoutsPath . "$value.tpl.php";
+                break;
+            case "file":
+                $this->layoutPath = $value;
+                break;
+        }
     }
 
     public function addJavaScript($script)
@@ -49,6 +62,7 @@ class Layout
 
     public function out($contents, $blocks = array(), $viewData = array())
     {
+        $sheets = array();
         foreach($this->javaScripts as $javaScript)
         {
             $javascripts .= "<script type='text/javascript' src='$javaScript'></script>";
@@ -58,8 +72,7 @@ class Layout
         {
             $sheets[$styleSheet["media"]][] = $styleSheet;
         }
-        
-        
+
         foreach($viewData as $key => $value)
         {
             $$key = $value;
@@ -83,10 +96,9 @@ class Layout
         }
 
         $title = $this->title;
-        $layoutPath = Ntentan::$layoutsPath . "{$this->name}.tpl.php";
-        if(file_exists($layoutPath))
+        if(file_exists($this->layoutPath))
         {
-            include $layoutPath;
+            include $this->layoutPath;
         }
         else if($this->name === false)
         {
@@ -94,7 +106,7 @@ class Layout
         }
         else
         {
-            echo Ntentan::message("Layout path does not exist <code><b>$layoutPath</b></code>");
+            echo Ntentan::message("Layout path does not exist <code><b>{$this->layoutPath}</b></code>");
             die();
         }
     }
