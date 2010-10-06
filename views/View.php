@@ -56,6 +56,9 @@ class View extends Presentation
             case "layout":
                 $this->layout->name = $value;
                 break;
+            case "layoutFile":
+                $this->layout->file = $value;
+                break;
         }
     }
     

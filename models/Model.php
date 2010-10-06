@@ -107,9 +107,17 @@ class Model implements ArrayAccess, Iterator
      */
     public static function load($modelPath)
     {
-    	Ntentan::addIncludePath(Ntentan::$modulesPath . "/" . str_replace(".", "/", $modelPath));
-        $className = Model::getClassName($modelPath);
-        return new $className();
+        $filePath = Ntentan::$modulesPath . "/" . str_replace(".", "/", $modelPath);
+        if(file_exists($filePath . "/" . Ntentan::camelize($modelPath) . "Model.php"))
+        {
+            Ntentan::addIncludePath($filePath);
+            $className = Model::getClassName($modelPath);
+            return new $className();
+        }
+        else
+        {
+            throw new ModelNotFoundException("Model class not found for [$modelPath]");
+        }
     }
 
     public function setData($data, $overwrite = false)
