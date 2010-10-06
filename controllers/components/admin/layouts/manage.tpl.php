@@ -6,6 +6,20 @@
     <?php echo $javascripts ?>
 </head>
 <body>
-<h1 id='header'>Admin</h1>
+
+<div class="row" id="header">
+    <div class="column grid_10_8">
+        <h1><?php echo $site_name?> Administrator Console</h1>
+    </div>
+    <div class="column grid_10_2">
+        Login Information
+    </div>
+</div>
+
+<div class="row">
+    <div class="column grid_10_3"></div>
+    <div class="column grid_10_7"></div>
+</div>
+
 </body>
 </html>

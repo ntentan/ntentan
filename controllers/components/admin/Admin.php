@@ -54,11 +54,15 @@ class Admin extends Component
     public $postDeleteCallback;
     public $prefix;
     public $managerMode = false;
+    public $sections = array();
     private $operations;
+    private $site;
     
     public function __construct($prefix = "admin")
     {
         $this->prefix = $prefix;
+        include "config/site.php";
+        $this->site = $site;
     }
     
     public function init()
@@ -163,6 +167,8 @@ class Admin extends Component
     {
         $this->useLayout("manage.tpl.php");
         $this->useTemplate("run.tpl.php");
+        $this->set("site_name", $this->site["name"]);
+        $this->view->layout->addStyleSheet(Ntentan::getFilePath("stylesheets/grid.css"));
     }
 
     public function run()

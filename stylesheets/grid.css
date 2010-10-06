@@ -1,0 +1,50 @@
+/**
+ * Inspired by the 1KB grid
+ */
+
+.grid_10_1 { width:10%; }
+.grid_10_2 { width:20%; }
+.grid_10_3 { width:30%; }
+.grid_10_4 { width:40%; }
+.grid_10_5 { width:50%; }
+.grid_10_6 { width:60%; }
+.grid_10_7 { width:70%; }
+.grid_10_8 { width:80%; }
+.grid_10_9 { width:90%; }
+.grid_10_10 { width:100%; }
+
+.grid_20_1 { width:5%; }
+.grid_20_2 { width:10%; }
+.grid_20_3 { width:15%; }
+.grid_20_4 { width:20%; }
+.grid_20_5 { width:25%; }
+.grid_20_6 { width:30%; }
+.grid_20_7 { width:35%; }
+.grid_20_8 { width:40%; }
+.grid_20_9 { width:45%; }
+.grid_20_10 { width:50%; }
+.grid_20_11 { width:55%; }
+.grid_20_12 { width:60%; }
+.grid_20_13 { width:65%; }
+.grid_20_14 { width:70%; }
+.grid_20_15 { width:75%; }
+.grid_20_16 { width:80%; }
+.grid_20_17 { width:85%; }
+.grid_20_18 { width:90%; }
+.grid_20_19 { width:95%; }
+.grid_20_20 { width:100%; }
+
+.column {
+    overflow: hidden;
+    float: left;
+    display: inline;
+}
+.row {
+    width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+}
+.row .row {
+    width: auto;
+    display: inline-block;
+}
