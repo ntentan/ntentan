@@ -82,9 +82,9 @@ class Ntentan
 		{
             if(preg_match($route["pattern"], Ntentan::$route, $matches) == 1)
 		    {
+                $parts = array();
 		        if(isset($route["route"]))
 		        {
-		            $parts = array();
                     $newRoute = $route["route"];
                     foreach($matches as $key => $value)
                     {
@@ -234,11 +234,11 @@ class Ntentan
     	die();
     }
         
-    public static function message($message, $subTitle = null, $type = null, $showTrace = true) 
+    public static function message($message, $subTitle = null, $type = null, $showTrace = true, $trace = false) 
     {
         if($showTrace === true)
         {
-            $trace = debug_backtrace();
+            $trace = is_array($trace) ? $trace : debug_backtrace();
         }
         ob_start();
         include "templates/message.tpl.php";
@@ -252,6 +252,12 @@ class Ntentan
      */
     public static function exceptionHandler($exception)
     {
-        echo Ntentan::message($exception->getMessage());
+        echo Ntentan::message(
+            $exception->getMessage(),
+            null,
+            null,
+            true,
+            $exception->getTrace()
+        );
     }
 }

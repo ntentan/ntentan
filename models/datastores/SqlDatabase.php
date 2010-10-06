@@ -91,21 +91,40 @@ abstract class SqlDatabase extends DataStore
         $query = "SELECT $fields FROM {$this->table} ";
         
         // Generate joins
-        foreach($this->model->belongsTo as $relatedModel)
+        if($params["fetch_related"] === true)
         {
-            if(is_array($relatedModel))
+            foreach($this->model->belongsTo as $relatedModel)
             {
-                $firstRelatedModel = Model::load($relatedModel[0]);
-                $firstDatastore = $firstRelatedModel->getDataStore(true);
-                $secondRelatedModel = Model::load($relatedModel["through"]);
-                $secondDatastore = $secondRelatedModel->getDataStore(true);
-                $query .= "JOIN {$firstDatastore->table} ON {$firstDatastore->table}.id = {$secondDatastore->table}." . Ntentan::singular($firstDatastore->table) . "_id ";
+                if(is_array($relatedModel))
+                {
+                    $firstRelatedModel = Model::load(Model::getBelongsTo($relatedModel[0]));
+                    $firstDatastore = $firstRelatedModel->getDataStore(true);
+                    $secondRelatedModel = Model::load($relatedModel["through"]);
+                    $secondDatastore = $secondRelatedModel->getDataStore(true);
+                    $query .= "JOIN {$firstDatastore->table} ON {$firstDatastore->table}.id = {$secondDatastore->table}." . Ntentan::singular($firstDatastore->table) . "_id ";
+                }
+                else
+                {
+                    $model = Model::load(Model::getBelongsTo($relatedModel));
+                    $datastore = $model->getDataStore(true);
+                    $query .= "JOIN {$datastore->table} ON {$datastore->table}.id = {$this->table}." . Ntentan::singular($datastore->table) . "_id ";
+                }
             }
-            else
+        }
+        
+        if(isset($params["through"]))
+        {
+            if(is_array($params["through"]))
             {
-                $model = Model::load($relatedModel);
-                $datastore = $model->getDataStore(true);
-                $query .= "JOIN {$datastore->table} ON {$datastore->table}.id = {$this->table}." . Ntentan::singular($datastore->table) . "_id ";
+                $previousTable = $this->table;
+                foreach($params["through"] as $relatedModel)
+                {
+                    $modelInstance = Model::load($relatedModel);
+                    $currentTable = $modelInstance->getDataStore(true)->table;
+                    $foreignKey = Ntentan::singular($previousTable) . "_id";
+                    $query .= " JOIN $currentTable ON $previousTable.id = $currentTable.$foreignKey ";
+                    $previousTable = $currentTable;
+                }
             }
         }
 
@@ -131,11 +150,11 @@ abstract class SqlDatabase extends DataStore
             }
             $query .= " WHERE " . implode(" AND ", $conditions);
         }
-        
+
         // Add the sorting queries
         if(isset($params['sort'])) {
             if(is_array($params['sort'])) {
-                $query .= " ORDER BY " . implode(",", $params['sort']);
+                $query .= " ORDER BY " . implode(", ", $params['sort']);
             } else {
                 $query .= " ORDER BY {$params["sort"]} ";
             }

@@ -29,7 +29,7 @@ class FormContainer extends Container
 	{
 		$this->setId($id);
         $this->method = $method;
-        $this->addAttribute("action", Ntentan::getUrl(Ntentan::$route));
+        $this->addAttribute("action", Ntentan::getUrl(Ntentan::$requestedRoute));
 	}
 
     public function addFileUploadSupport($maxFileSize = "")

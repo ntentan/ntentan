@@ -182,7 +182,7 @@ class Admin extends Component
             "{$this->prefix}/{$this->controller->path}?n=" . 
             urlencode(
                 "Successfully deleted " . 
-                Ntentan::singular($this->controller->model->name) . 
+                Ntentan::singular($this->controller->model->getName()) . 
                 " <b>" . $item . "</b>"
             )
         );
