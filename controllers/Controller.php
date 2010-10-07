@@ -210,6 +210,11 @@ class Controller
         if($alias == null) $alias = $blockName;
         $this->blocks[$alias] = $blockInstance;
     }
+    
+    public function hasBlock($blockName)
+    {
+        return isset($this->blocks[$blockName]);
+    }
 
     /**
      * 
