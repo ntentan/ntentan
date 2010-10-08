@@ -20,7 +20,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * @package    ntentan.controllers.components
+ * @package    ntentan.controllers.components.admin
  * @author     James Ekow Abaka Ainooson <jainooson@gmail.com>
  * @copyright  2010 James Ekow Abaka Ainooson
  * @license    http://www.apache.org/licenses/LICENSE-2.0
@@ -33,7 +33,6 @@
     <?php echo $javascripts ?>
 </head>
 <body>
-
 <div class="row" id="header">
     <div class="column grid_10_8">
         <h1><?php echo $site_name ?> Administrator Console</h1>
@@ -42,7 +41,6 @@
         Login Information
     </div>
 </div>
-
 <div class="row">
     <div class="column grid_20_4"><?php echo $default_menu_block ?></div>
     <div class="column grid_20_16">
@@ -51,6 +49,5 @@
         </div>
     </div>
 </div>
-
 </body>
 </html>
