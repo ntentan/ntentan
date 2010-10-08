@@ -36,8 +36,6 @@ use ntentan\models\Model;
  * within the attached controllers package or namespace. Apart from the manipulation
  * interface, the admin component also provides a full blown admin console site.
  * 
- * 
- * 
  * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
  */
 class Admin extends Component
@@ -54,7 +52,18 @@ class Admin extends Component
      * @var array
      */
     public $extraOperations = array();
+    
+    /**
+     * The callback function to be called before adding data into the model.
+     * The function should be part of the class.
+     * @var string
+     */
     public $preAddCallback;
+    
+    /**
+     * The callback function to be called after adding data to the model.
+     * @var string
+     */
     public $postAddCallback;
     public $preEditCallback;
     public $postEditCallback;
