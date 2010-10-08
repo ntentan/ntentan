@@ -17,10 +17,9 @@ use ntentan\models\Model;
  * The methods called by the controllers are expected to set data into variables
  * which are later rendered as output to the end user through views.
  *
- * @author James Ekow Abaka Ainooson
- * @todo Controllers must output data that can be passed to some kind of template
- *       engine like smarty.
- * 
+ * @author  James Ekow Abaka Ainooson
+ * @todo    Controllers must output data that can be passed to some kind of 
+ *          template engine like smarty.
  */
 class Controller
 {
@@ -86,21 +85,31 @@ class Controller
     private $modelRoute;
     
     /**
-     * The data this controller holds for passing ot to the template.
+     * The data this controller holds for passing ot to the template. Thes data
+     * is stored as an associative array in this variable. The values can be
+     * manipulated through the Controller::set() method.
      * @var array
      */
     public $data;
     
     /**
-     * The path to the file of this controller's class.
-     * @var unknown_type
+     * The directory path to the file of this controller's class.
+     * @var string
      */
     public $filePath;
     
     public $method;
     
+    /**
+     * An associative array which stores the blocks which have been loaded for
+     * this controller.
+     * @var array
+     */
     protected $blocks = array();
     
+    /**
+     * Constructor for controller
+     */
     public function __construct()
     {
         foreach($this->components as $component)
@@ -109,12 +118,21 @@ class Controller
         }
     }
 
+    /**
+     * Returns the name of the controller.
+     * @return string
+     */
     public function getName()
     {
         $object = new ReflectionObject($this);
         return $object->getName();
     }
 
+    /**
+     * 
+     * @param string $property
+     * @param string $value
+     */
     public function __set($property, $value)
     {
         switch($property)

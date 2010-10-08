@@ -54,8 +54,14 @@ class Admin extends Component
     public $extraOperations = array();
     
     /**
-     * The callback function to be called before adding data into the model.
+     * The callback function to be called before adding data to the model. This
+     * callback works only when the user adds data to the model through the admin 
+     * component. If you want a callback which works with all other additions made
+     * to the model (without necessarily going through the admin component),
+     * then you might want to consider going through the Model::preAddHook 
+     * function.
      * @var string
+     * @see Model::preAddHook()
      */
     public $preAddCallback;
     
@@ -65,7 +71,10 @@ class Admin extends Component
      */
     public $postAddCallback;
     
-    
+    /**
+     * The callback function to be called before editing the data in the model
+     * @var unknown_type
+     */
     public $preEditCallback;
     public $postEditCallback;
     public $preDeleteCallback;

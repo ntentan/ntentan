@@ -31,14 +31,17 @@ use ntentan\Ntentan;
 use \ReflectionMethod;
 
 /**
- * The base class for all Componets. Components are little plugins which could
- * be written to extend the functionality of Controllers. Components basically
- * provide action methods which extend the capability of any Controller into
- * which it is loaded. Components can set variables in their parent controller
- * through which they can directly interract with the view.
- *  
+ * The base class for all Componets. Components are little plugins which are
+ * written to extend the functionality of Controllers. Components basically
+ * provide extra pre defined action methods which extend the capability of any 
+ * Controller into which it is loaded. Components can set variables in their 
+ * parent controller through which they can directly interract with the views 
+ * and layouts.
+ * 
+ * Since components are subclasses of controllers, they have access to all the
+ * utility methods which are available to controllers.
+ * 
  * @author James Ekow Abaka Ainooson
- * @abstract
  */
 class Component extends Controller
 {
