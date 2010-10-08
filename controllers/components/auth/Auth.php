@@ -47,7 +47,7 @@ class Auth extends Component
      * the required method.
      * @var string
      */
-    public $loginPath = "users/login";
+    public $loginRoute = "users/login";
     
     /**
      * The route through wich the logout method of the auth component should be
@@ -55,8 +55,8 @@ class Auth extends Component
      * implements the required method. 
      * @var string
      */
-    public $logoutPath = "users/logout";
-    public $redirectPath = "/";
+    public $logoutRoute = "users/logout";
+    public $redirectRoute = "/";
     public $redirectOnSuccess = true;
     public $name = __CLASS__;
     public $authMethod = "http_request";
@@ -93,7 +93,7 @@ class Auth extends Component
         {
             if($this->redirectOnSuccess)
             {
-                Ntentan::redirect($this->redirectPath);
+                Ntentan::redirect($this->redirectRoute);
             }
             else
             {
@@ -104,9 +104,9 @@ class Auth extends Component
         {
             $this->set("login_message", $this->authMethodInstance->message);
             $this->set("login_status", false);
-            if(Ntentan::$route != $this->loginPath)
+            if(Ntentan::$route != $this->loginRoute)
             {
-                Ntentan::redirect(Ntentan::getUrl($this->loginPath . "?redirect=" . urlencode(Ntentan::$requestedRoute) ));
+                Ntentan::redirect(Ntentan::getUrl($this->loginRoute . "?redirect=" . urlencode(Ntentan::$requestedRoute) ));
             }
         }
     }
@@ -114,7 +114,7 @@ class Auth extends Component
     public function logout()
     {
         $_SESSION = array();
-        Ntentan::redirect($this->loginPath);
+        Ntentan::redirect($this->loginRoute);
     }
 
     public static function userId()

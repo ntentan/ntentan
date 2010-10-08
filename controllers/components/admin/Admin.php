@@ -55,7 +55,6 @@ class Admin extends Component
     
     /**
      * The callback function to be called before adding data into the model.
-     * The function should be part of the class.
      * @var string
      */
     public $preAddCallback;
@@ -65,6 +64,8 @@ class Admin extends Component
      * @var string
      */
     public $postAddCallback;
+    
+    
     public $preEditCallback;
     public $postEditCallback;
     public $preDeleteCallback;
@@ -73,6 +74,7 @@ class Admin extends Component
     public $consoleMode = false;
     public $sections = array();
     public $model;
+    public $headings = true;
     private $operations;
     private $site;
 
@@ -89,8 +91,8 @@ class Admin extends Component
         {
             $operation["controller"] = 
                 $this->consoleMode ? 
-                    $this->controller->path . "/console/" . $this->getModel()->getName() : 
-                    $this->controller->path;
+                    $this->controller->route . "/console/" . $this->getModel()->getName() : 
+                    $this->controller->route;
         }
         
         $this->operations[$operation["operation"]] = array(
@@ -103,6 +105,18 @@ class Admin extends Component
         );
     }
     
+    private function getCurrentRoute()
+    {
+        if($this->consoleMode)
+        {
+            return "{$this->controller->route}/console/{$this->getModel()->getName()}";
+        }
+        else
+        {
+            return "{$this->prefix}/{$this->controller->route}";
+        }
+    }
+
     private function setupOperations()
     {
         $this->addOperation(
@@ -125,6 +139,7 @@ class Admin extends Component
     {
         $this->setupOperations();
         $this->set("model", ucfirst($this->getModel()->getName()));
+        $this->set("headings", $this->headings);
         $itemsPerPage = 5;
         $model = $this->getModel();
         $this->useTemplate("page.tpl.php");
@@ -163,7 +178,7 @@ class Admin extends Component
             if($pageNumber > 1)
             {
                 $pagingLinks[] = array(
-                    "link" => Ntentan::getUrl("{$this->prefix}/{$this->controller->path}/page/" . ($pageNumber - 1)),
+                    "link" => Ntentan::getUrl("{$this->prefix}/{$this->controller->route}/page/" . ($pageNumber - 1)),
                     "label" => "< Prev"
                 );
             }
@@ -171,7 +186,7 @@ class Admin extends Component
             for($i = 1; $i <= $numPages; $i++)
             {
                 $pagingLinks[] = array(
-                    "link" => Ntentan::getUrl("{$this->prefix}/{$this->controller->path}/page/$i"),
+                    "link" => Ntentan::getUrl("{$this->prefix}/{$this->controller->route}/page/$i"),
                     "label" => "$i"
                 );
             }
@@ -179,7 +194,7 @@ class Admin extends Component
             if($pageNumber < $numPages)
             {
                 $pagingLinks[] = array(
-                    "link" => Ntentan::getUrl("{$this->prefix}/{$this->controller->path}/page/" . ($pageNumber + 1)),
+                    "link" => Ntentan::getUrl("{$this->prefix}/{$this->controller->route}/page/" . ($pageNumber + 1)),
                     "label" => "Next >"
                 );
             }
@@ -202,18 +217,20 @@ class Admin extends Component
             Ntentan::getFilePath("stylesheets/grid.css")
         );
         $this->view->layout->addStyleSheet(
-            Ntentan::getFilePath(
-                "controllers/components/admin/stylesheets/admin.css"
-            )
-        );
-        $this->view->layout->addStyleSheet(
-            Ntentan::getFilePath(
-                "stylesheets/ntentan.css"
+            array(
+                Ntentan::getFilePath(
+                    "controllers/components/admin/stylesheets/admin.css"
+                ),
+                Ntentan::getFilePath(
+                    "stylesheets/ntentan.css"
+                ),
+                Ntentan::getFilePath(
+                    "views/helpers/forms/stylesheets/forms.css"
+                )
             )
         );
         
         //Setup the menus to be used in this administrator section
-        
         $this->addBlock("menu", "default_menu");
         foreach($this->sections as $section)
         {
@@ -225,7 +242,7 @@ class Admin extends Component
             else if (is_string($section))
             {
                 $item["label"] = Ntentan::toSentence($section);
-                $item["path"] = Ntentan::getUrl($this->controller->path . "/console/$section");
+                $item["url"] = Ntentan::getUrl($this->controller->route . "/console/$section");
                 $this->defaultMenuBlock->addItem($item);
             }
         }
@@ -297,8 +314,9 @@ class Admin extends Component
         $item = $this->getModel()->getFirstWithId($id);
         $this->set("item", (string)$item);
         $this->set("message", $this->operations[$operation]["confirm_message"]);
-        $this->set("positive_path", Ntentan::getUrl("{$this->prefix}/{$this->controller->path}/$operation/$id"));
-        $this->set("negative_path", Ntentan::getUrl("{$this->prefix}/{$this->controller->path}"));
+        $route = $this->getCurrentRoute();
+        $this->set("positive_route", Ntentan::getUrl("$route/$operation/$id"));
+        $this->set("negative_route", Ntentan::getUrl($route));
     }
 
     public function delete($id)
@@ -306,13 +324,9 @@ class Admin extends Component
         $this->view = false;
         $item = $this->getModel()->getFirstWithId($id);
         $item->delete();
+        $route = $this->getCurrentRoute();
         Ntentan::redirect(
-            "{$this->prefix}/{$this->controller->path}?n=" . 
-            urlencode(
-                "Successfully deleted " . 
-                Ntentan::singular($this->getModel()->getName()) .
-                " <b>" . $item . "</b>"
-            )
+            "$route?n=3&i=" . base64_encode($item)
         );
     }
 
@@ -321,23 +335,16 @@ class Admin extends Component
         $this->useTemplate("edit.tpl.php");
         $description = $this->getModel()->describe();
         $this->set("fields", $description["fields"]);
-        $data = $this->getModel()->getFirstWithId($id);
-        $this->set("data", $data->getData());
+        $item = $this->getModel()->getFirstWithId($id);
+        $this->set("data", $item->getData());
         if(count($_POST) > 0)
         {
-            $data->setData($_POST);
-            if($data->update())
+            $item->setData($_POST);
+            if($item->update())
             {
-                if($this->consoleMode)
-                {
-                    $path = "{$this->controller->path}/console/{$this->getModel()->getName()}";
-                }
-                else
-                {
-                    $path = "{$this->prefix}/{$this->controller->path}";
-                }                
+                $route = $this->getCurrentRoute();
                 Ntentan::redirect(
-                    "$path?n=2&i=" . base64_encode($data)
+                    "$route?n=2&i=" . base64_encode($item)
                 );
             }
             else
@@ -364,11 +371,11 @@ class Admin extends Component
             {
                 if($this->consoleMode)
                 {
-                    $path = "{$this->controller->path}/console/{$model->getName()}";
+                    $path = "{$this->controller->route}/console/{$model->getName()}";
                 }
                 else
                 {
-                    $path = "{$this->prefix}/{$this->controller->path}";
+                    $path = "{$this->prefix}/{$this->controller->route}";
                 }
                 
                 if(!$this->executeCallbackMethod($this->postAddCallback, $id, $model))

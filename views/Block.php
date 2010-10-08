@@ -9,11 +9,11 @@ class Block extends Presentation
     protected $data = array();
     protected $template;
     protected $name;
-    private $path;
+    private $filePath;
     
-    public function setPath($path)
+    public function setFilePath($filePath)
     {
-        $this->path = $path;
+        $this->filePath = $filePath;
     }
 
     public function getName() {
@@ -58,7 +58,7 @@ class Block extends Presentation
         if($this->template == "")
         {
             $block = $this->getName();
-            $this->template = $this->path . "/$block.tpl.php";
+            $this->template = $this->filePath . "/$block.tpl.php";
         }
         ob_start();
         include $this->template;

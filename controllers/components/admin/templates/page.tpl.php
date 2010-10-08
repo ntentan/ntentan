@@ -1,10 +1,15 @@
+<?php if($headings): ?>
 <h2><?php echo $model ?></h2>
+<?php endif ?>
 <div>
 <?php 
 switch($notification_type)
 {
 case 2:
     echo "<div class='notification'>Successfully edited $model <b>$notification_item</b></div>";
+    break;
+case 3:
+    echo "<div class='notification'>Successfully deleted $model <b>$notification_item</b></div>";
     break;
 } 
 ?>
