@@ -1,0 +1,99 @@
+@CHARSET "UTF-8";
+
+div.notification
+{
+    background-color:#fff889;
+    font-size:small;
+    padding:10px;
+    color:#fb880c;
+}
+
+div.error
+{
+    
+}
+
+.buttonlike
+{
+    border-radius:2px;
+    -moz-border-radius:3px; 
+    padding:3px;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px #e5e5ee;
+    font-size:smaller;
+    color:#202020;
+    display:inline-block;
+}
+
+.rounded-5px
+{
+        border-radius:5px;
+    -moz-border-radius:5px; 
+    padding:5px;
+}
+
+.grey-border
+{
+    border:1px solid #c0c0c0;
+}
+
+.grey-gradient
+{
+    background-color:#e0e0e0;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f0f0f0), to(#d0d0d0));
+    background: -moz-linear-gradient(top, #f0f0f0, #d0d0d0);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#F0F0F0, endColorstr=#D0D0D0);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#F0F0F0, endColorstr=#D0D0D0)";
+}
+
+.dark-grey-gradient
+{
+    background-color:#505050;
+    background: -webkit-gradient(linear, left top, left bottom, from(#808080), to(#606060));
+    background: -moz-linear-gradient(top, #808080, #606060);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#808080, endColorstr=#606060);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#808080, endColorstr=#606060)";   
+}
+
+.black-gradient
+{
+    background-color:#505050;
+    background: -webkit-gradient(linear, left top, left bottom, from(#404040), to(#000000));
+    background: -moz-linear-gradient(top, #404040, #000000);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#808080, endColorstr=#606060);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#808080, endColorstr=#606060)";   
+}
+
+.grey
+{
+    color:#a0a0a0;
+}
+
+.dark-grey
+{
+    color:#606060;
+    font-weight:bold;
+}
+
+.small-shadow
+{
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, .5);
+    -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, .5);
+    -moz-box-shadow: 0px 1px 2px rgba(0, 0, 0, .5);
+}
+
+.big-allround-shadow
+{
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, .5);
+    -webkit-box-shadow: 0px 0px 5px rgba(0, 0, 0, .5);
+    -moz-box-shadow: 0px 0px 5px rgba(0, 0, 0, .5);
+}
+
+.big-button
+{
+    width:80px;
+    text-align:center;
+    padding:5px;
+    font-size:normal;
+    font-weight:bold;
+}

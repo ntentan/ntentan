@@ -1,3 +1,14 @@
+<h2><?php echo $model ?></h2>
+<div>
+<?php 
+switch($notification_type)
+{
+case 2:
+    echo "<div class='notification'>Successfully edited $model <b>$notification_item</b></div>";
+    break;
+} 
+?>
+</div>
 <div>
     <table class='item-table'>
         <thead>
@@ -14,7 +25,7 @@
                 <?php foreach ($list_fields as $field):?>
                 <td><?php echo $row[$field] ?></td>
                 <?php endforeach;?>
-                <td>
+                <td class='operations'>
                     <?php foreach ($operations as $operation):?>
                     <a class='buttonlike grey-gradient grey-border' href="<?php echo $operation["link"] . $row["id"]; ?>">
                         <?php echo $operation["label"]?>
