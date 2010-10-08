@@ -1,5 +1,5 @@
 <?php
-namespace ntentan\models;
+namespace ntentan\models\exceptions;
 
 use \Exception;
 

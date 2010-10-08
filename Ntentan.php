@@ -67,7 +67,9 @@ class Ntentan
                 Ntentan::getFilePath('controllers/'),
                 Ntentan::getFilePath('models/'),
                 Ntentan::getFilePath('models/datastores/'),
+                Ntentan::getFilePath('models/exceptions/'),
                 Ntentan::getFilePath('views/'),
+                Ntentan::getFilePath('exceptions/'),
                 "./",
                 Ntentan::$modulesPath
             )
@@ -139,11 +141,17 @@ class Ntentan
         if($url[0]!="/") return "/$url"; else return $url;
     }
 
-    public static function redirect($path, $absolute = false)
+    /**
+     * Write a header to redirect the request to a new location. 
+     * @param string $url The url to redirect to. This could be a full URL or a
+     *                    route to an Ntentan controller.
+     * @param unknown_type $absolute
+     */
+    public static function redirect($url, $absolute = false)
     {
-        $path = isset($_GET["redirect"]) ? $_GET["redirect"] : $path;
-        $path = $absolute ? $path : Ntentan::getUrl($path);
-        header("Location: $path ");
+        $url = isset($_GET["redirect"]) ? $_GET["redirect"] : $url;
+        $url = $absolute ? $url : Ntentan::getUrl($url);
+        header("Location: $url ");
     }
 
     public static function getDefaultDataStore()

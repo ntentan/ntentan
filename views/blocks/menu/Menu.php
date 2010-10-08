@@ -18,10 +18,10 @@ class Menu extends Block {
             {
                 $item = array(
                     "label" => $item,
-                    "path" => Ntentan::getUrl(strtolower(str_replace(" ", "_",$item)))
+                    "url" => Ntentan::getUrl(strtolower(str_replace(" ", "_",$item)))
                 );
             }
-            $item["selected"] = $item["path"] == Ntentan::$route;
+            $item["selected"] = $item["url"] == Ntentan::$route;
             $this->items[] = $item;
         }
         $this->set("items", $this->items);

@@ -32,10 +32,10 @@ class Controller
     public $defaultMethodName = "run";
 
 	/**
-	 * A copy of the path that was used to load this controller.
+	 * A copy of the route that was used to load this controller.
 	 * @var String
 	 */
-	public $path;
+	public $route;
 
 	/**
 	 * A short machine readable name for this controller.
@@ -80,10 +80,10 @@ class Controller
     private $modelInstance;
     
     /**
-     * A path to the model of the default model this controller is liked to.
+     * A route to the model of the default model this controller is liked to.
      * @var string
      */
-    private $modelPath;
+    private $modelRoute;
     
     /**
      * The data this controller holds for passing ot to the template.
@@ -134,7 +134,6 @@ class Controller
             {
                 $this->viewInstance = new View();
                 $this->viewInstance->layout = "main";
-                $this->viewInstance->template = $path;
                 $this->viewInstance->defaultTemplatePath = $this->filePath;
             }
             return $this->viewInstance;
@@ -145,12 +144,12 @@ class Controller
         case "model":
             if($this->modelInstance == null)
             {
-                $this->modelInstance = Model::load($this->modelPath);
+                $this->modelInstance = Model::load($this->modelRoute);
             }
             return $this->modelInstance;
             
         case "directory":
-            return Ntentan::$modulesPath . $this->path . "/";
+            return Ntentan::$modulesPath . $this->route . "/";
             
         default:
             if(substr($property, -5) == "Block")
@@ -206,7 +205,7 @@ class Controller
         
         $blockInstance = new $blockClass();
         $blockInstance->setName($blockName);
-        $blockInstance->setPath($path);
+        $blockInstance->setFilePath($path);
         if($alias == null) $alias = $blockName;
         $this->blocks[$alias] = $blockInstance;
     }
@@ -260,39 +259,39 @@ class Controller
 	 * @param $path 		The path for the model to be loaded.
 	 * @return Controller
 	 */
-	public static function load($path)
+	public static function load($route)
 	{
-        $controllerPath = '';
-        $controllerPathArray = explode('/', $path);
+        $controllerRoute = '';
+        $controllerRouteArray = explode('/', $route);
 
-        // Filter out all empty paths from the query
-        foreach($controllerPathArray as $value)
+        // Filter out all empty route entries from the query
+        foreach($controllerRouteArray as $value)
         {
             if($value == "") continue;
-            $pathArray[] = $value;
+            $routeArray[] = $value;
         }
         
         // Loop through the filtered path and extract the controller class
-		for($i = 0; $i<count($pathArray); $i++)
+		for($i = 0; $i<count($routeArray); $i++)
 		{
-			$p = $pathArray[$i];
+			$p = $routeArray[$i];
             $pCamelized .= Ntentan::camelize($p);
-            $filePath = Ntentan::$modulesPath . "$controllerPath/$p/";
+            $filePath = Ntentan::$modulesPath . "$controllerRoute/$p/";
 			if(file_exists($filePath . "{$pCamelized}Controller.php"))
 			{
 				$controllerName = $pCamelized."Controller";
-				$controllerPath .= "/$p";
-                $modelPath .= "$p";
+				$controllerRoute .= "/$p";
+                $modelRoute .= "$p";
 				break;
 			}
 			else
 			{
-				$controllerPath .= "/$p";
-                $modelPath .= "$p.";
+				$controllerRoute .= "/$p";
+                $modelRoute .= "$p.";
 			}
 		}
 
-        $controllerPath = substr($controllerPath,1);
+        $controllerRoute = substr($controllerRoute,1);
 
         if($controllerName == "")
         {
@@ -300,24 +299,24 @@ class Controller
         }
         else
         {
-            Ntentan::addIncludePath(Ntentan::$modulesPath . "/$controllerPath/"); //$controllerName.php";
-            $controllerNamespace = "\\" . str_replace("/", "\\", Ntentan::$modulesPath . "/$controllerPath/");
+            Ntentan::addIncludePath(Ntentan::$modulesPath . "/$controllerRoute/"); //$controllerName.php";
+            $controllerNamespace = "\\" . str_replace("/", "\\", Ntentan::$modulesPath . "/$controllerRoute/");
             $controllerName = $controllerNamespace . $controllerName;
             if(class_exists($controllerName))
             {
                 $controller = new $controllerName();
-                $controller->setPath($controllerPath);
+                $controller->setRoute($controllerRoute);
                 $controller->setName($controllerName);
-                $controller->modelPath = $modelPath;
+                $controller->modelRoute = $modelRoute;
                 $controller->filePath = $filePath;
             }
             else
             {
             	Ntentan::error("Controller class <b><code>$controllerName</code></b> not found.");
             }
-            if($i != count($pathArray)-1)
+            if($i != count($routeArray)-1)
             {
-                $controller->method = $pathArray[$i+1];
+                $controller->method = $routeArray[$i+1];
             }
             else
             {
@@ -327,7 +326,7 @@ class Controller
             $controller->init();
             if($controller->hasMethod())
             {
-                $ret = $controller->runMethod(array_slice($pathArray,$i+2));
+                $ret = $controller->runMethod(array_slice($routeArray,$i+2));
             }
             else
             {
@@ -350,12 +349,12 @@ class Controller
         }
     }
 
-    public function setPath($path)
+    public function setRoute($route)
     {
-        $this->path = $path;
+        $this->route = $route;
         foreach($this->componentInstances as $component)
         {
-            $component->setControllerPath($path);
+            $component->setControllerRoute($route);
         }
     }
 
@@ -394,7 +393,7 @@ class Controller
             $this->mainPreRender();
             $controllerClass = new ReflectionClass($this->getName());
             $method = $controllerClass->GetMethod($path);
-            $this->view->template = Ntentan::$modulesPath . "/$this->path/$path.tpl.php";
+            $this->view->template = Ntentan::$modulesPath . "/{$this->route}/$path.tpl.php";
             $method->invokeArgs($this, $params);
             $this->view->blocks = $this->blocks;
             $ret = $this->view->out($this->get());

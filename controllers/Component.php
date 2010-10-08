@@ -74,12 +74,12 @@ class Component extends Controller
     }
 
     /**
-     * Sets the controller path of this component.
-     * @param $controllerPath
+     * Sets the controller route of this component.
+     * @param $controllerRoute
      */
-    public function setControllerPath($controllerPath)
+    public function setControllerRoute($controllerRoute)
     {
-        $this->path = $controllerPath;
+        $this->route = $controllerRoute;
     }
 
     /**

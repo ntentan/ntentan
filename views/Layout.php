@@ -3,7 +3,7 @@
 namespace ntentan\views;
 
 use ntentan\Ntentan;
-
+use ntentan\exceptions\FileNotFoundException;
 
 /**
  * 
@@ -45,7 +45,17 @@ class Layout
 
     public function addStyleSheet($styleSheet, $media = "all")
     {
-        $this->styleSheets[] = array("path"=>$styleSheet, "media"=>$media);
+        if(is_array($styleSheet))
+        {
+            foreach($styleSheet as $sheet)
+            {
+                $this->styleSheets[] = array("path"=>$sheet, "media"=>$media);
+            }
+        }
+        else
+        {
+            $this->styleSheets[] = array("path"=>$styleSheet, "media"=>$media);
+        }
     }
 
     public function removeStyleSheet($styleSheet, $media = "all")
@@ -82,7 +92,14 @@ class Layout
         {
             foreach($sheets[$media] as $sheet)
             {
-                $$media .= file_get_contents($sheet["path"]);
+                if(file_exists($sheet["path"]))
+                {
+                    $$media .= file_get_contents($sheet["path"]);
+                }
+                else
+                {
+                    throw new FileNotFoundException("Stylesheet file <b><code>{$sheet["path"]}</code></b> not found!");
+                }
             }
             $path = Ntentan::$resourcesPath . "css/" . $media . ".css";
             file_put_contents($path, $$media);

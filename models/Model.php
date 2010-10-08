@@ -2,6 +2,8 @@
 namespace ntentan\models;
 
 use ntentan\Ntentan;
+use ntentan\models\exceptions\ModelNotFoundException;
+use ntentan\models\exceptions\FieldNotFoundException;
 use \ArrayAccess;
 use \Iterator;
 use \ReflectionObject;
@@ -44,7 +46,7 @@ class Model implements ArrayAccess, Iterator
     public $hasMany = array();
     public $mustBeUnique;
     public $belongsToModelInstances = array();
-    public $modelPath;
+    public $modelRoute;
     private $name;
     public $invalidFields = array();
     private static $modelCache;
@@ -76,7 +78,7 @@ class Model implements ArrayAccess, Iterator
         $modelName = end(explode("\\", $modelInformation->getName()));
         $this->name = strtolower(Ntentan::deCamelize(substr($modelName, 0, strlen($modelName) - 5)));
         $this->iteratorPosition = 0;
-        $this->modelPath = implode(".",array_slice(explode("\\", $modelInformation->getName()),1 , -1));
+        $this->modelRoute = implode(".",array_slice(explode("\\", $modelInformation->getName()),1 , -1));
         
         $dataStoreParams = Ntentan::getDefaultDataStore();
         $dataStoreClass = __NAMESPACE__ . "\\datastores\\" . Ntentan::camelize($dataStoreParams["datastore"]);
@@ -105,18 +107,18 @@ class Model implements ArrayAccess, Iterator
      * @param string $model
      * @return Model
      */
-    public static function load($modelPath)
+    public static function load($modelRoute)
     {
-        $filePath = Ntentan::$modulesPath . "/" . str_replace(".", "/", $modelPath);
-        if(file_exists($filePath . "/" . Ntentan::camelize($modelPath) . "Model.php"))
+        $filePath = Ntentan::$modulesPath . "/" . str_replace(".", "/", $modelRoute);
+        if(file_exists($filePath . "/" . Ntentan::camelize($modelRoute) . "Model.php"))
         {
             Ntentan::addIncludePath($filePath);
-            $className = Model::getClassName($modelPath);
+            $className = Model::getClassName($modelRoute);
             return new $className();
         }
         else
         {
-            throw new ModelNotFoundException("Model class not found for [$modelPath]");
+            throw new ModelNotFoundException("Model class not found for [$modelRoute]");
         }
     }
 
@@ -258,7 +260,7 @@ class Model implements ArrayAccess, Iterator
             $type = 'all';
             foreach($arguments as $argument)
             {
-                $params["conditions"][$this->modelPath . "." . $field] = $argument;
+                $params["conditions"][$this->modelRoute . "." . $field] = $argument;
             }
             return $this->get($type, $params);
         }
@@ -269,7 +271,7 @@ class Model implements ArrayAccess, Iterator
             $type = 'first';
             foreach($arguments as $argument)
             {
-                $params["conditions"][$this->modelPath . "." . $field] = $argument;
+                $params["conditions"][$this->modelRoute . "." . $field] = $argument;
             }
             return $this->get($type, $params);
         }
@@ -281,7 +283,7 @@ class Model implements ArrayAccess, Iterator
             $params["fetch_related"] = true;
             foreach($arguments as $argument)
             {
-                $params["conditions"][$this->modelPath . "." . $field] = $argument;
+                $params["conditions"][$this->modelRoute . "." . $field] = $argument;
             }
             return $this->get($type, $params);
         }
