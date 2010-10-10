@@ -23,6 +23,7 @@ body
 {
 	margin:0px;
 	font-family:helvetica,sans-serif;
+	font-size:smaller;
 }
 
 #header
@@ -36,6 +37,12 @@ body
 	margin:0px;
 	padding:10px;
 	color:#ffffff;
+}
+
+h2
+{
+	margin:0px;
+	margin-bottom:5px;
 }
 
 #admin-contents
@@ -81,4 +88,10 @@ div.item-pages-list > a
     display:inline-block;
     padding:5px;
     color:#a0a0a0;
+}
+
+div#form-area
+{
+	width:50%;
+	min-width:500px;
 }

@@ -3,6 +3,7 @@ namespace ntentan\models;
 
 use ntentan\Ntentan;
 use ntentan\models\exceptions\ModelNotFoundException;
+use ntentan\models\exceptions\MethodNotFoundException;
 use ntentan\models\exceptions\FieldNotFoundException;
 use \ArrayAccess;
 use \Iterator;
@@ -462,7 +463,7 @@ class Model implements ArrayAccess, Iterator
                     {
                         if($field["name"] == $fieldName)
                         {
-                            $description["fields"][$i]["model"] = $belongsTo;
+                            $description["fields"][$i]["model"] = Ntentan::plural($belongsTo);
                             $description["fields"][$i]["foreing_key"] = true;
                         }
                     }

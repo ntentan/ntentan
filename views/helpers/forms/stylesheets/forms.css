@@ -1,9 +1,15 @@
 input[type='text'],
 input[type='password']
 {
-    font-size:large;
     border:1px solid #a0a0a0;
-    width:100%;
+    width:90%;
+    background-color:#ffffff;
+    padding:5px;
+}
+
+select
+{
+	/*font-size:larger;*/
 }
 
 input[type='text']:focus,
@@ -16,7 +22,7 @@ textarea
 {
     border:1px solid #a0a0a0;
     width:100%;
-    font-size:large;
+    /*font-size:larger;*/
     font-family:"Helvetica", sans-serif
 }
 
@@ -27,13 +33,13 @@ textarea:focus
 
 input[type='submit']
 {
-	font-size:large;
+	font-size:larger;
 	font-weight:bold;
 }
 
 label
 {
-	font-size:larger;
+	/*font-size:large;*/
     font-weight:bold;
     color:#808080;
 }
@@ -51,7 +57,7 @@ div.fapi-description
 div.fapi-submit-area
 {
 	padding-top:10px;
-	border-top:1px solid #808080;
+	border-top:1px solid #f0f0f0;
 }
 
 span.fapi-required

@@ -1,4 +1,8 @@
 <?php
+namespace ntentan\views\helpers\forms;
+
+use ntentan\models\Model;
+
 class ModelField extends SelectionList
 {
 	public function __construct($label, $model, $value = null)
@@ -8,7 +12,7 @@ class ModelField extends SelectionList
         $modelInstance = Model::load($model);
         $data = $modelInstance->get('all');
         
-        for($i = 0; $i < $data->length(); $i++)
+        for($i = 0; $i < $data->count(); $i++)
         {
             $this->addOption($data[$i], $data[$i]["id"]);
         }

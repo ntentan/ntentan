@@ -1,4 +1,8 @@
 <?php
+namespace ntentan\models\exceptions;
+
+use \Exception;
+
 class MethodNotFoundException extends Exception
 {
     public function __construct($method)

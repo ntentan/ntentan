@@ -157,7 +157,8 @@ class Admin extends Component
         $itemsPerPage,
             array(
                 "offset"=>($pageNumber-1) * $itemsPerPage,
-                "sort" => "id desc"
+                "sort" => $model->getName() . ".id desc",
+                "fetch_related" => true
             )
         );
 
@@ -173,9 +174,19 @@ class Admin extends Component
             $description = $model->describe();
             foreach($description["fields"] as $field)
             {
-                if($field["primary_key"] == true) continue;
-                $this->listFields[] = $field["name"];
-             }
+                if($field["primary_key"] === true)
+                {
+                    continue;
+                }
+                else if($field["foreing_key"] === true)
+                {
+                    $this->listFields[] = Ntentan::singular($field["model"]);
+                }
+                else
+                {
+                    $this->listFields[] = $field["name"];
+                }
+            }
         }
 
         $this->set("list_fields", $this->listFields);
@@ -346,6 +357,8 @@ class Admin extends Component
         $this->set("fields", $description["fields"]);
         $item = $this->getModel()->getFirstWithId($id);
         $this->set("data", $item->getData());
+        $this->set("item", ucfirst(Ntentan::singular($this->getModel()->getName())));
+        
         if(count($_POST) > 0)
         {
             $item->setData($_POST);
@@ -378,19 +391,12 @@ class Admin extends Component
             $id = $model->save();
             if($id > 0)
             {
-                if($this->consoleMode)
-                {
-                    $path = "{$this->controller->route}/console/{$model->getName()}";
-                }
-                else
-                {
-                    $path = "{$this->prefix}/{$this->controller->route}";
-                }
+                $route = $this->getCurrentRoute();
                 
                 if(!$this->executeCallbackMethod($this->postAddCallback, $id, $model))
                 {
                     Ntentan::redirect(
-                        "$path?n=" . urlencode("Successfully added new ".$this->getModel()->getName()." <b>". (string)$model. "</b>")
+                        "$route?n=1&i=" . base64_encode($model)
                     );
                 }
             }

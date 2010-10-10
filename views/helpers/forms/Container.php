@@ -37,41 +37,27 @@ abstract class Container extends Element
 
 	/**
 	 * The element function for the renderer currently in use.
+	 * @var string
 	 */
 	protected $renderer_element;
 
-	/**
-	 * The database table into which all the data represented in this
-	 * container is to be dumped.
+	/** 
+	 * When set to false the fields are not shown for editing.
+	 * @var boolean
 	 */
-	//protected $database_table;
-
-	/**
-	 * The database schema in which the table into which the data is to
-	 * be dumped is found.
-	 */
-	//private $database_schema;
-
-	/**
-	 * The primary key field of the database table.
-	 */
-	//protected $primary_key_field;
-
-	//! The primary key value of the database table.
-	//protected $primary_key_value;
-
-	//! When set to false the fields are not shown for editing.
 	protected $showfields = true;
 
-	//! Stores the name of a custom function to call when the form is
-	//! being rendered.
+	/**
+	 * Stores the name of a custom function to call when the form is being
+	 * rendered.
+	 * @var string
+	 */
 	protected $onRenderCallback;
 
 	/**
 	 * The Ntentan Model which holds the form's data.
 	 * @see Model
 	 */
-	//protected $model;
 
 	protected $callback;
 	protected $callbackData;
