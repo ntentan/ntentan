@@ -1,7 +1,9 @@
 <?php if($headings): ?>
 <h2><?php echo $model ?></h2>
 <?php endif ?>
-<div>
+<div id="item-actions-menu">
+    <?php echo $item_actions_menu_block ?>
+</div>
 <?php 
 switch($notification_type)
 {
@@ -16,7 +18,6 @@ case 3:
     break;
 } 
 ?>
-</div>
 <div>
     <table class='item-table'>
         <thead>

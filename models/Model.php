@@ -5,6 +5,7 @@ use ntentan\Ntentan;
 use ntentan\models\exceptions\ModelNotFoundException;
 use ntentan\models\exceptions\MethodNotFoundException;
 use ntentan\models\exceptions\FieldNotFoundException;
+use ntentan\caching\Cache;
 use \ArrayAccess;
 use \Iterator;
 use \ReflectionObject;
@@ -52,12 +53,6 @@ class Model implements ArrayAccess, Iterator
     public $invalidFields = array();
     private static $modelCache;
     private $iteratorPosition;
-    
-    /**
-     * Description
-     * @var unknown_type
-     */
-    private $_description;
     
     public function __construct()
     {
@@ -345,7 +340,7 @@ class Model implements ArrayAccess, Iterator
         }
         else
         {
-            throw new FieldNotFoundException("Field [$variable] not found in Model");
+            //throw new FieldNotFoundException("Field [$variable] not found in Model");
         }
     }
 
@@ -413,7 +408,7 @@ class Model implements ArrayAccess, Iterator
 
     public function describe()
     {
-        if($this->_description == null)
+        if(!Cache::exists("model_" . $this->getName()))
         {
             $description = $this->_dataStoreInstance->describe();
             if(is_array($this->mustBeUnique))
@@ -485,10 +480,9 @@ class Model implements ArrayAccess, Iterator
                     }
                 }
             }
-            $this->_description = $description;
+            Cache::add("model_" . $this->getName(), $description);
         }
-        
-        return $this->_description;
+        return Cache::get("model_" . $this->getName());
     }
 
     public function __toString()

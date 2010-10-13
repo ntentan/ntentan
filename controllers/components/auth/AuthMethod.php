@@ -16,6 +16,7 @@ abstract class AuthMethod
         $usersModelClass = Model::getClassName($this->usersModel);
         $users = new $usersModelClass();
         $result = $users->getFirstWithUsername($username);
+
         if($result->password == md5($password))
         {
             $_SESSION["logged_in"] = true;

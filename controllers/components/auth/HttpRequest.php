@@ -10,7 +10,10 @@ class HttpRequest extends AuthMethod
     {
         if(isset($_REQUEST["username"]) && isset($_REQUEST["password"]))
         {
-            return $this->authLocalPassword($_REQUEST["username"], $_REQUEST["password"]);
+            return $this->authLocalPassword(
+                $_REQUEST["username"],
+                $_REQUEST["password"]
+            );
         }
         else
         {

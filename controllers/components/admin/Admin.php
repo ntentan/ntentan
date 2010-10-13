@@ -278,7 +278,6 @@ class Admin extends Component
             {
                 array_pop($arguments);
                 $this->model = Model::load(implode(".", $arguments));
-                $this->addBlock("menu", "console_menu");
                 $this->add();
             }
             else if(is_numeric(end($arguments)))
@@ -308,7 +307,14 @@ class Admin extends Component
             }
             else
             {
+                $this->addBlock("menu", "item_actions_menu");
                 $this->model = Model::load(implode(".", $arguments));
+                $this->itemActionsMenuBlock->addItem(
+                    array(
+                        "label" => "Add new " . strtolower(Ntentan::singular($this->model->getName())),
+                        "url"   =>  Ntentan::getUrl($this->getCurrentRoute() . "/add")
+                    )
+                );
                 $this->view->layout->title = ucfirst($this->model->getName()) . " | " . $this->site["name"] . " Administrator Console";
                 $this->page(1);
             }

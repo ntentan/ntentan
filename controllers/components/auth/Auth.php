@@ -63,7 +63,7 @@ class Auth extends Component
     public $usersModel = "users";
     protected $authMethodInstance;
     
-    public function preRender()
+    public function init()
     {
         // Load the authenticator
         $authenticatorClass = __NAMESPACE__ . '\\' . Ntentan::camelize($this->authMethod);
