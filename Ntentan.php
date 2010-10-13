@@ -109,6 +109,7 @@ class Ntentan
         if(Ntentan::$route == "") {
             Ntentan::$route = Ntentan::$defaultRoute;
         }
+        
 		$module = controllers\Controller::load(Ntentan::$route);
 	}
 
@@ -154,6 +155,9 @@ class Ntentan
         header("Location: $url ");
     }
 
+    /**
+     * Returns the default datastore used by the 
+     */
     public static function getDefaultDataStore()
     {
     	if(file_exists(Ntentan::$dbConfigFile)) {

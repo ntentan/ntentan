@@ -85,9 +85,9 @@ class Controller
     private $modelRoute;
     
     /**
-     * The data this controller holds for passing ot to the template. Thes data
-     * is stored as an associative array in this variable. The values can be
-     * manipulated through the Controller::set() method.
+     * Stores the data this controller holds for passing ot to the template. 
+     * This data is stored as an associative array in this variable. The values 
+     * can be manipulated through the Controller::set() method.
      * @var array
      */
     public $data;
@@ -313,7 +313,7 @@ class Controller
 
         if($controllerName == "")
         {
-            Ntentan::error("Path not found! [$path]");
+            Ntentan::error("Path not found! [$route]");
         }
         else
         {

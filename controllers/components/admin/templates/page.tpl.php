@@ -5,6 +5,9 @@
 <?php 
 switch($notification_type)
 {
+case 1:
+    echo "<div class='notification'>Successfully added $model <b>$notification_item</b></div>";
+    break;
 case 2:
     echo "<div class='notification'>Successfully edited $model <b>$notification_item</b></div>";
     break;

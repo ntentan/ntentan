@@ -1,4 +1,8 @@
 <?php
+namespace ntentan\views\helpers\forms;
+
+use ntentan\views\helpers\forms\Field;
+
 /**
  * An item that can be added to a selection list.
  * @ingroup Form_API

@@ -4,7 +4,7 @@ namespace ntentan\models\datastores;
 
 use \mysqli;
 use \Exception;
-use \DataStoreException;
+use ntentan\models\exceptions\DataStoreException;
 
 class Mysql extends SqlDatabase
 {

@@ -1,9 +1,24 @@
 <?php
+
 namespace ntentan\models\datastores;
 
 use ntentan\Ntentan;
 use ntentan\models\Model;
 
+/**
+ * A class used for the writing of datastores which store their data on SQL 
+ * Databases. This class generates standard SQL queries through which most 
+ * SQL database systems could be manipulated. For system specific functions (like
+ * connecting, interpreting queries, escaping strings etc.) this class exposes 
+ * abstract methods which need to be implemented by the actual datastore classes.
+ * If a datastore needs to be written for any database system which supports
+ * standard SQL queries, the this class would be a great foundation to build
+ * upon
+ * 
+ * @author jainooson@gmail.com,
+ * @package ntentan.models.datastores
+ * @abstract
+ */
 abstract class SqlDatabase extends DataStore
 {
     protected $_table;
@@ -51,7 +66,7 @@ abstract class SqlDatabase extends DataStore
         parent::setModel($model);
         $this->table = end(explode(".", $model->getName()));
     }
-    
+
     private function resolveName($fieldPath)
     {
         if(strpos($fieldPath, ".") === false)
@@ -79,16 +94,20 @@ abstract class SqlDatabase extends DataStore
         {
             if($params["fields"] == null)
             {
-                $fields = " * ";
+                //$fields = " * ";
+                $description = $this->describe();
+                $modelFields = array_keys($description["fields"]);
+                foreach($modelFields as $index => $field)
+                {
+                    $modelFields[$index] = $this->quote($description["name"]). "." . $this->quote($field);
+                }
+                $fields = implode(", ", $modelFields);
             }
             else
             {
                 $fields = implode(", ", is_array($params["fields"]) ? $params["fields"] : explode(",", $params["fields"]));
             }
         }
-
-        // Generate the base query
-        $query = "SELECT $fields FROM {$this->table} ";
         
         // Generate joins
         if($params["fetch_related"] === true)
@@ -101,13 +120,24 @@ abstract class SqlDatabase extends DataStore
                     $firstDatastore = $firstRelatedModel->getDataStore(true);
                     $secondRelatedModel = Model::load($relatedModel["through"]);
                     $secondDatastore = $secondRelatedModel->getDataStore(true);
-                    $query .= "JOIN {$firstDatastore->table} ON {$firstDatastore->table}.id = {$secondDatastore->table}." . Ntentan::singular($firstDatastore->table) . "_id ";
+                    $joins = "JOIN {$firstDatastore->table} ON {$firstDatastore->table}.id = {$secondDatastore->table}." . Ntentan::singular($firstDatastore->table) . "_id ";
                 }
                 else
                 {
                     $model = Model::load(Model::getBelongsTo($relatedModel));
                     $datastore = $model->getDataStore(true);
-                    $query .= "JOIN {$datastore->table} ON {$datastore->table}.id = {$this->table}." . Ntentan::singular($datastore->table) . "_id ";
+                    $joinedModelDescription = $model->describe();
+                    $joinedModelFields = array_keys($joinedModelDescription["fields"]);
+                    
+                    foreach($joinedModelFields as $index => $field)
+                    {
+                        $joinedModelFields[$index] = 
+                            $this->quote($joinedModelDescription["name"])
+                             . "." . $this->quote($field) . " as "
+                             . $this->quote("{$joinedModelDescription["name"]}.$field");
+                    }
+                    $fields = $fields . ", " . implode(", ", $joinedModelFields);
+                    $joins = "JOIN {$datastore->table} ON {$datastore->table}.id = {$this->table}." . Ntentan::singular($datastore->table) . "_id ";
                 }
             }
         }
@@ -122,12 +152,15 @@ abstract class SqlDatabase extends DataStore
                     $modelInstance = Model::load($relatedModel);
                     $currentTable = $modelInstance->getDataStore(true)->table;
                     $foreignKey = Ntentan::singular($previousTable) . "_id";
-                    $query .= " JOIN $currentTable ON $previousTable.id = $currentTable.$foreignKey ";
+                    $joins .= " JOIN $currentTable ON $previousTable.id = $currentTable.$foreignKey ";
                     $previousTable = $currentTable;
                 }
             }
         }
-
+        
+        // Generate the base query
+        $query = "SELECT $fields FROM {$this->table} $joins ";
+        
         // Generate conditions
         if($params["conditions"] !== null)
         {
@@ -311,4 +344,3 @@ abstract class SqlDatabase extends DataStore
     protected abstract function quote($field);
     protected abstract function getLastInsertId();
 }
-
