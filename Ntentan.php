@@ -70,6 +70,7 @@ class Ntentan
                 Ntentan::getFilePath('models/exceptions/'),
                 Ntentan::getFilePath('views/'),
                 Ntentan::getFilePath('exceptions/'),
+                Ntentan::getFilePath('caching/'),
                 "./",
                 Ntentan::$modulesPath
             )
@@ -198,7 +199,11 @@ class Ntentan
     
     public static function plural($string)
     {
-        if(substr($string, -1) != "s")
+        if(substr($string, -1) == "y")
+        {
+            return substr($string, 0, strlen($string) - 1) . "ies";
+        }
+        elseif(substr($string, -1) != "s")
         {
             return $string . "s";
         }

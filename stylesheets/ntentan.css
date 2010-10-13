@@ -10,7 +10,9 @@ div.notification
 
 div.error
 {
-    
+    padding:10px;
+    background-color:pink;
+    color:red;
 }
 
 .buttonlike

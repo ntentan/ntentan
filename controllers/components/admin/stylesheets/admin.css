@@ -17,8 +17,6 @@
  * limitations under the License.
  */
 
-@CHARSET "UTF-8";
-
 body
 {
 	margin:0px;
@@ -48,6 +46,34 @@ h2
 #admin-contents
 {
 	padding:10px;
+}
+
+div#item-actions-menu > ul
+{
+    list-style:none;
+    margin:0px;
+    padding:0px;
+    background-color:#d0d0d0;
+}
+
+div#item-actions-menu > ul > li
+{
+    display:inline-block;
+    padding-top:7px;
+    padding-bottom:7px;
+}
+
+div#item-actions-menu > ul > li > a
+{
+    padding:7px;
+    text-decoration:none;
+    font-weight:bold;
+    color:black;
+}
+
+div#item-actions-menu > ul > li > a:hover
+{
+    color:white;
 }
 
 table.item-table

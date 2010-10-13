@@ -95,7 +95,7 @@ abstract class SqlDatabase extends DataStore
             if($params["fields"] == null)
             {
                 //$fields = " * ";
-                $description = $this->describe();
+                $description = $this->model->describe();
                 $modelFields = array_keys($description["fields"]);
                 foreach($modelFields as $index => $field)
                 {
@@ -110,6 +110,7 @@ abstract class SqlDatabase extends DataStore
         }
         
         // Generate joins
+        $joins = "";
         if($params["fetch_related"] === true)
         {
             foreach($this->model->belongsTo as $relatedModel)
@@ -120,7 +121,7 @@ abstract class SqlDatabase extends DataStore
                     $firstDatastore = $firstRelatedModel->getDataStore(true);
                     $secondRelatedModel = Model::load($relatedModel["through"]);
                     $secondDatastore = $secondRelatedModel->getDataStore(true);
-                    $joins = "JOIN {$firstDatastore->table} ON {$firstDatastore->table}.id = {$secondDatastore->table}." . Ntentan::singular($firstDatastore->table) . "_id ";
+                    $joins .= " JOIN {$firstDatastore->table} ON {$firstDatastore->table}.id = {$secondDatastore->table}." . Ntentan::singular($firstDatastore->table) . "_id ";
                 }
                 else
                 {
@@ -128,7 +129,6 @@ abstract class SqlDatabase extends DataStore
                     $datastore = $model->getDataStore(true);
                     $joinedModelDescription = $model->describe();
                     $joinedModelFields = array_keys($joinedModelDescription["fields"]);
-                    
                     foreach($joinedModelFields as $index => $field)
                     {
                         $joinedModelFields[$index] = 
@@ -137,7 +137,7 @@ abstract class SqlDatabase extends DataStore
                              . $this->quote("{$joinedModelDescription["name"]}.$field");
                     }
                     $fields = $fields . ", " . implode(", ", $joinedModelFields);
-                    $joins = "JOIN {$datastore->table} ON {$datastore->table}.id = {$this->table}." . Ntentan::singular($datastore->table) . "_id ";
+                    $joins .= " JOIN {$datastore->table} ON {$datastore->table}.id = {$this->table}." . Ntentan::singular($datastore->table) . "_id ";
                 }
             }
         }
@@ -157,10 +157,10 @@ abstract class SqlDatabase extends DataStore
                 }
             }
         }
-        
+
         // Generate the base query
         $query = "SELECT $fields FROM {$this->table} $joins ";
-        
+
         // Generate conditions
         if($params["conditions"] !== null)
         {
