@@ -6,7 +6,7 @@ use ntentan\Ntentan;
 use ntentan\models\Model;
 
 /**
- * A class used for the writing of datastores which store their data on SQL 
+ * A class used for the writing of datastores which store their data in SQL 
  * Databases. This class generates standard SQL queries through which most 
  * SQL database systems could be manipulated. For system specific functions (like
  * connecting, interpreting queries, escaping strings etc.) this class exposes 
@@ -343,4 +343,5 @@ abstract class SqlDatabase extends DataStore
     protected abstract function escape($query);
     protected abstract function quote($field);
     protected abstract function getLastInsertId();
+    public abstract function describeModel();
 }

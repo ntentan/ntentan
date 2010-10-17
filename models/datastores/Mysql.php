@@ -2,6 +2,8 @@
 
 namespace ntentan\models\datastores;
 
+use ntentan\Ntentan;
+
 use \mysqli;
 use \Exception;
 use ntentan\models\exceptions\DataStoreException;
@@ -102,7 +104,7 @@ class Mysql extends SqlDatabase
                     break;
 
                 case "timestamp":
-                case "timestamp without time zone":
+                case "datetime":
                     $type = "datetime";
                     break;
             
@@ -157,6 +159,76 @@ class Mysql extends SqlDatabase
         $description = array();
         $description["name"] = $this->table;
         $description["fields"] = $fields;
+        return $description;
+    }
+    
+    /**
+     * (non-PHPdoc)
+     * @see models/datastores/ntentan\models\datastores.SqlDatabase::describeSchema()
+     */
+    public function describeModel()
+    {
+        $description = array();
+        $description["tables"] = array();
+        $tables = $this->query(
+            sprintf(
+                "SELECT table_name 
+                 FROM information_schema.tables 
+                 WHERE table_schema = '%s'",
+                $this->defaultSchema
+            )
+        );
+        
+        foreach($tables as $table)
+        {
+            $description["tables"][$table["table_name"]] = array();
+            $description["tables"][$table["table_name"]]["belongs_to"] = array();
+            $description["tables"][$table["table_name"]]["has_many"] = array();
+            
+            // Get the schemas which belong to
+            $belongsToTables = $this->query(
+                sprintf(
+                    "select referenced_table_name
+                    from information_schema.table_constraints 
+                    join information_schema.key_column_usage using(constraint_name) 
+                    where 
+                        table_constraints.table_schema = '%s' and 
+                        constraint_type = 'FOREIGN KEY' and 
+                        table_constraints.table_name = '%s' and
+                        referenced_column_name = 'id'",
+                    $this->defaultSchema,
+                    $table["table_name"]
+                )
+            );
+            
+            foreach($belongsToTables as $belongsToTable)
+            {
+                $description["tables"][$table["table_name"]]["belongs_to"][] = 
+                    Ntentan::singular($belongsToTable["referenced_table_name"]);
+            }
+            
+            // Get the schemas which is owns.
+            $hasManyTables = $this->query(
+                sprintf(
+                    "select table_constraints.table_name
+                    from information_schema.table_constraints 
+                    join information_schema.key_column_usage using(constraint_name) 
+                    where 
+                        table_constraints.table_schema = '%s' and 
+                        constraint_type = 'FOREIGN KEY' and 
+                        referenced_table_name = '%s' and
+                        referenced_column_name = 'id'",
+                    $this->defaultSchema,
+                    $table["table_name"]
+                )
+            );
+            
+            foreach($hasManyTables as $hasManyTable)
+            {
+                $description["tables"][$table["table_name"]]["has_many"][] = 
+                    $hasManyTable["table_name"];
+            }            
+        }
         return $description;
     }
     

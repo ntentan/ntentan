@@ -1,5 +1,4 @@
 <?php
-
 namespace ntentan\views\helpers\forms;
 
 use \ntentan\views\helpers\Helper;
@@ -63,7 +62,7 @@ class Forms extends Helper
         switch($field["type"])
         {
             case "double":
-                $element = new TextField(ucwords(str_replace("_", " ", $field["name"])));
+                $element = new TextField(ucwords(str_replace("_", " ", $field["name"])), $field["name"]);
                 $element->setAsNumeric();
                 break;
 
@@ -81,13 +80,16 @@ class Forms extends Helper
                 break;
 
             case "string":
-               $element = new TextField(Ntentan::toSentence($field["name"]), $field["name"]);
+                $element = new TextField(Ntentan::toSentence($field["name"]), $field["name"]);
                 break;
             case "text":
                 $element = new TextArea(Ntentan::toSentence($field["name"]), $field["name"]);
                 break;
             case "boolean":
                 $element = new Checkbox(Ntentan::toSentence($field["name"]), $field["name"]);
+                break;
+            case "datetime":
+                $element = new DateField(Ntentan::toSentence($field["name"]), $field["name"]);
                 break;
                 
             default:

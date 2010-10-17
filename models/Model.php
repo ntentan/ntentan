@@ -493,7 +493,7 @@ class Model implements ArrayAccess, Iterator
         }
         else if(is_array($this->data))
         {
-            return print_r($this->data, true);
+            return json_encode($this->data, true);
         }
     }
 
