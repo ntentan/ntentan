@@ -85,13 +85,13 @@ class Admin extends Component
     public $model;
     public $headings = true;
     private $operations;
-    private $site;
+    private $app;
 
     public function __construct($prefix = null)
     {
         $this->prefix = $prefix;
-        include "config/site.php";
-        $this->site = $site;
+        include "config/app.php";
+        $this->app = $app;
     }
 
     public function addOperation($operation)
@@ -232,7 +232,7 @@ class Admin extends Component
         // Setup layouts, templates and stuff
         $this->useLayout("console.tpl.php");
         $this->useTemplate("run.tpl.php");
-        $this->set("site_name", $this->site["name"]);
+        $this->set("app_name", $this->app["name"]);
         $this->view->layout->addStyleSheet(
             Ntentan::getFilePath("stylesheets/grid.css")
         );
@@ -270,7 +270,7 @@ class Admin extends Component
         $arguments = func_get_args();
         if(count($arguments) == 0)
         {
-            $this->view->layout->title = $this->site["name"] . " Administrator Console";
+            $this->view->layout->title = $this->app["name"] . " Administrator Console";
         }
         else
         { 
@@ -315,7 +315,7 @@ class Admin extends Component
                         "url"   =>  Ntentan::getUrl($this->getCurrentRoute() . "/add")
                     )
                 );
-                $this->view->layout->title = ucfirst($this->model->getName()) . " | " . $this->site["name"] . " Administrator Console";
+                $this->view->layout->title = ucfirst($this->model->getName()) . " | " . $this->app["name"] . " Administrator Console";
                 $this->page(1);
             }
         }

@@ -56,11 +56,21 @@ class Ntentan
     public static $route;
     public static $dbConfigFile = "config/db.php";
     
+    const VERSION = "0.1";
+    
 	/**
 	 * The main entry point of the Ntentan application.
 	 */
 	public static function boot()
 	{
+	    if(!file_exists("config/ntentan.php"))
+	    {
+	        echo Ntentan::message("Please ensure that ntentan is properly setup. The <code>config/ntentan.php</code> file is not present.");
+	        die();
+	    }
+	    require "config/ntentan.php";
+	    Ntentan::$basePath = $ntentan_home;
+	    Ntentan::$modulesPath = $modules_path;
         Ntentan::addIncludePath(
             array
             (
@@ -75,7 +85,13 @@ class Ntentan
                 Ntentan::$modulesPath
             )
         );
-
+        
+        // Do not go beyond this point if running in CLI mode
+        if(defined('STDIN')===true)
+        {
+            return null;
+        }
+        
         Ntentan::$requestedRoute = $_GET["q"];
         Ntentan::$route = $_GET["q"];
         unset($_GET["q"]);
@@ -170,7 +186,7 @@ class Ntentan
             	die();
             }
     	} else {
-    		echo Ntentan::message("Could not locate <b>config.php</b> file");
+    		echo Ntentan::message("Could not locate the database configuration file <code><b>".Ntentan::$dbConfigFile."</b></code>");
     		die();
     	}
     }
@@ -258,7 +274,14 @@ class Ntentan
             $trace = is_array($trace) ? $trace : debug_backtrace();
         }
         ob_start();
-        include "templates/message.tpl.php";
+        if(defined('STDIN'))
+        {
+            include "templates/message-cli.tpl.php";
+        }
+        else
+        {
+            include "templates/message.tpl.php";
+        }
         $message = ob_get_clean();
         return $message;
     }

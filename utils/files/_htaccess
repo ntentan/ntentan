@@ -1,0 +1,22 @@
+# Don't show directories.
+Options -Indexes
+
+# Follow symbolic links
+Options +FollowSymLinks
+
+# Set the default handler.
+DirectoryIndex index.php
+
+# Various rewrite rules.
+<IfModule mod_rewrite.c>
+  RewriteEngine on
+  
+  # Set the rewrite base
+  # RewriteBase /
+
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !=/favicon.ico
+  RewriteRule ^(.*)$ index.php?q=$1 [L,QSA]
+</IfModule>
+

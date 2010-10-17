@@ -101,7 +101,7 @@ class Layout
                     throw new FileNotFoundException("Stylesheet file <b><code>{$sheet["path"]}</code></b> not found!");
                 }
             }
-            $path = Ntentan::$resourcesPath . "css/" . $media . ".css";
+            $path = Ntentan::$resourcesPath . "public/" . $media . ".css";
             file_put_contents($path, $$media);
             $stylesheets .= "<link rel='stylesheet' type='text/css' href='/$path' media='$media'>";
         }
