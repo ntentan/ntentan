@@ -1,0 +1,84 @@
+\hypertarget{class_postgresql}{
+\section{Postgresql Class Reference}
+\label{class_postgresql}\index{Postgresql@{Postgresql}}
+}
+Inheritance diagram for Postgresql:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_postgresql}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_postgresql_ad1330238ab6052e9b2e39bdf6ef8d1a5}{
+{\bfseries connect} (\$parameters)}
+\label{class_postgresql_ad1330238ab6052e9b2e39bdf6ef8d1a5}
+
+\item 
+\hypertarget{class_postgresql_a3a1b0563c0cace2acb354763603913bc}{
+{\bfseries describe} ()}
+\label{class_postgresql_a3a1b0563c0cace2acb354763603913bc}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_postgresql_a1722d9fd690b3cc3247ddc684f87557e}{setTable} (\$table)
+\begin{DoxyCompactList}\small\item\em A protected function used internally to set the table names. \item\end{DoxyCompactList}\item 
+\hypertarget{class_postgresql_adfbdbd6335ece38f952aa94ef156c8df}{
+{\bfseries query} (\$query)}
+\label{class_postgresql_adfbdbd6335ece38f952aa94ef156c8df}
+
+\item 
+\hypertarget{class_postgresql_af46b7259f6efb9dc57202be05cf2320c}{
+{\bfseries escape} (\$string)}
+\label{class_postgresql_af46b7259f6efb9dc57202be05cf2320c}
+
+\item 
+\hypertarget{class_postgresql_a443b163e803316c852044e9660ab28a5}{
+{\bfseries quote} (\$field)}
+\label{class_postgresql_a443b163e803316c852044e9660ab28a5}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 4 of file Postgresql.php.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_postgresql_a1722d9fd690b3cc3247ddc684f87557e}{
+\index{Postgresql@{Postgresql}!setTable@{setTable}}
+\index{setTable@{setTable}!Postgresql@{Postgresql}}
+\subsubsection[{setTable}]{\setlength{\rightskip}{0pt plus 5cm}Postgresql::setTable (
+\begin{DoxyParamCaption}
+\item[{\$}]{ table}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{class_postgresql_a1722d9fd690b3cc3247ddc684f87557e}
+
+
+A protected function used internally to set the table names. 
+
+This function exists so that datastores which need to modify the table names could do so by overriding it and providing their own implementation.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em unknown\_\-type}]\$table \end{DoxyParams}
+
+
+Reimplemented from \hyperlink{class_sql_database_a932f083428617453b72784e6cda0d1ae}{SqlDatabase}.
+
+
+
+Definition at line 19 of file Postgresql.php.
+
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+models/datastores/Postgresql.php\end{DoxyCompactItemize}

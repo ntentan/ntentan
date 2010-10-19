@@ -1,0 +1,135 @@
+\hypertarget{class_radio_group}{
+\section{RadioGroup Class Reference}
+\label{class_radio_group}\index{RadioGroup@{RadioGroup}}
+}
+
+
+A \hyperlink{class_field}{Field} for containing radio buttons.  
+
+
+Inheritance diagram for RadioGroup:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_radio_group}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_radio_group_a16b486c286cd271ad3c9790648a93748}{
+\hyperlink{class_radio_group_a16b486c286cd271ad3c9790648a93748}{\_\-\_\-construct} (\$label=\char`\"{}\char`\"{}, \$name=\char`\"{}\char`\"{}, \$description=\char`\"{}\char`\"{})}
+\label{class_radio_group_a16b486c286cd271ad3c9790648a93748}
+
+\begin{DoxyCompactList}\small\item\em The constructor for the radio group. \item\end{DoxyCompactList}\item 
+\hypertarget{class_radio_group_a3927b76bb696bf92f39052713155fba6}{
+\hyperlink{class_radio_group_a3927b76bb696bf92f39052713155fba6}{add} (\$button)}
+\label{class_radio_group_a3927b76bb696bf92f39052713155fba6}
+
+\begin{DoxyCompactList}\small\item\em Adds a radio button to the radio group. \item\end{DoxyCompactList}\item 
+\hypertarget{class_radio_group_a1ab6ba37db990d91ce8870b31d42b118}{
+{\bfseries removeRadioButton} (\$index)}
+\label{class_radio_group_a1ab6ba37db990d91ce8870b31d42b118}
+
+\item 
+\hypertarget{class_radio_group_a0ad4e42f4b1721ab1cccb4ae42b693b3}{
+\hyperlink{class_radio_group_a0ad4e42f4b1721ab1cccb4ae42b693b3}{render} ()}
+\label{class_radio_group_a0ad4e42f4b1721ab1cccb4ae42b693b3}
+
+\begin{DoxyCompactList}\small\item\em Render the form. \item\end{DoxyCompactList}\item 
+\hypertarget{class_radio_group_a5d3a1909ce909ca2f5439ed792c24a6e}{
+{\bfseries hasOptions} ()}
+\label{class_radio_group_a5d3a1909ce909ca2f5439ed792c24a6e}
+
+\item 
+\hypertarget{class_radio_group_abf525d5557c95c34f8b23b3c30cd1564}{
+\hyperlink{class_radio_group_abf525d5557c95c34f8b23b3c30cd1564}{getData} (\$storable=false)}
+\label{class_radio_group_abf525d5557c95c34f8b23b3c30cd1564}
+
+\begin{DoxyCompactList}\small\item\em Return the data that is stored in this radio group. \item\end{DoxyCompactList}\item 
+\hyperlink{class_radio_group_a923a901a0e646cd3850b244ff1c08c8e}{setNameEncryption} (\$nameEncryption)
+\begin{DoxyCompactList}\small\item\em Sets whether the form names should be encrypted. \item\end{DoxyCompactList}\item 
+\hypertarget{class_radio_group_aa4cc6fbc101d78ebb03e9451e8ab8be7}{
+{\bfseries setNameEncryptionKey} (\$nameEncryptionKey)}
+\label{class_radio_group_aa4cc6fbc101d78ebb03e9451e8ab8be7}
+
+\item 
+\hyperlink{class_radio_group_a32a481506b800b668ee55022681f8b2f}{setValue} (\$value)
+\begin{DoxyCompactList}\small\item\em Sets the value of the field. \item\end{DoxyCompactList}\item 
+\hypertarget{class_radio_group_a5a8c26a3164b32f2242fab7c6b5f23b1}{
+{\bfseries getDisplayValue} ()}
+\label{class_radio_group_a5a8c26a3164b32f2242fab7c6b5f23b1}
+
+\item 
+\hypertarget{class_radio_group_ad334de2c3b8c02f59b4559c67f2b8906}{
+{\bfseries getOptions} ()}
+\label{class_radio_group_ad334de2c3b8c02f59b4559c67f2b8906}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_radio_group_ade993f1eeb8be3cd72f00653a575e713}{
+\hyperlink{class_radio_group_ade993f1eeb8be3cd72f00653a575e713}{\$buttons} = array()}
+\label{class_radio_group_ade993f1eeb8be3cd72f00653a575e713}
+
+\begin{DoxyCompactList}\small\item\em The buttons found in the radio group. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A \hyperlink{class_field}{Field} for containing radio buttons. 
+
+Definition at line 6 of file RadioGroup.php.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_radio_group_a923a901a0e646cd3850b244ff1c08c8e}{
+\index{RadioGroup@{RadioGroup}!setNameEncryption@{setNameEncryption}}
+\index{setNameEncryption@{setNameEncryption}!RadioGroup@{RadioGroup}}
+\subsubsection[{setNameEncryption}]{\setlength{\rightskip}{0pt plus 5cm}RadioGroup::setNameEncryption (
+\begin{DoxyParamCaption}
+\item[{\$}]{ nameEncryption}
+\end{DoxyParamCaption}
+)}}
+\label{class_radio_group_a923a901a0e646cd3850b244ff1c08c8e}
+
+
+Sets whether the form names should be encrypted. 
+
+If this method is called with a parameter true, all the names that are rendered in the HTML code are encrypted so that the database internals are not exposed in anyway to the end users. 
+
+Reimplemented from \hyperlink{class_element_a0be16568225df436cf790b4f1c272b17}{Element}.
+
+
+
+Definition at line 73 of file RadioGroup.php.
+
+\hypertarget{class_radio_group_a32a481506b800b668ee55022681f8b2f}{
+\index{RadioGroup@{RadioGroup}!setValue@{setValue}}
+\index{setValue@{setValue}!RadioGroup@{RadioGroup}}
+\subsubsection[{setValue}]{\setlength{\rightskip}{0pt plus 5cm}RadioGroup::setValue (
+\begin{DoxyParamCaption}
+\item[{\$}]{ value}
+\end{DoxyParamCaption}
+)}}
+\label{class_radio_group_a32a481506b800b668ee55022681f8b2f}
+
+
+Sets the value of the field. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em \$value}]The value of the field. \end{DoxyParams}
+
+
+Reimplemented from \hyperlink{class_field_a71850d0cc96eeb649e4e62b040c6fa97}{Field}.
+
+
+
+Definition at line 91 of file RadioGroup.php.
+
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+views/helpers/forms/RadioGroup.php\end{DoxyCompactItemize}

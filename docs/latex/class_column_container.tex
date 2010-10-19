@@ -1,0 +1,97 @@
+\hypertarget{class_column_container}{
+\section{ColumnContainer Class Reference}
+\label{class_column_container}\index{ColumnContainer@{ColumnContainer}}
+}
+
+
+A special container which lays out its form elements in columns.  
+
+
+Inheritance diagram for ColumnContainer:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{class_column_container}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_column_container_a8b6c7c5d8fe133fb22742a82e5bffbb3}{
+{\bfseries \_\-\_\-construct} (\$num\_\-columns=1)}
+\label{class_column_container_a8b6c7c5d8fe133fb22742a82e5bffbb3}
+
+\item 
+\hyperlink{class_column_container_a007bcdbf4d4cb4baf777728bbed600ab}{add} (\$element, \$row=-\/1, \$column=-\/1)
+\begin{DoxyCompactList}\small\item\em Add an element to the table. \item\end{DoxyCompactList}\item 
+\hypertarget{class_column_container_a02cb2f5dd2685beb4a10f88f27d498f9}{
+\hyperlink{class_column_container_a02cb2f5dd2685beb4a10f88f27d498f9}{render} ()}
+\label{class_column_container_a02cb2f5dd2685beb4a10f88f27d498f9}
+
+\begin{DoxyCompactList}\small\item\em Renders the table. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_column_container_a58066b1ef3d75aeaebe83efef1927849}{\$reArranged}
+\begin{DoxyCompactList}\small\item\em A boolean flag which is set whenever the contents of the table have been rearranged. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A special container which lays out its form elements in columns. The elements are evenly packed into the columns. The \hyperlink{class_column_container}{ColumnContainer} class is an extension of the \hyperlink{class_table_layout}{TableLayout} class which has one row but different columns based on the number of columns the container is supposed to have.
+
+\begin{DoxyAuthor}{Author}
+james 
+\end{DoxyAuthor}
+
+
+Definition at line 11 of file ColumnContainer.php.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_column_container_a007bcdbf4d4cb4baf777728bbed600ab}{
+\index{ColumnContainer@{ColumnContainer}!add@{add}}
+\index{add@{add}!ColumnContainer@{ColumnContainer}}
+\subsubsection[{add}]{\setlength{\rightskip}{0pt plus 5cm}ColumnContainer::add (
+\begin{DoxyParamCaption}
+\item[{\$}]{ element, }
+\item[{\$}]{ row = {\ttfamily -\/1}, }
+\item[{\$}]{ column = {\ttfamily -\/1}}
+\end{DoxyParamCaption}
+)}}
+\label{class_column_container_a007bcdbf4d4cb4baf777728bbed600ab}
+
+
+Add an element to the table. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em \$element}]The element to be added \item[{\em \$row}]The row to add the element to. Count starts from 0. \item[{\em \$column}]The column to add the element to. Count starts from 0. \end{DoxyParams}
+
+
+Reimplemented from \hyperlink{class_table_layout_a2a65f0d9e3cd5c256625ab2654ba83de}{TableLayout}.
+
+
+
+Definition at line 25 of file ColumnContainer.php.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_column_container_a58066b1ef3d75aeaebe83efef1927849}{
+\index{ColumnContainer@{ColumnContainer}!\$reArranged@{\$reArranged}}
+\index{\$reArranged@{\$reArranged}!ColumnContainer@{ColumnContainer}}
+\subsubsection[{\$reArranged}]{\setlength{\rightskip}{0pt plus 5cm}ColumnContainer::\$reArranged\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{class_column_container_a58066b1ef3d75aeaebe83efef1927849}
+
+
+A boolean flag which is set whenever the contents of the table have been rearranged. 
+
+Rearranging is normally done right when the container is being rendered. 
+
+Definition at line 18 of file ColumnContainer.php.
+
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+views/helpers/forms/ColumnContainer.php\end{DoxyCompactItemize}

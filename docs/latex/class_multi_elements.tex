@@ -1,0 +1,183 @@
+\hypertarget{class_multi_elements}{
+\section{MultiElements Class Reference}
+\label{class_multi_elements}\index{MultiElements@{MultiElements}}
+}
+
+
+A special container which allows you to use multiple instances of a single form to collect multiple data.  
+
+
+Inheritance diagram for MultiElements:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{class_multi_elements}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_multi_elements_a3e463b94b318a35663e4105b303765c0}{
+{\bfseries validate} ()}
+\label{class_multi_elements_a3e463b94b318a35663e4105b303765c0}
+
+\item 
+\hyperlink{class_multi_elements_ab8b2e6f6ae29cdb9e0697fce659636c2}{getData} (\$storable=false)
+\begin{DoxyCompactList}\small\item\em This method returns a structured array which represents the data stored in all the fields in the class. \item\end{DoxyCompactList}\item 
+\hyperlink{class_multi_elements_ab7205e4715c9e8d02a698ceac1597f4f}{setData} (\$data)
+\begin{DoxyCompactList}\small\item\em This method sets the data for the fields in this container. \item\end{DoxyCompactList}\item 
+\hypertarget{class_multi_elements_a868d87cf7cc235dc8bdcaf122f75a1d0}{
+{\bfseries setTemplate} (\$template)}
+\label{class_multi_elements_a868d87cf7cc235dc8bdcaf122f75a1d0}
+
+\item 
+\hyperlink{class_multi_elements_a70cf310cca207dc983733da873145632}{render} ()
+\begin{DoxyCompactList}\small\item\em Renders the form element by outputing the HTML associated with the element. \item\end{DoxyCompactList}\item 
+\hypertarget{class_multi_elements_aec3fd7e17e77d30fccac65f865e9f361}{
+{\bfseries setShowField} (\$showField)}
+\label{class_multi_elements_aec3fd7e17e77d30fccac65f865e9f361}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_multi_elements_a5cbd4682387a95316060c95d684a871e}{
+const {\bfseries MODE\_\-CONTAINER} = \char`\"{}container\char`\"{}}
+\label{class_multi_elements_a5cbd4682387a95316060c95d684a871e}
+
+\item 
+\hypertarget{class_multi_elements_a6715b40e298eeaf32ce752f5b607c202}{
+const {\bfseries MODE\_\-FIELD} = \char`\"{}field\char`\"{}}
+\label{class_multi_elements_a6715b40e298eeaf32ce752f5b607c202}
+
+\item 
+\hypertarget{class_multi_elements_a114619f284c51683d14a1b0e03544a27}{
+\hyperlink{class_multi_elements_a114619f284c51683d14a1b0e03544a27}{\$label}}
+\label{class_multi_elements_a114619f284c51683d14a1b0e03544a27}
+
+\begin{DoxyCompactList}\small\item\em The label of the form element. \item\end{DoxyCompactList}\item 
+\hypertarget{class_multi_elements_a378d8633d92d9c7a3d1a6bdaf5e64f1a}{
+{\bfseries \$hasRelatedData} = true}
+\label{class_multi_elements_a378d8633d92d9c7a3d1a6bdaf5e64f1a}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_multi_elements_ae4fd7ce1911806683f41ceccbba86b79}{
+{\bfseries \$template}}
+\label{class_multi_elements_ae4fd7ce1911806683f41ceccbba86b79}
+
+\item 
+\hypertarget{class_multi_elements_a17b1ea3e770fa9ffa733e97d28c6bc56}{
+{\bfseries \$index}}
+\label{class_multi_elements_a17b1ea3e770fa9ffa733e97d28c6bc56}
+
+\item 
+\hypertarget{class_multi_elements_a9c49531fd636f3dffb6cce1704dc4a2a}{
+{\bfseries \$templateName}}
+\label{class_multi_elements_a9c49531fd636f3dffb6cce1704dc4a2a}
+
+\item 
+\hypertarget{class_multi_elements_aea9ef5ad730038fc72479f84921a37af}{
+{\bfseries \$data} = array()}
+\label{class_multi_elements_aea9ef5ad730038fc72479f84921a37af}
+
+\item 
+\hypertarget{class_multi_elements_acf590c553533f560c89bb8054a7bd15e}{
+{\bfseries \$referenceField}}
+\label{class_multi_elements_acf590c553533f560c89bb8054a7bd15e}
+
+\item 
+\hypertarget{class_multi_elements_ab634de63ecb3726b095bd297d476e783}{
+{\bfseries \$relatedField}}
+\label{class_multi_elements_ab634de63ecb3726b095bd297d476e783}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A special container which allows you to use multiple instances of a single form to collect multiple data. These different data can be stored into different models.
+
+\begin{Desc}
+\item[\hyperlink{todo__todo000387}{Todo}]Work on displaying errors if a multi form fails to validate \end{Desc}
+\begin{DoxyAuthor}{Author}
+james 
+\end{DoxyAuthor}
+
+
+Definition at line 10 of file MultiElements.php.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_multi_elements_ab8b2e6f6ae29cdb9e0697fce659636c2}{
+\index{MultiElements@{MultiElements}!getData@{getData}}
+\index{getData@{getData}!MultiElements@{MultiElements}}
+\subsubsection[{getData}]{\setlength{\rightskip}{0pt plus 5cm}MultiElements::getData (
+\begin{DoxyParamCaption}
+\item[{\$}]{ storable = {\ttfamily false}}
+\end{DoxyParamCaption}
+)}}
+\label{class_multi_elements_ab8b2e6f6ae29cdb9e0697fce659636c2}
+
+
+This method returns a structured array which represents the data stored in all the fields in the class. 
+
+This method is recursive so one call to it extracts all the fields in all nested containers within this container. 
+\begin{DoxyParams}{Parameters}
+\item[{\em \$storable}]This variable is set as true only when data for storable fields is required. A storable field is field which can be stored in the database. \end{DoxyParams}
+
+
+Reimplemented from \hyperlink{class_container_a06e9edea6936eccbf9185205e9fccf2b}{Container}.
+
+
+
+Definition at line 95 of file MultiElements.php.
+
+\hypertarget{class_multi_elements_a70cf310cca207dc983733da873145632}{
+\index{MultiElements@{MultiElements}!render@{render}}
+\index{render@{render}!MultiElements@{MultiElements}}
+\subsubsection[{render}]{\setlength{\rightskip}{0pt plus 5cm}MultiElements::render (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{class_multi_elements_a70cf310cca207dc983733da873145632}
+
+
+Renders the form element by outputing the HTML associated with the element. 
+
+This method is abstract and it is implemented by all the other classes which inherit the \hyperlink{class_element}{Element} class. 
+
+Reimplemented from \hyperlink{class_element_a8fd45d1d43cf11f3dadab39b0306a960}{Element}.
+
+
+
+Definition at line 133 of file MultiElements.php.
+
+\hypertarget{class_multi_elements_ab7205e4715c9e8d02a698ceac1597f4f}{
+\index{MultiElements@{MultiElements}!setData@{setData}}
+\index{setData@{setData}!MultiElements@{MultiElements}}
+\subsubsection[{setData}]{\setlength{\rightskip}{0pt plus 5cm}MultiElements::setData (
+\begin{DoxyParamCaption}
+\item[{\$}]{ data}
+\end{DoxyParamCaption}
+)}}
+\label{class_multi_elements_ab7205e4715c9e8d02a698ceac1597f4f}
+
+
+This method sets the data for the fields in this container. 
+
+The parameter passed to this method is a structured array which has field names as keys and the values as value. 
+
+Reimplemented from \hyperlink{class_container_aa075a18544dd30fe7891658635c95ee3}{Container}.
+
+
+
+Definition at line 101 of file MultiElements.php.
+
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+views/helpers/forms/MultiElements.php\end{DoxyCompactItemize}

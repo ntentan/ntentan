@@ -1,0 +1,322 @@
+\hypertarget{class_ntentan}{
+\section{Ntentan Class Reference}
+\label{class_ntentan}\index{Ntentan@{Ntentan}}
+}
+
+
+A utility class for the \hyperlink{class_ntentan}{Ntentan} framework.  
+
+
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{class_ntentan_aae9d932cd2d0b993687cbd8a0f6bc017}{boot} ()
+\begin{DoxyCompactList}\small\item\em The main entry point of the \hyperlink{class_ntentan}{Ntentan} application. \item\end{DoxyCompactList}\item 
+static \hyperlink{class_ntentan_a7e7c64fcc8df8b9a28edd35938c67519}{addIncludePath} (\$paths)
+\begin{DoxyCompactList}\small\item\em A utility method to add a path to the list of include paths. \item\end{DoxyCompactList}\item 
+static \hyperlink{class_ntentan_ac510c981e4113eaeea9b78e354bbe011}{getFilePath} (\$path)
+\begin{DoxyCompactList}\small\item\em Returns the path of a file which is supposed to be located within the ntentan framework's directory. \item\end{DoxyCompactList}\item 
+static \hyperlink{class_ntentan_a5a4071aa07e974112467bd283f046928}{getUrl} (\$url)
+\begin{DoxyCompactList}\small\item\em Returns a url which has been formatted purposedly for the application. \item\end{DoxyCompactList}\item 
+static \hyperlink{class_ntentan_a7fb9274efd2e06979c802fad6f4caaf9}{redirect} (\$url, \$absolute=false)
+\begin{DoxyCompactList}\small\item\em Write a header to redirect the request to a new location. \item\end{DoxyCompactList}\item 
+\hypertarget{class_ntentan_a7dffd6acc10d40aea8de45682f77d584}{
+static \hyperlink{class_ntentan_a7dffd6acc10d40aea8de45682f77d584}{getDefaultDataStore} ()}
+\label{class_ntentan_a7dffd6acc10d40aea8de45682f77d584}
+
+\begin{DoxyCompactList}\small\item\em Returns the default datastore as defined in the config/db.php configuration file. \item\end{DoxyCompactList}\item 
+\hypertarget{class_ntentan_a3fe6be344ec5da120c0980fd76fc6a7d}{
+static \hyperlink{class_ntentan_a3fe6be344ec5da120c0980fd76fc6a7d}{getRequestUri} ()}
+\label{class_ntentan_a3fe6be344ec5da120c0980fd76fc6a7d}
+
+\begin{DoxyCompactList}\small\item\em Get the full URI which was sent in. \item\end{DoxyCompactList}\item 
+static \hyperlink{class_ntentan_a140030a51598f0ab28fb2b1eb9d66943}{toSentence} (\$string)
+\begin{DoxyCompactList}\small\item\em Converts an underscore seperated string into a sentence by replacing the underscores with spaces and capitalizing the first character of all the new words which are formed. \item\end{DoxyCompactList}\item 
+static \hyperlink{class_ntentan_af20cd339e8109e82087b070c25e71afc}{singular} (\$string)
+\begin{DoxyCompactList}\small\item\em Returns the sigular form of any plural word which is passed to it. \item\end{DoxyCompactList}\item 
+\hypertarget{class_ntentan_a476659fbbb9a4f15dc7d63ab30101f95}{
+static {\bfseries plural} (\$string)}
+\label{class_ntentan_a476659fbbb9a4f15dc7d63ab30101f95}
+
+\item 
+\hypertarget{class_ntentan_a68793e6d96f6485e4e271801615acd79}{
+static {\bfseries camelize} (\$string, \$delimiter=\char`\"{}.\char`\"{}, \$baseDelimiter=\char`\"{}\char`\"{})}
+\label{class_ntentan_a68793e6d96f6485e4e271801615acd79}
+
+\item 
+\hypertarget{class_ntentan_a2db5063abf786553fd1d774077cbe3ee}{
+static {\bfseries deCamelize} (\$string)}
+\label{class_ntentan_a2db5063abf786553fd1d774077cbe3ee}
+
+\item 
+\hypertarget{class_ntentan_a35b2b752a50d5cab127f09e722d6bb85}{
+static {\bfseries addRoute} (\$source, \$dest)}
+\label{class_ntentan_a35b2b752a50d5cab127f09e722d6bb85}
+
+\item 
+\hypertarget{class_ntentan_a63ba6c4c67e23cbd0310b844235b952f}{
+static {\bfseries isAjax} ()}
+\label{class_ntentan_a63ba6c4c67e23cbd0310b844235b952f}
+
+\item 
+\hypertarget{class_ntentan_aadb43e645ab935c3d9994354c104dd06}{
+static {\bfseries error} (\$message, \$subTitle=null, \$type=null)}
+\label{class_ntentan_aadb43e645ab935c3d9994354c104dd06}
+
+\item 
+\hypertarget{class_ntentan_a1737eab45817f0bae620a51e2bf83b4f}{
+static {\bfseries message} (\$message, \$subTitle=null, \$type=null, \$showTrace=true, \$trace=false)}
+\label{class_ntentan_a1737eab45817f0bae620a51e2bf83b4f}
+
+\item 
+static \hyperlink{class_ntentan_aa6c204fe10f8eff5e5da9352c8ca5b8a}{exceptionHandler} (\$exception)
+\begin{DoxyCompactList}\small\item\em Default call back for displaying exceptions. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_ntentan_a85c9908e7aea8f5b38ab369e2cbd9ccb}{
+const {\bfseries VERSION} = \char`\"{}0.1\char`\"{}}
+\label{class_ntentan_a85c9908e7aea8f5b38ab369e2cbd9ccb}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_ntentan_a8cf819d855bf68d46c2672cb76805fd7}{
+static {\bfseries \$basePath} = \char`\"{}ntentan/\char`\"{}}
+\label{class_ntentan_a8cf819d855bf68d46c2672cb76805fd7}
+
+\item 
+\hypertarget{class_ntentan_a9ad9dcbaae9a85da518baf5447510b74}{
+static {\bfseries \$modulesPath} = \char`\"{}modules/\char`\"{}}
+\label{class_ntentan_a9ad9dcbaae9a85da518baf5447510b74}
+
+\item 
+\hypertarget{class_ntentan_a21185751e678cbbd74cc2941b2fe885e}{
+static {\bfseries \$cachePath} = \char`\"{}cache/\char`\"{}}
+\label{class_ntentan_a21185751e678cbbd74cc2941b2fe885e}
+
+\item 
+\hypertarget{class_ntentan_a19a998727fa616b1722674eeeadbbfbd}{
+static {\bfseries \$layoutsPath} = \char`\"{}layouts/\char`\"{}}
+\label{class_ntentan_a19a998727fa616b1722674eeeadbbfbd}
+
+\item 
+\hypertarget{class_ntentan_ad616af2da8952556259f16f4b6af5061}{
+static {\bfseries \$blocksPath} = \char`\"{}blocks/\char`\"{}}
+\label{class_ntentan_ad616af2da8952556259f16f4b6af5061}
+
+\item 
+\hypertarget{class_ntentan_a0f677a48241dd38a90ecde76679123a2}{
+static {\bfseries \$resourcesPath} = \char`\"{}resources/\char`\"{}}
+\label{class_ntentan_a0f677a48241dd38a90ecde76679123a2}
+
+\item 
+\hypertarget{class_ntentan_a751c7c8493204f45de3d636e8a5d2baf}{
+static {\bfseries \$defaultRoute} = \char`\"{}home\char`\"{}}
+\label{class_ntentan_a751c7c8493204f45de3d636e8a5d2baf}
+
+\item 
+\hypertarget{class_ntentan_af4af743b01b287ba5bc81046b6f62124}{
+static {\bfseries \$requestedRoute}}
+\label{class_ntentan_af4af743b01b287ba5bc81046b6f62124}
+
+\item 
+\hypertarget{class_ntentan_a37d0f00bcb251c7208921a49cf52b5fe}{
+static {\bfseries \$routes} = array()}
+\label{class_ntentan_a37d0f00bcb251c7208921a49cf52b5fe}
+
+\item 
+\hypertarget{class_ntentan_adbd483beec917e9bcbdd014e27fdbf50}{
+static {\bfseries \$route}}
+\label{class_ntentan_adbd483beec917e9bcbdd014e27fdbf50}
+
+\item 
+\hypertarget{class_ntentan_a06a99fa9e9c1e45bbc1b354b357a5dd4}{
+static {\bfseries \$dbConfigFile} = \char`\"{}config/db.php\char`\"{}}
+\label{class_ntentan_a06a99fa9e9c1e45bbc1b354b357a5dd4}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A utility class for the \hyperlink{class_ntentan}{Ntentan} framework. This class contains the information necessary for routing. It also performs the routing of the pages and the loading of the controllers. This class also has several utility methods which help in the overall operation of the entire framework.
+
+\begin{DoxyAuthor}{Author}
+James Ainooson $<$\href{mailto:jainooson@gmail.com}{\tt jainooson@gmail.com}$>$  Apache License, Version 2.0 
+\end{DoxyAuthor}
+
+
+Definition at line 54 of file Ntentan.php.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_ntentan_a7e7c64fcc8df8b9a28edd35938c67519}{
+\index{Ntentan@{Ntentan}!addIncludePath@{addIncludePath}}
+\index{addIncludePath@{addIncludePath}!Ntentan@{Ntentan}}
+\subsubsection[{addIncludePath}]{\setlength{\rightskip}{0pt plus 5cm}static Ntentan::addIncludePath (
+\begin{DoxyParamCaption}
+\item[{\$}]{ paths}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{class_ntentan_a7e7c64fcc8df8b9a28edd35938c67519}
+
+
+A utility method to add a path to the list of include paths. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em array}]\$paths \end{DoxyParams}
+
+
+Definition at line 231 of file Ntentan.php.
+
+\hypertarget{class_ntentan_aae9d932cd2d0b993687cbd8a0f6bc017}{
+\index{Ntentan@{Ntentan}!boot@{boot}}
+\index{boot@{boot}!Ntentan@{Ntentan}}
+\subsubsection[{boot}]{\setlength{\rightskip}{0pt plus 5cm}static Ntentan::boot (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{class_ntentan_aae9d932cd2d0b993687cbd8a0f6bc017}
+
+
+The main entry point of the \hyperlink{class_ntentan}{Ntentan} application. 
+
+This method checks if ntentan is properly setup and then it implements the routing engine which loads the controllers to handle the request. 
+
+Definition at line 149 of file Ntentan.php.
+
+\hypertarget{class_ntentan_aa6c204fe10f8eff5e5da9352c8ca5b8a}{
+\index{Ntentan@{Ntentan}!exceptionHandler@{exceptionHandler}}
+\index{exceptionHandler@{exceptionHandler}!Ntentan@{Ntentan}}
+\subsubsection[{exceptionHandler}]{\setlength{\rightskip}{0pt plus 5cm}static Ntentan::exceptionHandler (
+\begin{DoxyParamCaption}
+\item[{\$}]{ exception}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{class_ntentan_aa6c204fe10f8eff5e5da9352c8ca5b8a}
+
+
+Default call back for displaying exceptions. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em Exception}]\$exception \end{DoxyParams}
+
+
+Definition at line 415 of file Ntentan.php.
+
+\hypertarget{class_ntentan_ac510c981e4113eaeea9b78e354bbe011}{
+\index{Ntentan@{Ntentan}!getFilePath@{getFilePath}}
+\index{getFilePath@{getFilePath}!Ntentan@{Ntentan}}
+\subsubsection[{getFilePath}]{\setlength{\rightskip}{0pt plus 5cm}static Ntentan::getFilePath (
+\begin{DoxyParamCaption}
+\item[{\$}]{ path}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{class_ntentan_ac510c981e4113eaeea9b78e354bbe011}
+
+
+Returns the path of a file which is supposed to be located within the ntentan framework's directory. 
+
+This method is mostly used internally within the ntentan framework. 
+\begin{DoxyParams}{Parameters}
+\item[{\em string}]\$path \end{DoxyParams}
+
+
+Definition at line 252 of file Ntentan.php.
+
+\hypertarget{class_ntentan_a5a4071aa07e974112467bd283f046928}{
+\index{Ntentan@{Ntentan}!getUrl@{getUrl}}
+\index{getUrl@{getUrl}!Ntentan@{Ntentan}}
+\subsubsection[{getUrl}]{\setlength{\rightskip}{0pt plus 5cm}static Ntentan::getUrl (
+\begin{DoxyParamCaption}
+\item[{\$}]{ url}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{class_ntentan_a5a4071aa07e974112467bd283f046928}
+
+
+Returns a url which has been formatted purposedly for the application. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em unknown\_\-type}]\$url \end{DoxyParams}
+
+
+Definition at line 261 of file Ntentan.php.
+
+\hypertarget{class_ntentan_a7fb9274efd2e06979c802fad6f4caaf9}{
+\index{Ntentan@{Ntentan}!redirect@{redirect}}
+\index{redirect@{redirect}!Ntentan@{Ntentan}}
+\subsubsection[{redirect}]{\setlength{\rightskip}{0pt plus 5cm}static Ntentan::redirect (
+\begin{DoxyParamCaption}
+\item[{\$}]{ url, }
+\item[{\$}]{ absolute = {\ttfamily false}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{class_ntentan_a7fb9274efd2e06979c802fad6f4caaf9}
+
+
+Write a header to redirect the request to a new location. 
+
+In cases where a redirect parameter exists in the request, the \$url parameter of this method is totally ignored.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em string}]\$url The url to redirect to. This could be a full URL or a route to an \hyperlink{class_ntentan}{Ntentan} controller. \item[{\em unknown\_\-type}]\$absolute \end{DoxyParams}
+
+
+Definition at line 275 of file Ntentan.php.
+
+\hypertarget{class_ntentan_af20cd339e8109e82087b070c25e71afc}{
+\index{Ntentan@{Ntentan}!singular@{singular}}
+\index{singular@{singular}!Ntentan@{Ntentan}}
+\subsubsection[{singular}]{\setlength{\rightskip}{0pt plus 5cm}static Ntentan::singular (
+\begin{DoxyParamCaption}
+\item[{\$}]{ string}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{class_ntentan_af20cd339e8109e82087b070c25e71afc}
+
+
+Returns the sigular form of any plural word which is passed to it. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em string}]\$string \end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+Ntentan::plural 
+\end{DoxySeeAlso}
+
+
+Definition at line 326 of file Ntentan.php.
+
+\hypertarget{class_ntentan_a140030a51598f0ab28fb2b1eb9d66943}{
+\index{Ntentan@{Ntentan}!toSentence@{toSentence}}
+\index{toSentence@{toSentence}!Ntentan@{Ntentan}}
+\subsubsection[{toSentence}]{\setlength{\rightskip}{0pt plus 5cm}static Ntentan::toSentence (
+\begin{DoxyParamCaption}
+\item[{\$}]{ string}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{class_ntentan_a140030a51598f0ab28fb2b1eb9d66943}
+
+
+Converts an underscore seperated string into a sentence by replacing the underscores with spaces and capitalizing the first character of all the new words which are formed. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em unknown\_\-type}]\$string \end{DoxyParams}
+
+
+Definition at line 316 of file Ntentan.php.
+
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+Ntentan.php\end{DoxyCompactItemize}

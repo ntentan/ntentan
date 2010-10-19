@@ -1,0 +1,183 @@
+\hypertarget{class_text_field}{
+\section{TextField Class Reference}
+\label{class_text_field}\index{TextField@{TextField}}
+}
+
+
+Implementation of a regular text field.  
+
+
+Inheritance diagram for TextField:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{class_text_field}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_text_field_a0f3c1bbf6321580bd09a121aa40eb3d6}{
+{\bfseries \_\-\_\-construct} (\$label=\char`\"{}\char`\"{}, \$name=\char`\"{}\char`\"{}, \$description=\char`\"{}\char`\"{}, \$value=\char`\"{}\char`\"{})}
+\label{class_text_field_a0f3c1bbf6321580bd09a121aa40eb3d6}
+
+\item 
+\hyperlink{class_text_field_a519c28ac5dcb35ecde4f5a7a441ef7c5}{render} ()
+\begin{DoxyCompactList}\small\item\em Renders the form element by outputing the HTML associated with the element. \item\end{DoxyCompactList}\item 
+\hyperlink{class_text_field_a3e19e7ea11d59c52a8039f94b44db656}{getCSSClasses} ()
+\begin{DoxyCompactList}\small\item\em Returns an array of all the CSS classes associated with this element. \item\end{DoxyCompactList}\item 
+\hyperlink{class_text_field_aefdb80683fc9bf82acd01114f3732210}{setRegExp} (\$regexp)
+\begin{DoxyCompactList}\small\item\em Sets the regular expression that is used to validate the text field. \item\end{DoxyCompactList}\item 
+\hyperlink{class_text_field_ac2ad9c3bcd29ebb3738d5cf1e4fadd8e}{setAsText} (\$max\_\-lenght=0)
+\begin{DoxyCompactList}\small\item\em Sets the text field as text for validation purposes. \item\end{DoxyCompactList}\item 
+\hyperlink{class_text_field_a42f24fe465c8f5c9199d2dc91fce23ef}{setAsNumeric} (\$min\_\-val=0, \$max\_\-val=0)
+\begin{DoxyCompactList}\small\item\em Sets the text field as numeric for validation purposes. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_text_field_a7285905c1e51ef79dfa553ed0fef50d4}{
+{\bfseries \$max\_\-lenght}}
+\label{class_text_field_a7285905c1e51ef79dfa553ed0fef50d4}
+
+\item 
+\hypertarget{class_text_field_a1787d0cbe28683021ba1e1a82ee15efc}{
+{\bfseries \$type}}
+\label{class_text_field_a1787d0cbe28683021ba1e1a82ee15efc}
+
+\item 
+\hypertarget{class_text_field_a829eef981033a1fd72ed51a5d98f8be5}{
+{\bfseries \$max\_\-val}}
+\label{class_text_field_a829eef981033a1fd72ed51a5d98f8be5}
+
+\item 
+\hypertarget{class_text_field_a9fd980b0568811f2819081ce9efced62}{
+{\bfseries \$min\_\-val}}
+\label{class_text_field_a9fd980b0568811f2819081ce9efced62}
+
+\item 
+\hypertarget{class_text_field_aefa837e82c90e465b349e78985e444e5}{
+{\bfseries \$regexp}}
+\label{class_text_field_aefa837e82c90e465b349e78985e444e5}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Implementation of a regular text field. This field is used to accept single line text input from the user. 
+
+Definition at line 9 of file TextField.php.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_text_field_a3e19e7ea11d59c52a8039f94b44db656}{
+\index{TextField@{TextField}!getCSSClasses@{getCSSClasses}}
+\index{getCSSClasses@{getCSSClasses}!TextField@{TextField}}
+\subsubsection[{getCSSClasses}]{\setlength{\rightskip}{0pt plus 5cm}TextField::getCSSClasses (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{class_text_field_a3e19e7ea11d59c52a8039f94b44db656}
+
+
+Returns an array of all the CSS classes associated with this element. 
+
+
+
+Reimplemented from \hyperlink{class_field_a83a6e22ab2724bf5a17f9a0024fff9df}{Field}.
+
+
+
+Definition at line 39 of file TextField.php.
+
+\hypertarget{class_text_field_a519c28ac5dcb35ecde4f5a7a441ef7c5}{
+\index{TextField@{TextField}!render@{render}}
+\index{render@{render}!TextField@{TextField}}
+\subsubsection[{render}]{\setlength{\rightskip}{0pt plus 5cm}TextField::render (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{class_text_field_a519c28ac5dcb35ecde4f5a7a441ef7c5}
+
+
+Renders the form element by outputing the HTML associated with the element. 
+
+This method is abstract and it is implemented by all the other classes which inherit the \hyperlink{class_element}{Element} class. 
+
+Reimplemented from \hyperlink{class_element_a8fd45d1d43cf11f3dadab39b0306a960}{Element}.
+
+
+
+Reimplemented in \hyperlink{class_date_field_a4abe10a34dd34fcc46fb47e1db387757}{DateField}.
+
+
+
+Definition at line 25 of file TextField.php.
+
+\hypertarget{class_text_field_a42f24fe465c8f5c9199d2dc91fce23ef}{
+\index{TextField@{TextField}!setAsNumeric@{setAsNumeric}}
+\index{setAsNumeric@{setAsNumeric}!TextField@{TextField}}
+\subsubsection[{setAsNumeric}]{\setlength{\rightskip}{0pt plus 5cm}TextField::setAsNumeric (
+\begin{DoxyParamCaption}
+\item[{\$}]{ min\_\-val = {\ttfamily 0}, }
+\item[{\$}]{ max\_\-val = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{class_text_field_a42f24fe465c8f5c9199d2dc91fce23ef}
+
+
+Sets the text field as numeric for validation purposes. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em \$min\_\-val}]The smallest value the field can take (optional). \item[{\em \$max\_\-val}]The largest value the field can take (optional). \end{DoxyParams}
+
+
+Definition at line 80 of file TextField.php.
+
+\hypertarget{class_text_field_ac2ad9c3bcd29ebb3738d5cf1e4fadd8e}{
+\index{TextField@{TextField}!setAsText@{setAsText}}
+\index{setAsText@{setAsText}!TextField@{TextField}}
+\subsubsection[{setAsText}]{\setlength{\rightskip}{0pt plus 5cm}TextField::setAsText (
+\begin{DoxyParamCaption}
+\item[{\$}]{ max\_\-lenght = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{class_text_field_ac2ad9c3bcd29ebb3738d5cf1e4fadd8e}
+
+
+Sets the text field as text for validation purposes. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em \$max\_\-lenght}]The maximum lenght of the text in the field. \end{DoxyParams}
+
+
+Definition at line 68 of file TextField.php.
+
+\hypertarget{class_text_field_aefdb80683fc9bf82acd01114f3732210}{
+\index{TextField@{TextField}!setRegExp@{setRegExp}}
+\index{setRegExp@{setRegExp}!TextField@{TextField}}
+\subsubsection[{setRegExp}]{\setlength{\rightskip}{0pt plus 5cm}TextField::setRegExp (
+\begin{DoxyParamCaption}
+\item[{\$}]{ regexp}
+\end{DoxyParamCaption}
+)}}
+\label{class_text_field_aefdb80683fc9bf82acd01114f3732210}
+
+
+Sets the regular expression that is used to validate the text field. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em string}]\$regexp The regular expression \end{DoxyParams}
+
+
+Definition at line 49 of file TextField.php.
+
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+views/helpers/forms/TextField.php\end{DoxyCompactItemize}

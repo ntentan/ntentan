@@ -1,0 +1,159 @@
+\hypertarget{class_form_container}{
+\section{FormContainer Class Reference}
+\label{class_form_container}\index{FormContainer@{FormContainer}}
+}
+Inheritance diagram for FormContainer:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_form_container}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_form_container_aacafb0c33430ba392fd00ad053fb869c}{\_\-\_\-construct} (\$id=\char`\"{}\char`\"{}, \$method=\char`\"{}POST\char`\"{})
+\begin{DoxyCompactList}\small\item\em Constructor for initialising the forms. \item\end{DoxyCompactList}\item 
+\hypertarget{class_form_container_a97994acc527b18601ecb814d50f6f60e}{
+{\bfseries addFileUploadSupport} (\$maxFileSize=\char`\"{}\char`\"{})}
+\label{class_form_container_a97994acc527b18601ecb814d50f6f60e}
+
+\item 
+\hyperlink{class_form_container_a3ce5039b18ec388500b8e25b9e226a2d}{render} ()
+\begin{DoxyCompactList}\small\item\em Renders the form element by outputing the HTML associated with the element. \item\end{DoxyCompactList}\item 
+\hyperlink{class_form_container_a08a118f0323c4e7949a7b065d0cebb0e}{setShowFields} (\$show\_\-field)
+\begin{DoxyCompactList}\small\item\em Sets whether the fields should be exposed for editing. \item\end{DoxyCompactList}\item 
+\hypertarget{class_form_container_a94654f0c426624c8c77aea71911569b3}{
+{\bfseries \_\-\_\-toString} ()}
+\label{class_form_container_a94654f0c426624c8c77aea71911569b3}
+
+\item 
+\hyperlink{class_form_container_a3f2e3f340a1ad67ae5a3a5733aaee332}{setId} (\$id)
+\begin{DoxyCompactList}\small\item\em Public accessor for setting the ID of the element. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_form_container_a67df89d0b4bd7f3b7088ff962745c434}{
+{\bfseries \$submitValue}}
+\label{class_form_container_a67df89d0b4bd7f3b7088ff962745c434}
+
+\item 
+\hypertarget{class_form_container_af7c65df447782fb26cf286e732ba8b73}{
+{\bfseries \$showSubmit} = true}
+\label{class_form_container_af7c65df447782fb26cf286e732ba8b73}
+
+\item 
+\hypertarget{class_form_container_a00f9acb0bce9e16b5be8c11ffcd10fc5}{
+{\bfseries \$successUrl}}
+\label{class_form_container_a00f9acb0bce9e16b5be8c11ffcd10fc5}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_form_container_a73a7b83d19d7797cad74a4d6f85027f2}{
+{\bfseries \$method} = \char`\"{}POST\char`\"{}}
+\label{class_form_container_a73a7b83d19d7797cad74a4d6f85027f2}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 17 of file FormContainer.php.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_form_container_aacafb0c33430ba392fd00ad053fb869c}{
+\index{FormContainer@{FormContainer}!\_\-\_\-construct@{\_\-\_\-construct}}
+\index{\_\-\_\-construct@{\_\-\_\-construct}!FormContainer@{FormContainer}}
+\subsubsection[{\_\-\_\-construct}]{\setlength{\rightskip}{0pt plus 5cm}FormContainer::\_\-\_\-construct (
+\begin{DoxyParamCaption}
+\item[{\$}]{ id = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{\$}]{ method = {\ttfamily \char`\"{}POST\char`\"{}}}
+\end{DoxyParamCaption}
+)}}
+\label{class_form_container_aacafb0c33430ba392fd00ad053fb869c}
+
+
+Constructor for initialising the forms. 
+
+This constructor accepts the method of the form. 
+
+Definition at line 28 of file FormContainer.php.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_form_container_a3ce5039b18ec388500b8e25b9e226a2d}{
+\index{FormContainer@{FormContainer}!render@{render}}
+\index{render@{render}!FormContainer@{FormContainer}}
+\subsubsection[{render}]{\setlength{\rightskip}{0pt plus 5cm}FormContainer::render (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{class_form_container_a3ce5039b18ec388500b8e25b9e226a2d}
+
+
+Renders the form element by outputing the HTML associated with the element. 
+
+This method is abstract and it is implemented by all the other classes which inherit the \hyperlink{class_element}{Element} class. 
+
+Reimplemented from \hyperlink{class_element_a8fd45d1d43cf11f3dadab39b0306a960}{Element}.
+
+
+
+Definition at line 44 of file FormContainer.php.
+
+\hypertarget{class_form_container_a3f2e3f340a1ad67ae5a3a5733aaee332}{
+\index{FormContainer@{FormContainer}!setId@{setId}}
+\index{setId@{setId}!FormContainer@{FormContainer}}
+\subsubsection[{setId}]{\setlength{\rightskip}{0pt plus 5cm}FormContainer::setId (
+\begin{DoxyParamCaption}
+\item[{\$}]{ id}
+\end{DoxyParamCaption}
+)}}
+\label{class_form_container_a3f2e3f340a1ad67ae5a3a5733aaee332}
+
+
+Public accessor for setting the ID of the element. 
+
+\begin{DoxyReturn}{Returns}
+\hyperlink{class_element}{Element} 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{class_element_a01d8f5e07035ebfe29d4e9306a844cfa}{Element}.
+
+
+
+Definition at line 88 of file FormContainer.php.
+
+\hypertarget{class_form_container_a08a118f0323c4e7949a7b065d0cebb0e}{
+\index{FormContainer@{FormContainer}!setShowFields@{setShowFields}}
+\index{setShowFields@{setShowFields}!FormContainer@{FormContainer}}
+\subsubsection[{setShowFields}]{\setlength{\rightskip}{0pt plus 5cm}FormContainer::setShowFields (
+\begin{DoxyParamCaption}
+\item[{\$}]{ showfield}
+\end{DoxyParamCaption}
+)}}
+\label{class_form_container_a08a118f0323c4e7949a7b065d0cebb0e}
+
+
+Sets whether the fields should be exposed for editing. 
+
+If this field is set as true then the values of the fields as retrieved from the database are showed. 
+
+Reimplemented from \hyperlink{class_container_a2b2b5903cbb6e310a65a0e03f81c63f7}{Container}.
+
+
+
+Definition at line 72 of file FormContainer.php.
+
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+views/helpers/forms/FormContainer.php\end{DoxyCompactItemize}

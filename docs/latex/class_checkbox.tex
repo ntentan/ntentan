@@ -1,0 +1,188 @@
+\hypertarget{class_checkbox}{
+\section{Checkbox Class Reference}
+\label{class_checkbox}\index{Checkbox@{Checkbox}}
+}
+
+
+A regular checkbox with a label.  
+
+
+Inheritance diagram for Checkbox:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_checkbox}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_checkbox_a0fd0e4264d85e4d8402f82e401b0a52a}{\_\-\_\-construct} (\$label=\char`\"{}\char`\"{}, \$name=\char`\"{}\char`\"{}, \$description=\char`\"{}\char`\"{}, \$value=\char`\"{}\char`\"{})
+\begin{DoxyCompactList}\small\item\em Constructor for the checkbox. \item\end{DoxyCompactList}\item 
+\hyperlink{class_checkbox_a47da7bc8e79cdb2e6d76973a50a74f7b}{setCheckedValue} (\$checkedValue)
+\begin{DoxyCompactList}\small\item\em Sets the value that should be assigned as the checked value for this check box. \item\end{DoxyCompactList}\item 
+\hyperlink{class_checkbox_af78d9523facd67502c5bbad100ed26c9}{getCheckedValue} ()
+\begin{DoxyCompactList}\small\item\em Gets and returns the checkedValue for the check box. \item\end{DoxyCompactList}\item 
+\hyperlink{class_checkbox_a0997d66168b7c017874f384286a88fe2}{render} ()
+\begin{DoxyCompactList}\small\item\em Renders the form element by outputing the HTML associated with the element. \item\end{DoxyCompactList}\item 
+\hyperlink{class_checkbox_a1d69a9bb1e9acc46e17dbdd0ac46ba29}{getData} (\$storable=false)
+\begin{DoxyCompactList}\small\item\em Returns the data held by this field. \item\end{DoxyCompactList}\item 
+\hyperlink{class_checkbox_ac20b8987d565ac45f782e970d9ad473f}{getRequired} ()
+\begin{DoxyCompactList}\small\item\em Returns the required status of the field. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_checkbox_a97e526a6f1d2e1f728754e3729e5bbaf}{
+\hyperlink{class_checkbox_a97e526a6f1d2e1f728754e3729e5bbaf}{\$checkedValue}}
+\label{class_checkbox_a97e526a6f1d2e1f728754e3729e5bbaf}
+
+\begin{DoxyCompactList}\small\item\em The value that this field should contain if this checkbox is checked. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A regular checkbox with a label. 
+
+Definition at line 9 of file Checkbox.php.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_checkbox_a0fd0e4264d85e4d8402f82e401b0a52a}{
+\index{Checkbox@{Checkbox}!\_\-\_\-construct@{\_\-\_\-construct}}
+\index{\_\-\_\-construct@{\_\-\_\-construct}!Checkbox@{Checkbox}}
+\subsubsection[{\_\-\_\-construct}]{\setlength{\rightskip}{0pt plus 5cm}Checkbox::\_\-\_\-construct (
+\begin{DoxyParamCaption}
+\item[{\$}]{ label = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{\$}]{ name = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{\$}]{ description = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{\$}]{ value = {\ttfamily \char`\"{}\char`\"{}}}
+\end{DoxyParamCaption}
+)}}
+\label{class_checkbox_a0fd0e4264d85e4d8402f82e401b0a52a}
+
+
+Constructor for the checkbox. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em \$label}]The label of the checkbox. \item[{\em \$name}]The name of the checkbox used for the name='' attribute of the HTML output \item[{\em \$description}]A description of the field. \item[{\em \$value}]A value to assign to this checkbox. \end{DoxyParams}
+
+
+Definition at line 24 of file Checkbox.php.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_checkbox_af78d9523facd67502c5bbad100ed26c9}{
+\index{Checkbox@{Checkbox}!getCheckedValue@{getCheckedValue}}
+\index{getCheckedValue@{getCheckedValue}!Checkbox@{Checkbox}}
+\subsubsection[{getCheckedValue}]{\setlength{\rightskip}{0pt plus 5cm}Checkbox::getCheckedValue (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{class_checkbox_af78d9523facd67502c5bbad100ed26c9}
+
+
+Gets and returns the checkedValue for the check box. 
+
+\begin{DoxyReturn}{Returns}
+string 
+\end{DoxyReturn}
+
+
+Definition at line 48 of file Checkbox.php.
+
+\hypertarget{class_checkbox_a1d69a9bb1e9acc46e17dbdd0ac46ba29}{
+\index{Checkbox@{Checkbox}!getData@{getData}}
+\index{getData@{getData}!Checkbox@{Checkbox}}
+\subsubsection[{getData}]{\setlength{\rightskip}{0pt plus 5cm}Checkbox::getData (
+\begin{DoxyParamCaption}
+\item[{\$}]{ storable = {\ttfamily false}}
+\end{DoxyParamCaption}
+)}}
+\label{class_checkbox_a1d69a9bb1e9acc46e17dbdd0ac46ba29}
+
+
+Returns the data held by this field. 
+
+This data is returned as a key value pair. The key is the name of the field and the value represents the value of the field. 
+
+Reimplemented from \hyperlink{class_field_a8598f5a7d3772772b9620cfa7136fd4b}{Field}.
+
+
+
+Definition at line 61 of file Checkbox.php.
+
+\hypertarget{class_checkbox_ac20b8987d565ac45f782e970d9ad473f}{
+\index{Checkbox@{Checkbox}!getRequired@{getRequired}}
+\index{getRequired@{getRequired}!Checkbox@{Checkbox}}
+\subsubsection[{getRequired}]{\setlength{\rightskip}{0pt plus 5cm}Checkbox::getRequired (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{class_checkbox_ac20b8987d565ac45f782e970d9ad473f}
+
+
+Returns the required status of the field. 
+
+\begin{DoxyReturn}{Returns}
+The required status of the field. 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{class_field_a450a2de68e1231d0d0f98b13ae81544f}{Field}.
+
+
+
+Definition at line 73 of file Checkbox.php.
+
+\hypertarget{class_checkbox_a0997d66168b7c017874f384286a88fe2}{
+\index{Checkbox@{Checkbox}!render@{render}}
+\index{render@{render}!Checkbox@{Checkbox}}
+\subsubsection[{render}]{\setlength{\rightskip}{0pt plus 5cm}Checkbox::render (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{class_checkbox_a0997d66168b7c017874f384286a88fe2}
+
+
+Renders the form element by outputing the HTML associated with the element. 
+
+This method is abstract and it is implemented by all the other classes which inherit the \hyperlink{class_element}{Element} class. 
+
+Reimplemented from \hyperlink{class_element_a8fd45d1d43cf11f3dadab39b0306a960}{Element}.
+
+
+
+Definition at line 53 of file Checkbox.php.
+
+\hypertarget{class_checkbox_a47da7bc8e79cdb2e6d76973a50a74f7b}{
+\index{Checkbox@{Checkbox}!setCheckedValue@{setCheckedValue}}
+\index{setCheckedValue@{setCheckedValue}!Checkbox@{Checkbox}}
+\subsubsection[{setCheckedValue}]{\setlength{\rightskip}{0pt plus 5cm}Checkbox::setCheckedValue (
+\begin{DoxyParamCaption}
+\item[{\$}]{ checkedValue}
+\end{DoxyParamCaption}
+)}}
+\label{class_checkbox_a47da7bc8e79cdb2e6d76973a50a74f7b}
+
+
+Sets the value that should be assigned as the checked value for this check box. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em \$checkedValue}]The value to be assigned. \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\hyperlink{class_checkbox}{Checkbox} 
+\end{DoxyReturn}
+
+
+Definition at line 37 of file Checkbox.php.
+
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+views/helpers/forms/Checkbox.php\end{DoxyCompactItemize}

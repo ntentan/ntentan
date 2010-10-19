@@ -1,0 +1,353 @@
+\hypertarget{class_controller}{
+\section{Controller Class Reference}
+\label{class_controller}\index{Controller@{Controller}}
+}
+
+
+The \hyperlink{class_controller}{Controller} class represents the base class for all controllers that are built for the ntentan framework.  
+
+
+Inheritance diagram for Controller:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_controller}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_controller_acd649140a4353af09a3a181ae5b00d2e}{
+\hyperlink{class_controller_acd649140a4353af09a3a181ae5b00d2e}{\_\-\_\-construct} ()}
+\label{class_controller_acd649140a4353af09a3a181ae5b00d2e}
+
+\begin{DoxyCompactList}\small\item\em Constructor for controller. \item\end{DoxyCompactList}\item 
+\hyperlink{class_controller_a6e87320e6aa6d9ad34d4c2fb8ee004a1}{getName} ()
+\begin{DoxyCompactList}\small\item\em Returns the name of the controller. \item\end{DoxyCompactList}\item 
+\hyperlink{class_controller_adfe2035a8eec9a9478c442957b84d533}{\_\-\_\-set} (\$property, \$value)
+\item 
+\hypertarget{class_controller_aaff54cc92626ec4ecf4673f20d7f5c68}{
+{\bfseries \_\-\_\-get} (\$property)}
+\label{class_controller_aaff54cc92626ec4ecf4673f20d7f5c68}
+
+\item 
+\hyperlink{class_controller_af5f1793d5ac524b867f84e004940d6e6}{addComponent} ()
+\begin{DoxyCompactList}\small\item\em Adds a component to the controller. \item\end{DoxyCompactList}\item 
+\hypertarget{class_controller_a2a94518457a9c47d48b3f8ae0ac5524a}{
+{\bfseries addBlock} (\$blockName, \$alias=null)}
+\label{class_controller_a2a94518457a9c47d48b3f8ae0ac5524a}
+
+\item 
+\hypertarget{class_controller_a558db4d00bb1e82aa406f49f16cafbd9}{
+{\bfseries hasBlock} (\$blockName)}
+\label{class_controller_a558db4d00bb1e82aa406f49f16cafbd9}
+
+\item 
+\hyperlink{class_controller_a613d097760ed6eb56c658ccff5f04b97}{setName} (\$name)
+\begin{DoxyCompactList}\small\item\em Set the name of this controller. \item\end{DoxyCompactList}\item 
+\hypertarget{class_controller_a51156de8c43545c5d748686d89d32c4f}{
+{\bfseries setRoute} (\$route)}
+\label{class_controller_a51156de8c43545c5d748686d89d32c4f}
+
+\item 
+\hypertarget{class_controller_a6763b9873e40beca4551ba6b2737f079}{
+{\bfseries hasMethod} (\$method=null)}
+\label{class_controller_a6763b9873e40beca4551ba6b2737f079}
+
+\item 
+\hypertarget{class_controller_acd67cab82343f59fae539edef2d4bc50}{
+{\bfseries setView} (\$view)}
+\label{class_controller_acd67cab82343f59fae539edef2d4bc50}
+
+\item 
+\hypertarget{class_controller_aab48ce68b0c0df911be982b2012646a9}{
+{\bfseries runMethod} (\$params, \$method=null)}
+\label{class_controller_aab48ce68b0c0df911be982b2012646a9}
+
+\item 
+\hypertarget{class_controller_a7d310a995390f11a548905def70c7322}{
+{\bfseries mainPreRender} ()}
+\label{class_controller_a7d310a995390f11a548905def70c7322}
+
+\item 
+\hypertarget{class_controller_a691d45ba371415b15421158023889a49}{
+{\bfseries mainPostRender} ()}
+\label{class_controller_a691d45ba371415b15421158023889a49}
+
+\item 
+\hypertarget{class_controller_a1d0b447a7989164d4f849969cd09619f}{
+{\bfseries preRender} ()}
+\label{class_controller_a1d0b447a7989164d4f849969cd09619f}
+
+\item 
+\hypertarget{class_controller_addbb3896d56965cccd940802c46f5b31}{
+{\bfseries postRender} ()}
+\label{class_controller_addbb3896d56965cccd940802c46f5b31}
+
+\item 
+\hypertarget{class_controller_a1e3b1c1ee371b348c680362f4d446b24}{
+{\bfseries hasComponent} (\$component)}
+\label{class_controller_a1e3b1c1ee371b348c680362f4d446b24}
+
+\item 
+\hyperlink{class_controller_af71b414389f649229743b8e8b16e1ee8}{init} ()
+\begin{DoxyCompactList}\small\item\em Function called automatically after the controller is initialized. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{class_controller_a3a4733e0d493702d5500d8aa14083a17}{load} (\$route)
+\begin{DoxyCompactList}\small\item\em A utility method to load a controller. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_controller_a068823f706db1cd66bdcebd9099a65bd}{
+{\bfseries \$defaultMethodName} = \char`\"{}run\char`\"{}}
+\label{class_controller_a068823f706db1cd66bdcebd9099a65bd}
+
+\item 
+\hypertarget{class_controller_af16b1197221d82c3a1495e6ca01cf2ac}{
+{\bfseries \$route}}
+\label{class_controller_af16b1197221d82c3a1495e6ca01cf2ac}
+
+\item 
+\hypertarget{class_controller_aafa3038f4ab2c4ef3b17fd4a899d9efe}{
+{\bfseries \$name}}
+\label{class_controller_aafa3038f4ab2c4ef3b17fd4a899d9efe}
+
+\item 
+\hypertarget{class_controller_ace70f2af26afa64d3b0cd30bc4f857a1}{
+{\bfseries \$variables} = array()}
+\label{class_controller_ace70f2af26afa64d3b0cd30bc4f857a1}
+
+\item 
+\hypertarget{class_controller_a2b19e09e61453460557812d6c932bdaa}{
+{\bfseries \$viewInstance}}
+\label{class_controller_a2b19e09e61453460557812d6c932bdaa}
+
+\item 
+\hypertarget{class_controller_ac9073fdd6603617ab015c968f0add014}{
+{\bfseries \$data}}
+\label{class_controller_ac9073fdd6603617ab015c968f0add014}
+
+\item 
+\hypertarget{class_controller_a81683d71a179b1ae44d7b8169f8bc3fc}{
+{\bfseries \$filePath}}
+\label{class_controller_a81683d71a179b1ae44d7b8169f8bc3fc}
+
+\item 
+\hypertarget{class_controller_a85b704f5a547cde6210d671f3f69a70f}{
+{\bfseries \$method}}
+\label{class_controller_a85b704f5a547cde6210d671f3f69a70f}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_controller_a09205134686f48577ff0bfa6430d999e}{set} (\$params1, \$params2=null)
+\item 
+\hyperlink{class_controller_a2fd851bc4d27c9a5910f5bac3e8339db}{append} (\$params1, \$params2)
+\begin{DoxyCompactList}\small\item\em Appends a string to an already setup template variable. \item\end{DoxyCompactList}\item 
+\hypertarget{class_controller_a406967bc6b6257de3f64fc72555af83c}{
+{\bfseries get} ()}
+\label{class_controller_a406967bc6b6257de3f64fc72555af83c}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_controller_ab99f8debe4d4f2adcaf6a3d4f3c23610}{
+{\bfseries \$components} = array()}
+\label{class_controller_ab99f8debe4d4f2adcaf6a3d4f3c23610}
+
+\item 
+\hypertarget{class_controller_a57470a1eae9a43c7ebabfd6d3044faaf}{
+{\bfseries \$blocks} = array()}
+\label{class_controller_a57470a1eae9a43c7ebabfd6d3044faaf}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The \hyperlink{class_controller}{Controller} class represents the base class for all controllers that are built for the ntentan framework. Controllers are used to direct the flow of your application logic. They are stored in modules and they contain methods which are called from the url. Parameters to the methods are also passed through the URL. If a method is not specified, the default method is called. The methods called by the controllers are expected to set data into variables which are later rendered as output to the end user through views.
+
+\begin{DoxyAuthor}{Author}
+James Ekow Abaka Ainooson 
+\end{DoxyAuthor}
+\begin{Desc}
+\item[\hyperlink{todo__todo000001}{Todo}]Controllers must output data that can be passed to some kind of template engine like smarty. \end{Desc}
+
+
+Definition at line 24 of file Controller.php.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_controller_adfe2035a8eec9a9478c442957b84d533}{
+\index{Controller@{Controller}!\_\-\_\-set@{\_\-\_\-set}}
+\index{\_\-\_\-set@{\_\-\_\-set}!Controller@{Controller}}
+\subsubsection[{\_\-\_\-set}]{\setlength{\rightskip}{0pt plus 5cm}Controller::\_\-\_\-set (
+\begin{DoxyParamCaption}
+\item[{\$}]{ property, }
+\item[{\$}]{ value}
+\end{DoxyParamCaption}
+)}}
+\label{class_controller_adfe2035a8eec9a9478c442957b84d533}
+
+\begin{DoxyParams}{Parameters}
+\item[{\em string}]\$property \item[{\em string}]\$value \end{DoxyParams}
+
+
+Definition at line 136 of file Controller.php.
+
+\hypertarget{class_controller_af5f1793d5ac524b867f84e004940d6e6}{
+\index{Controller@{Controller}!addComponent@{addComponent}}
+\index{addComponent@{addComponent}!Controller@{Controller}}
+\subsubsection[{addComponent}]{\setlength{\rightskip}{0pt plus 5cm}Controller::addComponent (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{class_controller_af5f1793d5ac524b867f84e004940d6e6}
+
+
+Adds a component to the controller. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em string}]\$component Name of the component \end{DoxyParams}
+
+
+Definition at line 190 of file Controller.php.
+
+\hypertarget{class_controller_a2fd851bc4d27c9a5910f5bac3e8339db}{
+\index{Controller@{Controller}!append@{append}}
+\index{append@{append}!Controller@{Controller}}
+\subsubsection[{append}]{\setlength{\rightskip}{0pt plus 5cm}Controller::append (
+\begin{DoxyParamCaption}
+\item[{\$}]{ params1, }
+\item[{\$}]{ params2}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{class_controller_a2fd851bc4d27c9a5910f5bac3e8339db}
+
+
+Appends a string to an already setup template variable. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em string}]\$params1 \item[{\em string}]\$params2 \end{DoxyParams}
+
+
+Definition at line 258 of file Controller.php.
+
+\hypertarget{class_controller_a6e87320e6aa6d9ad34d4c2fb8ee004a1}{
+\index{Controller@{Controller}!getName@{getName}}
+\index{getName@{getName}!Controller@{Controller}}
+\subsubsection[{getName}]{\setlength{\rightskip}{0pt plus 5cm}Controller::getName (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{class_controller_a6e87320e6aa6d9ad34d4c2fb8ee004a1}
+
+
+Returns the name of the controller. 
+
+\begin{DoxyReturn}{Returns}
+string 
+\end{DoxyReturn}
+
+
+Definition at line 125 of file Controller.php.
+
+\hypertarget{class_controller_af71b414389f649229743b8e8b16e1ee8}{
+\index{Controller@{Controller}!init@{init}}
+\index{init@{init}!Controller@{Controller}}
+\subsubsection[{init}]{\setlength{\rightskip}{0pt plus 5cm}Controller::init (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{class_controller_af71b414389f649229743b8e8b16e1ee8}
+
+
+Function called automatically after the controller is initialized. 
+
+This method should be overriden by controllers which want to initialize certain variables after the constructor function is called. 
+
+Reimplemented in \hyperlink{class_auth_a57c4bdd2e34ab7f4535d3df47d96fadd}{Auth}.
+
+
+
+Definition at line 480 of file Controller.php.
+
+\hypertarget{class_controller_a3a4733e0d493702d5500d8aa14083a17}{
+\index{Controller@{Controller}!load@{load}}
+\index{load@{load}!Controller@{Controller}}
+\subsubsection[{load}]{\setlength{\rightskip}{0pt plus 5cm}static Controller::load (
+\begin{DoxyParamCaption}
+\item[{\$}]{ route}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{class_controller_a3a4733e0d493702d5500d8aa14083a17}
+
+
+A utility method to load a controller. 
+
+This method loads the controller and fetches the contents of the controller into the Controller::\$contents variable if the get\_\-contents parameter is set to true on call. If a controller doesn't exist in the module path, a ModelController is loaded to help manipulate the contents of the model. If no model exists in that location, it is asumed to be a package and a package controller is loaded.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em \$path}]The path for the model to be loaded. \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\hyperlink{class_controller}{Controller} 
+\end{DoxyReturn}
+
+
+Definition at line 280 of file Controller.php.
+
+\hypertarget{class_controller_a09205134686f48577ff0bfa6430d999e}{
+\index{Controller@{Controller}!set@{set}}
+\index{set@{set}!Controller@{Controller}}
+\subsubsection[{set}]{\setlength{\rightskip}{0pt plus 5cm}Controller::set (
+\begin{DoxyParamCaption}
+\item[{\$}]{ params1, }
+\item[{\$}]{ params2 = {\ttfamily null}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{class_controller_a09205134686f48577ff0bfa6430d999e}
+
+\begin{DoxyParams}{Parameters}
+\item[{\em mixed}]\$params1 \item[{\em string}]\$params2 \end{DoxyParams}
+
+
+Reimplemented in \hyperlink{class_component_ade610325a5659ae078e577c7e214628d}{Component}.
+
+
+
+Definition at line 241 of file Controller.php.
+
+\hypertarget{class_controller_a613d097760ed6eb56c658ccff5f04b97}{
+\index{Controller@{Controller}!setName@{setName}}
+\index{setName@{setName}!Controller@{Controller}}
+\subsubsection[{setName}]{\setlength{\rightskip}{0pt plus 5cm}Controller::setName (
+\begin{DoxyParamCaption}
+\item[{\$}]{ name}
+\end{DoxyParamCaption}
+)}}
+\label{class_controller_a613d097760ed6eb56c658ccff5f04b97}
+
+
+Set the name of this controller. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em string}]\$name \end{DoxyParams}
+
+
+Definition at line 361 of file Controller.php.
+
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+controllers/Controller.php\end{DoxyCompactItemize}
