@@ -37,13 +37,23 @@ set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
  * routing and is the boilerplate code on which the entire Ntentan Framework
  * application operates.
  * 
- *  @author     James Ainooson <jainooson-at-gmail-dot-com>
+ *  @author     James Ainooson <jainooson@gmail.com>
  *  @license    Apache License, Version 2.0
  *  @package    ntentan
  */
 class Ntentan
 {
+    /**
+     * The home of the ntentan framework. The directory in which the code for 
+     * the ntentan framework resides.
+     * @var string
+     */
     public static $basePath = "ntentan/";
+    
+    /**
+     * 
+     * @var unknown_type
+     */
     public static $modulesPath = "modules/";
     public static $cachePath = "cache/";
     public static $layoutsPath = "layouts/";
@@ -65,7 +75,9 @@ class Ntentan
 	{
 	    if(!file_exists("config/ntentan.php"))
 	    {
-	        echo Ntentan::message("Please ensure that ntentan is properly setup. The <code>config/ntentan.php</code> file is not present.");
+	        echo Ntentan::message(
+	            "Please ensure that ntentan is properly setup. The <code>config/ntentan.php</code> file is not present."
+	        );
 	        die();
 	    }
 	    require "config/ntentan.php";
@@ -116,7 +128,10 @@ class Ntentan
 		        {
 		            foreach($route["globals"] as $key => $value)
 		            {
-		                define($key, str_replace(array_keys($parts), $parts, $value));
+		                define(
+		                    $key, 
+		                    str_replace(array_keys($parts), $parts, $value)
+		                );
 		            }
 		        }
                 break;

@@ -84,6 +84,7 @@ class Admin extends Component
     public $sections = array();
     public $model;
     public $headings = true;
+    public $notifications = true;
     private $operations;
     private $app;
 
@@ -149,6 +150,7 @@ class Admin extends Component
         $this->setupOperations();
         $this->set("model", ucfirst($this->getModel()->getName()));
         $this->set("headings", $this->headings);
+        $this->set("notifications", $this->notifications);
         $itemsPerPage = 5;
         $model = $this->getModel();
         $this->useTemplate("page.tpl.php");
