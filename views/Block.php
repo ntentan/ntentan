@@ -3,7 +3,12 @@ namespace ntentan\views\blocks;
 
 use \ntentan\Ntentan;
 use \ntentan\views\Presentation;
-
+/**
+ * 
+ * Enter description here ...
+ * @author ekow
+ * @todo Look at the possibility of renaming blocks to widgets
+ */
 class Block extends Presentation
 {
     protected $data = array();
