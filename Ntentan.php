@@ -1,8 +1,7 @@
 <?php
 /**
- * Utility file with lots of classes which perform simple utilities in place.
- *
- * LICENSE:
+ * File to contain the Ntentan class
+ * 
  * Copyright 2010 James Ekow Abaka Ainooson
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,10 +20,20 @@
  * @author     James Ekow Abaka Ainooson <jainooson@gmail.com>
  * @copyright  2010 James Ekow Abaka Ainooson
  * @license    http://www.apache.org/licenses/LICENSE-2.0
+ * @version    0.1
+ * @since      0.1
  */
 
+/**
+ * Root namespace for all ntentan classes
+ * @author ekow
+ */
 namespace ntentan;
 
+/**
+ * Include the autoloading function. This function automatically includes the 
+ * source files for all classes whose source files are not found.
+ */
 include "autoload.php";
 
 session_start();
@@ -33,9 +42,10 @@ set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
 
 
 /**
- * A utility class for the Ntentan framework. This class initializes all the 
- * routing and is the boilerplate code on which the entire Ntentan Framework
- * application operates.
+ * A utility class for the Ntentan framework. This class contains the information
+ * necessary for routing. It also performs the routing of the pages and the
+ * loading of the controllers. This class also has several utility methods
+ * which help in the overall operation of the entire framework.
  * 
  *  @author     James Ainooson <jainooson@gmail.com>
  *  @license    Apache License, Version 2.0
@@ -51,28 +61,94 @@ class Ntentan
     public static $basePath = "ntentan/";
     
     /**
-     * 
-     * @var unknown_type
+     * The directory which holds the modules of the application.
+     * @var string
      */
     public static $modulesPath = "modules/";
+    
+    /**
+     * The directory uses for storing data which needs to be cached in the file
+     * cache. This path is only necessary when the file caching method is
+     * used.
+     * @var string
+     */
     public static $cachePath = "cache/";
+    
+    /**
+     * The directory which contains the layouts for the current application.
+     * @var string
+     * @see Layout
+     */
     public static $layoutsPath = "layouts/";
+    
+    /**
+     * The directory which contains the blocks for the current application.
+     * @var string
+     * @see Block
+     */
     public static $blocksPath = "blocks/";
+    
+    /**
+     * The directory which contains the resources used by the application.
+     * Resources are public files such as images, stylesheets or javascripts
+     * which are referenced from the application. Static HTML pages could also
+     * be stored as resources.
+     * @var string
+     */
     public static $resourcesPath = "resources/";
 
+    /**
+     * The default route to use when no route is specified in the URL.
+     * @var unknown_type
+     */
     public static $defaultRoute = "home";
+    
+    /**
+     * The route which was requested through the URL. In cases where the route
+     * is altered by the routing engine, this route still remains the same as
+     * what was requested through the URL. The altered route can always be found
+     * in the Ntentan::$route property.
+     * @var string
+     */
     public static $requestedRoute;
+    
+    /**
+     * The routing table. An array of regular expressions and associated
+     * operations. If a particular request sent in through the URL matches a
+     * regular expression in the table, the associated operations are executed.
+     * 
+     * @var array
+     */
     public static $routes = array();
+    
+    /**
+     * The route which is currently being executed. If the routing engine has
+     * modified the requested route, this property would hold the value of the
+     * new route.
+     * @var string
+     */
     public static $route;
+    
+    /**
+     * The path to the file which holds the database configuration/
+     * @var string
+     */
     public static $dbConfigFile = "config/db.php";
     
+    /**
+     * Current ntentan version
+     * @var string
+     */
     const VERSION = "0.1";
     
 	/**
-	 * The main entry point of the Ntentan application.
+	 * The main entry point of the Ntentan application. This method checks if
+	 * ntentan is properly setup and then it implements the routing engine which
+	 * loads the controllers to handle the request.
 	 */
 	public static function boot()
 	{
+	    // Check if the library was properly setup
 	    if(!file_exists("config/ntentan.php"))
 	    {
 	        echo Ntentan::message(
@@ -80,6 +156,8 @@ class Ntentan
 	        );
 	        die();
 	    }
+	    
+	    // Setup the include path
 	    require "config/ntentan.php";
 	    Ntentan::$basePath = $ntentan_home;
 	    Ntentan::$modulesPath = $modules_path;
@@ -104,6 +182,7 @@ class Ntentan
             return null;
         }
         
+        // Implement the routing engine
         Ntentan::$requestedRoute = $_GET["q"];
         Ntentan::$route = $_GET["q"];
         unset($_GET["q"]);
@@ -146,7 +225,7 @@ class Ntentan
 	}
 
     /**
-     * 
+     * A utility method to add a path to the list of include paths.
      * @param array $paths 
      */
     public static function addIncludePath($paths)
@@ -164,18 +243,31 @@ class Ntentan
         }
     }
 
+    /**
+     * Returns the path of a file which is supposed to be located within the
+     * ntentan framework's directory. This method is mostly used internally 
+     * within the ntentan framework.
+     * @param string $path
+     */
     public static function getFilePath($path)
     {
         return Ntentan::$basePath . $path;
     }
-
+    
+    /**
+     * Returns a url which has been formatted purposedly for the application.
+     * @param unknown_type $url
+     */
     public static function getUrl($url)
     {
         if($url[0]!="/") return "/$url"; else return $url;
     }
 
     /**
-     * Write a header to redirect the request to a new location. 
+     * Write a header to redirect the request to a new location. In cases where
+     * a redirect parameter exists in the request, the $url parameter of this
+     * method is totally ignored.
+     * 
      * @param string $url The url to redirect to. This could be a full URL or a
      *                    route to an Ntentan controller.
      * @param unknown_type $absolute
@@ -188,7 +280,8 @@ class Ntentan
     }
 
     /**
-     * Returns the default datastore used by the 
+     * Returns the default datastore as defined in the config/db.php 
+     * configuration file.
      */
     public static function getDefaultDataStore()
     {
@@ -206,16 +299,30 @@ class Ntentan
     	}
     }
 
+    /**
+     * Get the full URI which was sent in.
+     */
     public static function getRequestUri()
     {
         return 'http'. ($_SERVER['HTTPS'] ? 's' : null) .'://'. $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     }
 
+    /**
+     * Converts an underscore seperated string into a sentence by replacing the
+     * underscores with spaces and capitalizing the first character of all the
+     * new words which are formed.
+     * @param unknown_type $string
+     */
     public static function toSentence($string)
     {
         return ucwords(str_replace("_", " ", $string));
     }
 
+    /**
+     * Returns the sigular form of any plural word which is passed to it.
+     * @param string $string
+     * @see Ntentan::plural
+     */
     public static function singular($string)
     {
         if(substr($string,-3) == "ies")
