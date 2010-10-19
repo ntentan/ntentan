@@ -209,42 +209,39 @@ abstract class SqlDatabase extends DataStore
         }
 
         // Execute the query
-        $result = $this->query($query);
+        $results = $this->query($query);
 
         // Retrieve all related data
-        if($params["fetch_related"] === true)
+        if($params["fetch_related"] === true and count($this->model->belongsTo) > 0)
         {
-            foreach($this->model->belongsToModelInstances as $key => $belongsToInstance)
+            foreach($results as $index => $result)
             {
-                $relationName = Ntentan::singular(
-                    Model::getBelongsTo(
-                        is_array($this->model->belongsTo) ? 
-                        $this->model->belongsTo[$key] :
-                        $this->model->belongsTo
-                    )
-                );
-                $foreignKey = $relationName . "_id";
-                foreach($result as $key => $row)
+                foreach($result as $field => $value)
                 {
-                    $reference = $belongsToInstance->getFirstWithId($row[$foreignKey]);
-                    $result[$key][$relationName] = $reference;
+                    if(strpos($field,".")!==false) 
+                    {
+                        $fieldNameArray = explode(".", $field);
+                        $fieldName = array_pop($fieldNameArray);
+                        $modelName = Ntentan::singular(implode(".", $fieldNameArray));
+                        $results[$index][$modelName][$fieldName] = $value;
+                        unset($results[$index][$field]);
+                    }
                 }
             }
         }
-        
 
         // Generate the data to be returned
         if($params["type"] == 'first')
         {
-            $return = $result[0];
+            $return = $results[0];
         }
         else if($params["type"] == 'count')
         {
-            $return = reset($result[0]);
+            $return = reset($results[0]);
         }
         else
         {
-            $return = $result;
+            $return = $results;
         }
 
         return $return;

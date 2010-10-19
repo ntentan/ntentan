@@ -269,6 +269,7 @@ class Model implements ArrayAccess, Iterator
             {
                 $params["conditions"][$this->modelRoute . "." . $field] = $argument;
             }
+            $params["fetch_related"] = true;
             return $this->get($type, $params);
         }
         
@@ -276,11 +277,21 @@ class Model implements ArrayAccess, Iterator
         {
             $field = Ntentan::deCamelize(substr($method, 10));
             $type = 'all';
-            $params["fetch_related"] = true;
+            $conditions = array();
             foreach($arguments as $argument)
             {
-                $params["conditions"][$this->modelRoute . "." . $field] = $argument;
+                if(is_array($argument))
+                {
+                    $params = $argument;
+                    break;
+                }
+                else
+                {
+                    $conditions[$this->modelRoute . "." . $field] = $argument;
+                }
             }
+            $params["conditions"] = $conditions;
+            if(!isset($params["fetch_related"])) $params["fetch_related"] = true;
             return $this->get($type, $params);
         }
         

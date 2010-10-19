@@ -17,7 +17,7 @@ class TimeObject
 	
 	public function time()
 	{
-	    return date("g:i a");
+	    return date("g:i a", $this->timestamp);
 	}
 	
 	public function friendly()
@@ -41,7 +41,7 @@ class TimeObject
         }
         else
         {
-            return date("jS F, Y");
+            return date("jS F, Y", $this->timestamp);
         }
 	}
 }
