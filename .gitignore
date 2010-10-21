@@ -3,4 +3,5 @@
 .project
 nbproject
 *~HEAD*
-gendoc
+docs
+Doxyfile
