@@ -1,5 +1,5 @@
 <?php
-namespace ntentan\views\helpers\forms;
+namespace ntentan\views\helpers\forms\api;
 
 use \ReflectionClass;
 
@@ -18,8 +18,6 @@ abstract class Element
 {
 	const SCOPE_ELEMENT = "";
 	const SCOPE_WRAPPER = "_wrapper";
-
-	protected $ajax = true;
 
     protected $formId;
 

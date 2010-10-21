@@ -1,6 +1,6 @@
 <?php
 
-namespace ntentan\views\helpers\forms;
+namespace ntentan\views\helpers\forms\api;
 
 /**
  * The Attribute class is used for storing and rendering HTML attributes.

@@ -1,5 +1,5 @@
 <?php
-namespace ntentan\views\helpers\forms;
+namespace ntentan\views\helpers\forms\api;
 
 /**
  * Implementation of a regular text field. This field is used to
