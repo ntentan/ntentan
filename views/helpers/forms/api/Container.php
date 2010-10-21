@@ -1,6 +1,8 @@
 <?php
 
-namespace ntentan\views\helpers\forms;
+namespace ntentan\views\helpers\forms\api;
+
+use ntentan\Ntentan;
 
 use \Exception;
 
@@ -8,7 +10,6 @@ use \Exception;
  * The container class. This abstract class provides the necessary
  * basis for implementing form element containers. The container
  * is a special element which contains other form elements.
- *
  */
 abstract class Container extends Element
 {
@@ -21,7 +22,7 @@ abstract class Container extends Element
 	/**
 	 * The name of the renderer currently in use.
 	 */
-	protected $renderer = "default";
+	protected $renderer = "inline";
 
 	/**
 	 * The header function for the current renderer. This function contains the
@@ -62,23 +63,6 @@ abstract class Container extends Element
 	protected $callback;
 	protected $callbackData;
 	public $isContainer = true;
-
-
-	/**
-	 * Sets the current renderer being used by the container. The renderer
-	 * is responsible for rendering the HTML form content.
-	 * @param $renderer The name of the renderer being used.
-	 * @return Container
-	 */
-	public function setRenderer($renderer)
-	{
-		$this->renderer = $renderer;
-		include_once "Renderers/$this->renderer.php";
-		$this->renderer_head = $renderer."_renderer_head";
-		$this->renderer_foot = $renderer."_renderer_foot";
-		$this->renderer_element = $renderer."_renderer_element";
-		return $this;
-	}
 
 	/**
 	 * Returns the renderer which is currently being used by the class.
@@ -148,19 +132,6 @@ abstract class Container extends Element
 		return $this;
 	}
 
-
-	/**
-	 * Method for removing a particular form element from the
-	 * container.
-	 *
-	 * @param $index The index of the element to be removed.
-	 * @todo Implement the method to remove an element from the Container.
-	 */
-	public function remove($index)
-	{
-
-	}
-
 	//! This method sets the data for the fields in this container. The parameter
 	//! passed to this method is a structured array which has field names as keys
 	//! and the values as value.
@@ -183,81 +154,32 @@ abstract class Container extends Element
 		if($sent=="yes") return true; else return false;
 	}
 
-	//! This method returns a structured array which represents the data stored
-	//! in all the fields in the class. This method is recursive so one call
-	//! to it extracts all the fields in all nested containers within this
-	//! container.
-	//! \param $storable This variable is set as true only when data for
-	//!                  storable fields is required. A storable field
-	//!                  is field which can be stored in the database.
-	public function getData($storable=false)
-	{
-		$data = array();
-
-		if($this->isFormSent())
-		{
-			foreach($this->elements as $element)
-			{
-				if($storable)
-				{
-					if($element->getStorable()==true) $data+=$element->getData($storable);
-				}
-				else
-				{
-					$data+=$element->getData();
-				}
-			}
-		}
-		else
-		{
-			foreach($this->elements as $element)
-			{
-				if($element->getType()=="Container")
-				{
-					$data+=$element->getData();
-				}
-				else
-				{
-					$data+=array($element->getName(false) => $element->getValue());
-				}
-			}
-		}
-
-		return $data;
-	}
-
-	//! This method sets the method of transfer for this container. The method
-	//! could either be "GET" or "POST".
-	public function setMethod($method) {
-		$this->method = strtoupper($method);
-		foreach($this->elements as $element) {
-			$element->setMethod($method);
-		}
-	}
-
 	public function getType()
 	{
 		return __CLASS__;
 	}
+	
+	protected function getRendererInstance()
+	{
+	    $rendererClass = __NAMESPACE__ . "\\renderers\\" . Ntentan::camelize($this->renderer);
+        return new $rendererClass();
+	}
 
-	//! Render all the Elements found within this container. The Elements
-	//! are rendered using the current renderer.
+	/**
+	 * Render all the elements currently contained in this container. This method
+	 * would initialize the renderer class and use it to layout the elements
+	 * on the form.
+	 */
 	protected function renderElements()
 	{
-        $this->setRenderer($this->renderer);
-		$renderer_head = $this->renderer_head;
-		$renderer_foot = $this->renderer_foot;
-		$renderer_element = $this->renderer_element;
-		$ret = "";
-
+	    $renderer = $this->getRendererInstance();
         $this->onRender();
-
-		if($renderer_head!="") $ret .= $renderer_head();
+		$ret = $renderer->head();
 		foreach($this->elements as $element)
 		{
-			$ret .= $renderer_element($element,$this->getShowField());
+			$ret .= $renderer->element($element);
 		}
-		if($renderer_head!="") $ret .= $renderer_foot();
+		$ret .= $renderer->foot();
 		return $ret;
 	}
 
@@ -301,18 +223,6 @@ abstract class Container extends Element
 			}
 		}
 		return $fields;
-	}
-
-	//! Sets the value of the render callback function.
-	public function setRenderCallback($onRenderCallback)
-	{
-		$this->onRenderCallback = $onRenderCallback;
-	}
-
-	//! Returns the value of the render callback function.
-	public function getRenderCallback()
-	{
-		return $this->onRenderCallback;
 	}
 
     public function get($name)
@@ -361,39 +271,6 @@ abstract class Container extends Element
 			}
 		}
 		throw new Exception("No element with id $id found in Container");
-	}
-
-	/**
-	 * Sets the callback function which should be fired whenever this container
-	 * is successfully submitted.
-	 * @param $callback The callback function
-	 * @return Container
-	 */
-	public function setCallback($callback,$data)
-	{
-		$this->callback = $callback;
-		$this->callbackData = $data;
-		return $this;
-	}
-
-	protected static function executeCallback()
-	{
-		$args = func_get_args();
-		$function = array_shift($args);
-		$function = explode("::",$function);
-		if(count($function)==2)
-		{
-			$method = new ReflectionMethod($function[0], $function[1]);
-			return $method->invokeArgs(null, $args);
-		}
-		else if(count($function)==1)
-		{
-			$method = $function[0];
-			if(function_exists($method))
-			{
-				return $method($args[0],$args[1],$args[2]);
-			}
-		}
 	}
 
 	public function setErrors($errors)

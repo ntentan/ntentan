@@ -1,14 +1,13 @@
 <?php
 namespace ntentan\views\helpers\forms;
 
-use \ntentan\views\helpers\Helper;
-use \ntentan\Ntentan;
+use ntentan\views\helpers\Helper;
+use ntentan\Ntentan;
 use \ReflectionMethod;
 
 /**
- * Enter description here ...
- * @author ekow
- *
+ * Forms helper for rendering forms.
+ * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
  */
 class Forms extends Helper
 {
@@ -20,7 +19,13 @@ class Forms extends Helper
     
     public function __construct()
     {
-        $this->container = new FormContainer();
+        Ntentan::addIncludePath(
+            Ntentan::getFilePath("views/helpers/forms/api")
+        );
+        Ntentan::addIncludePath(
+            Ntentan::getFilePath("views/helpers/forms/api/renderers")
+        );
+        $this->container = new api\Form();
     }
     
     public function __toString()
@@ -35,16 +40,11 @@ class Forms extends Helper
         $args = func_get_args();
         if(is_string($args[0]))
         {
-            $method = new ReflectionMethod(__NAMESPACE__ . "\\Element", "create");
+            $method = new ReflectionMethod(__NAMESPACE__ . "\\api\\Element", "create");
             $element = $method->invokeArgs(null, $args);
             $this->container->add($element);
         }
         return $element;
-    }
-    
-    public function generateForm($description)
-    {
-        
     }
     
     public function setErrors($errors)
@@ -57,7 +57,7 @@ class Forms extends Helper
         $this->container->setData($data);
     }
     
-    public function addModelField($field, $return = false)
+    public function createModelField($field)
     {
         switch($field["type"])
         {
@@ -97,6 +97,12 @@ class Forms extends Helper
         }
         if($field["required"]) $element->setRequired(true);
         $element->setDescription($field["comment"]);
+        return $element;
+    }
+    
+    public function addModelField($field, $return = false)
+    {
+        $element = $this->createModelField($field);
         if($return)
         {
             return $element;
