@@ -36,6 +36,8 @@ namespace ntentan;
  */
 include "autoload.php";
 
+include "globals.php";
+
 session_start();
 date_default_timezone_set("Africa/Accra");
 set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));

@@ -1,6 +1,6 @@
 <?php
 
-namespace ntentan\views\helpers\forms;
+namespace ntentan\views\helpers\forms\api;
 
 /**
  * The form class. This class represents the overall form class. This
@@ -14,7 +14,7 @@ namespace ntentan\views\helpers\forms;
  */
 use ntentan\Ntentan;
 
-class FormContainer extends Container
+class Form extends Container
 {
     public $submitValue;
 	public $showSubmit = true;
@@ -87,7 +87,7 @@ class FormContainer extends Container
 
     public function setId($id)
     {
-        parent::setId($id == "" ? "form" . FormContainer::$numForms++ : $id);
+        parent::setId($id == "" ? "form" . Form::$numForms++ : $id);
         return $this;
     }
 }

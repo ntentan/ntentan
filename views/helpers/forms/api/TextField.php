@@ -1,5 +1,5 @@
 <?php
-namespace ntentan\views\helpers\forms;
+namespace ntentan\views\helpers\forms\api;
 
 /**
  * Implementation of a regular text field. This field is used to
@@ -28,12 +28,7 @@ class TextField extends Field
 		$this->addAttribute("name",$this->getName());
 		$this->addAttribute("id",$this->getId());
 		$this->addAttribute("value",$this->getValue());
-		$validations = $this->getJsValidations();
-		if($this->ajax && $validations != "[]")
-		{
-			$this->addAttribute("onblur","fapiValidate('".$this->getId()."',$validations)");
-		}
-		return "<input {$this->getAttributes()} />";//.($this->ajax?"<script type='text/javascript'>var {$this->getName()}_errors;</script>"); //class="fapi-textfield '.$this->getCSSClasses().'" type="text" name="'.$this->getName().'" id="'.$this->getId().'" value="'.$this->getValue().'" />';
+		return "<input {$this->getAttributes()} />";
 	}
 
 	public function getCSSClasses()

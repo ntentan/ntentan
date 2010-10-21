@@ -1,5 +1,5 @@
 <?php
-namespace ntentan\views\helpers\forms;
+namespace ntentan\views\helpers\forms\api;
 
 use \ReflectionClass;
 
@@ -18,8 +18,6 @@ abstract class Element
 {
 	const SCOPE_ELEMENT = "";
 	const SCOPE_WRAPPER = "_wrapper";
-
-	protected $ajax = true;
 
     protected $formId;
 
@@ -56,24 +54,20 @@ abstract class Element
 	//! assiciated with the class in one way or the other.
 	protected $error;
 
-	//! A boolean value which is set to true if the form elements are
-	//! to be made available for editing. If this property is set to false
-	//! the form element shows only the value associated with this field
-	//! in cases where the data has been collected from the database.
+	/**
+	 * A boolean value which is set to true if the form elements are
+	 * to be made available for editing. If this property is set to false
+	 * the form element shows only the value associated with this field
+	 * in cases where the data has been collected from the database.
+	 * @var boolean
+	 */ 
 	protected $showfield = true;
 
-	//! The parent element which contains this element.
+	/**
+	 * The parent element which contains this element.
+	 * @var Element
+	 */
 	protected $parent = null;
-
-	//! Sets up the name encryption. If this value is set to true, all
-	//! the form element names which are output to HTML would be
-	//! encrypted so that the structure of the internal database is not
-	//! exposed in any way.
-	protected $nameEncryption = false;
-
-	//! A value which determines whether this field is to be used in
-	//! constructing database queries
-	protected $storable = true;
 
 	/**
 	 * The name of the form field. This is what is to be outputed as
@@ -83,9 +77,8 @@ abstract class Element
 	 * bu the unmangled name.
 	 */
 	public $name;
-
-	//! A value which determines whether this element contains file data;
-	protected $hasFile = false;
+	
+	private static $count;
 
 	public function __construct($label="", $description="", $id="")
 	{
@@ -110,7 +103,11 @@ abstract class Element
 	 */
 	public function getId()
 	{
-		return $this->id;
+	    if($this->id == "")
+	    {
+	        $this->setId("element" . ++Element::$count);
+	    }
+	    return $this->id;
 	}
 
 
@@ -378,18 +375,6 @@ abstract class Element
 	{
 		$this->error = false;
 		$this->errors = array();
-	}
-
-	/**
-	 * Factory method for creating elements.
-	 * @return Element
-	 */
-	public static function create()
-	{
-		$args = func_get_args();
-		$element = __NAMESPACE__ . "\\" . array_shift($args);
-		$element = new ReflectionClass($element);
-		return $element->newInstanceArgs($args==null?array():$args);
 	}
 
     public static function createFromString($class, $label, $name, $value = null)

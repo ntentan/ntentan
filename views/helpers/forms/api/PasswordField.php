@@ -1,7 +1,5 @@
 <?php
-namespace ntentan\views\helpers\forms;
-
-use \ntentan\views\helpers\forms\TextField;
+namespace ntentan\views\helpers\forms\api;
 
 class PasswordField extends TextField
 {

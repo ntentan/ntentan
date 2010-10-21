@@ -1,14 +1,14 @@
 <?php
 namespace ntentan\views\helpers\forms;
 
-use \ntentan\views\helpers\Helper;
-use \ntentan\Ntentan;
+use ntentan\views\helpers\Helper;
+use ntentan\Ntentan;
 use \ReflectionMethod;
+use \ReflectionClass;
 
 /**
- * Enter description here ...
- * @author ekow
- *
+ * Forms helper for rendering forms.
+ * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
  */
 class Forms extends Helper
 {
@@ -20,31 +20,42 @@ class Forms extends Helper
     
     public function __construct()
     {
-        $this->container = new FormContainer();
+        Ntentan::addIncludePath(
+            Ntentan::getFilePath("views/helpers/forms/api")
+        );
+        Ntentan::addIncludePath(
+            Ntentan::getFilePath("views/helpers/forms/api/renderers")
+        );
+        $this->container = new api\Form();
     }
     
     public function __toString()
     {
         $this->container->submitValue = $this->submitValue;
         $this->container->setId($this->id);
-        return (string)$this->container;
+        $return = (string)$this->container;
+        $this->container = new api\Form();
+        return $return;
     }
     
+    public static function create()
+    {
+        $args = func_get_args();
+        $element = __NAMESPACE__ . "\\api\\" . array_shift($args);
+        $element = new ReflectionClass($element);
+        return $element->newInstanceArgs($args==null?array():$args);
+    }
+        
     public function add()
     {
         $args = func_get_args();
         if(is_string($args[0]))
         {
-            $method = new ReflectionMethod(__NAMESPACE__ . "\\Element", "create");
-            $element = $method->invokeArgs(null, $args);
+            $elementClass = new ReflectionMethod(__NAMESPACE__ . "\\Forms", 'create');
+            $element = $elementClass->invokeArgs(null, $args);
             $this->container->add($element);
         }
         return $element;
-    }
-    
-    public function generateForm($description)
-    {
-        
     }
     
     public function setErrors($errors)
@@ -57,7 +68,7 @@ class Forms extends Helper
         $this->container->setData($data);
     }
     
-    public function addModelField($field, $return = false)
+    public function createModelField($field)
     {
         switch($field["type"])
         {
@@ -97,6 +108,12 @@ class Forms extends Helper
         }
         if($field["required"]) $element->setRequired(true);
         $element->setDescription($field["comment"]);
+        return $element;
+    }
+    
+    public function addModelField($field, $return = false)
+    {
+        $element = $this->createModelField($field);
         if($return)
         {
             return $element;
@@ -105,5 +122,10 @@ class Forms extends Helper
         {
             $this->container->add($element);
         }
+    }
+    
+    public function open()
+    {
+        
     }
 }

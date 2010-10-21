@@ -1,0 +1,188 @@
+<?php
+namespace ntentan\views\helpers\forms\api;
+
+/**
+ * The form field class. This class represents a form field element.
+ * Sublcasses of this class are to be used to capture information from
+ * the user of the application.
+ * \ingroup Form_API
+ */
+abstract class Field extends Element
+{
+	/**
+	 * A flag for setting the required state of the form. If this value
+	 * is set as true then the form would not be validated if there is
+	 * no value entered into this field.
+	 */
+	public $required = false;
+
+	/**
+	 * The value of the form field.
+	 */
+	protected $value;
+
+	/**
+	 * The enabled state of the field.
+	 */
+	protected $enabled;
+
+	//! The name of a custom validation function which can be used to
+	//! perform further validations on the field.
+	protected $validationFunc;
+
+	//! A validation constraint which expects that the value entered in
+	//! this field is unique in the database.
+	protected $unique;
+	
+	public $isField = true;
+
+	public function getId()
+	{
+		$id = parent::getId();
+		if($id == "" && $this->ajax)
+		{
+			$id = str_replace(".","_",$this->getName());
+		}
+		return $id;
+	}
+
+	/**
+	 * The constructor for the field element.
+	 */
+	public function __construct($name="", $value="")
+	{
+		$this->name = $name;
+		$this->value = $value;
+	}
+
+	/**
+	 * Sets the value of the field.
+	 *
+	 * @param $value The value of the field.
+	 */
+	public function setValue($value)
+	{
+		if($unset)
+		{
+			if($this->getMethod()=="GET") unset($_GET[$this->getName()]);
+			if($this->getMethod()=="POST") unset($_POST[$this->getName()]);
+		}
+		$this->value = $value;
+        return $this;
+	}
+
+	/**
+	 * Get the value of the field.
+	 *
+	 * @return unknown
+	 */
+	public function getValue()
+	{
+		return $this->value;
+	}
+
+	public function getDisplayValue()
+	{
+		return $this->value;
+	}
+
+	/**
+     * Sets the required status of the field.
+     *
+     * @param The required status of the field.
+     */
+	public function setRequired($required)
+	{
+		$this->required = $required;
+		return $this;
+	}
+
+	/**
+     * Returns the required status of the field.
+     *
+     * @return The required status of the field.
+     */
+	public function getRequired()
+	{
+		return $this->required;
+	}
+
+	//! Returns the data held by this field. This data is returned as a
+	//! key value pair. The key is the name of the field and the value
+	//! represents the value of the field.
+	//!
+	public function getData($storable=false)
+	{
+		if($this->getMethod()=="POST")
+		{
+			//print $this->getName(false)." - ".$this->getValue()."<br />";;
+			if(isset($_POST[$this->getName()])) $this->setValue($_POST[$this->getName()]);
+		}
+		else if($this->getMethod()=="GET")
+		{
+			//print $this->getName(false)." - ".$this->getValue()."<br />";;
+			if(isset($_GET[$this->getName()])) $this->setValue($_GET[$this->getName()]);
+		}
+		else
+		{
+			//print $this->getLabel();
+			//print $this->getName(false);
+			throw new Exception("The method for this field has not been set.");
+			$this->setValue("");
+		}
+		return array($this->getName(false) => $this->getValue());
+	}
+
+	//! Sets the data that is stored in this field.
+	//! \param $data An array of fields. This method just looks through for
+	//!              a field that matches it and then applies its value to
+	//!              itself.
+	public function setData($data)
+	{
+		if(array_search($this->getName(false),array_keys($data))!==false)
+		{
+			$this->setValue($data[$this->getName(false)]);
+		}
+	}
+
+	public function validate()
+	{
+		//Perform the required validation. Generate an error if this
+		//field is empty.
+		if($this->getRequired() && $this->getValue() === "" )//&& $_POST[$this->getName($this->nameEncryption)] === "")
+		{
+			$this->error = true;
+			array_push($this->errors,$this->getLabel()." is required.");
+			return false;
+		}
+
+		// Call the custom validation function.
+		$validationFunc = $this->validationFunc;
+		if($validationFunc!="")
+		{
+			$this->error = !$validationFunc($this,$this->errors);
+			return !$this->error;
+		}
+		return true;
+	}
+
+	public function getType()
+	{
+		return __CLASS__;
+	}
+
+	public function getCSSClasses()
+	{
+		$classes=parent::getCSSClasses();
+		if($this->error) $classes.="fapi-error ";
+		if($this->getRequired()) $classes .="required ";
+		return $classes;
+	}
+
+	public function getOptions()
+	{
+		return array();
+	}
+
+}
+
