@@ -4,6 +4,7 @@ namespace ntentan\views\helpers\forms;
 use ntentan\views\helpers\Helper;
 use ntentan\Ntentan;
 use \ReflectionMethod;
+use \ReflectionClass;
 
 /**
  * Forms helper for rendering forms.
@@ -32,16 +33,26 @@ class Forms extends Helper
     {
         $this->container->submitValue = $this->submitValue;
         $this->container->setId($this->id);
-        return (string)$this->container;
+        $return = (string)$this->container;
+        $this->container = new api\Form();
+        return $return;
     }
     
+    public static function create()
+    {
+        $args = func_get_args();
+        $element = __NAMESPACE__ . "\\api\\" . array_shift($args);
+        $element = new ReflectionClass($element);
+        return $element->newInstanceArgs($args==null?array():$args);
+    }
+        
     public function add()
     {
         $args = func_get_args();
         if(is_string($args[0]))
         {
-            $method = new ReflectionMethod(__NAMESPACE__ . "\\api\\Element", "create");
-            $element = $method->invokeArgs(null, $args);
+            $elementClass = new ReflectionMethod(__NAMESPACE__ . "\\Forms", 'create');
+            $element = $elementClass->invokeArgs(null, $args);
             $this->container->add($element);
         }
         return $element;
@@ -111,5 +122,10 @@ class Forms extends Helper
         {
             $this->container->add($element);
         }
+    }
+    
+    public function open()
+    {
+        
     }
 }

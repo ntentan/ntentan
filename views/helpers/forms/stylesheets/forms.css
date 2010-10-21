@@ -10,7 +10,7 @@ input[type='password']
 
 select
 {
-	/*font-size:larger;*/
+	font-size:larger;
 }
 
 input[type='text']:focus,
@@ -21,10 +21,10 @@ input[type='password']:focus
 
 textarea
 {
-    border:1px solid #a0a0a0;
+    border:2px solid #e0e0e0;
     width:100%;
-    /*font-size:larger;*/
-    font-family:"Helvetica", sans-serif
+    font-family:"Helvetica", sans-serif;
+    height:200px;
 }
 
 textarea:focus
@@ -84,4 +84,9 @@ div.fapi-error > ul
 	list-style:none;
 	padding:5px;
 	margin:0px;
+}
+
+table.fapi-table
+{
+	width:100%;
 }
