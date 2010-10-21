@@ -23,15 +23,24 @@
  */
 namespace ntentan\views;
 
-use \ntentan\Ntentan;
-
+use ntentan\Ntentan;
 
 class Presentation
 {
+    private $loadedHelpers = array();
     public function loadHelper($helper)
     {
         Ntentan::addIncludePath(Ntentan::getFilePath("views/helpers/$helper"));
         $helperClass = "\\ntentan\\views\\helpers\\$helper\\" . ucfirst($helper);
         return new $helperClass();
+    }
+    
+    public function __get($property)
+    {
+        if(!isset($this->loadedHelpers[$property]))
+        {
+            $this->loadedHelpers[$property] = $this->loadHelper($property);
+        }
+        return $this->loadedHelpers[$property];
     }
 }
