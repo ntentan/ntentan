@@ -2,6 +2,8 @@
 
 namespace ntentan\views\helpers\forms\api;
 
+use ntentan\views\helpers\forms\Forms;
+
 use ntentan\Ntentan;
 
 use \Exception;
@@ -18,29 +20,6 @@ abstract class Container extends Element
 	 * The array which holds all the elements contained in this container.
 	 */
 	protected $elements = array();
-
-	/**
-	 * The name of the renderer currently in use.
-	 */
-	protected $renderer = "inline";
-
-	/**
-	 * The header function for the current renderer. This function contains the
-	 * name of the renderer post-fixed with "_renderer_head"
-	 */
-	protected $renderer_head;
-
-	/**
-	 * The footer function for the renderer currently in use. This function
-	 * contains the name of the renderer post-fixed with "_renderer_foot".
-	 */
-	protected $renderer_foot;
-
-	/**
-	 * The element function for the renderer currently in use.
-	 * @var string
-	 */
-	protected $renderer_element;
 
 	/** 
 	 * When set to false the fields are not shown for editing.
@@ -63,6 +42,7 @@ abstract class Container extends Element
 	protected $callback;
 	protected $callbackData;
 	public $isContainer = true;
+	private $rendererInstance = null;
 
 	/**
 	 * Returns the renderer which is currently being used by the class.
@@ -158,21 +138,15 @@ abstract class Container extends Element
 	{
 		return __CLASS__;
 	}
-	
-	protected function getRendererInstance()
-	{
-	    $rendererClass = __NAMESPACE__ . "\\renderers\\" . Ntentan::camelize($this->renderer);
-        return new $rendererClass();
-	}
 
 	/**
 	 * Render all the elements currently contained in this container. This method
 	 * would initialize the renderer class and use it to layout the elements
 	 * on the form.
 	 */
-	protected function renderElements()
+	private function renderElements()
 	{
-	    $renderer = $this->getRendererInstance();
+	    $renderer = Forms::getRendererInstance();
         $this->onRender();
 		$ret = $renderer->head();
 		foreach($this->elements as $element)
@@ -181,6 +155,16 @@ abstract class Container extends Element
 		}
 		$ret .= $renderer->foot();
 		return $ret;
+	}
+	
+	abstract public function renderHead();
+	abstract public function renderFoot();
+	
+	public function render()
+	{
+	    return $this->renderHead() . 
+	           $this->renderElements() . 
+	           $this->renderFoot();
 	}
 
 	//! Sets whether the fields should be exposed for editing. If this

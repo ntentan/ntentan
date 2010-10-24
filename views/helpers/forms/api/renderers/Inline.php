@@ -92,5 +92,10 @@ class Inline extends Renderer
     {
     
     }
+    
+    public function type()
+    {
+        return "inline";
+    }
 }
 

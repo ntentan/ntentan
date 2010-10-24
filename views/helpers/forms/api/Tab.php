@@ -1,8 +1,5 @@
 <?php
-//! The Tab is a special container for containing elements. The tab can
-//! only be contained within the TabLayout container. Tabs are used to
-//! present notebook style interfaces for orgarnizing multiple forms.
-//! \ingroup Form_API
+namespace ntentan\views\helpers\forms\api;
 
 class Tab extends Container
 {
@@ -27,13 +24,16 @@ class Tab extends Container
 		$this->legend = $legend;
 	}
 
-	public function render()
+	public function renderHead()
 	{
 		$this->addAttribute("class","fapi-tab {$this->getCSSClasses()}");
 		$ret = "<div {$this->getAttributes()}>";
-		$ret .= $this->renderElements();
-		$ret .= "</div>";
 		return $ret;
+	}
+	
+	public function renderFoot()
+	{
+		return "</div>";
 	}
 
 	//! Returns whether this Tab is selected.

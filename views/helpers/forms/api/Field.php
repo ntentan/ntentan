@@ -149,7 +149,7 @@ abstract class Field extends Element
 	{
 		//Perform the required validation. Generate an error if this
 		//field is empty.
-		if($this->getRequired() && $this->getValue() === "" )//&& $_POST[$this->getName($this->nameEncryption)] === "")
+		if($this->getRequired() && $this->getValue() === "" )
 		{
 			$this->error = true;
 			array_push($this->errors,$this->getLabel()." is required.");

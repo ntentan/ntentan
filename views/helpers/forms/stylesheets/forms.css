@@ -2,7 +2,7 @@ input[type='text'],
 input[type='password']
 {
     border:2px solid #e0e0e0;
-    width:99%;
+    width:100%;
     background-color:#ffffff;
     font-size:larger;
     color:#404040
@@ -24,7 +24,6 @@ textarea
     border:2px solid #e0e0e0;
     width:100%;
     font-family:"Helvetica", sans-serif;
-    height:200px;
 }
 
 textarea:focus
@@ -40,7 +39,6 @@ input[type='submit']
 
 label
 {
-	/*font-size:large;*/
     font-weight:bold;
     color:#808080;
 }
@@ -89,4 +87,11 @@ div.fapi-error > ul
 table.fapi-table
 {
 	width:100%;
+	border-collapse:collapse;
+}
+
+table.fapi-table td
+{
+	padding:5px;
+	vertical-align:top;
 }

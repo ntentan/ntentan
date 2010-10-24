@@ -1,7 +1,5 @@
 <?php
-namespace ntentan\views\helpers\forms;
-
-use ntentan\views\helpers\forms\Field;
+namespace ntentan\views\helpers\forms\api;
 
 /**
  * An item that can be added to a selection list.
@@ -62,20 +60,13 @@ class SelectionList extends Field
 
 	public function render()
 	{
-		$validations = $this->getJsValidations();
-		if($this->ajax && $validations != "[]")
-		{
-			$this->addAttribute("onblur","fapiValidate('".$this->getId()."',$validations)");
-		}
 		$this->addAttribute("id",$this->getId());
-		$this->addAttribute("onchange",$this->getId()."OnChangeFunction()");
 		$ret = "<select {$this->getAttributes()} class='fapi-list ".$this->getCSSClasses()."' name='".$this->getName()."' ".($this->multiple?"multiple='multiple'":"").">";
 		foreach($this->options as $option)
 		{
 			$ret .= "<option value='$option->value' ".($this->getValue()===$option->value?"selected='selected'":"").">$option->label</option>";
 		}
 		$ret .= "</select>";
-		$ret .= $this->getJsOnChangeScript();
 		return $ret;
 	}
 
@@ -96,13 +87,6 @@ class SelectionList extends Field
 		return true;
 	}
 
-	// Extend the default set value field and allow for name resolution
-	// using the id's.
-	/*public function setValue($value)
-	{
-		return $this->resolve($value);
-	}*/
-
 	public function getOptions()
 	{
 		$options = array();
@@ -113,4 +97,4 @@ class SelectionList extends Field
 		return $options;
 	}
 }
-?>
+

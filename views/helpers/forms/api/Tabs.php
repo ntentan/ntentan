@@ -1,21 +1,15 @@
 <?php
+namespace ntentan\views\helpers\forms\api;
+
 /**
  * A special container for containing Tab elements. This makes it possible
  * to layout form elements in a tab fashion. The TabLayout container takes
  * the tab as the elements it contains.
  * @ingroup Form_API
  */
-class TabLayout extends Container
+class Tabs extends Container
 {
 	protected $tabs = array();
-
-	/**
-	 * Constructor for the Tab Layout.
-	 */
-	public function __construct()
-	{
-
-	}
 
 	/**
 	 * Adds a tab to the tab layout.
@@ -53,11 +47,13 @@ class TabLayout extends Container
 		}
 		return $retval;
 	}
-
-	/**
-	 * Renders all the tabs.
-	 */
-	public function render()
+	
+    public function renderHead()
+    {
+        return "<div class='fapi-tabs'>";
+    }
+	
+	public function renderFoot()
 	{
 		$ret = "<ul class='fapi-tab-list ".$this->getCSSClasses()."'>";
 		for($i=0; $i<count($this->tabs); $i++)
@@ -69,7 +65,7 @@ class TabLayout extends Container
 		{
 			$ret .= $element->render();
 		}
+		$ret .= "</div>";
 		return $ret;
 	}
 }
-?>

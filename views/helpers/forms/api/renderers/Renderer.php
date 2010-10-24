@@ -8,4 +8,5 @@ abstract class Renderer
     abstract public function head();
     abstract public function element($element);
     abstract public function foot();
+    abstract public function type();
 }
