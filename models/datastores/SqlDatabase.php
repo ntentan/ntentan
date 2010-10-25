@@ -162,7 +162,7 @@ abstract class SqlDatabase extends DataStore
         $query = "SELECT $fields FROM {$this->table} $joins ";
 
         // Generate conditions
-        if($params["conditions"] !== null)
+        if($params["conditions"] !== null && is_array($params["conditions"]))
         {
             // Go through the array of conditions and generate an SQL condition
             foreach($params["conditions"] as $field => $condition)
@@ -212,19 +212,41 @@ abstract class SqlDatabase extends DataStore
         $results = $this->query($query);
 
         // Retrieve all related data
-        if($params["fetch_related"] === true and count($this->model->belongsTo) > 0)
+        if($params["fetch_related"] === true)
         {
-            foreach($results as $index => $result)
+            if(count($this->model->belongsTo) > 0)
             {
-                foreach($result as $field => $value)
+                foreach($results as $index => $result)
                 {
-                    if(strpos($field,".")!==false) 
+                    foreach($result as $field => $value)
                     {
-                        $fieldNameArray = explode(".", $field);
-                        $fieldName = array_pop($fieldNameArray);
-                        $modelName = Ntentan::singular(implode(".", $fieldNameArray));
-                        $results[$index][$modelName][$fieldName] = $value;
-                        unset($results[$index][$field]);
+                        if(strpos($field,".")!==false) 
+                        {
+                            $fieldNameArray = explode(".", $field);
+                            $fieldName = array_pop($fieldNameArray);
+                            $modelName = Ntentan::singular(implode(".", $fieldNameArray));
+                            $results[$index][$modelName][$fieldName] = $value;
+                            unset($results[$index][$field]);
+                        }
+                    }
+                }
+            }
+            
+            if(count($this->model->hasMany) > 0)
+            {
+                foreach($this->model->hasMany as $hasMany)
+                {
+                    foreach($results as $index => $result)
+                    {
+                        $model = Model::load($hasMany);
+                        $relatedData = $model->get('all', 
+                            array("conditions"=>
+                                array(
+                                    Ntentan::singular($this->model->getName()) . "_id" => $result["id"]
+                                )
+                            )
+                        );
+                        $results[$index][$hasMany] = $relatedData;
                     }
                 }
             }
@@ -323,6 +345,7 @@ abstract class SqlDatabase extends DataStore
         foreach($data as $field => $value)
         {
             if($field == "id") continue;
+            if(is_array($value)) continue;
             $values[] = $this->quote($field) . " = '". $this->escape($value) . "'";
         }
         $query = "UPDATE {$this->table} SET " . implode(", ", $values) . " WHERE id = '{$data["id"]}'";
