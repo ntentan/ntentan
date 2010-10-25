@@ -86,6 +86,7 @@ class Admin extends Component
     public $headings = true;
     public $headingLevel = '2';
     public $notifications = true;
+    public $showTemplate = true;
     private $operations;
     private $app;
 
@@ -155,7 +156,7 @@ class Admin extends Component
         $this->set("headings", $this->headings);
         $itemsPerPage = 5;
         $model = $this->getModel();
-        $this->useTemplate("page.tpl.php");
+        if($this->showTemplate) $this->useTemplate("page.tpl.php");
 
         $data = $model->get(
         $itemsPerPage,
@@ -344,6 +345,7 @@ class Admin extends Component
         $item = $this->getModel()->getFirstWithId($id);
         $this->set("item", (string)$item);
         $this->set("message", $this->operations[$operation]["confirm_message"]);
+        $this->set("heading_level", $this->headingLevel);
         $route = $this->getCurrentRoute();
         $this->set("positive_route", Ntentan::getUrl("$route/$operation/$id"));
         $this->set("negative_route", Ntentan::getUrl($route));
