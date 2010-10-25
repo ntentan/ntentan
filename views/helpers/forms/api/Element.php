@@ -1,6 +1,8 @@
 <?php
 namespace ntentan\views\helpers\forms\api;
 
+use ntentan\views\helpers\forms\Forms;
+
 use \ReflectionClass;
 
 
@@ -127,16 +129,9 @@ abstract class Element
 	 *
 	 * @return The name of the form field.
 	 */
-	public function getName($encrypt=true)
+	public function getName()
 	{
-		if($this->getNameEncryption() && $encrypt)
-		{
-			return md5($this->name);
-		}
-		else
-		{
-			return $this->name;
-		}
+		return $this->name;
 	}
 
 	//! Sets the label which is attached to this element.
@@ -188,6 +183,11 @@ abstract class Element
 	 * all the other classes which inherit the Element class.
 	 */
 	abstract public function render();
+	
+	public function __toString()
+	{
+	    return Forms::getRendererInstance()->element($this);
+	}
 
 	//! Returns an array of all the CSS classes associated with this
 	//! element.
@@ -308,48 +308,9 @@ abstract class Element
 		return $this->showfield;
 	}
 
-	//! Sets whether the form names should be encrypted. If this method
-	//! is called with a parameter true, all the names that are rendered
-	//! in the HTML code are encrypted so that the database internals
-	//! are not exposed in anyway to the end users.
-	public function setNameEncryption($nameEncryption)
-	{
-		$this->nameEncryption = $nameEncryption;
-	}
-
-	public function setNameEncryptionKey($nameEncryptionKey)
-	{
-		$this->nameEncryptionKey = $nameEncryptionKey;
-	}
-
-	public function getNameEncryption()
-	{
-		return $this->nameEncryption;
-	}
-
-	public function getNameEncryptionKey()
-	{
-		return $this->nameEncryptionKey;
-	}
-
-	public function getForeing()
-	{
-		return false;
-	}
-
 	public function hasOptions()
 	{
 		return false;
-	}
-
-	public function setStorable($storable)
-	{
-		$this->storable = $storable;
-	}
-
-	public function getStorable()
-	{
-		return $this->storable;
 	}
 
 	public function getHasFile()
@@ -387,4 +348,4 @@ abstract class Element
         
     }
 }
-?>
+

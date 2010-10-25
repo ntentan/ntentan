@@ -1,4 +1,6 @@
 <?php
+namespace ntentan\views\helpers\forms\api;
+
 class UploadField extends Field
 {
 	public function __construct($label="",$name="",$description="",$value="",$destinationFile="")

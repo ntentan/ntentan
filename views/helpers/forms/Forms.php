@@ -5,6 +5,7 @@ use ntentan\views\helpers\Helper;
 use ntentan\Ntentan;
 use \ReflectionMethod;
 use \ReflectionClass;
+use \Exception;
 
 /**
  * Forms helper for rendering forms.
@@ -13,10 +14,10 @@ use \ReflectionClass;
 class Forms extends Helper
 {
     private $container;
-    
     public $submitValue;
-    
     public $id;
+    private static $rendererInstance;
+    public static $renderer = "inline";
     
     public function __construct()
     {
@@ -73,34 +74,34 @@ class Forms extends Helper
         switch($field["type"])
         {
             case "double":
-                $element = new TextField(ucwords(str_replace("_", " ", $field["name"])), $field["name"]);
+                $element = new api\TextField(ucwords(str_replace("_", " ", $field["name"])), $field["name"]);
                 $element->setAsNumeric();
                 break;
 
             case "integer":
                 if($field["foreing_key"]===true)
                 {
-                    $element = new ModelField(ucwords(str_replace("_", " ", substr($field["name"], 0, strlen($field["name"])-3))), $field["model"]);
+                    $element = new api\ModelField(ucwords(str_replace("_", " ", substr($field["name"], 0, strlen($field["name"])-3))), $field["model"]);
                     $element->name = $field["name"];
                 }
                 else
                 {
-                    $element = new TextField(ucwords(str_replace("_", " ", $field["name"])), $field["name"]);
+                    $element = new api\TextField(ucwords(str_replace("_", " ", $field["name"])), $field["name"]);
                     $element->setAsNumeric();
                 }
                 break;
 
             case "string":
-                $element = new TextField(Ntentan::toSentence($field["name"]), $field["name"]);
+                $element = new api\TextField(Ntentan::toSentence($field["name"]), $field["name"]);
                 break;
             case "text":
-                $element = new TextArea(Ntentan::toSentence($field["name"]), $field["name"]);
+                $element = new api\TextArea(Ntentan::toSentence($field["name"]), $field["name"]);
                 break;
             case "boolean":
-                $element = new Checkbox(Ntentan::toSentence($field["name"]), $field["name"]);
+                $element = new api\Checkbox(Ntentan::toSentence($field["name"]), $field["name"], "", 1);
                 break;
             case "datetime":
-                $element = new DateField(Ntentan::toSentence($field["name"]), $field["name"]);
+                $element = new api\DateField(Ntentan::toSentence($field["name"]), $field["name"]);
                 break;
                 
             default:
@@ -124,8 +125,54 @@ class Forms extends Helper
         }
     }
     
-    public function open()
+    public static function getRendererInstance()
     {
-        
+        if(self::$rendererInstance == null || self::$renderer != self::$rendererInstance->type())
+        {
+            $rendererClass = __NAMESPACE__ . "\\api\\renderers\\" . Ntentan::camelize(self::$renderer);
+            self::$rendererInstance = new $rendererClass();
+        }
+        return self::$rendererInstance;
+    }
+    
+    public function __call($function, $arguments)
+    {
+        if($function == "open")
+        {
+            return $this->container->renderHead();
+        }
+        elseif($function == "get")
+        {
+            return $this->createModelField($arguments[0]);
+        }
+        elseif($function == "close")
+        {
+            return $this->container->renderFoot();
+        }
+        elseif(substr($function, 0, 5) == "open_")
+        {
+            $container = "ntentan\\views\\helpers\\forms\\api\\" . Ntentan::camelize(substr($function, 5, strlen($function)));
+            $containerClass = new ReflectionClass($container);
+            $containerObject = $containerClass->newInstanceArgs($arguments);
+            return $containerObject->renderHead();
+        }
+        elseif(substr($function, 0, 6) == "close_")
+        {
+            $container = "ntentan\\views\\helpers\\forms\\api\\" . Ntentan::camelize(substr($function, 6, strlen($function)));
+            $containerClass = new ReflectionClass($container);
+            $containerObject = $containerClass->newInstanceArgs($arguments);
+            return $containerObject->renderFoot();
+        }
+        elseif(substr($function, 0, 4) == "get_")
+        {
+            $element = "ntentan\\views\\helpers\\forms\\api\\" . Ntentan::camelize(substr($function, 4, strlen($function)));
+            $elementClass = new ReflectionClass($element);
+            $elementObject = $elementClass->newInstanceArgs($arguments);
+            return $elementObject;
+        }
+        else
+        {
+            throw new Exception("Function not found");
+        }
     }
 }

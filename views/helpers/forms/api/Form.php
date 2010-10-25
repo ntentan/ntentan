@@ -40,17 +40,19 @@ class Form extends Container
         $this->addAttribute("enctype", "multipart/form-data");
         $this->add(new HiddenField("MAX_FILE_SIZE", "10485760"));
     }
+    
+    public function renderHead()
+    {
+        $this->addAttribute("method",$this->method);
+        $this->addAttribute("id",$this->getId());
+        $this->addAttribute("class","fapi-form");
 
-	public function render()
+        return '<form '.$this->getAttributes().'>';
+    }
+
+	public function renderFoot()
 	{
-		$this->addAttribute("method",$this->method);
-		$this->addAttribute("id",$this->getId());
-		$this->addAttribute("class","fapi-form");
-
-		$ret = '<form '.$this->getAttributes().'>';
-
-		$ret .= $this->renderElements();
-
+	    $ret = "";
 		if($this->showSubmit)
 		{
 			$ret .= '<div class="fapi-submit-area">';
@@ -74,11 +76,6 @@ class Form extends Container
 		Container::setShowField($show_field);
 		$this->setShowSubmit($show_field);
 	}
-	/*public function setSubmitValue($submitValue)
-	{
-	    die("w");
-	    $this->submitValue = $submitValue;
-	}*/
 
     public function __toString()
     {

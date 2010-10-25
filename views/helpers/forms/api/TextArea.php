@@ -12,6 +12,11 @@ class TextArea extends Field
 
 	public function render()
 	{
-		return "<textarea ".$this->getAttributes()." class='fapi-textarea ".$this->getCSSClasses()."' name='".$this->getName()."'>".$this->getValue()."</textarea>";
+	    $this->addAttribute('rows', 10);
+        $this->addAttribute('cols', 80);
+        $this->addAttribute('class', 'fapi-textarea');
+        $this->addAttribute('name', $this->getName());
+	    return "<textarea ".$this->getAttributes().$this->getCSSClasses()."'>".
+	           $this->getValue()."</textarea>";
 	}
 }

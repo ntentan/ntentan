@@ -45,13 +45,6 @@ class TextField extends Field
 	{
 		$this->type="REGEXP";
 		$this->regexp = $regexp;
-		$this->addJsValidation
-		(array(
-			"func"=>"fapiCheckRegexp",
-			"regexp"=>"/".$regexp."/",
-			"message"=>Field::prepareMessage("This {$this->getLabel()} format is not valid")
-			)
-		);
 		return $this;
 	}
 

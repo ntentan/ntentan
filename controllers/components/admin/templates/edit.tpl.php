@@ -1,4 +1,4 @@
-<h2>Edit <?php echo $item ?></h2>
+<h<?php echo $heading_level ?>>Edit <?php echo $item ?></h<?php echo $heading_level?>>
 <?php echo $console_menu_block; ?>
 <div id='form-area'>
 <?php 

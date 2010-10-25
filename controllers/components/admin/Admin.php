@@ -84,6 +84,7 @@ class Admin extends Component
     public $sections = array();
     public $model;
     public $headings = true;
+    public $headingLevel = '2';
     public $notifications = true;
     private $operations;
     private $app;
@@ -149,8 +150,9 @@ class Admin extends Component
     {
         $this->setupOperations();
         $this->set("model", ucfirst($this->getModel()->getName()));
-        $this->set("headings", $this->headings);
         $this->set("notifications", $this->notifications);
+        $this->set("heading_level", $this->headingLevel);
+        $this->set("headings", $this->headings);
         $itemsPerPage = 5;
         $model = $this->getModel();
         $this->useTemplate("page.tpl.php");
@@ -363,6 +365,8 @@ class Admin extends Component
         $this->useTemplate("edit.tpl.php");
         $description = $this->getModel()->describe();
         $this->set("fields", $description["fields"]);
+        $this->set("heading_level", $this->headingLevel);
+        $this->set("headings", $this->headings);
         $item = $this->getModel()->getFirstWithId($id);
         $this->set("data", $item->getData());
         $this->set("item", ucfirst(Ntentan::singular($this->getModel()->getName())));
@@ -389,6 +393,8 @@ class Admin extends Component
         $this->useTemplate("add.tpl.php");
         $model = $this->getModel();
         $description = $model->describe();
+        $this->set("heading_level", $this->headingLevel);
+        $this->set("headings", $this->headings);
         $this->set("fields", $description["fields"]);
         $this->set("model", ucfirst(Ntentan::singular($this->getModel()->getName())));
 
