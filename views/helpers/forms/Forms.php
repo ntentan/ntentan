@@ -147,6 +147,10 @@ class Forms extends Helper
         }
         elseif($function == "close")
         {
+            if($arguments[0] != "")
+            {
+                $this->container->submitValue = $arguments[0];
+            }
             return $this->container->renderFoot();
         }
         elseif(substr($function, 0, 5) == "open_")
@@ -169,6 +173,13 @@ class Forms extends Helper
             $elementClass = new ReflectionClass($element);
             $elementObject = $elementClass->newInstanceArgs($arguments);
             return $elementObject;
+        }
+        elseif(substr($function, 0, 4) == "add_")
+        {
+            $element = "ntentan\\views\\helpers\\forms\\api\\" . Ntentan::camelize(substr($function, 4, strlen($function)));
+            $elementClass = new ReflectionClass($element);
+            $elementObject = $elementClass->newInstanceArgs($arguments);
+            return $this->container->add($elementObject);
         }
         else
         {

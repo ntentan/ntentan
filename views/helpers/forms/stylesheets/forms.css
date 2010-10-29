@@ -95,3 +95,10 @@ table.fapi-table td
 	padding:5px;
 	vertical-align:top;
 }
+
+fieldset
+{
+	border:1px solid #f0f0f0;
+    border-radius:5px;
+    -moz-border-radius:5px;
+}
