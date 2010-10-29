@@ -9,3 +9,8 @@ function n($path)
 {
     return Ntentan::getFilePath($path);
 }
+
+function s($string)
+{
+    return Ntentan::toSentence($string);
+}

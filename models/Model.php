@@ -572,7 +572,7 @@ class Model implements ArrayAccess, Iterator
             if($field["primary_key"]) continue;
 
             // Validate Required
-            if($this->data[$field["name"]] == "" && $field["required"])
+            if(($this->data[$field["name"]] === "" || $this->data[$field["name"]] === null) && $field["required"])
             {
                 if(!($inserting && isset($field["default"])))
                 {

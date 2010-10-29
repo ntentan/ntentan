@@ -21,7 +21,7 @@ class Checkbox extends Field
 	 * @param $description A description of the field.
 	 * @param $value A value to assign to this checkbox.
 	 */
-	public function __construct($label="", $name="", $description="", $value="")
+	public function __construct($label="", $name="", $description="", $value="1")
 	{
 		Element::__construct($label, $description);
 		parent::__construct($name);
