@@ -72,7 +72,14 @@ class Model implements ArrayAccess, Iterator
         }
         $modelInformation = new ReflectionObject($this);
         $modelName = end(explode("\\", $modelInformation->getName()));
-        $this->name = strtolower(Ntentan::deCamelize(substr($modelName, 0, strlen($modelName) - 5)));
+        if(substr($modelName, -5) == "Model")
+        {
+            $this->name = strtolower(Ntentan::deCamelize(substr($modelName, 0, strlen($modelName) - 5)));
+        }
+        else
+        {
+            $this->name = strtolower(Ntentan::deCamelize($modelName));
+        }
         $this->iteratorPosition = 0;
         $this->modelRoute = implode(".",array_slice(explode("\\", $modelInformation->getName()),1 , -1));
         
@@ -94,7 +101,7 @@ class Model implements ArrayAccess, Iterator
     
     public static function getClassName($className)
     {
-        $name = "\\" . Ntentan::$modulesPath . "\\" . str_replace(".", "\\", $className) . "\\" . Ntentan::camelize(end(explode(".", $className))) . "Model";
+        $name = "\\" . Ntentan::$modulesPath . "\\" . str_replace(".", "\\", $className) . "\\" . Ntentan::camelize(end(explode(".", $className)));
         return $name;
     }
 
@@ -107,6 +114,12 @@ class Model implements ArrayAccess, Iterator
     {
         $filePath = Ntentan::$modulesPath . "/" . str_replace(".", "/", $modelRoute);
         if(file_exists($filePath . "/" . Ntentan::camelize($modelRoute) . "Model.php"))
+        {
+            Ntentan::addIncludePath($filePath);
+            $className = Model::getClassName($modelRoute) . "Model";
+            return new $className();
+        }
+        elseif(file_exists($filePath . "/" . Ntentan::camelize($modelRoute) . ".php"))
         {
             Ntentan::addIncludePath($filePath);
             $className = Model::getClassName($modelRoute);
@@ -199,6 +212,16 @@ class Model implements ArrayAccess, Iterator
     {
         
     }
+    
+    public function preDeleteCallback()
+    {
+        
+    }
+    
+    public function postDeleteCallback()
+    {
+        
+    }
 
     public function save()
     {
@@ -236,8 +259,10 @@ class Model implements ArrayAccess, Iterator
 
     public function delete()
     {
+        $this->preDeleteCallback();
         $this->_dataStoreInstance->setModel($this);
         $this->_dataStoreInstance->delete();
+        $this->postDeleteCallback();
     }
     
     public static function __callstatic($method, $arguments)
