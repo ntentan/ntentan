@@ -2,9 +2,7 @@
 namespace ntentan\views\helpers\forms\api;
 
 use ntentan\views\helpers\forms\Forms;
-
 use \ReflectionClass;
-
 
 /**
  * The form element class. An element can be anything from the form
@@ -12,9 +10,6 @@ use \ReflectionClass;
  * abstract render class that is used to output the HTML associated
  * with this form element. All visible elements of the form must be
  * subclasses of the element class.
- *
- * \ingroup Form_API
- *
  */
 abstract class Element
 {
@@ -307,12 +302,7 @@ abstract class Element
 	{
 		return $this->showfield;
 	}
-
-	public function hasOptions()
-	{
-		return false;
-	}
-
+	
 	public function getHasFile()
 	{
 		return $this->hasFile;

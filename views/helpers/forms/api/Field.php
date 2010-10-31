@@ -62,11 +62,6 @@ abstract class Field extends Element
 	 */
 	public function setValue($value)
 	{
-		if($unset)
-		{
-			if($this->getMethod()=="GET") unset($_GET[$this->getName()]);
-			if($this->getMethod()=="POST") unset($_POST[$this->getName()]);
-		}
 		$this->value = $value;
         return $this;
 	}
@@ -107,26 +102,29 @@ abstract class Field extends Element
 		return $this->required;
 	}
 
-	//! Returns the data held by this field. This data is returned as a
-	//! key value pair. The key is the name of the field and the value
-	//! represents the value of the field.
-	//!
-	public function getData($storable=false)
+	/**
+	 * Returns the data held by this field. This data is returned as a
+	 * key value pair. The key is the name of the field and the value
+	 * represents the value of the field.
+	 */
+	public function getData($storable)
 	{
 		if($this->getMethod()=="POST")
 		{
-			//print $this->getName(false)." - ".$this->getValue()."<br />";;
-			if(isset($_POST[$this->getName()])) $this->setValue($_POST[$this->getName()]);
+			if(isset($_POST[$this->getName()]))
+			{ 
+                $this->setValue($_POST[$this->getName()]);
+			}
 		}
 		else if($this->getMethod()=="GET")
 		{
-			//print $this->getName(false)." - ".$this->getValue()."<br />";;
-			if(isset($_GET[$this->getName()])) $this->setValue($_GET[$this->getName()]);
+			if(isset($_GET[$this->getName()]))
+			{
+                $this->setValue($_GET[$this->getName()]);
+			}
 		}
 		else
 		{
-			//print $this->getLabel();
-			//print $this->getName(false);
 			throw new Exception("The method for this field has not been set.");
 			$this->setValue("");
 		}
@@ -185,4 +183,3 @@ abstract class Field extends Element
 	}
 
 }
-

@@ -115,7 +115,7 @@ abstract class SqlDatabase extends DataStore
         {
             foreach($this->model->belongsTo as $relatedModel)
             {
-                if(is_array($relatedModel))
+                if(is_array($relatedModel) && isset($relatedModel["through"]))
                 {
                     $firstRelatedModel = Model::load(Model::getBelongsTo($relatedModel[0]));
                     $firstDatastore = $firstRelatedModel->getDataStore(true);
@@ -125,19 +125,36 @@ abstract class SqlDatabase extends DataStore
                 }
                 else
                 {
+                    if(is_array($relatedModel))
+                    {
+                        $alias = $relatedModel["as"];
+                        $relatedModel = $relatedModel[0];
+                    }
                     $model = Model::load(Model::getBelongsTo($relatedModel));
                     $datastore = $model->getDataStore(true);
                     $joinedModelDescription = $model->describe();
                     $joinedModelFields = array_keys($joinedModelDescription["fields"]);
+                    if($alias == null)
+                    {
+                        $joinedTable = $joinedModelDescription["name"];
+                    }
+                    else
+                    {
+                        $joinedTable = $alias;
+                    }
+                    
                     foreach($joinedModelFields as $index => $field)
                     {
                         $joinedModelFields[$index] = 
-                            $this->quote($joinedModelDescription["name"])
+                            $this->quote($joinedTable)
                              . "." . $this->quote($field) . " as "
-                             . $this->quote("{$joinedModelDescription["name"]}.$field");
+                             . $this->quote($joinedTable . ".$field");
                     }
                     $fields = $fields . ", " . implode(", ", $joinedModelFields);
-                    $joins .= " JOIN {$datastore->table} ON {$datastore->table}.id = {$this->table}." . Ntentan::singular($datastore->table) . "_id ";
+                    $joins .= " JOIN {$datastore->table} "
+                           . ($alias != null ? "AS $alias" : "")
+                           . " ON " . ($alias != null ? $alias : $datastore->table) . ".id = {$this->table}." 
+                           . ($alias != null ? $alias : Ntentan::singular($datastore->table) . "_id ");
                 }
             }
         }

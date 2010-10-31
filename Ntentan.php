@@ -169,7 +169,8 @@ class Ntentan
                 Ntentan::getFilePath('exceptions/'),
                 Ntentan::getFilePath('caching/'),
                 "./",
-                Ntentan::$modulesPath
+                Ntentan::$modulesPath,
+                Ntentan::$layoutsPath,
             )
         );
         

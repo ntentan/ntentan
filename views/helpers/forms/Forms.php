@@ -18,6 +18,8 @@ class Forms extends Helper
     public $id;
     private static $rendererInstance;
     public static $renderer = "inline";
+    private $data = array();
+    private $errors = array();
     
     public function __construct()
     {
@@ -34,6 +36,8 @@ class Forms extends Helper
     {
         $this->container->submitValue = $this->submitValue;
         $this->container->setId($this->id);
+        $this->container->setData($this->data);
+        $this->container->setErrors($this->errors);
         $return = (string)$this->container;
         $this->container = new api\Form();
         return $return;
@@ -61,12 +65,12 @@ class Forms extends Helper
     
     public function setErrors($errors)
     {
-        $this->container->setErrors($errors);
+        $this->errors = $errors;
     }
     
     public function setData($data)
     {
-        $this->container->setData($data);
+        $this->data = $data;
     }
     
     public function createModelField($field)
@@ -172,6 +176,12 @@ class Forms extends Helper
             $element = "ntentan\\views\\helpers\\forms\\api\\" . Ntentan::camelize(substr($function, 4, strlen($function)));
             $elementClass = new ReflectionClass($element);
             $elementObject = $elementClass->newInstanceArgs($arguments);
+            $name = $elementObject->getName();
+            $elementObject->setValue($this->data[$name]);
+            if(isset($this->errors[$name]))
+            {
+                $elementObject->addErrors($this->errors[$name]);
+            }
             return $elementObject;
         }
         elseif(substr($function, 0, 4) == "add_")

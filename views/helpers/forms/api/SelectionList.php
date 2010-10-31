@@ -2,29 +2,10 @@
 namespace ntentan\views\helpers\forms\api;
 
 /**
- * An item that can be added to a selection list.
- * @ingroup Form_API
+ * 
+ * @author ekow
+ *
  */
-class SelectionListItem
-{
-	public $label;
-	public $value;
-
-	public function __construct($label="", $value="")
-	{
-		$this->label = $label;
-		$this->value = $value;
-	}
-
-	public function __tostring()
-	{
-		return $this->label;
-	}
-}
-
-//! The SelectionList represents a list of selectible items. These items
-//! can be shown in a combo box or a regular list.
-//! \ingroup Form_API
 class SelectionList extends Field
 {
 	//! Array of options.
@@ -54,7 +35,7 @@ class SelectionList extends Field
 	public function addOption($label="", $value="")
 	{
 		if($value==="") $value=$label;
-		$this->options[] = new SelectionListItem($label, $value);
+		$this->options[$value] = $label;
 		return $this;
 	}
 
@@ -62,9 +43,9 @@ class SelectionList extends Field
 	{
 		$this->addAttribute("id",$this->getId());
 		$ret = "<select {$this->getAttributes()} class='fapi-list ".$this->getCSSClasses()."' name='".$this->getName()."' ".($this->multiple?"multiple='multiple'":"").">";
-		foreach($this->options as $option)
+		foreach($this->options as $value => $label)
 		{
-			$ret .= "<option value='$option->value' ".($this->getValue()===$option->value?"selected='selected'":"").">$option->label</option>";
+			$ret .= "<option value='$value' ".($this->getValue()==$value?"selected='selected'":"").">$label</option>";
 		}
 		$ret .= "</select>";
 		return $ret;
@@ -82,18 +63,24 @@ class SelectionList extends Field
         return $this->value;
 	}
 
-	public function hasOptions()
+	public function setOptions($options, $merge = true)
 	{
-		return true;
+	    if($merge) 
+	    {
+	        foreach($options as $value => $label)
+	        {
+	            $this->addOption($label, $value);
+	        }
+	    }
+	    else
+	    {
+	        $this->options = $options;
+	    }
+	    return $this;
 	}
-
+	
 	public function getOptions()
 	{
-		$options = array();
-		foreach($this->options as $option)
-		{
-			$options += array($option->value=>$option->label);
-		}
 		return $options;
 	}
 }
