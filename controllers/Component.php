@@ -1,8 +1,6 @@
 <?php
-/**
- * The class file which contains the Component class
- *
- * LICENSE:
+/* 
+ * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +14,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * @package    ntentan.controllers.components
- * @author     James Ekow Abaka Ainooson <jainooson@gmail.com>
- * @copyright  2010 James Ekow Abaka Ainooson
- * @license    http://www.apache.org/licenses/LICENSE-2.0
  */
-
 
 namespace ntentan\controllers\components;
 
