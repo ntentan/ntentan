@@ -89,12 +89,10 @@ class View extends Presentation
         ob_start();
         if(file_exists( $this->template ))
         {
-            include "view_utils.php";
             include $this->template;
         }
         else if(file_exists($this->defaultTemplatePath . $this->template))
         {
-            include "view_utils.php";
             include $this->defaultTemplatePath . $this->template;
         }
         else if($this->template === false)
