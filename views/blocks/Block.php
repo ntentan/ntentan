@@ -18,6 +18,8 @@
 
 namespace ntentan\views\blocks;
 
+use ntentan\views\template_engines\Template;
+
 use \ntentan\Ntentan;
 use \ntentan\views\Presentation;
 /**
@@ -73,18 +75,13 @@ class Block extends Presentation
     public function __toString()
     {
         $this->preRender();
-        foreach($this->data as $key => $value)
-        {
-            $$key = $value;
-        }
         if($this->template == "")
         {
             $block = $this->getName();
             $this->template = $this->filePath . "/$block.tpl.php";
         }
-        ob_start();
-        include $this->template;
+        $output = Template::out($this->template, $this->data);
         $this->postRender();
-        return ob_get_clean();
+        return $output;
     }
 }

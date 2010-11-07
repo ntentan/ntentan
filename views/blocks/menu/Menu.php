@@ -43,4 +43,9 @@ class Menu extends Block {
         }
         $this->set("items", $this->items);
     }
+    
+    public function preRender()
+    {
+        $this->set("has_links", $this->hasLinks);
+    }
 }

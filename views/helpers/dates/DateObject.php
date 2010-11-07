@@ -17,9 +17,9 @@
  */
 
 
-namespace ntentan\views\helpers\time;
+namespace ntentan\views\helpers\dates;
 
-class TimeObject
+class DateObject
 {
 	private $timestamp;
 	
