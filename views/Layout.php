@@ -18,6 +18,8 @@
 
 namespace ntentan\views;
 
+use ntentan\views\template_engines\Template;
+
 use ntentan\Ntentan;
 use ntentan\exceptions\FileNotFoundException;
 
@@ -89,19 +91,16 @@ class Layout
     public function out($contents, $blocks = array(), $viewData = array())
     {
         $sheets = array();
+        $layoutData = array();
+        
         foreach($this->javaScripts as $javaScript)
         {
-            $javascripts .= "<script type='text/javascript' src='$javaScript'></script>";
+            $layoutData["javascripts"] .= "<script type='text/javascript' src='$javaScript'></script>";
         }
 
         foreach($this->styleSheets as $styleSheet)
         {
             $sheets[$styleSheet["media"]][] = $styleSheet;
-        }
-
-        foreach($viewData as $key => $value)
-        {
-            $$key = $value;
         }
 
         foreach(array_keys($sheets) as $media)
@@ -119,23 +118,26 @@ class Layout
             }
             $path = "public/" . $media . ".css";
             file_put_contents($path, $$media);
-            $stylesheets .= "<link rel='stylesheet' type='text/css' href='/$path' media='$media'>";
+            $layoutData["stylesheets"] .= "<link rel='stylesheet' type='text/css' href='/$path' media='$media'>";
         }
 
         // Render all the blocks into string variables
         foreach($blocks as $name => $block)
         {
-            $$name = $block;
+            $layoutData[$name] = $block;
         }
 
-        $title = $this->title;
+        $layoutData["title"] = $this->title;
+        $layoutData["contents"] = $contents;
+        $layoutData = array_merge($layoutData, $viewData);
+
         if(file_exists($this->layoutPath))
         {
-            include $this->layoutPath;
+            return Template::out($this->layoutPath, $layoutData);
         }
         else if($this->name === false)
         {
-            echo $contents;
+            return $contents;
         }
         else
         {

@@ -108,26 +108,27 @@ abstract class SqlDatabase extends DataStore
         }
         else
         {
+            // If a count is not needed get a list of all the fields in the model
+            $description = $this->model->describe();
             if($params["fields"] == null)
             {
-                //$fields = " * ";
-                $description = $this->model->describe();
-                $modelFields = array_keys($description["fields"]);
-                foreach($modelFields as $index => $field)
-                {
-                    $modelFields[$index] = $this->quote($description["name"]). "." . $this->quote($field);
-                }
-                $fields = implode(", ", $modelFields);
+                $params["fields"] = array_keys($description["fields"]);
             }
-            else
+            
+            foreach($params["fields"] as $index => $field)
             {
-                $fields = implode(", ", is_array($params["fields"]) ? $params["fields"] : explode(",", $params["fields"]));
+                $params["fields"][$index] = $this->quote($description["name"]). "." . $this->quote($field);
+                if($params["fetch_belongs_to"] && $description["fields"][$field]["foreing_key"] === true && $description["fields"][$field]["alias"] != '')
+                {
+                    $params["fields"][$index] .= " AS {$description["fields"][$field]["alias"]}";
+                }
             }
+            $fields = implode(", ", is_array($params["fields"]) ? $params["fields"] : explode(",", $params["fields"]));
         }
         
         // Generate joins
         $joins = "";
-        if($params["fetch_related"] === true)
+        if($params["fetch_related"] === true || $params["fetch_belongs_to"] === true)
         {
             foreach($this->model->belongsTo as $relatedModel)
             {
@@ -163,7 +164,7 @@ abstract class SqlDatabase extends DataStore
                     {
                         $joinedModelFields[$index] = 
                             $this->quote($joinedTable)
-                             . "." . $this->quote($field) . " as "
+                             . "." . $this->quote($field) . " AS "
                              . $this->quote($joinedTable . ".$field");
                     }
                     $fields = $fields . ", " . implode(", ", $joinedModelFields);
@@ -171,6 +172,7 @@ abstract class SqlDatabase extends DataStore
                            . ($alias != null ? "AS $alias" : "")
                            . " ON " . ($alias != null ? $alias : $datastore->table) . ".id = {$this->table}." 
                            . ($alias != null ? $alias : Ntentan::singular($datastore->table) . "_id ");
+                    $alias = null;
                 }
             }
         }
@@ -241,16 +243,16 @@ abstract class SqlDatabase extends DataStore
         	$query .= "LIMIT $offset {$params["type"]}";
         }
 
-        // Execute the query
         $results = $this->query($query);
 
         // Retrieve all related data
-        if($params["fetch_related"] === true)
+        if($params["fetch_related"] === true || $params["fetch_belongs_to"] === true)
         {
             if(count($this->model->belongsTo) > 0)
             {
                 foreach($results as $index => $result)
                 {
+                    $modelizedFields = array();
                     foreach($result as $field => $value)
                     {
                         if(strpos($field,".")!==false) 
@@ -258,13 +260,33 @@ abstract class SqlDatabase extends DataStore
                             $fieldNameArray = explode(".", $field);
                             $fieldName = array_pop($fieldNameArray);
                             $modelName = Ntentan::singular(implode(".", $fieldNameArray));
+                            if(is_string($results[$index][$modelName])) $results[$index][$modelName] = array();
                             $results[$index][$modelName][$fieldName] = $value;
+                            $modelizedFields[] = $modelName;
                             unset($results[$index][$field]);
                         }
                     }
+                    $modelizedFields = array_unique($modelizedFields);
+                    foreach($modelizedFields as $modelizedField)
+                    {
+                        if($description["fields"][$modelizedField]["alias"])
+                        {
+                            $wrapperModelName = $description["fields"][$modelizedField]["model"];
+                        }
+                        else
+                        {
+                            $wrapperModelName = Ntentan::plural($modelizedField);
+                        }
+                        $wrapperModel = Model::load($wrapperModelName);
+                        $wrapperModel->setData($results[$index][$modelizedField], true);
+                        $results[$index][$modelizedField] = $wrapperModel;
+                    }
                 }
             }
-            
+        }
+        
+        if($params["fetch_related"] === true || $params["fetch_has_many"] === true)
+        {
             if(count($this->model->hasMany) > 0)
             {
                 foreach($this->model->hasMany as $hasMany)

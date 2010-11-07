@@ -17,9 +17,10 @@
  */
 
 use ntentan\Ntentan;
+use ntentan\views\template_engines\Template;
 
 /**
- * A short-cut wrapper function around the Ntentan::getUrl method
+ * A shortcut wrapper function around the Ntentan::getUrl method
  * @param $url
  */
 function u($url)
@@ -28,7 +29,7 @@ function u($url)
 }
 
 /**
- * A short-cut wrapper around the Ntentan::getFilePath method
+ * A shortcut wrapper around the Ntentan::getFilePath method
  * @param unknown_type $path
  */
 function n($path)
@@ -37,10 +38,20 @@ function n($path)
 }
 
 /**
- * A short-cut wrapper around the Ntentan::toSentence method
+ * A shortcut wrapper around the Ntentan::toSentence method
  * @param $string
  */
 function s($string)
 {
     return Ntentan::toSentence($string);
+}
+
+/**
+ * A shortcut wrapper around the 
+ * @param string $template
+ * @param array $data
+ */
+function t($template, $data)
+{
+    return Template::out($template, $data);
 }

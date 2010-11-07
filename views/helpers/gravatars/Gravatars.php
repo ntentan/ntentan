@@ -17,16 +17,15 @@
  */
 
 
-namespace ntentan\views\helpers\time;
+namespace ntentan\views\helpers\gravatars;
 
-use ntentan\views\helpers\Helper;
+use \ntentan\views\helpers\Helper;
 
-class Time extends Helper
+class Gravatars extends Helper
 {
-	private $timestamp;
-	
-	public function parse($time)
-	{
-		return new TimeObject(strtotime($time));
-	}	
+    public function get($email, $size = 48)
+    {
+        $hash = md5(strtolower(trim($email)));
+        return "http://www.gravatar.com/avatar/$hash.jpg?s=$size&amp;d=mm";
+    }
 }

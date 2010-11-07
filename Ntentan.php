@@ -39,10 +39,11 @@ set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
 
 
 /**
- * A utility class for the Ntentan framework. This class contains the information
- * necessary for routing. It also performs the routing of the pages and the
- * loading of the controllers. This class also has several utility methods
- * which help in the overall operation of the entire framework.
+ * A utility class for the Ntentan framework. This class contains the routing
+ * framework used for routing the pages. Routing involves the analysis of the
+ * URL and the loading of the controllers which are requested through the URL. 
+ * This class also has several utility methods which help in the overall 
+ * operation of the entire framework.
  * 
  *  @author     James Ainooson <jainooson@gmail.com>
  *  @license    Apache License, Version 2.0
@@ -166,6 +167,8 @@ class Ntentan
                 Ntentan::getFilePath('models/datastores/'),
                 Ntentan::getFilePath('models/exceptions/'),
                 Ntentan::getFilePath('views/'),
+                Ntentan::getFilePath('views/template_engines/'),
+                Ntentan::getFilePath('views/blocks/'),
                 Ntentan::getFilePath('exceptions/'),
                 Ntentan::getFilePath('caching/'),
                 "./",
@@ -317,34 +320,49 @@ class Ntentan
     }
 
     /**
-     * Returns the sigular form of any plural word which is passed to it.
-     * @param string $string
+     * Returns the sigular form of any plural english word which is passed to it.
+     * @param string $word
      * @see Ntentan::plural
      */
-    public static function singular($string)
+    public static function singular($word)
     {
-        if(substr($string,-3) == "ies")
+        if(substr($word,-3) == "ies")
         {
-            return substr($string, 0, strlen($string) - 3) . "y";
+            return substr($word, 0, strlen($word) - 3) . "y";
         }
-        else if(substr($string, -1) == "s")
+        else if(substr($word, -1) == "s")
         {
-            return substr($string, 0, strlen($string) - 1);
+            return substr($word, 0, strlen($word) - 1);
+        }
+        else
+        {
+            return $word;
         }
     }
     
-    public static function plural($string)
+    /**
+     * Returns the plural form of any singular english word which is passed to it.
+     * @param string $word
+     */
+    public static function plural($word)
     {
-        if(substr($string, -1) == "y")
+        if(substr($word, -1) == "y")
         {
-            return substr($string, 0, strlen($string) - 1) . "ies";
+            return substr($word, 0, strlen($word) - 1) . "ies";
         }
-        elseif(substr($string, -1) != "s")
+        elseif(substr($word, -1) != "s")
         {
-            return $string . "s";
+            return $word . "s";
         }
     }
     
+    /**
+     * Converts a dot separeted string or under-score separated string into 
+     * a camelcase format.
+     * @param string $string The string to be converted.
+     * @param string $delimiter The delimiter to be used as the trigger for capitalisation
+     * @param string $baseDelimiter Another delimiter to be used as a second trigger for capitalisation
+     */
     public static function camelize($string, $delimiter=".", $baseDelimiter = "")
     {
         if($baseDelimiter == "") $baseDelimiter = $delimiter;
@@ -357,6 +375,10 @@ class Ntentan
         return $ret;
     }
     
+    /**
+     * Converts a camel case string to an underscore separated string
+     * @param unknown_type $string
+     */
     public static function deCamelize($string)
     {
         $deCamelized = "";

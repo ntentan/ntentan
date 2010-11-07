@@ -5,8 +5,7 @@
     <?php echo $item_actions_menu_block ?>
 </div>
 <?php if($notifications):?> 
-<div class="notification">
-<?php
+<div class="notification"><?php
 switch($notification_type)
 {
 case 1:
@@ -19,41 +18,22 @@ case 3:
     echo "Successfully deleted $model <b>$notification_item</b>";
     break;
 }
-?>
-</div>
+?></div>
 <?php endif?>
 <div>
-    <table class='item-table'>
-        <thead>
-            <tr>
-                <?php foreach($list_fields as $field):?>
-                <td><?php echo to_sentence($field) ?></td>
-                <?php endforeach;?>
-                <td></td>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach($data as $row): ?>
-            <tr>
-                <?php foreach ($list_fields as $field):?>
-                <td><?php echo $row[$field] ?></td>
-                <?php endforeach;?>
-                <td class='operations'>
-                    <?php foreach ($operations as $operation):?>
-                    <a class='buttonlike grey-gradient grey-border' href="<?php echo $operation["link"] . $row["id"]; ?>">
-                        <?php echo $operation["label"]?>
-                    </a>
-                    <?php endforeach;?>
-                </td>
-            </tr>
-            <?php endforeach;?>
-        </tbody>
-    </table>
-    <?php if(isset($pages)):?>
-    <div class='item-pages-list'>
-        <?php foreach ($pages as $page):?>
-        <a href='<?php echo $page["link"] ?>'><?php echo $page["label"] ?></a>
-        <?php endforeach;?>
-    </div>
-    <?php endif?>
+<?php
+$headers[] = "";
+$this->list->headers = $headers;
+$this->list->data = $data;
+$this->list->cellTemplates['id'] = $operations_template;
+$this->list->variables["operations"] = $operations;
+echo $this->list;
+?>
+<?php if(isset($pages)):?>
+<div class='item-pages-list'>
+    <?php foreach ($pages as $page):?>
+    <a href='<?php echo $page["link"] ?>'><?php echo $page["label"] ?></a>
+    <?php endforeach;?>
+</div>
+<?php endif?>
 </div>

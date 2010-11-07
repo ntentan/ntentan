@@ -70,6 +70,7 @@ class Model implements ArrayAccess, Iterator
     public $invalidFields = array();
     private static $modelCache;
     private $iteratorPosition;
+    public $defaultField;
     
     public function __construct()
     {
@@ -208,6 +209,12 @@ class Model implements ArrayAccess, Iterator
         $params["type"] = $type;
         $result = $this->_dataStoreInstance->get($params);
         return $result;
+    }
+
+    public function getFields()
+    {
+        $description = $this->describe();
+        return array_keys($description["fields"]);
     }
 
     public function preSaveCallback()
@@ -355,7 +362,7 @@ class Model implements ArrayAccess, Iterator
         if(substr($method, 0, 3) == "get")
         {
             $modelName = strtolower(substr($method,3));
-            if(is_array($this->hasMany))
+            /*if(is_array($this->hasMany))
             {
                 $key = array_search($modelName, $this->hasMany);
                 $model = Model::load($this->hasMany[$key]);
@@ -363,7 +370,7 @@ class Model implements ArrayAccess, Iterator
             else
             {
                 $model = Model::load($this->hasMany);
-            }
+            }*/
             $modelMethod = new ReflectionMethod($model, "get");
             $foreingKey = $this->name . "_id";
             //$arguments[1]["conditions"] = array($this->name . "_id" => $this->data["id"]);
@@ -517,17 +524,20 @@ class Model implements ArrayAccess, Iterator
                 {
                     $belongsToModel = is_array($belongsTo) ? $belongsTo[0] : $belongsTo;
                     $description["belongs_to"][] = $belongsToModel;
+                    $alias = null;
                     if(is_array($belongsTo))
                     {
                         $fieldName = $belongsTo["as"];
+                        $alias = $belongsTo["as"];
                     }
                     else
                     {
-                        $fieldName = strtolower(
+                        $alias = strtolower(
                             Ntentan::singular(
                                 $this->getBelongsTo($belongsTo)
                             )
-                        ) . "_id";
+                        );
+                        $fieldName = $alias . "_id";
                     }
                     foreach($description["fields"] as $i => $field)
                     {
@@ -535,13 +545,15 @@ class Model implements ArrayAccess, Iterator
                         {
                             $description["fields"][$i]["model"] = Ntentan::plural($belongsToModel);
                             $description["fields"][$i]["foreing_key"] = true;
+                            $description["fields"][$i]["field_name"] = $fieldName;
+                            if($alias != '') $description["fields"][$i]["alias"] = $alias;
                         }
                     }
                 }
             }
             else
             {
-                if($this->belongsTo != "")
+                if($this->belongsTo != null)
                 {
                     $description["belongs_to"][] = $this->belongsTo;
                     $fieldName = strtolower(Ntentan::singular($this->belongsTo)) . "_id";

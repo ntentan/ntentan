@@ -88,6 +88,7 @@ class Admin extends Component
     public $notifications = true;
     public $showTemplate = true;
     private $operations;
+    public $operationsTemplate;
     private $app;
 
     public function __construct($prefix = null)
@@ -150,25 +151,50 @@ class Admin extends Component
     public function page($pageNumber)
     {
         $this->setupOperations();
+        $this->operationsTemplate = 
+            $this->operationsTemplate == null ? 
+                Ntentan::getFilePath(
+                    'controllers/components/admin/templates/operations.tpl.php'
+                ):
+                $this->operationsTemplate;
+        $this->set("operations_template", $this->operationsTemplate);
         $this->set("model", ucfirst($this->getModel()->getName()));
         $this->set("notifications", $this->notifications);
         $this->set("heading_level", $this->headingLevel);
         $this->set("headings", $this->headings);
-        $itemsPerPage = 5;
+        $itemsPerPage = 10;
         $model = $this->getModel();
+        $table = $model->getDataStore(true)->table;
         if($this->showTemplate) $this->useTemplate("page.tpl.php");
+        $listFields = $this->listFields;
+        $description = $model->describe();
+        if(count($listFields) == null)
+        {
+            $listFields = $model->getFields();
+            array_shift($listFields);
+            /*foreach($listFields as $index => $listField)
+            {
+                $listFields[$index] = $model->getName() . "." . $listField;
+            }*/
+        }
+        $listFields[] = "id";
 
         $data = $model->get(
-        $itemsPerPage,
+            $itemsPerPage,
             array(
-                "offset"=>($pageNumber-1) * $itemsPerPage,
-                "sort" => $model->getName() . ".id desc",
-                "fetch_related" => true
+                "fields"            =>  $listFields,
+                "offset"            =>  ($pageNumber-1) * $itemsPerPage,
+                "sort"              =>  $model->getName() . ".id desc",
+                "fetch_belongs_to"  =>  true
             )
         );
-
+        
         $count = $model->get('count');
-        $this->set("data", $data->getData());
+        $data = $data->getData();
+        $this->set("data", $data);
+        $headers = array_keys($data[0]);
+        array_pop($headers);
+        $this->set("headers", $headers);
         $numPages = ceil($count / $itemsPerPage);
         $pagingLinks = array();
 

@@ -18,6 +18,8 @@
 
 namespace ntentan\views;
 
+use ntentan\views\template_engines\Template;
+
 use ntentan\Ntentan;
 
 /**
@@ -69,31 +71,23 @@ class View extends Presentation
 
     public function out($viewData)
     {
-        // Convert all keys of the data array into variables
-        if(is_array($viewData))
-        {
-            foreach($viewData as $key => $value)
-            {
-                $$key = $value;
-            }
-        }
-        
         // Render all the blocks into string variables
         $blocks = array();
         foreach($this->blocks as $alias => $block)
         {
             $blockName = $alias."_block";
-            $$blockName = (string)$block;
-            $blocks[$blockName] = $$blockName;
+            $viewData[$blockName] = (string)$block;
+            $blocks[$blockName] = $viewData[$blockName];
         }
-        ob_start();
+        
+        //ob_start();
         if(file_exists( $this->template ))
         {
-            include $this->template;
+            $data = Template::out($this->template, $viewData);
         }
         else if(file_exists($this->defaultTemplatePath . $this->template))
         {
-            include $this->defaultTemplatePath . $this->template;
+            $data = Template::out($this->defaultTemplatePath . $this->template, $viewData);
         }
         else if($this->template === false)
         {
@@ -103,23 +97,11 @@ class View extends Presentation
         {
             Ntentan::error("View template <b><code>{$this->template}</code></b> not Found!");
         }
-        $data = ob_get_clean();
 
         if(!Ntentan::isAjax())
         {
-            ob_start();
-            $this->_layout->out($data, $blocks, $viewData);
-            $data = ob_get_clean();
+            $data = $this->_layout->out($data, $blocks, $viewData);
         }
-        
         return $data;
-    }
-    
-    public static function nl2br($text) {
-        return str_replace("\n", "<br/>", $text);
-    }
-
-    public static function truncate($text, $size, $ending = "...") {
-    	return substr($text, 0, $size) . $ending;
     }
 }
