@@ -114,16 +114,16 @@ abstract class SqlDatabase extends DataStore
             {
                 $params["fields"] = array_keys($description["fields"]);
             }
-            
+            $fields = array();
             foreach($params["fields"] as $index => $field)
             {
-                $params["fields"][$index] = $this->quote($description["name"]). "." . $this->quote($field);
+                $fields[$index] = $this->quote($description["name"]). "." . $this->quote($field);
                 if($params["fetch_belongs_to"] && $description["fields"][$field]["foreing_key"] === true && $description["fields"][$field]["alias"] != '')
                 {
-                    $params["fields"][$index] .= " AS {$description["fields"][$field]["alias"]}";
+                    $fields[$index] .= " AS {$description["fields"][$field]["alias"]}";
                 }
             }
-            $fields = implode(", ", is_array($params["fields"]) ? $params["fields"] : explode(",", $params["fields"]));
+            $fields = implode(", ", is_array($fields) ? $fields : explode(",", $fields));
         }
         
         // Generate joins
@@ -142,11 +142,22 @@ abstract class SqlDatabase extends DataStore
                 }
                 else
                 {
+                    $alias = null;
                     if(is_array($relatedModel))
                     {
                         $alias = $relatedModel["as"];
                         $relatedModel = $relatedModel[0];
                     }
+                    
+                    if($alias != null && array_search($alias, $params["fields"]) === false) 
+                    {
+                        continue;
+                    }
+                    else if($alias == null && array_search(Ntentan::singular($relatedModel) . "_id", $params["fields"]) === false)
+                    {
+                        continue;
+                    }
+                    
                     $model = Model::load(Model::getBelongsTo($relatedModel));
                     $datastore = $model->getDataStore(true);
                     $joinedModelDescription = $model->describe();
@@ -172,7 +183,6 @@ abstract class SqlDatabase extends DataStore
                            . ($alias != null ? "AS $alias" : "")
                            . " ON " . ($alias != null ? $alias : $datastore->table) . ".id = {$this->table}." 
                            . ($alias != null ? $alias : Ntentan::singular($datastore->table) . "_id ");
-                    $alias = null;
                 }
             }
         }

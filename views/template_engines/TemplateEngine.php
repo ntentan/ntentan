@@ -17,6 +17,10 @@ abstract class TemplateEngine
     public function __get($property)
     {
         $property = Ntentan::plural($property);
+        if($property === null)
+        {
+            throw new \Exception("Unknown helper <b>$property</b>");
+        }
         if(!isset($this->loadedHelpers[$property]))
         {
             $this->loadedHelpers[$property] = $this->loadHelper($property);
