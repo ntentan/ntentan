@@ -222,9 +222,9 @@ class Controller
         $blockFile = "blocks/$blockName/" . Ntentan::camelize($blockName) . ".php";
         if(file_exists($blockFile))
         {
-            Ntentan::addIncludePath(Ntentan::$blocksPath . "$blockName");
+            require_once $blockFile;
             $blockClass = "\\" . Ntentan::$modulesPath . "\\blocks\\$blockName\\" . Ntentan::camelize($blockName);
-            $path = "blocks/$blockName"; 
+            $path = "blocks/$blockName";
         }
         else if(file_exists(Ntentan::getFilePath("views/blocks/$blockName/" . Ntentan::camelize($blockName) . ".php")))
         {

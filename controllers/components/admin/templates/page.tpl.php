@@ -1,5 +1,5 @@
 <?php if($headings): ?>
-<h2><?php echo $model ?></h2>
+<h<?php echo $heading_level?>><?php echo $model ?></h<?php echo $heading_level?>>
 <?php endif ?>
 <div id="item-actions-menu">
     <?php echo $item_actions_menu_block ?>
@@ -25,7 +25,15 @@ case 3:
 $headers[] = "";
 $this->list->headers = $headers;
 $this->list->data = $data;
-$this->list->cellTemplates['id'] = $operations_template;
+if(is_array($cell_templates))
+{
+    $this->list->cellTemplates = $cell_templates;
+}
+
+if($this->list->cellTemplates['id'] == null)
+{ 
+    $this->list->cellTemplates['id'] = $operations_template;
+}
 $this->list->variables["operations"] = $operations;
 echo $this->list;
 ?>

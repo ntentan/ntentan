@@ -172,10 +172,6 @@ class Admin extends Component
         {
             $listFields = $model->getFields();
             array_shift($listFields);
-            /*foreach($listFields as $index => $listField)
-            {
-                $listFields[$index] = $model->getName() . "." . $listField;
-            }*/
         }
         $listFields[] = "id";
 
@@ -192,8 +188,11 @@ class Admin extends Component
         $count = $model->get('count');
         $data = $data->getData();
         $this->set("data", $data);
-        $headers = array_keys($data[0]);
-        array_pop($headers);
+        if(count($data) > 0)
+        {
+            $headers = array_keys($data[0]);
+            array_pop($headers);
+        }
         $this->set("headers", $headers);
         $numPages = ceil($count / $itemsPerPage);
         $pagingLinks = array();
