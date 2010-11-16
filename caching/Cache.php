@@ -20,6 +20,9 @@ namespace ntentan\caching;
 
 use ntentan\Ntentan;
 
+/**
+ * Abstract cache class.
+ */
 abstract class Cache
 {
     const DEFAULT_TTL = 360;

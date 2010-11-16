@@ -111,7 +111,7 @@ class Component extends Controller
     }
     
     /**
-     * 
+     * Execute a callback method
      */
     protected function executeCallbackMethod()
     {
@@ -171,7 +171,16 @@ class Component extends Controller
             $this->view->template = $this->filePath . "/templates/$file";
         }
     }
-    
+
+    /**
+     * Specifies a layout to be used by the component. This method allows the
+     * component to override or provide a layout to be used for the rendering
+     * of the HTML code. The layout is first searched for in the components
+     * directory if it is not found then the applications layout directory is
+     * looked up.
+     * 
+     * @param string $file
+     */
     public function useLayout($file)
     {
         $layoutFile = Ntentan::$layoutsPath . $file;
