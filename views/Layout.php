@@ -93,11 +93,21 @@ class Layout
         $sheets = array();
         $layoutData = array();
         
+        /**
+         * Process all the javascripts
+         */
         foreach($this->javaScripts as $javaScript)
         {
-            $layoutData["javascripts"] .= "<script type='text/javascript' src='$javaScript'></script>";
+            //$layoutData["javascripts"] .= "<script type='text/javascript' src='$javaScript'></script>";
+            $javaScripts .= file_get_contents($javaScript);
         }
+        file_put_contents("public/bundle.js", $javaScripts);
+        $layoutData["javascripts"] = 
+            "<script type='text/javascript' src='". Ntentan::getUrl('public/bundle.js') ."'></script>";
 
+        /**
+         * Process all the stylesheets
+         */
         foreach($this->styleSheets as $styleSheet)
         {
             $sheets[$styleSheet["media"]][] = $styleSheet;
@@ -109,7 +119,7 @@ class Layout
             {
                 if(file_exists($sheet["path"]))
                 {
-                    $$media .= file_get_contents($sheet["path"]);
+                    $$media .= "/** ntentan stylesheet - {$sheet["path"]} **/\n" . file_get_contents($sheet["path"]);
                 }
                 else
                 {
@@ -118,7 +128,7 @@ class Layout
             }
             $path = "public/" . $media . ".css";
             file_put_contents($path, $$media);
-            $layoutData["stylesheets"] .= "<link rel='stylesheet' type='text/css' href='/$path' media='$media'>";
+            $layoutData["stylesheets"] .= "<link rel='stylesheet' type='text/css' href='/$path' media='$media' />";
         }
 
         // Render all the blocks into string variables

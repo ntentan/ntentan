@@ -25,6 +25,7 @@ case 3:
 $headers[] = "";
 $this->list->headers = $headers;
 $this->list->data = $data;
+$this->list->rowTemplate = $row_template;
 if(is_array($cell_templates))
 {
     $this->list->cellTemplates = $cell_templates;
@@ -35,6 +36,13 @@ if($this->list->cellTemplates['id'] == null)
     $this->list->cellTemplates['id'] = $operations_template;
 }
 $this->list->variables["operations"] = $operations;
+if(is_array($variables))
+{
+    foreach($variables as $variable => $value)
+    {
+        $this->list->variables[$variable] = $value;
+    }
+}
 echo $this->list;
 ?>
 <?php if(isset($pages)):?>
