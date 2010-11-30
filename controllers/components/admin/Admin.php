@@ -73,10 +73,20 @@ class Admin extends Component
     
     /**
      * The callback function to be called before editing the data in the model
-     * @var unknown_type
+     * @var string
      */
     public $preEditCallback;
+
+    /**
+     * The callback function to be called after editing data in the model
+     * @var string
+     */
     public $postEditCallback;
+
+    /**
+     *
+     * @var string
+     */
     public $preDeleteCallback;
     public $postDeleteCallback;
     public $prefix;
@@ -87,9 +97,14 @@ class Admin extends Component
     public $headingLevel = '2';
     public $notifications = true;
     public $showTemplate = true;
-    private $operations;
+    private $operations = array();
+    public $itemOperationUrl;
     public $operationsTemplate;
+    public $rowOperation;
+    public $rowTemplate;
     private $app;
+    public $hasEditOperation = true;
+    public $hasAddOperation = true;
 
     public function __construct($prefix = null)
     {
@@ -132,20 +147,26 @@ class Admin extends Component
 
     private function setupOperations()
     {
-        $this->addOperation(
-            array(
-                "label"=> "Edit", 
-                "operation" => "edit"
-            )
-        );
-
-        $this->addOperation(
-            array(
-                "label"=> "Delete",
-                "operation" => "delete",
-                "confirm_message" => "Are you sure you want to delete <b>%item%</b>?"
-            )
-        );
+        if($this->hasAddOperation)
+        {
+            $this->addOperation(
+                array(
+                    "label"=> "Edit", 
+                    "operation" => "edit"
+                )
+            );
+        }
+        
+        if($this->hasEditOperation)
+        {
+            $this->addOperation(
+                array(
+                    "label"=> "Delete",
+                    "operation" => "delete",
+                    "confirm_message" => "Are you sure you want to delete <b>%item%</b>?"
+                )
+            );
+        }
     }
 
     public function page($pageNumber)
@@ -157,11 +178,21 @@ class Admin extends Component
                     'controllers/components/admin/templates/operations.tpl.php'
                 ):
                 $this->operationsTemplate;
+
+        $this->rowTemplate =
+            $this->rowTemplate == null ?
+                Ntentan::getFilePath(
+                    'controllers/components/admin/templates/row.tpl.php'
+                ):
+                $this->rowTemplate;
+
         $this->set("operations_template", $this->operationsTemplate);
+        $this->set("row_template", $this->rowTemplate);
         $this->set("model", ucfirst($this->getModel()->getName()));
         $this->set("notifications", $this->notifications);
         $this->set("heading_level", $this->headingLevel);
         $this->set("headings", $this->headings);
+        $this->set("item_operation_url", $this->itemOperationUrl);
         $itemsPerPage = 10;
         $model = $this->getModel();
         $table = $model->getDataStore(true)->table;
@@ -228,7 +259,9 @@ class Admin extends Component
             if($pageNumber > 1)
             {
                 $pagingLinks[] = array(
-                    "link" => Ntentan::getUrl("{$this->prefix}/{$this->controller->route}/page/" . ($pageNumber - 1)),
+                    "link" => Ntentan::getUrl(
+                        "{$this->prefix}/{$this->controller->route}/page/" . ($pageNumber - 1)
+                    ),
                     "label" => "< Prev"
                 );
             }
@@ -236,7 +269,9 @@ class Admin extends Component
             for($i = 1; $i <= $numPages; $i++)
             {
                 $pagingLinks[] = array(
-                    "link" => Ntentan::getUrl("{$this->prefix}/{$this->controller->route}/page/$i"),
+                    "link" => Ntentan::getUrl(
+                        "{$this->prefix}/{$this->controller->route}/page/$i"
+                    ),
                     "label" => "$i"
                 );
             }
@@ -244,7 +279,9 @@ class Admin extends Component
             if($pageNumber < $numPages)
             {
                 $pagingLinks[] = array(
-                    "link" => Ntentan::getUrl("{$this->prefix}/{$this->controller->route}/page/" . ($pageNumber + 1)),
+                    "link" => Ntentan::getUrl(
+                        "{$this->prefix}/{$this->controller->route}/page/" . ($pageNumber + 1)
+                    ),
                     "label" => "Next >"
                 );
             }

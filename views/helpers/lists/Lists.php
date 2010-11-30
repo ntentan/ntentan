@@ -25,6 +25,7 @@ use ntentan\views\helpers\Helper;
 class Lists extends Helper
 {
     public $headers = array();
+    public $hasHeaders = true;
     public $data = array();
     public $rowTemplate = null;
     public $defaultCellTemplate = null;
@@ -33,8 +34,12 @@ class Lists extends Helper
     
     public function __toString()
     {
-        $this->rowTemplate = $this->rowTemplate == null ? Ntentan::getFilePath('views/helpers/lists/templates/row.tpl.php') : $this->rowTemplate;
-        $this->defaultCellTemplate = $this->defaultCellTemplate == null ? Ntentan::getFilePath('views/helpers/lists/templates/default_cell.tpl.php') : $this->defaultCellTemplate;
+        $this->rowTemplate = $this->rowTemplate == null ? 
+            Ntentan::getFilePath('views/helpers/lists/templates/row.tpl.php') :
+            $this->rowTemplate;
+        $this->defaultCellTemplate = $this->defaultCellTemplate == null ? 
+            Ntentan::getFilePath('views/helpers/lists/templates/default_cell.tpl.php') :
+            $this->defaultCellTemplate;
         return Template::out(
             Ntentan::getFilePath('views/helpers/lists/templates/list.tpl.php'),
             array(
@@ -43,7 +48,8 @@ class Lists extends Helper
                 "row_template"          =>  $this->rowTemplate,
                 "cell_templates"        =>  $this->cellTemplates,
                 "default_cell_template" =>  $this->defaultCellTemplate,
-                "variables"             =>  $this->variables
+                "variables"             =>  $this->variables,
+                "has_headers"           =>  $this->hasHeaders
             )
         );
     }

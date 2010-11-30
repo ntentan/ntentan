@@ -95,6 +95,11 @@ table.item-table > thead > tr > td
     padding:5px;
 }
 
+table.item-table > tbody > tr /**.mouseover**/
+{
+    background-color:red;
+}
+
 table.item-table > tbody > tr > td
 {
     border-bottom:1px solid #f0f0f0;
@@ -102,9 +107,10 @@ table.item-table > tbody > tr > td
     padding:5px;
 }
 
-table.item-table > tbody > tr > td.operations
+table.item-table > tbody > tr > td#id_cell
 {
     text-align:right;
+    background-color:#f8f8f8;
 }
 
 div.item-pages-list > a
