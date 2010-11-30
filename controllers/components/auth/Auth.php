@@ -77,10 +77,14 @@ class Auth extends Component
             print Ntentan::message("Authenticator class <code>$authenticatorClass</code> not found.");
         }       
         
+
+    }
+
+    public function postRender()
+    {
         // Allow the roles component to activate the authentication if it is
         // available. If not just run the authenticator from this section.
         if($this->controller->hasComponent("roles")) return;
-        
         if($_SESSION["logged_in"] === false || !isset($_SESSION["logged_in"]))
         {
             $this->login();
@@ -110,7 +114,8 @@ class Auth extends Component
                     Ntentan::getUrl(
                         $this->loginRoute .
                         (Ntentan::$requestedRoute == "" ? "" : "?redirect=" . urlencode(Ntentan::$requestedRoute))
-                    )
+                    ),
+                    true
                 );
             }
         }

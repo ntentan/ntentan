@@ -309,7 +309,7 @@ class Controller
 		for($i = 0; $i<count($routeArray); $i++)
 		{
 			$p = $routeArray[$i];
-            $pCamelized .= Ntentan::camelize($p);
+            $pCamelized = Ntentan::camelize($p);
             $filePath = Ntentan::$modulesPath . "$controllerRoute/$p/";
 			if(file_exists($filePath . "{$pCamelized}Controller.php"))
 			{
@@ -383,6 +383,10 @@ class Controller
         }
     }
 
+    /**
+     * Set the value of the route used to load this controller.
+     * @param string $route
+     */
     public function setRoute($route)
     {
         $this->route = $route;
@@ -392,6 +396,12 @@ class Controller
         }
     }
 
+    /**
+     * Returns true if this controller has the requested method and returns
+     * false otherwise.
+     * @param string $method
+     * @return booleam
+     */
     public function hasMethod($method = null)
     {
         $ret = false;
@@ -427,7 +437,7 @@ class Controller
             $this->mainPreRender();
             $controllerClass = new ReflectionClass($this->getName());
             $method = $controllerClass->GetMethod($path);
-            $this->view->template = Ntentan::$modulesPath . "/{$this->route}/$path.tpl.php";
+            $this->view->template = Ntentan::$modulesPath . "/".Ntentan::$route.".tpl.php";
             $method->invokeArgs($this, $params);
             $this->view->blocks = $this->blocks;
             $ret = $this->view->out($this->get());
@@ -471,11 +481,19 @@ class Controller
 
     }
 
+    /**
+     * 
+     */
     public function postRender()
     {
         
     }
-    
+
+    /**
+     * Checks whether this controller has a particular component loaded.
+     * @param string $component
+     * @return boolean
+     */
     public function hasComponent($component)
     {
         if(array_search($component, $this->components) !== false)

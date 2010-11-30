@@ -126,6 +126,8 @@ class Ntentan
      * @var string
      */
     public static $route;
+
+    public static $prefix;
     
     /**
      * The path to the file which holds the database configuration/
@@ -159,6 +161,7 @@ class Ntentan
 	    require "config/ntentan.php";
 	    Ntentan::$basePath = $ntentan_home;
 	    Ntentan::$modulesPath = $modules_path;
+        Ntentan::$prefix = $url_prefix;
         Ntentan::addIncludePath(
             array
             (
@@ -261,7 +264,7 @@ class Ntentan
      */
     public static function getUrl($url)
     {
-        if($url[0]!="/") return "/$url"; else return $url;
+        return Ntentan::$prefix . ($url[0]!="/" ? "/$url" : $url);
     }
 
     /**
@@ -276,7 +279,7 @@ class Ntentan
     public static function redirect($url, $absolute = false)
     {
         $url = isset($_GET["redirect"]) ? $_GET["redirect"] : $url;
-        $url = $absolute ? $url : Ntentan::getUrl($url);
+        $url = $absolute === true ? $url : Ntentan::getUrl($url);
         header("Location: $url ");
     }
 

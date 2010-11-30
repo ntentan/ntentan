@@ -20,12 +20,27 @@ namespace ntentan\utils;
 
 use ntentan\Ntentan;
 
+/**
+ * Utility script class for interacting with applications. This script can
+ * setup application directories as well as modify existing ones.
+ */
 class App extends Util
 {
     protected $shortOptionsMap = array(
         "i" => "interactive"
     );
-    
+
+    /**
+     * This method creates a new application by setting up the directories
+     * and files. It also creates all the initial necessary bootstrap codes
+     * needed for the application to work properly.
+     *
+     * @todo create a default home page for the application
+     * @todo create the resource, layouts directories and the public directories
+     * @todo the default home page should check for all permissions which are
+     *       necessary
+     * @param array $options
+     */
     public function create($options)
     {
         // Extract the parameters for the options
@@ -92,5 +107,8 @@ class App extends Util
                 file_get_contents(NTENTAN_HOME . "utils/files/_ntentan.php")
             )
         );
+
+        echo "Creating home controller ...\n";
+        mkdir("$module/home");
     }
 }
