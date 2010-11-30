@@ -25,5 +25,11 @@ error_reporting(E_ALL ^ E_NOTICE);
  */
 function __autoload($class)
 {
-    require_once end(explode("\\", $class)) . ".php";
+    $fullPath = explode("\\", $class);
+    $class = array_pop($fullPath);
+    if($fullPath[0] == \ntentan\Ntentan::$modulesPath)
+    {
+        \ntentan\Ntentan::addIncludePath(implode("/",$fullPath));
+    }
+    require_once $class . ".php";
 }

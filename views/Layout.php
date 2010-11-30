@@ -96,14 +96,18 @@ class Layout
         /**
          * Process all the javascripts
          */
-        foreach($this->javaScripts as $javaScript)
+        if(count($this->javaScripts) > 0)
         {
-            //$layoutData["javascripts"] .= "<script type='text/javascript' src='$javaScript'></script>";
-            $javaScripts .= file_get_contents($javaScript);
+            foreach($this->javaScripts as $javaScript)
+            {
+                $javaScripts .= file_get_contents($javaScript);
+            }
+            file_put_contents("public/bundle.js", $javaScripts);
+            $layoutData["javascripts"] =
+                "<script type='text/javascript' src='"
+                .   Ntentan::getUrl('public/bundle.js')
+                .   "'></script>";
         }
-        file_put_contents("public/bundle.js", $javaScripts);
-        $layoutData["javascripts"] = 
-            "<script type='text/javascript' src='". Ntentan::getUrl('public/bundle.js') ."'></script>";
 
         /**
          * Process all the stylesheets
@@ -119,7 +123,8 @@ class Layout
             {
                 if(file_exists($sheet["path"]))
                 {
-                    $$media .= "/** ntentan stylesheet - {$sheet["path"]} **/\n" . file_get_contents($sheet["path"]);
+                    $$media .= "/** ntentan stylesheet - {$sheet["path"]} **/\n"
+                    . file_get_contents($sheet["path"]);
                 }
                 else
                 {
