@@ -37,7 +37,6 @@ use \ntentan\controllers\components\Component;
  * to what they have access to based on thei attached role.
  * 
  * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
- * @package ntentan.controllers.components.auth
  */
 class Auth extends Component
 {
@@ -56,12 +55,28 @@ class Auth extends Component
      * @var string
      */
     public $logoutRoute = "users/logout";
+
+    /**
+     *
+     * @var string
+     */
     public $redirectRoute = "/";
     public $redirectOnSuccess = true;
     public $name = __CLASS__;
     public $authMethod = "http_request";
-    public $usersModel = "users";
+    private $_usersModel = "users";
     protected $authMethodInstance;
+
+    public function __set($variable, $value)
+    {
+        switch($variable)
+        {
+            case "usersModel":
+                $this->_usersModel = $value;
+                $this->authMethodInstance->usersModel = $value;
+                break;
+        }
+    }
     
     public function init()
     {
@@ -70,7 +85,7 @@ class Auth extends Component
         if(class_exists($authenticatorClass))
         {
             $this->authMethodInstance = new $authenticatorClass();
-            $this->authMethodInstance->usersModel = $this->usersModel;
+            $this->authMethodInstance->usersModel = $this->_usersModel;
         }
         else
         {

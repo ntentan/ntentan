@@ -131,9 +131,10 @@ class Layout
                     throw new FileNotFoundException("Stylesheet file <b><code>{$sheet["path"]}</code></b> not found!");
                 }
             }
-            $path = "public/" . $media . ".css";
+            $url = Ntentan::getUrl("public/" . $media . ".css");
+            $path = "public/$media.css";
             file_put_contents($path, $$media);
-            $layoutData["stylesheets"] .= "<link rel='stylesheet' type='text/css' href='/$path' media='$media' />";
+            $layoutData["stylesheets"] .= "<link rel='stylesheet' type='text/css' href='$url' media='$media' />";
         }
 
         // Render all the blocks into string variables
