@@ -18,7 +18,7 @@
 
 namespace ntentan\views\helpers\forms\api;
 
-use ntentan\views\helpers\forms\Forms;
+use ntentan\views\helpers\forms\FormsHelper;
 use \ReflectionClass;
 
 /**
@@ -198,7 +198,7 @@ abstract class Element
 	
 	public function __toString()
 	{
-	    return Forms::getRendererInstance()->element($this);
+	    return FormsHelper::getRendererInstance()->element($this);
 	}
 
 	//! Returns an array of all the CSS classes associated with this

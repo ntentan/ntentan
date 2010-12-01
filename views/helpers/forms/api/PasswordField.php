@@ -58,4 +58,3 @@ class PasswordField extends TextField
 		return "This field cannot be viewed";
 	}
 }
-?>

@@ -51,6 +51,14 @@ class Component extends Controller
     protected $controller;
 
     /**
+     * Dummy constructor.
+     */
+    public function __construct()
+    {
+        
+    }
+
+    /**
      * Sets the controller instance of this component.
      * @param Controller $controller
      */

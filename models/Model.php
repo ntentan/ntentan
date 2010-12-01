@@ -119,8 +119,15 @@ class Model implements ArrayAccess, Iterator
     
     public static function getClassName($className)
     {
-        $name = "\\" . Ntentan::$modulesPath . "\\" . str_replace(".", "\\", $className) . "\\" . Ntentan::camelize(end(explode(".", $className)));
-        return $name;
+        $classNameArray = explode('.', $className);
+        $className = Ntentan::camelize(end($classNameArray));
+        $fullClassName = "\\" . Ntentan::$modulesPath . "\\" . implode("\\", $classNameArray) . "\\$className";
+        $modelClassFile = Ntentan::$modulesPath . '/' . implode('/', $classNameArray) . "/$className.php" ;
+        if(!file_exists($modelClassFile))
+        {
+            throw new ModelNotFoundException("Model class <b><code>$fullClassName</code></b> not found");
+        }
+        return $fullClassName;
     }
 
     /**
@@ -130,23 +137,9 @@ class Model implements ArrayAccess, Iterator
      */
     public static function load($modelRoute)
     {
-        $filePath = Ntentan::$modulesPath . "/" . str_replace(".", "/", $modelRoute);
-        if(file_exists($filePath . "/" . Ntentan::camelize($modelRoute) . "Model.php"))
-        {
-            Ntentan::addIncludePath($filePath);
-            $className = Model::getClassName($modelRoute) . "Model";
-            return new $className();
-        }
-        elseif(file_exists($filePath . "/" . Ntentan::camelize($modelRoute) . ".php"))
-        {
-            Ntentan::addIncludePath($filePath);
-            $className = Model::getClassName($modelRoute);
-            return new $className();
-        }
-        else
-        {
-            throw new ModelNotFoundException("Model class not found for [$modelRoute]");
-        }
+        $className = Model::getClassName($modelRoute);
+        var_dump($className);
+        return new $className();
     }
 
     public function setData($data, $overwrite = false)

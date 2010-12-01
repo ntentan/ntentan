@@ -124,17 +124,6 @@ class Controller
     protected $blocks = array();
     
     /**
-     * Constructor for controller
-     */
-    public function __construct()
-    {
-        foreach($this->components as $component)
-        {
-            $this->addComponent($component);
-        }
-    }
-
-    /**
      * Returns the name of the controller.
      * @return string
      */
@@ -339,10 +328,10 @@ class Controller
             if(class_exists($controllerName))
             {
                 $controller = new $controllerName();
-                $controller->setRoute($controllerRoute);
-                $controller->setName($controllerName);
-                $controller->modelRoute = $modelRoute;
-                $controller->filePath = $filePath;
+                foreach($controller->components as $component)
+                {
+                    $controller->addComponent($component);
+                }
             }
             else
             {
@@ -358,6 +347,10 @@ class Controller
             }
             
             $controller->init();
+            $controller->setRoute($controllerRoute);
+            $controller->setName($controllerName);
+            $controller->modelRoute = $modelRoute;
+            $controller->filePath = $filePath;
             if($controller->hasMethod())
             {
                 $ret = $controller->runMethod(array_slice($routeArray,$i+2));
@@ -384,7 +377,7 @@ class Controller
     }
 
     /**
-     * Set the value of the route used to load this controller.
+     * Set the value of the route used to load this controller. 
      * @param string $route
      */
     public function setRoute($route)
@@ -437,7 +430,7 @@ class Controller
             $this->mainPreRender();
             $controllerClass = new ReflectionClass($this->getName());
             $method = $controllerClass->GetMethod($path);
-            $this->view->template = Ntentan::$modulesPath . "/".Ntentan::$route.".tpl.php";
+            $this->view->template = Ntentan::$modulesPath . "/{$this->route}/$path.tpl.php";
             $method->invokeArgs($this, $params);
             $this->view->blocks = $this->blocks;
             $ret = $this->view->out($this->get());

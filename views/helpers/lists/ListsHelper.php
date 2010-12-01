@@ -22,7 +22,7 @@ use ntentan\Ntentan;
 use ntentan\views\template_engines\Template;
 use ntentan\views\helpers\Helper;
 
-class Lists extends Helper
+class ListsHelper extends Helper
 {
     public $headers = array();
     public $hasHeaders = true;

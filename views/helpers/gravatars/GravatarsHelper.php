@@ -14,15 +14,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */?>
-<?php if(count($items) > 0):?>
-<ul class='menu <?php echo $alias ?>'>
-<?php foreach($items as $item): ?>
-<li class='menu-item <?php echo \ntentan\Ntentan::$route == $item["url"] ? "menu-selected" : "" ?> <?php echo str_replace(" ","_",strtolower($item["label"])) ?>'>
-<?php if($has_links == true):?>
-<a href='<?php echo isset($item["url"]) ? $item["url"] : str_replace(" ", "_", strtolower($item["label"]))?>'><?php echo $item["label"]?></a>
-<?php endif?>
-</li>
-<?php endforeach;?>
-</ul>
-<?php endif ?>
+ */
+
+
+namespace ntentan\views\helpers\gravatars;
+
+use \ntentan\views\helpers\Helper;
+
+class GravatarsHelper extends Helper
+{
+    public function get($email, $size = 48)
+    {
+        $hash = md5(strtolower(trim($email)));
+        return "http://www.gravatar.com/avatar/$hash.jpg?s=$size&amp;d=mm";
+    }
+}

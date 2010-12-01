@@ -28,7 +28,7 @@ use \Exception;
  * Forms helper for rendering forms.
  * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
  */
-class Forms extends Helper
+class FormsHelper extends Helper
 {
     private $container;
     public $submitValue;
@@ -73,7 +73,7 @@ class Forms extends Helper
         $args = func_get_args();
         if(is_string($args[0]))
         {
-            $elementClass = new ReflectionMethod(__NAMESPACE__ . "\\Forms", 'create');
+            $elementClass = new ReflectionMethod(__NAMESPACE__ . "\\FormsHelper", 'create');
             $element = $elementClass->invokeArgs(null, $args);
             $this->container->add($element);
         }
@@ -210,7 +210,7 @@ class Forms extends Helper
         }
         else
         {
-            throw new Exception("Function not found");
+            throw new Exception("Function <code><b>$function</b></code> not found in form helper.");
         }
     }
 }

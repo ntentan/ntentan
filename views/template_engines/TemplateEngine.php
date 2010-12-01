@@ -10,13 +10,14 @@ abstract class TemplateEngine
     private function loadHelper($helper)
     {
         Ntentan::addIncludePath(Ntentan::getFilePath("views/helpers/$helper"));
-        $helperClass = "\\ntentan\\views\\helpers\\$helper\\" . ucfirst($helper);
+        $helperClass = "\\ntentan\\views\\helpers\\$helper\\" . Ntentan::camelize($helper) . "Helper";
         return new $helperClass();
     }
     
     public function __get($property)
     {
-        $property = Ntentan::plural($property);
+        $propertyPlural = Ntentan::plural($property);
+        $property = $propertyPlural == null ? $property : $propertyPlural;
         if($property === null)
         {
             throw new \Exception("Unknown helper <b>$property</b>");

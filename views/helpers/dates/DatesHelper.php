@@ -21,7 +21,7 @@ namespace ntentan\views\helpers\dates;
 
 use ntentan\views\helpers\Helper;
 
-class Dates extends Helper
+class DatesHelper extends Helper
 {
     const DEPTH_NONE        = 0;
     const DEPTH_MINUTES     = 1;
