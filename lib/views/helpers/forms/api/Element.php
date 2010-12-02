@@ -216,7 +216,8 @@ abstract class Element
 	//! Adds a css class to this element.
 	public function addCSSClass($class)
 	{
-		array_push($this->classes, $class);
+		$this->classes[] = $class;
+        return $this;
 	}
 
 	//! Adds an attribute object to the internal attribute array of the

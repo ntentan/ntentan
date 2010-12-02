@@ -16,19 +16,18 @@
  * limitations under the License.
  */
 
-namespace ntentan\views\blocks;
+namespace ntentan\views\widgets;
 
 use ntentan\views\template_engines\Template;
+use ntentan\Ntentan;
+use ntentan\views\Presentation;
 
-use \ntentan\Ntentan;
-use \ntentan\views\Presentation;
 /**
- * 
  * Enter description here ...
  * @author ekow
  * @todo Look at the possibility of renaming blocks to widgets
  */
-class Block extends Presentation
+class Widget extends Presentation
 {
     protected $data = array();
     protected $template;
@@ -77,8 +76,8 @@ class Block extends Presentation
         $this->preRender();
         if($this->template == "")
         {
-            $block = $this->getName();
-            $this->template = $this->filePath . "/$block.tpl.php";
+            $widget = $this->getName();
+            $this->template = $this->filePath . "/$widget.tpl.php";
         }
         $output = Template::out($this->template, $this->data);
         $this->postRender();

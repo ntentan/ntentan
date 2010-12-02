@@ -1,0 +1,15 @@
+/** Shadows */
+.big-soft-shadow
+{
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, .5);
+    -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, .5);
+    -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, .5);
+}
+
+/** rounded */
+.rounded-5px
+{
+    border-radius:5px;
+    -moz-border-radius:5px;
+}
+

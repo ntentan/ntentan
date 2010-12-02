@@ -121,7 +121,7 @@ class Controller
      * this controller.
      * @var array
      */
-    protected $blocks = array();
+    protected $widgets = array();
     
     /**
      * Returns the name of the controller.
@@ -134,7 +134,7 @@ class Controller
     }
 
     /**
-     * 
+     * Setter property
      * @param string $property
      * @param string $value
      */
@@ -175,10 +175,10 @@ class Controller
             return Ntentan::$modulesPath . $this->route . "/";
             
         default:
-            if(substr($property, -5) == "Block")
+            if(substr($property, -5) == "Widget")
             {
-                $block = Ntentan::deCamelize(substr($property, 0, strlen($property) - 5));
-                return $this->blocks[$block];
+                $widget = Ntentan::deCamelize(substr($property, 0, strlen($property) - 5));
+                return $this->widgets[$widget];
             }
             else if(substr($property, -9) == "Component")
             {
@@ -206,36 +206,36 @@ class Controller
         $this->componentInstances[$component] = $componentInstance;
     }
 
-    public function addBlock($blockName, $alias = null)
+    public function addWidget($widgetName, $alias = null)
     {
-        $blockFile = "blocks/$blockName/" . Ntentan::camelize($blockName) . ".php";
-        if(file_exists($blockFile))
+        $widgetFile = "widgets/$widgetName/" . Ntentan::camelize($widgetName) . "Widget.php";
+        if(file_exists($widgetFile))
         {
-            require_once $blockFile;
-            $blockClass = "\\" . Ntentan::$modulesPath . "\\blocks\\$blockName\\" . Ntentan::camelize($blockName);
-            $path = "blocks/$blockName";
+            require_once $widgetFile;
+            $widgetClass = "\\" . Ntentan::$modulesPath . "\\widgets\\$widgetName\\" . Ntentan::camelize($widgetName) . 'Widget';
+            $path = "widgets/$widgetName";
         }
-        else if(file_exists(Ntentan::getFilePath("views/blocks/$blockName/" . Ntentan::camelize($blockName) . ".php")))
+        else if(file_exists(Ntentan::getFilePath("views/widgets/$widgetName/" . Ntentan::camelize($widgetName) . "Widget.php")))
         {
-            Ntentan::addIncludePath(Ntentan::getFilePath("views/blocks/$blockName"));
-            $blockClass = "\\ntentan\\views\\blocks\\$blockName\\" . Ntentan::camelize($blockName);
-            $path = Ntentan::getFilePath("views/blocks/$blockName"); 
+            Ntentan::addIncludePath(Ntentan::getFilePath("views/widgets/$widgetName"));
+            $widgetClass = "\\ntentan\\views\\widgets\\$widgetName\\" . Ntentan::camelize($widgetName) . 'Widget';
+            $path = Ntentan::getFilePath("views/widgets/$widgetName");
         }
         else
         {
-            Ntentan::message("Block <code>$blockname</code> not found");
+            Ntentan::message("Widget <code><b>$widgetName</b></code> not found");
         }
         
-        $blockInstance = new $blockClass();
-        $blockInstance->setName($blockName);
-        $blockInstance->setFilePath($path);
-        if($alias == null) $alias = $blockName;
-        $this->blocks[$alias] = $blockInstance;
+        $widgetInstance = new $widgetClass();
+        $widgetInstance->setName($widgetName);
+        $widgetInstance->setFilePath($path);
+        if($alias == null) $alias = $widgetName;
+        $this->widgets[$alias] = $widgetInstance;
     }
     
-    public function hasBlock($blockName)
+    public function hasWidget($widgetName)
     {
-        return isset($this->blocks[$blockName]);
+        return isset($this->widgets[$widgetName]);
     }
 
     /**
@@ -432,7 +432,7 @@ class Controller
             $method = $controllerClass->GetMethod($path);
             $this->view->template = Ntentan::$modulesPath . "/{$this->route}/$path.tpl.php";
             $method->invokeArgs($this, $params);
-            $this->view->blocks = $this->blocks;
+            $this->view->widgets = $this->widgets;
             $ret = $this->view->out($this->get());
             $this->mainPostRender();
         }
@@ -443,7 +443,7 @@ class Controller
                 if($component->hasMethod($path))
                 {
                     $component->variables = $this->variables;
-                    $component->blocks = $this->blocks;
+                    $component->widgets = $this->widgets;
                     $component->runMethod($params, $path);
                 }
             }

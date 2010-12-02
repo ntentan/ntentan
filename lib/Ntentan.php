@@ -171,7 +171,7 @@ class Ntentan
                 Ntentan::getFilePath('models/exceptions/'),
                 Ntentan::getFilePath('views/'),
                 Ntentan::getFilePath('views/template_engines/'),
-                Ntentan::getFilePath('views/blocks/'),
+                Ntentan::getFilePath('views/widgets/'),
                 Ntentan::getFilePath('exceptions/'),
                 Ntentan::getFilePath('caching/'),
                 "./",
@@ -255,7 +255,7 @@ class Ntentan
      */
     public static function getFilePath($path)
     {
-        return Ntentan::$basePath . $path;
+        return Ntentan::$basePath . "lib/$path";
     }
     
     /**

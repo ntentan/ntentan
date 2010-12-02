@@ -138,7 +138,6 @@ class Model implements ArrayAccess, Iterator
     public static function load($modelRoute)
     {
         $className = Model::getClassName($modelRoute);
-        var_dump($className);
         return new $className();
     }
 

@@ -30,7 +30,7 @@ class View extends Presentation
 {
     private $_layout;
     public $template;
-    public $blocks;
+    public $widgets;
     public $defaultTemplatePath;
 
     public function __construct()
@@ -47,6 +47,7 @@ class View extends Presentation
                 return $this->_layout;
                 break;
             default:
+                throw new \Exception("Parameter $property not found in view class");
                 return parent::__get($property);
         }
     }
@@ -72,12 +73,12 @@ class View extends Presentation
     public function out($viewData)
     {
         // Render all the blocks into string variables
-        $blocks = array();
-        foreach($this->blocks as $alias => $block)
+        $widgets = array();
+        foreach($this->widgets as $alias => $widget)
         {
-            $blockName = $alias."_block";
-            $viewData[$blockName] = (string)$block;
-            $blocks[$blockName] = $viewData[$blockName];
+            $widgetName = $alias."_widget";
+            $viewData[$widgetName] = (string)$widget;
+            $widgets[$blockName] = $viewData[$widgetName];
         }
         
         //ob_start();
@@ -100,7 +101,7 @@ class View extends Presentation
 
         if(!Ntentan::isAjax())
         {
-            $data = $this->_layout->out($data, $blocks, $viewData);
+            $data = $this->_layout->out($data, $widgets, $viewData);
         }
         return $data;
     }

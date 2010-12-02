@@ -88,7 +88,7 @@ class Layout
         }
     }
 
-    public function out($contents, $blocks = array(), $viewData = array())
+    public function out($contents, $widgets = array(), $viewData = array())
     {
         $sheets = array();
         $layoutData = array();
@@ -137,10 +137,10 @@ class Layout
             $layoutData["stylesheets"] .= "<link rel='stylesheet' type='text/css' href='$url' media='$media' />";
         }
 
-        // Render all the blocks into string variables
-        foreach($blocks as $name => $block)
+        // Render all the widgets into string variables
+        foreach($widgets as $name => $widget)
         {
-            $layoutData[$name] = $block;
+            $layoutData[$name] = $widget;
         }
 
         $layoutData["title"] = $this->title;
