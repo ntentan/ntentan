@@ -41,10 +41,10 @@ class FormsHelper extends Helper
     public function __construct()
     {
         Ntentan::addIncludePath(
-            Ntentan::getFilePath("views/helpers/forms/api")
+            Ntentan::getFilePath("lib/views/helpers/forms/api")
         );
         Ntentan::addIncludePath(
-            Ntentan::getFilePath("views/helpers/forms/api/renderers")
+            Ntentan::getFilePath("lib/views/helpers/forms/api/renderers")
         );
         $this->container = new api\Form();
     }

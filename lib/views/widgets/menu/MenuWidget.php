@@ -16,12 +16,15 @@
  * limitations under the License.
  */
 
-namespace ntentan\views\blocks\menu;
+namespace ntentan\views\widgets\menu;
 
 use ntentan\Ntentan;
-use ntentan\views\blocks\Block;
+use ntentan\views\widgets\Widget;
 
-class Menu extends Block {
+/**
+ * Standard menu widget which ships with the menu widget.
+ */
+class MenuWidget extends Widget {
     
     protected $items = array();
     public $hasLinks = true;
@@ -34,18 +37,18 @@ class Menu extends Block {
             if(is_string($item) || is_numeric($item))
             {
                 $item = array(
-                    "label" => $item,
-                    "url" => Ntentan::getUrl(strtolower(str_replace(" ", "_",$item)))
+                    'label' => $item,
+                    'url' => Ntentan::getUrl(strtolower(str_replace(' ', '_', $item)))
                 );
             }
-            $item["selected"] = $item["url"] == Ntentan::$route;
+            $item['selected'] = $item['url'] == Ntentan::$route;
             $this->items[] = $item;
         }
-        $this->set("items", $this->items);
+        $this->set('items', $this->items);
     }
     
     public function preRender()
     {
-        $this->set("has_links", $this->hasLinks);
+        $this->set('has_links', $this->hasLinks);
     }
 }

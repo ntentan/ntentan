@@ -32,6 +32,7 @@ class Widget extends Presentation
     protected $data = array();
     protected $template;
     protected $name;
+    protected $alias;
     private $filePath;
     
     public function setFilePath($filePath)
@@ -45,6 +46,11 @@ class Widget extends Presentation
     
     public function setName($name) {
     	$this->name = $name;
+    }
+
+    public function setAlias($alias)
+    {
+        $this->alias = $alias;
     }
 
     protected function set($params1, $params2 = null) {
@@ -79,6 +85,7 @@ class Widget extends Presentation
             $widget = $this->getName();
             $this->template = $this->filePath . "/$widget.tpl.php";
         }
+        $this->set('alias', $this->alias);
         $output = Template::out($this->template, $this->data);
         $this->postRender();
         return $output;
