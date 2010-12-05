@@ -9,7 +9,7 @@ class Template
     {
         $engine = end(explode(".", $template));
         Ntentan::addIncludePath(
-            Ntentan::getFilePath("views/template_engines/" . $engine)
+            Ntentan::getFilePath("lib/views/template_engines/" . $engine)
         );
         $engine = "ntentan\\views\\template_engines\\$engine\\" . Ntentan::camelize($engine);
         $engine = new $engine();

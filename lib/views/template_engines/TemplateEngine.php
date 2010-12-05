@@ -9,7 +9,7 @@ abstract class TemplateEngine
     
     private function loadHelper($helper)
     {
-        Ntentan::addIncludePath(Ntentan::getFilePath("views/helpers/$helper"));
+        Ntentan::addIncludePath(Ntentan::getFilePath("lib/views/helpers/$helper"));
         $helperClass = "\\ntentan\\views\\helpers\\$helper\\" . Ntentan::camelize($helper) . "Helper";
         return new $helperClass();
     }

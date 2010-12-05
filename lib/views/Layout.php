@@ -151,7 +151,7 @@ class Layout
         {
             return Template::out($this->layoutPath, $layoutData);
         }
-        else if($this->name === false)
+        else if($this->name == false)
         {
             return $contents;
         }

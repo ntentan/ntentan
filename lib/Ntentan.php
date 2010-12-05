@@ -165,15 +165,15 @@ class Ntentan
         Ntentan::addIncludePath(
             array
             (
-                Ntentan::getFilePath('controllers/'),
-                Ntentan::getFilePath('models/'),
-                Ntentan::getFilePath('models/datastores/'),
-                Ntentan::getFilePath('models/exceptions/'),
-                Ntentan::getFilePath('views/'),
-                Ntentan::getFilePath('views/template_engines/'),
-                Ntentan::getFilePath('views/widgets/'),
-                Ntentan::getFilePath('exceptions/'),
-                Ntentan::getFilePath('caching/'),
+                Ntentan::getFilePath('lib/controllers/'),
+                Ntentan::getFilePath('lib/models/'),
+                Ntentan::getFilePath('lib/models/datastores/'),
+                Ntentan::getFilePath('lib/models/exceptions/'),
+                Ntentan::getFilePath('lib/views/'),
+                Ntentan::getFilePath('lib/views/template_engines/'),
+                Ntentan::getFilePath('lib/views/widgets/'),
+                Ntentan::getFilePath('lib/exceptions/'),
+                Ntentan::getFilePath('lib/caching/'),
                 "./",
                 Ntentan::$modulesPath,
                 Ntentan::$layoutsPath,
@@ -255,7 +255,7 @@ class Ntentan
      */
     public static function getFilePath($path)
     {
-        return Ntentan::$basePath . "lib/$path";
+        return Ntentan::$basePath . $path;
     }
     
     /**
@@ -421,11 +421,11 @@ class Ntentan
         ob_start();
         if(defined('STDIN'))
         {
-            include "templates/message-cli.tpl.php";
+            include Ntentan::getFilePath("templates/message-cli.tpl.php");
         }
         else
         {
-            include "templates/message.tpl.php";
+            include Ntentan::getFilePath("templates/message.tpl.php");
         }
         $message = ob_get_clean();
         return $message;

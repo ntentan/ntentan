@@ -175,9 +175,9 @@ class Controller
             return Ntentan::$modulesPath . $this->route . "/";
             
         default:
-            if(substr($property, -5) == "Widget")
+            if(substr($property, -6) == "Widget")
             {
-                $widget = Ntentan::deCamelize(substr($property, 0, strlen($property) - 5));
+                $widget = Ntentan::deCamelize(substr($property, 0, strlen($property) - 6));
                 return $this->widgets[$widget];
             }
             else if(substr($property, -9) == "Component")
@@ -196,11 +196,11 @@ class Controller
     {
         $arguments = func_get_args();
         $component = array_shift($arguments);
-        Ntentan::addIncludePath(Ntentan::getFilePath("controllers/components/$component"));
+        Ntentan::addIncludePath(Ntentan::getFilePath("lib/controllers/components/$component"));
         $componentName = "\\ntentan\\controllers\\components\\$component\\" . ucfirst($component);
         $componentClass = new ReflectionClass($componentName);
         $componentInstance = $componentClass->newInstanceArgs($arguments);
-        $componentInstance->filePath = Ntentan::getFilePath("controllers/components/$component");
+        $componentInstance->filePath = Ntentan::getFilePath("lib/controllers/components/$component");
         $componentInstance->setController($this);
         $componentInstance->init();
         $this->componentInstances[$component] = $componentInstance;
@@ -215,11 +215,11 @@ class Controller
             $widgetClass = "\\" . Ntentan::$modulesPath . "\\widgets\\$widgetName\\" . Ntentan::camelize($widgetName) . 'Widget';
             $path = "widgets/$widgetName";
         }
-        else if(file_exists(Ntentan::getFilePath("views/widgets/$widgetName/" . Ntentan::camelize($widgetName) . "Widget.php")))
+        else if(file_exists(Ntentan::getFilePath("lib/views/widgets/$widgetName/" . Ntentan::camelize($widgetName) . "Widget.php")))
         {
-            Ntentan::addIncludePath(Ntentan::getFilePath("views/widgets/$widgetName"));
+            Ntentan::addIncludePath(Ntentan::getFilePath("lib/views/widgets/$widgetName"));
             $widgetClass = "\\ntentan\\views\\widgets\\$widgetName\\" . Ntentan::camelize($widgetName) . 'Widget';
-            $path = Ntentan::getFilePath("views/widgets/$widgetName");
+            $path = Ntentan::getFilePath("lib/views/widgets/$widgetName");
         }
         else
         {
@@ -230,6 +230,7 @@ class Controller
         $widgetInstance->setName($widgetName);
         $widgetInstance->setFilePath($path);
         if($alias == null) $alias = $widgetName;
+        $widgetInstance->setAlias($alias);
         $this->widgets[$alias] = $widgetInstance;
     }
     

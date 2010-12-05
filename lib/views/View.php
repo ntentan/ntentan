@@ -57,10 +57,10 @@ class View extends Presentation
         switch($property)
         {
             case "layout":
-                $this->layout->name = $value;
+                $this->_layout->name = $value;
                 break;
             case "layoutFile":
-                $this->layout->file = $value;
+                $this->_layout->file = $value;
                 break;
         }
     }
