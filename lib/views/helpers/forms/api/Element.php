@@ -91,6 +91,8 @@ abstract class Element
 	 * bu the unmangled name.
 	 */
 	public $name;
+
+    public $renderLabel = true;
 	
 	private static $count;
 
@@ -129,6 +131,7 @@ abstract class Element
 	 * Public accessor for setting the name property of the field.
 	 *
 	 * @param  $name The name to assign to the form element.
+     * @deprecated
 	 */
 	public function setName($name)
 	{
@@ -140,11 +143,25 @@ abstract class Element
 	 * Public accessor for getting the name property of the field.
 	 *
 	 * @return The name of the form field.
+     * @deprecated
 	 */
 	public function getName()
 	{
 		return $this->name;
 	}
+
+    public function name($name = false)
+    {
+        if($name === false)
+        {
+            return $this->name;
+        }
+        else
+        {
+            $this->name = $name;
+            return $this;
+        }
+    }
 
 	//! Sets the label which is attached to this element.
 	public function setLabel($label)
@@ -159,18 +176,43 @@ abstract class Element
 		return $this->label;
 	}
 
-	//! Gets the description which is attached to this element. The description
-	//! is normally displayed under the element when rendering HTML.
+    /**
+     * Gets the description which is attached to this element. The description
+	 * is normally displayed under the element when rendering HTML.
+     *
+     * @deprecated
+     * @return string
+     */
 	public function getDescription()
 	{
 		return $this->description;
 	}
 
-	public function setDescription($description)
+    /**
+     * Sets the description which is attached to this element. The description
+	 * is normally displayed under the element when rendering HTML.
+     *
+     * @deprecated
+     * @return string
+     */
+    public function setDescription($description)
 	{
 		$this->description = $description;
         return $this;
 	}
+
+    public function description($description = null)
+    {
+        if($description === false)
+        {
+            return $this->description;
+        }
+        else
+        {
+            $this->description = $description;
+            return $this;
+        }
+    }
 
 	//! Returns all the arrays associated with this document.
 	public function getErrors()

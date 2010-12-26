@@ -31,6 +31,23 @@ class App extends Util
     );
 
     /**
+     * This method adds models, controllers or views to the application
+     * @param array $options
+     */
+    public function add($options)
+    {
+        switch($options[0])
+        {
+        case 'model':
+            require 'config/ntentan.php';
+            
+            break;
+        case 'controller':
+            break;
+        }
+    }
+
+    /**
      * This method creates a new application by setting up the directories
      * and files. It also creates all the initial necessary bootstrap codes
      * needed for the application to work properly.

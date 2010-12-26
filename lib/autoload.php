@@ -31,5 +31,10 @@ function __autoload($class)
     {
         \ntentan\Ntentan::addIncludePath(implode("/",$fullPath));
     }
+    /*else if($fullPath[0] == 'ntentan')
+    {
+        var_dump($fullPath);
+        \ntentan\Ntentan::addIncludePath(implode("/",$fullPath));
+    }*/
     require_once $class . ".php";
 }

@@ -266,7 +266,7 @@ class Controller
         $this->variables[$params1] .= $params2;
     }
 
-    protected function get()
+    protected function getData()
     {
         return $this->variables;
     }
@@ -340,7 +340,7 @@ class Controller
             }
             if($i != count($routeArray)-1)
             {
-                $controller->method = $routeArray[$i+1];
+                $controller->method = Ntentan::camelize($routeArray[$i+1],".","",true);
             }
             else
             {
@@ -431,10 +431,10 @@ class Controller
             $this->mainPreRender();
             $controllerClass = new ReflectionClass($this->getName());
             $method = $controllerClass->GetMethod($path);
-            $this->view->template = Ntentan::$modulesPath . "/{$this->route}/$path.tpl.php";
+            $this->view->template = Ntentan::$modulesPath . "/{$this->route}/" . Ntentan::deCamelize($path) . ".tpl.php";
             $method->invokeArgs($this, $params);
             $this->view->widgets = $this->widgets;
-            $ret = $this->view->out($this->get());
+            $ret = $this->view->out($this->getData());
             $this->mainPostRender();
         }
         else

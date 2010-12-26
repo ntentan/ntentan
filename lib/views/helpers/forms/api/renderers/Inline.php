@@ -48,7 +48,7 @@ class Inline extends Renderer
     
         $ret .= "<div class='fapi-element-div' ".($element->getId()==""?"":"id='".$element->getId()."_wrapper'")." ".$element->getAttributes(Element::SCOPE_WRAPPER).">";
         
-        if(!$element->isContainer)
+        if(!$element->isContainer && $element->renderLabel)
         {
             $ret .= "<label class='fapi-label'>".$element->getLabel();
             if($element->getRequired() && $element->getLabel()!="" && $element->getShowField())
@@ -71,8 +71,8 @@ class Inline extends Renderer
             $ret .= "</ul>";
             $ret .= "</div>";
         }
-    
-        if($element->getType()=="Field")
+        
+        if($element->getType()=="ntentan\views\helpers\forms\api\Field")
         {
             if($element->getShowField())
             {
@@ -89,7 +89,7 @@ class Inline extends Renderer
             $ret .= $element->render();
         }
     
-        if($element->getType()!="Container" && $element->getShowField())
+        if($element->getType()!="ntentan\views\helpers\forms\api\Container" && $element->getShowField())
         {
             if($element->getDescription() != "")
             {
@@ -115,4 +115,3 @@ class Inline extends Renderer
         return "inline";
     }
 }
-
