@@ -50,15 +50,19 @@ class Inline extends Renderer
         
         if(!$element->isContainer && $element->renderLabel)
         {
-            $ret .= "<label class='fapi-label'>".$element->getLabel();
-            if($element->getRequired() && $element->getLabel()!="" && $element->getShowField())
+            $label = $element->getLabel();
+            if($label != '')
             {
-                $ret .= "<span class='fapi-required'>*</span>";
+                $ret .= "<label class='fapi-label'>".$label;
+                if($element->getRequired() && $label!="" && $element->getShowField())
+                {
+                    $ret .= "<span class='fapi-required'>*</span>";
+                }
+                $ret .= "</label>";
             }
-            $ret .= "</label>";
         }
     
-    	$ret .= "<div class='fapi-message' id='".$element->getId()."-fapi-message'></div>";
+    	//$ret .= "<div class='fapi-message' id='".$element->getId()."-fapi-message'></div>";
     
         if($element->hasError())
         {

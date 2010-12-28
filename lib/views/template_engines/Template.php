@@ -5,7 +5,7 @@ use ntentan\Ntentan;
 
 class Template
 {
-    public static function out($template, $data)
+    public static function out($template, $templateData)
     {
         $engine = end(explode(".", $template));
         Ntentan::addIncludePath(
@@ -13,6 +13,6 @@ class Template
         );
         $engine = "ntentan\\views\\template_engines\\$engine\\" . Ntentan::camelize($engine);
         $engine = new $engine();
-        return $engine->out($template, $data);
+        return $engine->out($template, $templateData);
     }
 }

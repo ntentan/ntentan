@@ -160,6 +160,10 @@ class FormsHelper extends Helper
     {
         if($function == "open")
         {
+            if($arguments[0] != '')
+            {
+                $this->container->setId($arguments[0]);
+            }
             return $this->container->renderHead();
         }
         elseif($function == "get")
@@ -171,6 +175,10 @@ class FormsHelper extends Helper
             if($arguments[0] != "")
             {
                 $this->container->submitValue = $arguments[0];
+            }
+            elseif($arguments[0] === false)
+            {
+                $this->container->showSubmit = false;
             }
             return $this->container->renderFoot();
         }

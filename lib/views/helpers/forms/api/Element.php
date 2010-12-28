@@ -105,6 +105,8 @@ abstract class Element
 
 	/**
 	 * Public accessor for setting the ID of the element.
+     *
+     * @deprecated
 	 * @return Element
 	 */
 	public function setId($id)
@@ -113,6 +115,20 @@ abstract class Element
 		$this->addAttribute("id",$this->id);
 		return $this;
 	}
+
+    public function id($id = false)
+    {
+        if($id === false)
+        {
+            return $this->id;
+        }
+        else
+        {
+            $this->id = str_replace(".","_",$id);
+            $this->attribute('id', $this->id);
+            return $this;
+        }
+    }
 
 	/**
 	 * Public accessor for getting the Id of the element.
@@ -265,10 +281,41 @@ abstract class Element
 	//! Adds an attribute object to the internal attribute array of the
 	//! element.
 	//! \see Attribute
-	public function addAttributeObject($attribute)
+	/*public function addAttributeObject($attribute)
 	{
 		$this->attributes[] = $attribute;
-	}
+	}*/
+
+    public function attribute($key, $value = false, $scope = Element::SCOPE_ELEMENT)
+    {
+        if($value === false)
+        {
+            switch($scope)
+            {
+                case Element::SCOPE_ELEMENT:
+                    return $this->attributes[$key];
+                    break;
+
+                case Element::SCOPE_WRAPPER: 
+                    return $this->wrapperAttributes[$key];
+                    break;
+            }
+        }
+        else
+        {
+            switch($scope)
+            {
+                case Element::SCOPE_ELEMENT:
+                    $this->attributes[$key] = $value;
+                    break;
+
+                case Element::SCOPE_WRAPPER:
+                    $this->wrapperAttributes[$key] = $value;
+                    break;
+            }
+            return $this;
+        }
+    }
 
 	//! Adds an attribute to the list of attributes of this element.
 	//! This method internally creates a new Attribute object and appends
@@ -277,59 +324,35 @@ abstract class Element
 	public function addAttribute($attribute,$value,$scope = Element::SCOPE_ELEMENT)
 	{
 		// Force the setting of the attribute.
-		if($scope==Element::SCOPE_ELEMENT)
+		if($scope == Element::SCOPE_ELEMENT)
 		{
-			foreach($this->attributes as $attribute_obj)
-			{
-				if($attribute_obj->getAttribute()==$attribute)
-				{
-					$attribute_obj->setValue($value);
-					return;
-				}
-			}
-			$attribute = new Attribute($attribute, $value);
-			$this->attributes[] = $attribute;
-			//$this->addAttributeObject($attribute);
+			$this->attributes[$attribute] = $value;
 		}
-		else if($scope = Element::SCOPE_WRAPPER)
+		else if($scope == Element::SCOPE_WRAPPER)
 		{
-			foreach($this->wrapperAttributes as $attribute_obj)
-			{
-				if($attribute_obj->getAttribute()==$attribute)
-				{
-					$attribute_obj->setValue($value);
-					return;
-				}
-			}
-			$attribute = new Attribute($attribute, $value);
-			$this->wrapperAttributes[] = $attribute;
+			$this->wrapperAttributes[$attribute] = $value;
 		}
 		return $this;
 	}
 
-	public function removeAttribute($attribute)
+	public function removeAttribute($attribute, $scope = Element::SCOPE_ELEMENT)
 	{
-		$i=0;
-		foreach($this->attributes as $attribute_obj)
-		{
-			if($attribute_obj->getAttribute()==$attribute)
-			{
-				array_splice($this->attributes,$i,1);
-			}
-			$i++;
-		}
+		switch($scope)
+        {
+        case Element::SCOPE_ELEMENT:
+            unset($this->attributes[$attribute]);
+            break;
+
+        case Element:SCOPE_WRAPPER:
+            unset($this->wrapperAttributes[$attribute]);
+            break;
+        }
 	}
 
 	//! Sets the value for a particular attribute.
 	public function setAttribute($attribute,$value)
 	{
-		foreach($this->attributes as $attrib)
-		{
-			if($attrib->getAttribute()==$attribute)
-			{
-				$attrib->setValue($value);
-			}
-		}
+		$this->attributes[$attribute] = $value;
 		return $this;
 	}
 
@@ -343,9 +366,9 @@ abstract class Element
 			case Element::SCOPE_WRAPPER: $attributes = $this->wrapperAttributes; break;
 		}
 		$ret = "";
-		foreach($attributes as $attribute)
+		foreach($attributes as $key => $value)
 		{
-			$ret .= $attribute->getHTML()." ";
+			$ret .= $key . '="' . $value . '" ';
 		}
 		return $ret;
 	}

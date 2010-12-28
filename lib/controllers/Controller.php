@@ -185,6 +185,10 @@ class Controller
                 $component = substr($property, 0, strlen($property) - 9);
                 return $this->componentInstances[$component];
             }
+            else
+            {
+                throw new \Exception("Unknown property <code><b>{$property}</b></code> requested");
+            }
         }
     }
 
@@ -223,7 +227,7 @@ class Controller
         }
         else
         {
-            Ntentan::message("Widget <code><b>$widgetName</b></code> not found");
+            Ntentan::error("Widget <code><b>$widgetName</b></code> not found");
         }
         
         $widgetInstance = new $widgetClass();

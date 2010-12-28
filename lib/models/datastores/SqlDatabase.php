@@ -22,7 +22,7 @@ use ntentan\Ntentan;
 use ntentan\models\Model;
 
 /**
- * A class used for the writing of datastores which store their data in SQL 
+ * A class used as the base class datastore classes which store their data in SQL
  * Databases. This class generates standard SQL queries through which most 
  * SQL database systems could be manipulated. For system specific functions (like
  * connecting, interpreting queries, escaping strings etc.) this class exposes 
