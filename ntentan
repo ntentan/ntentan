@@ -19,9 +19,19 @@ basic ntentan application execute:
 ";
     die();
 }
+else if(!isset($argv[1]))
+{
+    echo
+"
+Welcome to the Ntentan Framework!
+Please specify an action to perform.
+";
+    die();
 
-require_once("Ntentan.php");
-require_once("utils/Util.php");
+}
+
+require_once(NTENTAN_HOME . "lib/Ntentan.php");
+require_once(NTENTAN_HOME . "utils/Util.php");
 
 $utilClassName = ntentan\Ntentan::camelize($argv[1]);
 if($argv[1] != "app" && $argv[2] != "create")
@@ -43,21 +53,5 @@ if(class_exists("ntentan\\utils\\$utilClassName"))
 }
 else
 {
-    fputs(STDERR, "Invalid script. Execution function doesn't exist\n");
+    fputs(STDERR, "Sorry the script you requested doesn't exist.\n");
 }
-
-/*if($argv[1] != "app" && $argv[2] != "create")
-{
-    ntentan\Ntentan::boot();
-}
-
-array_shift($argv);
-array_shift($argv);
-if(function_exists("execute"))
-{
-    execute($argv);
-}
-else
-{
-    fputs(STDERR, "Invalid script. Execution function doesn't exist");
-}*/

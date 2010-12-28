@@ -365,15 +365,17 @@ class Ntentan
      * @param string $string The string to be converted.
      * @param string $delimiter The delimiter to be used as the trigger for capitalisation
      * @param string $baseDelimiter Another delimiter to be used as a second trigger for capitalisation
+     * @param string $firstPartLowercase When set to true, the first letter of the camelcase returned is a lowecase character
      */
-    public static function camelize($string, $delimiter=".", $baseDelimiter = "")
+    public static function camelize($string, $delimiter=".", $baseDelimiter = "", $firstPartLowercase = false)
     {
         if($baseDelimiter == "") $baseDelimiter = $delimiter;
         $parts = explode($delimiter, $string);
         $ret = "";
-        foreach($parts as $part)
+        foreach($parts as $i => $part)
         {
-            $ret .= $delimiter == $baseDelimiter ? ucfirst(Ntentan::camelize($part, "_", $baseDelimiter)) : ucfirst($part);
+            $part = $delimiter == $baseDelimiter ? ucfirst(Ntentan::camelize($part, "_", $baseDelimiter)) : ucfirst($part);
+            $ret .= $firstPartLowercase === true ? lcfirst($part) : $part;
         }
         return $ret;
     }
@@ -396,12 +398,21 @@ class Ntentan
         }
         return $deCamelized;
     }
-    
+
+    /**
+     * Adds a route to the routing engine of the system.
+     * @param string $source
+     * @param string $dest
+     */
     public static function addRoute($source, $dest)
     {
         Ntentan::$routes[] = array($source, $dest);
     }
-    
+
+    /**
+     * Returns true if the request is an AJAX request.
+     * @return boolean
+     */
     public static function isAjax()
     {
         if($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') return true; else return false;
