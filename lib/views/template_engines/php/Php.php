@@ -5,9 +5,9 @@ use ntentan\views\template_engines\TemplateEngine;
 
 class Php extends TemplateEngine
 {
-    public function out($template, $data)
+    public function out($template, $templateData)
     {
-        foreach($data as $key => $value)
+        foreach($templateData as $key => $value)
         {
             $$key = $value;
         }

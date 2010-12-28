@@ -35,13 +35,13 @@ class ListsHelper extends Helper
     public function __toString()
     {
         $this->rowTemplate = $this->rowTemplate == null ? 
-            Ntentan::getFilePath('views/helpers/lists/templates/row.tpl.php') :
+            Ntentan::getFilePath('lib/views/helpers/lists/templates/row.tpl.php') :
             $this->rowTemplate;
         $this->defaultCellTemplate = $this->defaultCellTemplate == null ? 
-            Ntentan::getFilePath('views/helpers/lists/templates/default_cell.tpl.php') :
+            Ntentan::getFilePath('lib/views/helpers/lists/templates/default_cell.tpl.php') :
             $this->defaultCellTemplate;
         return Template::out(
-            Ntentan::getFilePath('views/helpers/lists/templates/list.tpl.php'),
+            Ntentan::getFilePath('lib/views/helpers/lists/templates/list.tpl.php'),
             array(
                 "headers"               =>  $this->headers,
                 "data"                  =>  $this->data,

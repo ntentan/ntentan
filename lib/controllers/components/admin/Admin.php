@@ -175,14 +175,14 @@ class Admin extends Component
         $this->operationsTemplate = 
             $this->operationsTemplate == null ? 
                 Ntentan::getFilePath(
-                    'controllers/components/admin/templates/operations.tpl.php'
+                    'lib/controllers/components/admin/templates/operations.tpl.php'
                 ):
                 $this->operationsTemplate;
 
         $this->rowTemplate =
             $this->rowTemplate == null ?
                 Ntentan::getFilePath(
-                    'controllers/components/admin/templates/row.tpl.php'
+                    'lib/controllers/components/admin/templates/row.tpl.php'
                 ):
                 $this->rowTemplate;
 

@@ -19,7 +19,6 @@
 namespace ntentan\views;
 
 use ntentan\views\template_engines\Template;
-
 use ntentan\Ntentan;
 use ntentan\exceptions\FileNotFoundException;
 
@@ -100,7 +99,14 @@ class Layout
         {
             foreach($this->javaScripts as $javaScript)
             {
-                $javaScripts .= file_get_contents($javaScript);
+                if(\file_exists($javaScript))
+                {
+                    $javaScripts .= file_get_contents($javaScript);
+                }
+                else
+                {
+                    throw new FileNotFoundException("Javascript file <code><b>$javaScript</b></code> not found!");
+                }
             }
             file_put_contents("public/bundle.js", $javaScripts);
             $layoutData["javascripts"] =
