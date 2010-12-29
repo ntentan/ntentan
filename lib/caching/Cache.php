@@ -32,8 +32,7 @@ abstract class Cache
     {
         if(Cache::$instance == null)
         {
-            require "config/ntentan.php";
-            $class = Ntentan::camelize($cache_method);
+            $class = Ntentan::camelize(Ntentan::$cacheMethod);
             require "$class.php";
             $class = "ntentan\\caching\\$class";
             Cache::$instance = new $class();

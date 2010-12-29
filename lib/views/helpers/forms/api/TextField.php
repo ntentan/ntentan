@@ -25,7 +25,7 @@ namespace ntentan\views\helpers\forms\api;
  */
 class TextField extends Field
 {
-	protected $max_lenght;
+	protected $max_length;
 	protected $type;
 	protected $max_val;
 	protected $min_val;
@@ -89,73 +89,4 @@ class TextField extends Field
 		$this->max_val = $max_val;
 		return $this;
 	}
-
-	/**
-	 * @todo rewrite this whole validation
-	 * @see lib/fapi/Forms/Field#validate()
-	 */
-	/*public function validate()
-	{
-
-		//Perform validation on the parent class.
-		if(!parent::validate())
-		{
-			return false;
-		}
-
-		if($this->getValue()=="") return true;
-
-		//Perform validation on text fields
-		if($this->type=="TEXT")
-		{
-			if(!is_numeric($this->getValue()))
-			{
-				if($this->max_lenght>0 && strlen($this->getValue())>$this->max_lenght)
-				{
-					$this->error = true;
-					array_push($this->errors,"The lenght of the text in this field cannot exceed $this->max_lenght");
-					return false;
-				}
-			}
-			return true;
-		}
-
-		//Perform validation of the numeric fields
-		else if($this->type=="NUMERIC")
-		{
-			if(is_numeric($this->getValue()))
-			{
-				if($this->min_val!=$this->max_val)
-				{
-					if(!($this->getValue()>=$this->min_val && $this->getValue()<=$this->max_val))
-					{
-						$this->error = true;
-						array_push($this->errors, "The value of the number in this field must be between $this->min_val and $this->max_val");
-						return false;
-					}
-				}
-			}
-			else
-			{
-				$this->error = true;
-				array_push($this->errors, "The value of this field is expected to be a number.");
-				return false;
-			}
-			return true;
-		}
-
-		else if($this->type=="REGEXP")
-		{
-			if(preg_match("$this->regexp", $this->getValue())==1)
-			{
-				return true;
-			}
-			else
-			{
-				array_push($this->errors, "The format of this field is invalid");
-				$this->error = true;
-				return false;
-			}
-		}
-	}*/
 }

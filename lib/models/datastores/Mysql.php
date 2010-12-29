@@ -147,7 +147,7 @@ class Mysql extends SqlDatabase
                 "name" => strtolower($mysqlField["COLUMN_NAME"]),
                 "type" => $type,
                 "required" => $mysqlField["IS_NULLABLE"] == "NO" ? true : false,
-                "lenght" => $mysqlField["CHARACTER_MAXIMUM_LENGHT"],
+                "length" => $mysqlField["CHARACTER_MAXIMUM_LENGTH"] > 0 ? (int)$mysqlField["CHARACTER_MAXIMUM_LENGTH"] : null,
                 "comment" => $mysqlField["COLUMN_COMMENT"]
             );
 
@@ -204,7 +204,7 @@ class Mysql extends SqlDatabase
             // Get the schemas which belong to
             $belongsToTables = $this->query(
                 sprintf(
-                    "select referenced_table_name
+                    "select referenced_table_name, column_name
                     from information_schema.table_constraints 
                     join information_schema.key_column_usage using(constraint_name) 
                     where 
@@ -219,8 +219,17 @@ class Mysql extends SqlDatabase
             
             foreach($belongsToTables as $belongsToTable)
             {
-                $description["tables"][$table["table_name"]]["belongs_to"][] = 
-                    Ntentan::singular($belongsToTable["referenced_table_name"]);
+                $singular = Ntentan::singular($belongsToTable["referenced_table_name"]);
+                if($belongsToTable['column_name'] == $singular . '_id')
+                {
+                    $description["tables"][$table["table_name"]]["belongs_to"][] =
+                        $singular;
+                }
+                else
+                {
+                    $description["tables"][$table["table_name"]]["belongs_to"][] =
+                        array($singular, 'as' => $belongsToTable['column_name']);
+                }
             }
             
             // Get the schemas which is owns.
