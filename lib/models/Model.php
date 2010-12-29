@@ -90,20 +90,15 @@ class Model implements ArrayAccess, Iterator
         }
         $modelInformation = new ReflectionObject($this);
         $modelName = end(explode("\\", $modelInformation->getName()));
-        if(substr($modelName, -5) == "Model")
-        {
-            $this->name = strtolower(Ntentan::deCamelize(substr($modelName, 0, strlen($modelName) - 5)));
-        }
-        else
-        {
-            $this->name = strtolower(Ntentan::deCamelize($modelName));
-        }
+        $this->name = strtolower(Ntentan::deCamelize($modelName));
+        
         $this->iteratorPosition = 0;
         $this->modelRoute = implode(".",array_slice(explode("\\", $modelInformation->getName()),1 , -1));
         
         $dataStoreParams = Ntentan::getDefaultDataStore();
         $dataStoreClass = __NAMESPACE__ . "\\datastores\\" . Ntentan::camelize($dataStoreParams["datastore"]);
         if(class_exists($dataStoreClass)) {
+            $this->dataStore = $dataStoreParams["datastore"];
             $dataStore = new $dataStoreClass($dataStoreParams);
             $this->setDataStore($dataStore);
         } else {
@@ -121,7 +116,7 @@ class Model implements ArrayAccess, Iterator
     {
         $classNameArray = explode('.', $className);
         $className = Ntentan::camelize(end($classNameArray));
-        $fullClassName = "\\" . Ntentan::$modulesPath . "\\" . implode("\\", $classNameArray) . "\\$className";
+        $fullClassName = "\\" . str_replace("/", "\\", Ntentan::$modulesPath) . "\\" . implode("\\", $classNameArray) . "\\$className";
         $modelClassFile = Ntentan::$modulesPath . '/' . implode('/', $classNameArray) . "/$className.php" ;
         if(!file_exists($modelClassFile))
         {
@@ -364,7 +359,7 @@ class Model implements ArrayAccess, Iterator
                 $model = Model::load($this->hasMany);
             }*/
             $modelMethod = new ReflectionMethod($model, "get");
-            $foreingKey = $this->name . "_id";
+            $foreignKey = $this->name . "_id";
             //$arguments[1]["conditions"] = array($this->name . "_id" => $this->data["id"]);
 
             $keys = array_keys($this->data);
@@ -483,10 +478,17 @@ class Model implements ArrayAccess, Iterator
                     {
                         if(is_array($unique))
                         {
-                            if($field["name"] == $unique["field"])
+                            if(isset($unique['field']))
                             {
-                                $uniqueField = true;
-                                $uniqueMessage = $unique["message"];
+                                if($field["name"] == $unique["field"])
+                                {
+                                    $uniqueField = true;
+                                    $uniqueMessage = $unique["message"];
+                                }
+                            }
+                            else
+                            {
+                                throw new exceptions\DescriptionException("A mustBeUnique constraint specified as an array must always contain a field property");
                             }
                         }
                         else
@@ -536,7 +538,7 @@ class Model implements ArrayAccess, Iterator
                         if($field["name"] == $fieldName)
                         {
                             $description["fields"][$i]["model"] = Ntentan::plural($belongsToModel);
-                            $description["fields"][$i]["foreing_key"] = true;
+                            $description["fields"][$i]["foreign_key"] = true;
                             $description["fields"][$i]["field_name"] = $fieldName;
                             if($alias != '') $description["fields"][$i]["alias"] = $alias;
                         }
@@ -554,7 +556,7 @@ class Model implements ArrayAccess, Iterator
                         if($field["name"] == $fieldName)
                         {
                             $description["fields"][$i]["model"] = $this->belongsTo;
-                            $description["fields"][$i]["foreing_key"] = true;
+                            $description["fields"][$i]["foreign_key"] = true;
                         }
                     }
                 }

@@ -71,7 +71,12 @@ class Ntentan
      * @var string
      */
     public static $cachePath = "cache/";
-    
+
+    /**
+     *
+     */
+    public static $cacheMethod = "file";
+
     /**
      * The directory which contains the layouts for the current application.
      * @var string
@@ -162,6 +167,8 @@ class Ntentan
 	    Ntentan::$basePath = $ntentan_home;
 	    Ntentan::$modulesPath = $modules_path;
         Ntentan::$prefix = $url_prefix;
+        Ntentan::$cacheMethod = $cache_method == '' ? Ntentan::$cacheMethod : $cache_method;
+        
         Ntentan::addIncludePath(
             array
             (

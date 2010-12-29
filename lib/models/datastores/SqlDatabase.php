@@ -118,7 +118,7 @@ abstract class SqlDatabase extends DataStore
             foreach($params["fields"] as $index => $field)
             {
                 $fields[$index] = $this->quote($description["name"]). "." . $this->quote($field);
-                if($params["fetch_belongs_to"] && $description["fields"][$field]["foreing_key"] === true && $description["fields"][$field]["alias"] != '')
+                if($params["fetch_belongs_to"] && $description["fields"][$field]["foreign_key"] === true && $description["fields"][$field]["alias"] != '')
                 {
                     $fields[$index] .= " AS {$description["fields"][$field]["alias"]}";
                 }

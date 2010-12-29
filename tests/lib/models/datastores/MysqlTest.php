@@ -5,6 +5,7 @@ require_once 'lib/test_cases/SqlDatabaseTestCase.php';
 require_once 'lib/models/datastores/DataStore.php';
 require_once 'lib/models/datastores/SqlDatabase.php';
 require_once 'lib/models/datastores/Mysql.php';
+//require_once 'lib/Ntentan.php';
 
 /**
  * Test class for DataStore.
@@ -12,11 +13,11 @@ require_once 'lib/models/datastores/Mysql.php';
  */
 class MysqlTest extends \ntentan\test_cases\SqlDatabaseTestCase
 {
-
-    /**
-     * @var DataStore
-     */
-    protected $object;
+    protected function setUp()
+    {
+        \ntentan\Ntentan::$dbConfigFile = 'tests/config/mysql_db.php';
+        parent::setUp();
+    }
 
     protected function getConnection()
     {
@@ -30,7 +31,13 @@ class MysqlTest extends \ntentan\test_cases\SqlDatabaseTestCase
         $parameters['username'] = 'root';
         $parameters['password'] = 'root';
         $parameters['database'] = 'ntentan_test';
-        return new ntentan\models\datastores\Mysql($parameters);
+        return new \ntentan\models\datastores\Mysql($parameters);
     }
 
+    public function testGetDatastore()
+    {
+        $this->assertEquals($this->users->getDataStore(), 'mysql');
+        $this->assertEquals($this->roles->getDataStore(), 'mysql');
+        $this->assertEquals($this->departments->getDataStore(), 'mysql');
+    }
 }

@@ -239,7 +239,7 @@ class Admin extends Component
                 {
                     continue;
                 }
-                else if($field["foreing_key"] === true)
+                else if($field["foreign_key"] === true)
                 {
                     $this->listFields[] = Ntentan::singular($field["model"]);
                 }

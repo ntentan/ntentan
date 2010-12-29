@@ -100,7 +100,7 @@ class FormsHelper extends Helper
                 break;
 
             case "integer":
-                if($field["foreing_key"]===true)
+                if($field["foreign_key"]===true)
                 {
                     $element = new api\ModelField(ucwords(str_replace("_", " ", substr($field["name"], 0, strlen($field["name"])-3))), $field["model"]);
                     $element->name = $field["name"];

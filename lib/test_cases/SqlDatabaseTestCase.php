@@ -1,7 +1,14 @@
 <?php
 namespace ntentan\test_cases;
 
+require_once 'lib/models/Model.php';
 require_once 'PHPUnit/Framework.php';
+require_once 'mocks/users/Users.php';
+require_once 'mocks/roles/Roles.php';
+require_once 'mocks/departments/Departments.php';
+require_once 'lib/Ntentan.php';
+require_once 'lib/models/exceptions/ModelNotFoundException.php';
+require_once 'lib/caching/Cache.php';
 
 /**
  * Test class for DataStore.
@@ -12,7 +19,9 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
     /**
      * @var DataStore
      */
-    protected $object;
+    protected $users;
+    protected $roles;
+    protected $departments;
 
     /**
      * Returns an instance of the datastore of the database being tested.
@@ -26,6 +35,11 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
         );
     }
 
+    protected function getSetUpOperation()
+    {
+        return $this->getOperations()->CLEAN_INSERT(TRUE);
+    }
+
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
@@ -33,8 +47,11 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->object = $this->getInstance();
-        $this->object->table = 'users';
+        \ntentan\Ntentan::$modulesPath = 'lib/test_cases/mocks';
+        \ntentan\Ntentan::$cacheMethod = 'volatile';
+        $this->users = \ntentan\models\Model::load('users');
+        $this->roles = \ntentan\models\Model::load('roles');
+        $this->departments = \ntentan\models\Model::load('departments');
     }
 
     /**
@@ -50,53 +67,289 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
      */
     public function testSetModel()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->assertEquals($this->users->getDatastore(true)->table, "users");
+        $this->assertEquals($this->roles->getDatastore(true)->table, "roles");
+        $this->assertEquals($this->departments->getDatastore(true)->table, "departments");
     }
 
-    /**
-     * @todo Implement testGet().
-     */
+    public function testDescribe()
+    {
+        $rolesDescription = array(
+            'name' => 'roles',
+            'fields' => array(
+                'id' => array(
+                     'name' => 'id',
+                    'type' => 'integer',
+                    'required' => true,
+                    'length' => null,
+                    'comment' => '',
+                    'primary_key' => true
+                ),
+                'name' => array(
+                    'name' => 'name',
+                    'type' => 'string',
+                    'required' => true,
+                    'length' => 255,
+                    'comment' => '',
+                    'unique' => true,
+                    'unique_violation_message' => 'Two roles cannot have the same name'
+                ),
+            )
+        );
+
+        $departmentsDescription = array(
+            'name' => 'departments',
+            'fields' => array(
+                'id' => array(
+                    'name' => 'id',
+                    'type' => 'integer',
+                    'required' => true,
+                    'length' => null,
+                    'comment' => '',
+                    'primary_key' => true
+                ),
+                'name' => array(
+                    'name' => 'name',
+                    'type' => 'string',
+                    'required' => true,
+                    'length' => 255,
+                    'comment' => ''
+                ),
+            )
+        );
+
+        $usersDescription = array(
+            'name' => 'users',
+            'fields' => array(
+                'id' => array(
+                    'name' => 'id',
+                    'type' => 'integer',
+                    'required' => true,
+                    'length' => null,
+                    'comment' => '',
+                    'primary_key' => true
+                ),
+                'username' => array(
+                    'name' => 'username',
+                    'type' => 'string',
+                    'required' => true,
+                    'length' => 255,
+                    'comment' => '',
+                    'unique' => true
+                ),
+                'password' => array(
+                    'name' => 'password',
+                    'type' => 'string',
+                    'required' => true,
+                    'length' => 255,
+                    'comment' => ''
+                ),
+                'role_id' => array(
+                    'name' => 'role_id',
+                    'type' => 'integer',
+                    'required' => false,
+                    'length' => null,
+                    'comment' => '',
+                    'model' => 'roles',
+                    'foreign_key' => true,
+                    'field_name' => 'role_id',
+                    'alias' => 'role'
+                ),
+                'firstname' => array(
+                    'name' => 'firstname',
+                    'type' => 'string',
+                    'required' => true,
+                    'length' => 255,
+                    'comment' => ''
+                ),
+                'lastname' => array(
+                    'name' => 'lastname',
+                    'type' => 'string',
+                    'required' => true,
+                    'length' => 255,
+                    'comment' => ''
+                ),
+                'othernames' => array(
+                    'name' => 'othernames',
+                    'type' => 'string',
+                    'required' => false,
+                    'length' => 255,
+                    'comment' => ''
+                ),
+                'status' => array(
+                    'name' => 'status',
+                    'type' => 'integer',
+                    'required' => true,
+                    'length' => null,
+                    'comment' => ''
+                ),
+                'email' => array(
+                    'name' => 'email',
+                    'type' => 'string',
+                    'required' => true,
+                    'length' => 255,
+                    'comment' => ''
+                ),
+                'phone' => array(
+                    'name' => 'phone',
+                    'type' => 'string',
+                    'required' => false,
+                    'length' => 64,
+                    'comment' => ''
+                ),
+                'office' => array(
+                    'name' => 'office',
+                    'type' => 'integer',
+                    'required' => false,
+                    'length' => null,
+                    'comment' => '',
+                    'model' => 'departments',
+                    'foreign_key' => true,
+                    'field_name' => 'office',
+                    'alias' => 'office'
+                ),
+                'last_login_time' => array(
+                    'name' => 'last_login_time',
+                    'type' => 'datetime',
+                    'required' => false,
+                    'length' => null,
+                    'comment' => ''
+                ),
+                'is_admin' => array(
+                    'name' => 'is_admin',
+                    'type' => 'boolean',
+                    'required' => false,
+                    'length' => null,
+                    'comment' => ''
+                ),
+            ),
+            'belongs_to' => array (
+                'role',
+                'department'
+            )
+        );
+
+        $this->assertEquals($this->users->describe(), $usersDescription);
+        $this->assertEquals($this->roles->describe(), $rolesDescription);
+        $this->assertEquals($this->departments->describe(), $departmentsDescription);
+    }
+
+    public function testDescribeModel()
+    {
+        $description = array(
+            'tables' => array(
+                'departments' => array(
+                    'belongs_to' => array(),
+                    'has_many' => array(
+                        'users'
+                    )
+                ),
+                'roles' => array(
+                    'belongs_to' => array(),
+                    'has_many' => array(
+                        'users'
+                    )
+                ),
+                'users' => array(
+                    'belongs_to' => array(
+                        'role',
+                        array('department', 'as' => 'office')
+                    ),
+                    'has_many' => array()
+                )
+            )
+        );
+        
+        $this->assertEquals($this->roles->getDataStore(true)->describeModel(), $description);
+        $this->assertEquals($this->users->getDataStore(true)->describeModel(), $description);
+        $this->assertEquals($this->departments->getDataStore(true)->describeModel(), $description);
+    }
+
+    public function testGetName()
+    {
+        $this->assertEquals($this->roles->getName(), 'roles');
+        $this->assertEquals($this->users->getName(), 'users');
+        $this->assertEquals($this->departments->getName(), 'departments');
+    }
+
     public function testGet()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+        $rolesData = array(
+            array('id' => '1', 'name' => 'System Administrator'),
+            array('id' => '2', 'name' => 'System Auditor'),
+            array('id' => '3', 'name' => 'Content Author'),
+            array('id' => '4', 'name' => 'Site Member'),
+        );
+
+        $filteredRolesData = array(
+            array('id' => '1', 'name' => 'System Administrator'),
+            array('id' => '2', 'name' => 'System Auditor'),
+        );
+
+        $this->assertEquals($rolesData, $this->roles->get()->toArray());
+        $this->assertEquals($rolesData, $this->roles->get()->getData());
+        $this->assertEquals($this->roles->get('count'), '4');
+
+        $this->assertEquals(
+            $filteredRolesData,
+            $this->roles->get(
+                'all', array(
+                    'conditions' => array(
+                        'id<' => 3
+                    )
+                )
+            )->toArray()
+        );
+
+        $this->assertEquals(
+            array('id' => '1', 'name' => 'System Administrator'),
+            $this->roles->get(
+                'first', array(
+                    'conditions' => array(
+                        'id' => 1
+                    )
+                )
+            )->toArray()
+        );
+
+        $this->assertEquals(
+            array('id' => '1', 'name' => 'System Administrator'),
+            $this->roles->get(
+                'first', array(
+                    'conditions' => array(
+                        'id<' => 2
+                    )
+                )
+            )->toArray()
         );
     }
 
-    /**
-     * @todo Implement testPut().
-     */
-    public function testPut()
+    public function testSetData()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+        $this->roles->setData(
+            array('name' => 'Dummy Role')
         );
-    }
+        $this->assertEquals($this->roles->getData(), array('name'=>'Dummy Role'));
 
-    /**
-     * @todo Implement testUpdate().
-     */
-    public function testUpdate()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+        $this->roles->setData(
+            array('id' => '2')
         );
-    }
+        $this->assertEquals($this->roles->getData(),
+            array(
+                'id' => '2',
+                'name' => 'Dummy Role'
+            )
+        );
 
-    /**
-     * @todo Implement testDelete().
-     */
-    public function testDelete()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+        $this->roles->setData(
+            array('name' => 'Dummiest Role'),
+            true
+        );
+        
+        $this->assertEquals($this->roles->getData(),
+            array(
+                'name' => 'Dummiest Role'
+            )
         );
     }
 }
