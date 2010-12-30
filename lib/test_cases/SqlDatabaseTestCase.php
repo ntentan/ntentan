@@ -8,6 +8,7 @@ require_once 'mocks/roles/Roles.php';
 require_once 'mocks/departments/Departments.php';
 require_once 'lib/Ntentan.php';
 require_once 'lib/models/exceptions/ModelNotFoundException.php';
+require_once 'lib/models/exceptions/DataStoreException.php';
 require_once 'lib/caching/Cache.php';
 
 /**
@@ -62,9 +63,6 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
     {
     }
 
-    /**
-     * @todo Implement testSetModel().
-     */
     public function testSetModel()
     {
         $this->assertEquals($this->users->getDatastore(true)->table, "users");
@@ -259,10 +257,14 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
                 )
             )
         );
-        
-        $this->assertEquals($this->roles->getDataStore(true)->describeModel(), $description);
-        $this->assertEquals($this->users->getDataStore(true)->describeModel(), $description);
-        $this->assertEquals($this->departments->getDataStore(true)->describeModel(), $description);
+
+        $rolesDescription = $this->roles->getDataStore(true)->describeModel();
+        $this->assertEquals($rolesDescription['roles'], $description['roles']);
+        $usersDescription = $this->users->getDataStore(true)->describeModel();
+        $this->assertEquals($usersDescription['users'], $description['users']);
+        $departmentsDescription = $this->departments->getDataStore(true)->describeModel();
+        $this->assertEquals($departmentsDescription['departments'], $description['departments']);
+        //$this->assertEquals($this->departments->getDataStore(true)->describeModel(), $description);
     }
 
     public function testGetName()
@@ -281,12 +283,21 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
             array('id' => '4', 'name' => 'Site Member'),
         );
 
+        $roleNameData = array(
+            array('name' => 'System Administrator'),
+            array('name' => 'System Auditor'),
+            array('name' => 'Content Author'),
+            array('name' => 'Site Member'),
+        );
+
         $filteredRolesData = array(
             array('id' => '1', 'name' => 'System Administrator'),
             array('id' => '2', 'name' => 'System Auditor'),
         );
 
         $this->assertEquals($rolesData, $this->roles->get()->toArray());
+        $this->assertEquals(true, is_object($this->roles->get()));
+        $this->assertObjectHasAttribute('belongsTo', $this->roles->get());
         $this->assertEquals($rolesData, $this->roles->get()->getData());
         $this->assertEquals($this->roles->get('count'), '4');
 
@@ -322,6 +333,74 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
                 )
             )->toArray()
         );
+
+        $this->assertEquals(
+            $roleNameData,
+            $this->roles->get(
+                'all', array(
+                    'fields' => array(
+                        'name'
+                    )
+                )
+            )->toArray()
+        );
+
+        $roles = $this->roles->get(
+            'all', array(
+                'fetch_related' => true
+            )
+        )->toArray();
+
+        $this->assertEquals(
+            $roles[1],
+            array(
+                'id' => 2,
+                'name' => 'System Auditor',
+                'users' => array(
+                    array(
+                        'id' => 3,
+                        'username' => 'edonkor',
+                        'password' => '92b9ef8d24335bb046db8e292e7de098',
+                        'role_id' => '2',
+                        'firstname' => 'Edward',
+                        'lastname' => 'Donkor',
+                        'othernames' => '',
+                        'status' => '4',
+                        'email' => 'edonkor@ntentan.com',
+                        'phone' => null,
+                        'office' => '2',
+                        'last_login_time' => null,
+                        'is_admin' => null
+                    )
+                )
+            )
+        );
+
+        $users = $this->users->get('all', array('fetch_related'=>true, 'fetch_belongs_to'=>true))->toArray();
+        $this->assertEquals(
+            $users[0],
+            array(
+                'id' => '1',
+                'username' => 'odadzie',
+                'password' => 'df9aaa54a00098488bebbec623a88bab',
+                'role' => array(
+                    'id' => '1',
+                    'name' => 'System Administrator'
+                ),
+                'firstname' => 'Osofo',
+                'lastname' => 'Dadzie',
+                'othernames' => null,
+                'status' => '2',
+                'email' => 'odadzie@ntentan.com',
+                'phone' => null,
+                'office' => array(
+                    'id' => '1',
+                    'name' => 'Software Developers',
+                ),
+                'last_login_time' => null,
+                'is_admin' => '1'
+            )
+        );
     }
 
     public function testSetData()
@@ -351,5 +430,10 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
                 'name' => 'Dummiest Role'
             )
         );
+    }
+
+    public function testSave()
+    {
+        
     }
 }

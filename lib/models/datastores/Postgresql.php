@@ -18,24 +18,22 @@
 
 namespace ntentan\models\datastores;
 
+use ntentan\Ntentan;
+
 class Postgresql extends SqlDatabase {
 	private $db;
 	
 	public function connect($parameters) {
 	    
 		if(isset($parameters["schema"])) {
-	    	$this->defaultSchema = $parameters["schema"];
+	    	$this->schema = $parameters["schema"];
 	    } else {
-	    	$this->defaultSchema = "public";
+	    	$this->schema = "public";
 	    }
         $this->db = pg_connect(
             "host={$parameters["host"]} dbname={$parameters["database"]} user={$parameters["username"]} password={$parameters["password"]}"
         );
 	}
-	
-    protected function setTable($table) {
-        $this->_table = "{$this->defaultSchema}.{$table}";
-    }	
 	
     protected function query($query)
     {
@@ -61,11 +59,51 @@ class Postgresql extends SqlDatabase {
     protected function quote($field) {
     	return "\"$field\"";
     }
+
+    protected function resolveName($fieldPath, $reformat=false, $description = null)
+    {
+        if($reformat === true)
+        {
+            if(strpos($fieldPath, ".") === false)
+            {
+                if($description['fields'][$fieldPath]['type'] == 'boolean')
+                {
+                    $field = $this->quotedTable . "." . $this->quote($fieldPath);
+                    return " CASE WHEN $field = true THEN 1 WHEN $field = false THEN 0 END AS $fieldPath";
+                }
+                else
+                {
+                    return $this->quotedTable . "." . $this->quote($fieldPath);
+                }
+            }
+            else
+            {
+                $modelPathArray = explode(".", $fieldPath);
+                $fieldName = array_pop($modelPathArray);
+                $modelPath = implode(".", $modelPathArray);
+                $model = Model::load($modelPath);
+                $description = $model->describe();
+                if($description[$fieldPath] == 'boolean')
+                {
+                    $fieldPath = $this->quote($model->getDataStore(true)->table) . '.' . $this->quote($fieldName);
+                    return "CASE WHEN $fieldPath = true THEN 1 WHEN $fieldPath = false THEN 0 END ";
+                }
+                else
+                {
+                    return $this->quote($model->getDataStore(true)->table) . '.' . $this->quote($fieldName);
+                }
+                
+            }
+        }
+        else
+        {
+            return parent::resolveName($fieldPath);
+        }
+    }
 	
     public function describe()
     {
         $fields = array();
-        $databaseInfo = explode(".", $this->table);
         
         $primaryKey = $this->query(
             "select column_name from 
@@ -74,7 +112,7 @@ class Postgresql extends SqlDatabase {
                 c.table_name = pk.table_name and 
                 c.table_schema = pk.table_schema and
                 c.constraint_name = pk.constraint_name
-             where pk.table_name = '{$databaseInfo[1]}' and pk.table_schema='{$databaseInfo[0]}'
+             where pk.table_name = '{$this->table}' and pk.table_schema='{$this->schema}'
              and constraint_type = 'PRIMARY KEY'"
         );
         
@@ -85,15 +123,16 @@ class Postgresql extends SqlDatabase {
                 c.table_name = pk.table_name and 
                 c.table_schema = pk.table_schema and
                 c.constraint_name = pk.constraint_name
-             where pk.table_name = '{$databaseInfo[1]}' and pk.table_schema='{$databaseInfo[0]}'
+             where pk.table_name = '{$this->table}' and pk.table_schema='{$this->schema}'
              and constraint_type = 'UNIQUE'"
         );
                 
-        $pgFields = $this->query("select * from information_schema.columns where table_schema='{$databaseInfo[0]}' and table_name='{$databaseInfo[1]}'");
+        $pgFields = $this->query("select * from information_schema.columns where table_schema='{$this->schema}' and table_name='{$this->table}'");
         
         if(count($pgFields) == 0)
         {
-            throw new Exception("Database table [{$this->table}] not found.");
+            die("Database table [{$this->table}] not found.");
+            throw new DataStoreException("Database table [{$this->table}] not found.");
         }
         
         foreach($pgFields as $index => $pgField)
@@ -140,7 +179,10 @@ class Postgresql extends SqlDatabase {
             $field = array(
                 "name" => strtolower($pgField["column_name"]),
                 "type" => $type,
-                "required" => $pgField["is_nullable"] == "NO" ? true : false
+                "required" => $pgField["is_nullable"] == "NO" ? true : false,
+                "length" => $pgField["character_maximum_length"] > 0 ? (int)$pgField["character_maximum_length"] : null,
+                "comment" => $pgField["column_comment"]
+
             );
             
             if($pgField["column_name"] == $primaryKey[0]["column_name"])
@@ -160,8 +202,104 @@ class Postgresql extends SqlDatabase {
         }
 
         $description = array();
-        $description["name"] = $this->table;
+        $description["name"] = $this->model->getName();
         $description["fields"] = $fields;
         return $description;
     }
+
+    public function getLastInsertId()
+    {
+        $lastval = $this->query("SELECT LASTVAL() as last");
+        return $lastval[0]["last"];
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see models/datastores/ntentan\models\datastores.SqlDatabase::describeSchema()
+     */
+    public function describeModel()
+    {
+        $description = array();
+        $description["tables"] = array();
+        $tables = $this->query(
+            sprintf(
+                "SELECT table_name
+                 FROM information_schema.tables
+                 WHERE table_schema = '%s'",
+                $this->schema
+            )
+        );
+
+        foreach($tables as $table)
+        {
+            $description["tables"][$table["table_name"]] = array();
+            $description["tables"][$table["table_name"]]["belongs_to"] = array();
+            $description["tables"][$table["table_name"]]["has_many"] = array();
+
+            // Get the schemas which belong to
+            $belongsToTables = $this->query(
+                sprintf(
+                    "select constraint_column_usage.table_name, column_name
+                    from information_schema.table_constraints
+                    join information_schema.constraint_column_usage using(constraint_name)
+                    where
+                        table_constraints.table_schema = '%s' and
+                        constraint_type = 'FOREIGN KEY' and
+                        table_constraints.table_name = '%s' and
+                        constraint_column_usage.column_name = 'id'",
+                    $this->schema,
+                    $table["table_name"]
+                )
+            );
+
+            foreach($belongsToTables as $belongsToTable)
+            {
+                $singular = Ntentan::singular($belongsToTable["table_name"]);
+                if($belongsToTable['column_name'] == $singular . '_id')
+                {
+                    $description["tables"][$table["table_name"]]["belongs_to"][] =
+                        $singular;
+                }
+                else
+                {
+                    $description["tables"][$table["table_name"]]["belongs_to"][] =
+                        array($singular, 'as' => $belongsToTable['column_name']);
+                }
+            }
+
+            // Get the schemas which is owns.
+            $hasManyTables = $this->query(
+                sprintf(
+                    "select table_constraints.table_name
+                    from information_schema.table_constraints
+                    join information_schema.constraint_column_usage using(constraint_name)
+                    where
+                        table_constraints.table_schema = '%s' and
+                        constraint_type = 'FOREIGN KEY' and
+                        constraint_column_usage.table_name = '%s' and
+                        constraint_column_usage.column_name = 'id'",
+                    $this->schema,
+                    $table["table_name"]
+                )
+            );
+
+            foreach($hasManyTables as $hasManyTable)
+            {
+                $description["tables"][$table["table_name"]]["has_many"][] =
+                    $hasManyTable["table_name"];
+            }
+        }
+        return $description;
+    }
+
+    public function begin()
+    {
+        $this->query("BEGIN");
+    }
+
+    public function end()
+    {
+        $this->query("COMMIT");
+    }
+
 }

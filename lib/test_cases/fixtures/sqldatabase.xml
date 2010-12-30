@@ -165,4 +165,49 @@
             <null/>
         </row>
     </table>
+    <!--<table name="permissions">
+        <column>id</column>
+        <column>permission</column>
+        <column>role_id</column>
+        <row>
+            <value>1</value>
+            <value>can_do_everything</value>
+            <value>1</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>can_build_software</value>
+            <value>2</value>
+        </row>
+        <row>
+            <value>3</value>
+            <value>can_view_reports</value>
+            <value>2</value>
+        </row>
+    </table>
+    <table name="resources">
+        <column>id</column>
+        <column>resource</column>
+        <column>department_id</column>
+        <row>
+            <value>1</value>
+            <value>printer</value>
+            <value>1</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>scanner</value>
+            <value>2</value>
+        </row>
+        <row>
+            <value>3</value>
+            <value>copier</value>
+            <value>1</value>
+        </row>
+        <row>
+            <value>4</value>
+            <value>stapler</value>
+            <value>3</value>
+        </row>
+    </table>-->
 </dataset>

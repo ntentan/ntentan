@@ -102,7 +102,7 @@ class Model implements ArrayAccess, Iterator
             $dataStore = new $dataStoreClass($dataStoreParams);
             $this->setDataStore($dataStore);
         } else {
-            Ntentan::error("Datastore <b><code>{$dataStoreClass}</code></b> doesn't exist.");
+            throw new exceptions\DataStoreException("Datastore {$dataStoreClass} doesn't exist.");
         }
     }
     
