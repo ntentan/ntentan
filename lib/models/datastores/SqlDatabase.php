@@ -38,8 +38,9 @@ use ntentan\models\Model;
 abstract class SqlDatabase extends DataStore
 {
     protected $_table;
-    
-    protected $defaultSchema;
+    protected $quotedTable;
+    protected $_schema;
+    protected $quotedSchema;
 
     public function __construct($parameters)
     {
@@ -51,6 +52,9 @@ abstract class SqlDatabase extends DataStore
     	case "table":
     		$this->setTable($value);
     		break;
+        case "schema":
+            $this->setSchema($value);
+            break;
     	}
     }
     
@@ -58,7 +62,8 @@ abstract class SqlDatabase extends DataStore
     	switch($property) {
     	case "table":
     		return $this->_table;
-    		break;
+        case 'schema':
+            return $this->_schema;
     	}
     }
     
@@ -71,6 +76,12 @@ abstract class SqlDatabase extends DataStore
      */
     protected function setTable($table) {
     	$this->_table = $table;
+        $this->quotedTable = $this->quote($table);
+    }
+
+    protected function setSchema($schema) {
+        $this->_schema = $schema;
+        $this->quotedSchema = $this->quoteSchema;
     }
 
     /**
@@ -83,11 +94,11 @@ abstract class SqlDatabase extends DataStore
         $this->table = end(explode(".", $model->getName()));
     }
 
-    private function resolveName($fieldPath)
+    protected function resolveName($fieldPath, $reformat=false, $description = null)
     {
         if(strpos($fieldPath, ".") === false)
         {
-            return $this->table . "." . $fieldPath;
+            return $this->quotedTable . "." . $this->quote($fieldPath);
         }
         else
         {
@@ -95,7 +106,7 @@ abstract class SqlDatabase extends DataStore
             $fieldName = array_pop($modelPathArray);
             $modelPath = implode(".", $modelPathArray);
             $model = Model::load($modelPath);
-            return "{$model->getDataStore(true)->table}.$fieldName";
+            return $this->quote($model->getDataStore(true)->table) . '.' . $this->quote($fieldName);
         }
     }
 
@@ -117,7 +128,8 @@ abstract class SqlDatabase extends DataStore
             $fields = array();
             foreach($params["fields"] as $index => $field)
             {
-                $fields[$index] = $this->quote($description["name"]). "." . $this->quote($field);
+                //$fields[$index] = $this->quote($description["name"]). "." . $this->quote($field);
+                $fields[$index] = $this->resolveName($field, true, $description);
                 if($params["fetch_belongs_to"] && $description["fields"][$field]["foreign_key"] === true && $description["fields"][$field]["alias"] != '')
                 {
                     $fields[$index] .= " AS {$description["fields"][$field]["alias"]}";

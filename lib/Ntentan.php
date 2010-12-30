@@ -305,7 +305,7 @@ class Ntentan
             	die();
             }
     	} else {
-    		echo Ntentan::message("Could not locate the database configuration file <code><b>".Ntentan::$dbConfigFile."</b></code>");
+    		throw new exceptions\FileNotFoundException("Could not locate the database configuration file <code><b>".Ntentan::$dbConfigFile."</b></code>");
     		die();
     	}
     }

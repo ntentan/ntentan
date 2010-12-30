@@ -29,7 +29,7 @@ class Mysql extends SqlDatabase
 	private static $db;
 	
     protected function connect($parameters) {
-        $this->defaultSchema = $parameters["database"];
+        $this->schema = $parameters["database"];
         Mysql::$db = new mysqli(
             $parameters["hostname"],
             $parameters["username"],
@@ -63,7 +63,8 @@ class Mysql extends SqlDatabase
     public function describe()
     {
         $fields = array();
-        $databaseInfo = $this->table;
+        $table = $this->table;
+        $schema = $this->schema;
         
         $primaryKey = $this->query(
             "select column_name from 
@@ -72,7 +73,7 @@ class Mysql extends SqlDatabase
                 c.table_name = pk.table_name and 
                 c.constraint_name = pk.constraint_name and
                 c.table_schema = pk.table_schema
-             where pk.table_name = '{$this->table}' and pk.table_schema='{$this->defaultSchema}'
+             where pk.table_name = '{$table}' and pk.table_schema='{$schema}'
              and constraint_type = 'PRIMARY KEY'"
         );
         
@@ -83,16 +84,15 @@ class Mysql extends SqlDatabase
                 c.table_name = pk.table_name and 
                 c.constraint_name = pk.constraint_name and
                 c.table_schema = pk.table_schema
-             where pk.table_name = '{$this->table}' and pk.table_schema='{$this->defaultSchema}'
+             where pk.table_name = '{$table}' and pk.table_schema='{$schema}'
              and constraint_type = 'UNIQUE'"
         );
         
-        $mysqlFields = $this->query("select * from information_schema.columns where table_schema='{$this->defaultSchema}' and table_name='{$this->table}'");
-
+        $mysqlFields = $this->query("select * from information_schema.columns where table_schema='{$schema}' and table_name='{$table}'");
         
         if(count($mysqlFields) == 0)
         {
-            throw new Exception("Database table [{$this->table}] not found.");
+            throw new Exception("Database table [{$table}] not found.");
         }
         
         foreach($mysqlFields as $index => $mysqlField)
@@ -140,7 +140,7 @@ class Mysql extends SqlDatabase
                     break;
                     
                 default:
-                    throw new Exception("Unknown MySQL data type [{$mysqlField["DATA_TYPE"]}] for field[{$mysqlField["COLUMN_NAME"]}] in table [{$this->table}]");
+                    throw new Exception("Unknown MySQL data type [{$mysqlField["DATA_TYPE"]}] for field[{$mysqlField["COLUMN_NAME"]}] in table [{$table}]");
             }
 
             $field = array(
@@ -173,7 +173,7 @@ class Mysql extends SqlDatabase
         }
 
         $description = array();
-        $description["name"] = $this->table;
+        $description["name"] = $this->model->getName();
         $description["fields"] = $fields;
         return $description;
     }
@@ -186,12 +186,14 @@ class Mysql extends SqlDatabase
     {
         $description = array();
         $description["tables"] = array();
+        $schema = $this->schema;
+
         $tables = $this->query(
             sprintf(
                 "SELECT table_name 
                  FROM information_schema.tables 
                  WHERE table_schema = '%s'",
-                $this->defaultSchema
+                $schema
             )
         );
         
@@ -212,7 +214,7 @@ class Mysql extends SqlDatabase
                         constraint_type = 'FOREIGN KEY' and 
                         table_constraints.table_name = '%s' and
                         referenced_column_name = 'id'",
-                    $this->defaultSchema,
+                    $schema,
                     $table["table_name"]
                 )
             );
@@ -243,7 +245,7 @@ class Mysql extends SqlDatabase
                         constraint_type = 'FOREIGN KEY' and 
                         referenced_table_name = '%s' and
                         referenced_column_name = 'id'",
-                    $this->defaultSchema,
+                    $schema,
                     $table["table_name"]
                 )
             );
