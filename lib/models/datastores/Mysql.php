@@ -60,41 +60,38 @@ class Mysql extends SqlDatabase
         return $result;
     }
 
-    public function describe()
+    public function describeTable($table, $schema)
     {
         $fields = array();
-        $table = $this->table;
-        $schema = $this->schema;
-        
         $primaryKey = $this->query(
-            "select column_name from 
-             information_schema.table_constraints pk 
-             join information_schema.key_column_usage c on 
-                c.table_name = pk.table_name and 
+            "select column_name from
+             information_schema.table_constraints pk
+             join information_schema.key_column_usage c on
+                c.table_name = pk.table_name and
                 c.constraint_name = pk.constraint_name and
                 c.table_schema = pk.table_schema
              where pk.table_name = '{$table}' and pk.table_schema='{$schema}'
              and constraint_type = 'PRIMARY KEY'"
         );
-        
+
         $uniqueKeys = $this->query(
-            "select column_name from 
-             information_schema.table_constraints pk 
-             join information_schema.key_column_usage c on 
-                c.table_name = pk.table_name and 
+            "select column_name from
+             information_schema.table_constraints pk
+             join information_schema.key_column_usage c on
+                c.table_name = pk.table_name and
                 c.constraint_name = pk.constraint_name and
                 c.table_schema = pk.table_schema
              where pk.table_name = '{$table}' and pk.table_schema='{$schema}'
              and constraint_type = 'UNIQUE'"
         );
-        
+
         $mysqlFields = $this->query("select * from information_schema.columns where table_schema='{$schema}' and table_name='{$table}'");
-        
+
         if(count($mysqlFields) == 0)
         {
             throw new Exception("Database table [{$table}] not found.");
         }
-        
+
         foreach($mysqlFields as $index => $mysqlField)
         {
             switch($mysqlField["DATA_TYPE"])
@@ -123,8 +120,9 @@ class Mysql extends SqlDatabase
                 case "datetime":
                     $type = "datetime";
                     break;
-            
+
                 case "varchar":
+                case "enum":
                     if($mysqlField["CHARACTER_MAXIMUM_LENGTH"]<256)
                     {
                         $type = "string";
@@ -134,11 +132,11 @@ class Mysql extends SqlDatabase
                         $type = "text";
                     }
                     break;
-                    
+
                 case "text":
                     $type = "text";
                     break;
-                    
+
                 default:
                     throw new Exception("Unknown MySQL data type [{$mysqlField["DATA_TYPE"]}] for field[{$mysqlField["COLUMN_NAME"]}] in table [{$table}]");
             }
@@ -155,12 +153,12 @@ class Mysql extends SqlDatabase
             {
                 $field["primary_key"] = true;
             }
-            
+
             if($mysqlField["COLUMN_DEFAULT"] !== null)
             {
                 $field["default"] = $mysqlField["COLUMN_DEFAULT"];
             }
-            
+
             foreach($uniqueKeys as $uniqueKey)
             {
                 if($mysqlField["COLUMN_NAME"] == $uniqueKey["column_name"])
@@ -171,10 +169,14 @@ class Mysql extends SqlDatabase
 
             $fields[$field["name"]] = $field;
         }
+        return $fields;
+    }
 
+    public function describe()
+    {
         $description = array();
         $description["name"] = $this->model->getName();
-        $description["fields"] = $fields;
+        $description["fields"] = $this->describeTable($this->table, $this->schema);
         return $description;
     }
     

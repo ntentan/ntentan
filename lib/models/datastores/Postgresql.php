@@ -100,41 +100,40 @@ class Postgresql extends SqlDatabase {
             return parent::resolveName($fieldPath);
         }
     }
-	
-    public function describe()
+
+    public function describeTable($table, $schema)
     {
         $fields = array();
-        
         $primaryKey = $this->query(
-            "select column_name from 
-             information_schema.table_constraints pk 
-             join information_schema.key_column_usage c on 
-                c.table_name = pk.table_name and 
+            "select column_name from
+             information_schema.table_constraints pk
+             join information_schema.key_column_usage c on
+                c.table_name = pk.table_name and
                 c.table_schema = pk.table_schema and
                 c.constraint_name = pk.constraint_name
-             where pk.table_name = '{$this->table}' and pk.table_schema='{$this->schema}'
+             where pk.table_name = '{$table}' and pk.table_schema='{$schema}'
              and constraint_type = 'PRIMARY KEY'"
         );
-        
+
         $uniqueKeys = $this->query(
-            "select column_name from 
-             information_schema.table_constraints pk 
-             join information_schema.key_column_usage c on 
-                c.table_name = pk.table_name and 
+            "select column_name from
+             information_schema.table_constraints pk
+             join information_schema.key_column_usage c on
+                c.table_name = pk.table_name and
                 c.table_schema = pk.table_schema and
                 c.constraint_name = pk.constraint_name
-             where pk.table_name = '{$this->table}' and pk.table_schema='{$this->schema}'
+             where pk.table_name = '{$table}' and pk.table_schema='{$schema}'
              and constraint_type = 'UNIQUE'"
         );
-                
-        $pgFields = $this->query("select * from information_schema.columns where table_schema='{$this->schema}' and table_name='{$this->table}'");
-        
+
+        $pgFields = $this->query("select * from information_schema.columns where table_schema='{$schema}' and table_name='{$table}'");
+
         if(count($pgFields) == 0)
         {
-            die("Database table [{$this->table}] not found.");
-            throw new DataStoreException("Database table [{$this->table}] not found.");
+            die("Database table [{$table}] not found.");
+            throw new DataStoreException("Database table [{$ta}] not found.");
         }
-        
+
         foreach($pgFields as $index => $pgField)
         {
             switch($pgField["data_type"])
@@ -143,20 +142,20 @@ class Postgresql extends SqlDatabase {
                 case "integer":
                     $type = $pgField["data_type"];
                     break;
-                    
+
                 case "numeric":
                     $type = "double";
                     break;
-                    
+
                 case "date":
                     $type = "date";
                     break;
-                
+
                 case "timestamp":
                 case "timestamp without time zone":
                     $type = "datetime";
                     break;
-            
+
                 case "character varying":
                     if($pgField["character_maximum_length"]<256)
                     {
@@ -167,15 +166,15 @@ class Postgresql extends SqlDatabase {
                         $type = "text";
                     }
                     break;
-                    
+
                 case "text":
                     $type = "text";
                     break;
-                    
+
                 default:
                     throw new Exception("Unknown postgresql data type [{$pgField["data_type"]}] for field[{$pgField["column_name"]}] in table [{$this->database}]");
             }
-            
+
             $field = array(
                 "name" => strtolower($pgField["column_name"]),
                 "type" => $type,
@@ -184,12 +183,12 @@ class Postgresql extends SqlDatabase {
                 "comment" => $pgField["column_comment"]
 
             );
-            
+
             if($pgField["column_name"] == $primaryKey[0]["column_name"])
             {
                 $field["primary_key"] = true;
             }
-            
+
             foreach($uniqueKeys as $uniqueKey)
             {
                 if($pgField["column_name"] == $uniqueKey["column_name"])
@@ -200,7 +199,12 @@ class Postgresql extends SqlDatabase {
 
             $fields[$field["name"]] = $field;
         }
-
+        return $fields;
+    }
+	
+    public function describe()
+    {
+        $fields = array();
         $description = array();
         $description["name"] = $this->model->getName();
         $description["fields"] = $fields;

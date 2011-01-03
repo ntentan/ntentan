@@ -447,9 +447,11 @@ class Controller
             {
                 if($component->hasMethod($path))
                 {
+                    $this->mainPreRender();
                     $component->variables = $this->variables;
                     $component->widgets = $this->widgets;
                     $component->runMethod($params, $path);
+                    $this->mainPostRender();
                 }
             }
         }

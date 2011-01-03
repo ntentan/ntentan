@@ -110,7 +110,7 @@ class Admin extends Component
     {
         $this->prefix = $prefix;
         include "config/app.php";
-        $this->app = $app;
+        $this->app = $app_name;
     }
 
     public function addOperation($operation)
@@ -301,24 +301,24 @@ class Admin extends Component
         $this->useTemplate("run.tpl.php");
         $this->set("app_name", $this->app["name"]);
         $this->view->layout->addStyleSheet(
-            Ntentan::getFilePath("stylesheets/grid.css")
+            Ntentan::getFilePath("css/grid.css")
         );
         $this->view->layout->addStyleSheet(
             array(
                 Ntentan::getFilePath(
-                    "controllers/components/admin/stylesheets/admin.css"
+                    "lib/controllers/components/admin/css/admin.css"
                 ),
                 Ntentan::getFilePath(
-                    "stylesheets/ntentan.css"
+                    "css/fx.css"
                 ),
                 Ntentan::getFilePath(
-                    "views/helpers/forms/stylesheets/forms.css"
+                    "lib/views/helpers/forms/css/forms.css"
                 )
             )
         );
         
         //Setup the menus to be used in this administrator section
-        $this->addBlock("menu", "default_menu");
+        $this->addWidget("menu", "default_menu");
         foreach($this->sections as $section)
         {
             $item = array();
