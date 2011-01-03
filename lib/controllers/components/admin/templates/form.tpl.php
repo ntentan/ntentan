@@ -2,6 +2,6 @@
 foreach($fields as $field)
 {
     if($field["primary_key"]) continue;
-    $this->forms->addModelField($field);
+    echo $this->form->get($field);
 }
-$this->forms->submitValue = "Save";
+$this->form->submitValue = "Save";

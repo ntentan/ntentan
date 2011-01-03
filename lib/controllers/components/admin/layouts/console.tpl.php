@@ -25,7 +25,8 @@
 <body>
 <div class="row" id="header">
     <div class="column grid_10_8">
-        <h1><?php echo $site_name ?> Administrator Console</h1>
+        <h1>Administrator Console</h1>
+        <h2><?php echo $app_name ?></h2>
     </div>
     <div class="column grid_10_2">
         Login Information
