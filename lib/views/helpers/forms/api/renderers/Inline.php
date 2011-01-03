@@ -31,6 +31,21 @@ class Inline extends Renderer
     {
     
     }
+
+    protected function renderLabel($element)
+    {
+        $label = $element->getLabel();
+        if($label != '')
+        {
+            $ret .= "<label class='fapi-label'>".$label;
+            if($element->getRequired() && $label!="" && $element->getShowField())
+            {
+                $ret .= "<span class='fapi-required'>*</span>";
+            }
+            $ret .= "</label><br/>";
+        }
+        return $ret;
+    }
     
     /**
      * The default renderer body function
@@ -47,22 +62,17 @@ class Inline extends Renderer
     	}
     
         $ret .= "<div class='fapi-element-div' ".($element->getId()==""?"":"id='".$element->getId()."_wrapper'")." ".$element->getAttributes(Element::SCOPE_WRAPPER).">";
+
+        if($element->getType() == "checkbox")
+        {
+            $element->renderLabel = false;
+        }
         
         if(!$element->isContainer && $element->renderLabel)
         {
             $label = $element->getLabel();
-            if($label != '')
-            {
-                $ret .= "<label class='fapi-label'>".$label;
-                if($element->getRequired() && $label!="" && $element->getShowField())
-                {
-                    $ret .= "<span class='fapi-required'>*</span>";
-                }
-                $ret .= "</label>";
-            }
+            $ret .= $this->renderLabel($element);
         }
-    
-    	//$ret .= "<div class='fapi-message' id='".$element->getId()."-fapi-message'></div>";
     
         if($element->hasError())
         {
@@ -87,6 +97,10 @@ class Inline extends Renderer
                 $ret .= $element->getDisplayValue();
                 $ret .= "<input type='hidden' name='".$element->getName()."' value='".$element->getValue()."'/>";
             }
+        }
+        else if($element->getType() == "checkbox")
+        {
+            $ret .= $element->render() . $this->renderLabel($element);
         }
         else
         {

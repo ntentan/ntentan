@@ -95,9 +95,9 @@ table.item-table > thead > tr > td
     padding:5px;
 }
 
-table.item-table > tbody > tr /**.mouseover**/
+table.item-table > tbody > tr:hover /**.mouseover**/
 {
-    background-color:red;
+    background-color:#fff7b8;
 }
 
 table.item-table > tbody > tr > td
@@ -105,6 +105,7 @@ table.item-table > tbody > tr > td
     border-bottom:1px solid #f0f0f0;
     margin:0px;
     padding:5px;
+    cursor:pointer
 }
 
 table.item-table > tbody > tr > td#id_cell

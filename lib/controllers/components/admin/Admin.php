@@ -1,8 +1,6 @@
 <?php
-/**
- * The file for the Administration Component
- *
- * LICENSE:
+/*
+ * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +14,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * @package    ntentan.contorllers.components.admin
- * @author     James Ekow Abaka Ainooson <jainooson@gmail.com>
- * @copyright  2010 James Ekow Abaka Ainooson
- * @license    http://www.apache.org/licenses/LICENSE-2.0
  */
 
 namespace ntentan\controllers\components\admin;
@@ -28,6 +21,7 @@ namespace ntentan\controllers\components\admin;
 use ntentan\Ntentan;
 use ntentan\controllers\components\Component;
 use ntentan\models\Model;
+use \ReflectionMethod;
 
 /**
  * Admin component provides an interface through which data in a model could be
@@ -110,7 +104,7 @@ class Admin extends Component
     {
         $this->prefix = $prefix;
         include "config/app.php";
-        $this->app = $app_name;
+        $this->app = $app;
     }
 
     public function addOperation($operation)
@@ -171,6 +165,15 @@ class Admin extends Component
 
     public function page($pageNumber)
     {
+        if($this->consoleMode)
+        {
+            $pageExtensionMethodName = Ntentan::camelize($this->model->getName(),".","", true) . 'AdminPage';
+            if(method_exists($this->controller, $pageExtensionMethodName))
+            {
+                $pageExtensionMethod = new ReflectionMethod($this->controller, $pageExtensionMethodName);
+                $pageExtensionMethod->invoke($this->controller, $pageNumber);
+            }
+        }
         $this->setupOperations();
         $this->operationsTemplate = 
             $this->operationsTemplate == null ? 
@@ -291,7 +294,14 @@ class Admin extends Component
     
     public function addSection($section)
     {
-        $this->sections[] = $section;
+        if(is_array($section))
+        {
+            $this->sections = array_merge($this->sections, $section);
+        }
+        else
+        {
+            $this->sections[] = $section;
+        }
     }
 
     public function console()

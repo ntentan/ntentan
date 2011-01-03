@@ -70,24 +70,6 @@ class Auth extends Component
                 break;
         }
     }
-    
-    public function init()
-    {
-        // Load the authenticator
-        Ntentan::addIncludePath(Ntentan::getFilePath('lib/controllers/components/auth/methods'));
-        $authenticatorClass = __NAMESPACE__ . '\\methods\\' . Ntentan::camelize($this->authMethod);
-        if(class_exists($authenticatorClass))
-        {
-            $this->authMethodInstance = new $authenticatorClass();
-            $this->authMethodInstance->usersModel = $this->_usersModel;
-        }
-        else
-        {
-            print Ntentan::message("Authenticator class <code>$authenticatorClass</code> not found.");
-        }       
-        
-
-    }
 
     public function postRender()
     {
@@ -102,6 +84,18 @@ class Auth extends Component
     
     public function login()
     {
+        Ntentan::addIncludePath(Ntentan::getFilePath('lib/controllers/components/auth/methods'));
+        $authenticatorClass = __NAMESPACE__ . '\\methods\\' . Ntentan::camelize($this->authMethod);
+        if(class_exists($authenticatorClass))
+        {
+            $this->authMethodInstance = new $authenticatorClass();
+            $this->authMethodInstance->usersModel = $this->_usersModel;
+        }
+        else
+        {
+            print Ntentan::message("Authenticator class <code>$authenticatorClass</code> not found.");
+        }
+        
         if($this->authMethodInstance->login())
         {
             if($this->redirectOnSuccess)

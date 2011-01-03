@@ -122,6 +122,7 @@ class FormsHelper extends Helper
                 $element = new api\Checkbox(Ntentan::toSentence($field["name"]), $field["name"], "", 1);
                 break;
             case "datetime":
+            case "date":
                 $element = new api\DateField(Ntentan::toSentence($field["name"]), $field["name"]);
                 break;
                 
@@ -168,7 +169,9 @@ class FormsHelper extends Helper
         }
         elseif($function == "get")
         {
-            return $this->createModelField($arguments[0]);
+            $elementObject = $this->createModelField($arguments[0]);
+            $elementObject->setValue($this->data[$arguments[0]['name']]);
+            return $elementObject;
         }
         elseif($function == "close")
         {

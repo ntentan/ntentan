@@ -91,5 +91,10 @@ class Checkbox extends Field
 	{
 		return false;
 	}
+
+    public function getType()
+    {
+        return "checkbox";
+    }
 }
 
