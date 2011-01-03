@@ -144,7 +144,7 @@ class Ntentan
      * Current ntentan version
      * @var string
      */
-    const VERSION = "0.1";
+    const VERSION = "0.5-rc1";
     
 	/**
 	 * The main entry point of the Ntentan application. This method checks if

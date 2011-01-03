@@ -150,5 +150,4 @@ class Schema extends Util
             );
         }
     }
-
 }
