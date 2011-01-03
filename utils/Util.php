@@ -29,6 +29,7 @@ use \ReflectionClass;
 class Util
 {
     protected $shortOptionsMap = array();
+    protected $module;
     
     public function execute($arguments)
     {
@@ -43,6 +44,22 @@ class Util
         {
             echo "Unknown operation";
         }
+    }
+
+    protected function templateCopy($templateFile, $outputFile, $data = array())
+    {
+        $variables = array();
+        $values = array();
+        foreach($data as $key => $value)
+        {
+            $variables[] = "{" . $key . "}";
+            $values[] = $value;
+        }
+
+        file_put_contents(
+            $outputFile,
+            str_replace($variables, $values, file_get_contents($templateFile))
+        );
     }
     
     protected function getUserResponse($question, $answers=null, $default=null, $notNull = false)
@@ -67,7 +84,7 @@ class Util
             {
                 return $response;
             }
-            foreach($answers as $anwser)
+            foreach($answers as $answer)
             {
                 if(strtolower($answer) == strtolower($response))
                 {

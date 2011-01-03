@@ -4,7 +4,7 @@
 define('NTENTAN_HOME', '/home/ekow/Projects/ntentan/');
 
 // Check if the ntentan framework has been initialized
-if(!file_exists("config/ntentan.php") && $argv[1] != "app" && $argv[2] != "create")
+if(!file_exists("config/ntentan.php") && $argv[1] != "create" && $argv[2] != "app")
 {
     echo 
 "
@@ -14,7 +14,7 @@ This directory has either not been initialized with ntentan or it does
 not contain an ntentan application. To intialize this directory with a 
 basic ntentan application execute:
 
-    {$argv[0]} app create -i
+    {$argv[0]} create app -i
     
 ";
     die();
@@ -34,7 +34,7 @@ require_once(NTENTAN_HOME . "lib/Ntentan.php");
 require_once(NTENTAN_HOME . "utils/Util.php");
 
 $utilClassName = ntentan\Ntentan::camelize($argv[1]);
-if($argv[1] != "app" && $argv[2] != "create")
+if($argv[1] != "create" && $argv[2] != "app")
 {
     ntentan\Ntentan::boot();
 }
@@ -49,7 +49,6 @@ if(class_exists("ntentan\\utils\\$utilClassName"))
     $utilClass = "ntentan\\utils\\$utilClassName";
     $util = new $utilClass();
     $util->execute($argv);
-    //require_once("utils/$utilClassName.php");
 }
 else
 {

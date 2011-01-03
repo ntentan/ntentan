@@ -1,49 +1,48 @@
 <?php
-/* 
- * Ntentan PHP Framework
- * Copyright 2010 James Ekow Abaka Ainooson
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 namespace ntentan\utils;
 
 use ntentan\Ntentan;
 
-/**
- * Utility script class for interacting with applications. This script can
- * setup application directories as well as modify existing ones.
- */
-class App extends Util
+class Create extends Util
 {
     protected $shortOptionsMap = array(
         "i" => "interactive"
     );
+    
+    /**
+     * 
+     * @param array $name
+     */
+    private function controllerDirectory($name)
+    {
+        $directory = str_replace('.', '/', $this->module) . "/$name";
+        mkdir($directory);
+        $className = Ntentan::camelize($name) . 'Controller';
+        $this->templateCopy(
+            NTENTAN_HOME . "utils/files/new_templates/_Controller.php",
+            "$directory/$className.php",
+            array(
+                'module' => $this->module,
+                'name' => $name,
+                'class_name' => $className
+            )
+        );
+    }
 
     /**
-     * This method adds models, controllers or views to the application
+     * 
      * @param array $options
      */
-    public function add($options)
+    public function controller($options)
     {
-        switch($options[0])
+        if(is_array($options))
         {
-        case 'model':
-            require 'config/ntentan.php';
-            
-            break;
-        case 'controller':
-            break;
+
+        }
+        else if(is_string($options))
+        {
+            Create::_controllerCore($options);
         }
     }
 
@@ -58,7 +57,7 @@ class App extends Util
      *       necessary
      * @param array $options
      */
-    public function create($options)
+    public function app($options)
     {
         // Extract the parameters for the options
         if($options["interactive"])
@@ -93,39 +92,39 @@ class App extends Util
                 die();
             }
         }
-        
+
         // Generate the index file
         echo "Generating index.php ...\n";
         file_put_contents(
             "index.php",
-            file_get_contents(NTENTAN_HOME . "utils/files/_index.php")
+            file_get_contents(NTENTAN_HOME . "utils/files/new_templates/_index.php")
         );
-        
+
         echo "Copying .htaccess ...\n";
-        file_put_contents(
-            ".htaccess", 
-            file_get_contents(NTENTAN_HOME . "utils/files/_htaccess")
+        $this->templateCopy(
+            NTENTAN_HOME . "utils/files/new_templates/_htaccess", 
+            '.htaccess'
         );
-        
+
         echo "Creating config directory ...\n";
         mkdir("config");
         mkdir($module);
-        file_put_contents(
-            "config/ntentan.php",
-            str_replace(
-                array(
-                    "{ntentan_home}",
-                    "{module}"
-                ),
-                array(
-                    NTENTAN_HOME,
-                    $module
-                ),
-                file_get_contents(NTENTAN_HOME . "utils/files/_ntentan.php")
+        $this->module = $module;
+
+        $this->templateCopy(
+            NTENTAN_HOME . 'utils/files/new_templates/_ntentan.php',
+            'config/ntentan.php',
+            array(
+                'ntentan_home' => NTENTAN_HOME,
+                'module' => $module
             )
         );
 
         echo "Creating home controller ...\n";
-        mkdir("$module/home");
+        Create::controllerDirectory('home');
+        $this->templateCopy(
+            NTENTAN_HOME . 'utils/files/new_templates/_home_run.tpl.php',
+            "$module/home/run.tpl.php"
+        );
     }
 }
