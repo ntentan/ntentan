@@ -131,6 +131,9 @@ class Create extends Util
         echo "Creating public directory";
         mkdir('public');
 
+        echo "Creating cache directory";
+        mkdir('cache');
+
         echo "Creating home controller ...\n";
         Create::controllerDirectory('home');
         $this->templateCopy(

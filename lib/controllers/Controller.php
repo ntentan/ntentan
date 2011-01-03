@@ -350,12 +350,11 @@ class Controller
             {
                 $controller->method = $controller->defaultMethodName;
             }
-            
-            $controller->init();
             $controller->setRoute($controllerRoute);
             $controller->setName($controllerName);
             $controller->modelRoute = $modelRoute;
             $controller->filePath = $filePath;
+            $controller->init();
             if($controller->hasMethod())
             {
                 $ret = $controller->runMethod(array_slice($routeArray,$i+2));
