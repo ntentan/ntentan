@@ -1,8 +1,5 @@
 <?php
-/**
- * The authentication component base class's script file.
- *
- * LICENSE:
+/*
  * Copyright 2010 James Ekow Abaka Ainooson
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * @package    ntentan.controllers.components
- * @author     James Ekow Abaka Ainooson <jainooson@gmail.com>
- * @copyright  2010 James Ekow Abaka Ainooson
- * @license    http://www.apache.org/licenses/LICENSE-2.0
+ * 
  */
 
 namespace ntentan\controllers\components\auth;
@@ -46,7 +39,7 @@ class Auth extends Component
      * the required method.
      * @var string
      */
-    public $loginRoute = "users/login";
+    public $loginRoute;
     
     /**
      * The route through wich the logout method of the auth component should be
@@ -54,7 +47,7 @@ class Auth extends Component
      * implements the required method. 
      * @var string
      */
-    public $logoutRoute = "users/logout";
+    public $logoutRoute;
 
     /**
      *
@@ -63,7 +56,7 @@ class Auth extends Component
     public $redirectRoute = "/";
     public $redirectOnSuccess = true;
     public $name = __CLASS__;
-    public $authMethod = "http_request";
+    public $authMethod = "http_basic";
     private $_usersModel = "users";
     protected $authMethodInstance;
 
@@ -81,7 +74,8 @@ class Auth extends Component
     public function init()
     {
         // Load the authenticator
-        $authenticatorClass = __NAMESPACE__ . '\\' . Ntentan::camelize($this->authMethod);
+        Ntentan::addIncludePath(Ntentan::getFilePath('lib/controllers/components/auth/methods'));
+        $authenticatorClass = __NAMESPACE__ . '\\methods\\' . Ntentan::camelize($this->authMethod);
         if(class_exists($authenticatorClass))
         {
             $this->authMethodInstance = new $authenticatorClass();
@@ -121,6 +115,9 @@ class Auth extends Component
         }
         else
         {
+            $this->loginRoute = $this->loginRoute == null ? $this->controller->route . "/login" : $this->loginRoute;
+            $this->logoutRoute = $this->logoutRoute == null ? $this->controller->route . "/login" : $this->logoutRoute;
+
             $this->set("login_message", $this->authMethodInstance->message);
             $this->set("login_status", false);
             if(Ntentan::$route != $this->loginRoute)

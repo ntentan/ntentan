@@ -32,7 +32,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="column grid_20_4"><?php echo $default_menu_block ?></div>
+    <div class="column grid_20_4"><?php echo $default_menu_widget ?></div>
     <div class="column grid_20_16">
         <div id="admin-contents">
             <?php echo $contents ?>

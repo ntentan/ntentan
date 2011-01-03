@@ -291,7 +291,7 @@ class Admin extends Component
     
     public function addSection($section)
     {
-        $this->sections[$section["group"]][] = $section;
+        $this->sections[] = $section;
     }
 
     public function console()
@@ -330,7 +330,7 @@ class Admin extends Component
             {
                 $item["label"] = Ntentan::toSentence($section);
                 $item["url"] = Ntentan::getUrl($this->controller->route . "/console/$section");
-                $this->defaultMenuBlock->addItem($item);
+                $this->defaultMenuWidget->addItem($item);
             }
         }
         
@@ -374,9 +374,9 @@ class Admin extends Component
             }
             else
             {
-                $this->addBlock("menu", "item_actions_menu");
+                $this->addWidget("menu", "item_actions_menu");
                 $this->model = Model::load(implode(".", $arguments));
-                $this->itemActionsMenuBlock->addItem(
+                $this->itemActionsMenuWidget->addItem(
                     array(
                         "label" => "Add new " . strtolower(Ntentan::singular($this->model->getName())),
                         "url"   =>  Ntentan::getUrl($this->getCurrentRoute() . "/add")

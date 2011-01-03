@@ -2,7 +2,7 @@
 <h<?php echo $heading_level?>><?php echo $model ?></h<?php echo $heading_level?>>
 <?php endif ?>
 <div id="item-actions-menu">
-    <?php echo $item_actions_menu_block ?>
+    <?php echo $item_actions_menu_widget ?>
 </div>
 <?php if($notifications):?> 
 <div class="notification"><?php
