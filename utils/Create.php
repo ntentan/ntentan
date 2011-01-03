@@ -20,7 +20,7 @@ class Create extends Util
         mkdir($directory);
         $className = Ntentan::camelize($name) . 'Controller';
         $this->templateCopy(
-            NTENTAN_HOME . "utils/files/new_templates/_Controller.php",
+            NTENTAN_HOME . "utils/files/create_templates/_Controller.php",
             "$directory/$className.php",
             array(
                 'module' => $this->module,
@@ -97,12 +97,12 @@ class Create extends Util
         echo "Generating index.php ...\n";
         file_put_contents(
             "index.php",
-            file_get_contents(NTENTAN_HOME . "utils/files/new_templates/_index.php")
+            file_get_contents(NTENTAN_HOME . "utils/files/create_templates/_index.php")
         );
 
         echo "Copying .htaccess ...\n";
         $this->templateCopy(
-            NTENTAN_HOME . "utils/files/new_templates/_htaccess", 
+            NTENTAN_HOME . "utils/files/create_templates/_htaccess",
             '.htaccess'
         );
 
@@ -112,7 +112,7 @@ class Create extends Util
         $this->module = $module;
 
         $this->templateCopy(
-            NTENTAN_HOME . 'utils/files/new_templates/_ntentan.php',
+            NTENTAN_HOME . 'utils/files/create_templates/_ntentan.php',
             'config/ntentan.php',
             array(
                 'ntentan_home' => NTENTAN_HOME,
@@ -120,10 +120,21 @@ class Create extends Util
             )
         );
 
+        $this->templateCopy(
+            NTENTAN_HOME . 'utils/files/create_templates/_app.php',
+            'config/app.php',
+            array(
+                'app_name' => $name
+            )
+        );
+
+        echo "Creating public directory";
+        mkdir('public');
+
         echo "Creating home controller ...\n";
         Create::controllerDirectory('home');
         $this->templateCopy(
-            NTENTAN_HOME . 'utils/files/new_templates/_home_run.tpl.php',
+            NTENTAN_HOME . 'utils/files/create_templates/_home_run.tpl.php',
             "$module/home/run.tpl.php"
         );
     }

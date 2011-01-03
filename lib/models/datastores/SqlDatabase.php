@@ -441,4 +441,5 @@ abstract class SqlDatabase extends DataStore
     protected abstract function quote($field);
     protected abstract function getLastInsertId();
     public abstract function describeModel();
+    public abstract function describeTable($table, $schema);
 }
