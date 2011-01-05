@@ -22,6 +22,7 @@ use ntentan\Ntentan;
 use ntentan\controllers\components\Component;
 use ntentan\models\Model;
 use \ReflectionMethod;
+use ntentan\utils\Janitor;
 
 /**
  * Admin component provides an interface through which data in a model could be
@@ -85,6 +86,7 @@ class Admin extends Component
     public $postDeleteCallback;
     public $prefix;
     public $consoleMode = false;
+    private $consoleModeRoute;
     public $sections = array();
     public $model;
     public $headings = true;
@@ -259,31 +261,59 @@ class Admin extends Component
 
         if($count > $itemsPerPage)
         {
+            $pageControllerRoute = $this->consoleMode === true ? "{$this->controller->route}/console/" . $this->model->getName() : $this->controller->route;
             if($pageNumber > 1)
             {
                 $pagingLinks[] = array(
                     "link" => Ntentan::getUrl(
-                        "{$this->prefix}/{$this->controller->route}/page/" . ($pageNumber - 1)
+                        "{$this->prefix}/$pageControllerRoute/page/" . ($pageNumber - 1)
                     ),
                     "label" => "< Prev"
                 );
             }
 
-            for($i = 1; $i <= $numPages; $i++)
+            if($numPages <= 21 || $pageNumber < 11)
             {
-                $pagingLinks[] = array(
-                    "link" => Ntentan::getUrl(
-                        "{$this->prefix}/{$this->controller->route}/page/$i"
-                    ),
-                    "label" => "$i"
-                );
+                for($i = 1; $i <= ($numPages > 21 ? 21 : $numPages) ; $i++)
+                {
+                    $pagingLinks[] = array(
+                        "link" => Ntentan::getUrl(
+                            "{$this->prefix}/$pageControllerRoute/page/$i"
+                        ),
+                        "label" => "$i",
+                        "selected" => $pageNumber == $i
+                    );
+                }
+            }
+            else
+            {
+                if($numPages - $pageNumber < 11)
+                {
+                    $startOffset = $pageNumber - (20 - ($numPages - $pageNumber));
+                    $endOffset = $pageNumber + ($numPages - $pageNumber);
+                }
+                else
+                {
+                    $startOffset = $pageNumber - 10;
+                    $endOffset = $pageNumber + 10;
+                }
+                for($i = $startOffset ; $i <= $endOffset; $i++)
+                {
+                    $pagingLinks[] = array(
+                        "link" => Ntentan::getUrl(
+                            "{$this->prefix}/$pageControllerRoute/page/$i"
+                        ),
+                        "label" => "$i",
+                        "selected" => $pageNumber == $i
+                    );
+                }
             }
 
             if($pageNumber < $numPages)
             {
                 $pagingLinks[] = array(
                     "link" => Ntentan::getUrl(
-                        "{$this->prefix}/{$this->controller->route}/page/" . ($pageNumber + 1)
+                        "{$this->prefix}/$pageControllerRoute/page/" . ($pageNumber + 1)
                     ),
                     "label" => "Next >"
                 );
@@ -294,14 +324,29 @@ class Admin extends Component
     
     public function addSection($section)
     {
-        if(is_array($section))
+        if(is_string($section))
         {
-            $this->sections = array_merge($this->sections, $section);
+            $newSection = array(
+                'route' => $section,
+                'label' => \ucwords(str_replace('/', ' ', $section)),
+                'model' => str_replace('/', '.', $section)
+            );
+            $section = $newSection;
         }
-        else
-        {
-            $this->sections[] = $section;
-        }
+        $this->sections[$section['route']] = $section;
+    }
+
+    private function showConsolePage($pageNumber)
+    {
+        $this->addWidget("menu", "item_actions_menu");
+        $this->itemActionsMenuWidget->addItem(
+            array(
+                "label" => "Add new " . strtolower(Ntentan::singular($this->model->getName())),
+                "url"   =>  Ntentan::getUrl($this->getCurrentRoute() . "/add")
+            )
+        );
+        $this->view->layout->title = ucfirst($this->model->getName()) . " | " . $this->app["name"] . " Administrator Console";
+        $this->page($pageNumber);
     }
 
     public function console()
@@ -310,9 +355,6 @@ class Admin extends Component
         $this->useLayout("console.tpl.php");
         $this->useTemplate("run.tpl.php");
         $this->set("app_name", $this->app["name"]);
-        $this->view->layout->addStyleSheet(
-            Ntentan::getFilePath("css/grid.css")
-        );
         $this->view->layout->addStyleSheet(
             array(
                 Ntentan::getFilePath(
@@ -323,25 +365,21 @@ class Admin extends Component
                 ),
                 Ntentan::getFilePath(
                     "lib/views/helpers/forms/css/forms.css"
-                )
+                ),
+                Ntentan::getFilePath("css/grid.css")
             )
+        );
+        $this->view->layout->addJavaScript(
+            Ntentan::getFilePath('js/jquery.js')
         );
         
         //Setup the menus to be used in this administrator section
         $this->addWidget("menu", "default_menu");
         foreach($this->sections as $section)
         {
-            $item = array();
-            if(is_array($section))
-            {
-                
-            }
-            else if (is_string($section))
-            {
-                $item["label"] = Ntentan::toSentence($section);
-                $item["url"] = Ntentan::getUrl($this->controller->route . "/console/$section");
-                $this->defaultMenuWidget->addItem($item);
-            }
+            $item['label'] = $section['label'];
+            $item['url'] = Ntentan::getUrl($this->controller->route . "/console/{$section['route']}");
+            $this->defaultMenuWidget->addItem($item);
         }
         
         $arguments = func_get_args();
@@ -379,21 +417,17 @@ class Admin extends Component
                             $this->model = Model::load(implode(".", $arguments));
                             $this->delete($index);
                             break;
+                        case 'page':
+                            $this->model = Model::load(implode(".", $arguments));
+                            $this->showConsolePage($index);
+                            break;
                     }
                 }
             }
             else
             {
-                $this->addWidget("menu", "item_actions_menu");
                 $this->model = Model::load(implode(".", $arguments));
-                $this->itemActionsMenuWidget->addItem(
-                    array(
-                        "label" => "Add new " . strtolower(Ntentan::singular($this->model->getName())),
-                        "url"   =>  Ntentan::getUrl($this->getCurrentRoute() . "/add")
-                    )
-                );
-                $this->view->layout->title = ucfirst($this->model->getName()) . " | " . $this->app["name"] . " Administrator Console";
-                $this->page(1);
+                $this->showConsolePage(1);
             }
         }
     }
@@ -442,12 +476,18 @@ class Admin extends Component
         $this->set("heading_level", $this->headingLevel);
         $this->set("headings", $this->headings);
         $item = $this->getModel()->getFirstWithId($id);
-        $this->set("data", $item->getData());
+        $data = $item->getData();
+        foreach($data as $key => $value)
+        {
+            $data[$key] = Janitor::cleanHtml($value);
+        }
+        $this->set("data", $data);
         $this->set("item", ucfirst(Ntentan::singular($this->getModel()->getName())));
         
         if(count($_POST) > 0)
         {
-            $item->setData($_POST);
+            $item->setData($_POST, true);
+            $item->id = $id;
             if($item->update())
             {
                 $route = $this->getCurrentRoute();
@@ -457,7 +497,7 @@ class Admin extends Component
             }
             else
             {
-                $this->set('errors', $user->invalidFields);
+                $this->set('errors', $item->invalidFields);
             }
         }
     }

@@ -95,9 +95,9 @@ table.item-table > thead > tr > td
     padding:5px;
 }
 
-table.item-table > tbody > tr:hover /**.mouseover**/
+table.item-table > tbody > tr:hover
 {
-    background-color:#fff7b8;
+    background-color:#fdffb8;
 }
 
 table.item-table > tbody > tr > td
@@ -123,8 +123,20 @@ div.item-pages-list > a
     color:#a0a0a0;
 }
 
+div.item-pages-list > a.selected
+{
+    color:#202020;
+}
+
 div#form-area
 {
 	width:50%;
 	min-width:500px;
+}
+
+div.notification
+{
+    background-color:#88fe9b;
+    padding:7px;
+    color:#02b01f;
 }

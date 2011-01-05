@@ -31,10 +31,10 @@ function __autoload($class)
     {
         \ntentan\Ntentan::addIncludePath(implode("/",$fullPath));
     }
-    /*else if($fullPath[0] == 'ntentan')
+    else if($fullPath[0] == 'ntentan')
     {
-        var_dump($fullPath);
-        \ntentan\Ntentan::addIncludePath(implode("/",$fullPath));
-    }*/
+        array_shift($fullPath);
+        \ntentan\Ntentan::addIncludePath(\ntentan\Ntentan::getFilePath('lib/' . implode("/",$fullPath)));
+    }
     require_once $class . ".php";
 }

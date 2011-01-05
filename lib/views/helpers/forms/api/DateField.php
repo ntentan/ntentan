@@ -36,7 +36,7 @@ class DateField extends TextField
     	$this->addAttribute( "class" , "fapi-sidefield ".$this->getCSSClasses());
     	$this->addAttribute( "id" , $this->getId());
     	$this->addAttribute( "name" , $this->getName());
-    	$this->addAttribute( "value" , $this->getValue()!==""?date("m/d/Y",(int)$this->getValue()) : "" );
+    	$this->addAttribute( "value" , $this->getValue()!==""?date("Y-m-d",(int)$this->getValue()) : "" );
     	$id = $this->getId();
         return "<input ".$this->getAttributes()." /><input class='fapi-sidebutton' type='button' value='..' onclick=\"$('#date-picker-$id').datepicker({altField:'#$id',changeYear:true,changeMonth:true,changeDate:true,maxDate:null,yearRange:'1900:2300',dateFormat:'mm/dd/yy'}).slideToggle()\" /><div class='fapi-datepicker' id='date-picker-$id'></div>";
     }
