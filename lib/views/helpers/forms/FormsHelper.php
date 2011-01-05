@@ -169,8 +169,13 @@ class FormsHelper extends Helper
         }
         elseif($function == "get")
         {
+            $name = $arguments[0]['name'];
             $elementObject = $this->createModelField($arguments[0]);
-            $elementObject->setValue($this->data[$arguments[0]['name']]);
+            $elementObject->setValue($this->data[$name]);
+            if(isset($this->errors[$name]))
+            {
+                $elementObject->addErrors($this->errors[$name]);
+            }
             return $elementObject;
         }
         elseif($function == "close")

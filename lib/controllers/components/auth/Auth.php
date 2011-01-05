@@ -71,7 +71,7 @@ class Auth extends Component
         }
     }
 
-    public function postRender()
+    public function preRender()
     {
         // Allow the roles component to activate the authentication if it is
         // available. If not just run the authenticator from this section.

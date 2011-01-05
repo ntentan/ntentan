@@ -4,18 +4,19 @@
 <div id="item-actions-menu">
     <?php echo $item_actions_menu_widget ?>
 </div>
-<?php if($notifications):?> 
+<?php if($notifications & is_numeric($notification_type)):?>
 <div class="notification"><?php
+$modelSingular = strtolower(\ntentan\Ntentan::singular($model));
 switch($notification_type)
 {
 case 1:
-    echo "Successfully added $model <b>$notification_item</b>";
+    echo "Successfully added $modelSingular <b>$notification_item</b>";
     break;
 case 2:
-    echo "Successfully edited $model <b>$notification_item</b>";
+    echo "Successfully edited $modelSingular <b>$notification_item</b>";
     break;
 case 3:
-    echo "Successfully deleted $model <b>$notification_item</b>";
+    echo "Successfully deleted $modelSingular <b>$notification_item</b>";
     break;
 }
 ?></div>
@@ -48,7 +49,7 @@ echo $this->list;
 <?php if(isset($pages)):?>
 <div class='item-pages-list'>
     <?php foreach ($pages as $page):?>
-    <a href='<?php echo $page["link"] ?>'><?php echo $page["label"] ?></a>
+    <a <?php echo $page['selected'] ? "class='selected'" : "" ?> href='<?php echo $page["link"] ?>'><?php echo $page["label"] ?></a>
     <?php endforeach;?>
 </div>
 <?php endif?>

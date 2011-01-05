@@ -6,6 +6,6 @@ echo $this->form->open();
 $this->form->setErrors($errors);
 $this->form->setData($data);
 include "form.tpl.php";
-echo $this->form->close();
+echo $this->form->close('Update');
 ?>
 </div>
