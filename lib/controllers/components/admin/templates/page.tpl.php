@@ -1,5 +1,5 @@
 <?php if($headings): ?>
-<h<?php echo $heading_level?>><?php echo $model ?></h<?php echo $heading_level?>>
+<h<?php echo $heading_level?>><?php echo $entity ?></h<?php echo $heading_level?>>
 <?php endif ?>
 <div id="item-actions-menu">
     <?php echo $item_actions_menu_widget ?>
@@ -37,6 +37,8 @@ if($this->list->cellTemplates['id'] == null)
     $this->list->cellTemplates['id'] = $operations_template;
 }
 $this->list->variables["operations"] = $operations;
+$this->list->variables['item_operation_url'] = $item_operation_url;
+
 if(is_array($variables))
 {
     foreach($variables as $variable => $value)

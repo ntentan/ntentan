@@ -75,18 +75,6 @@ class Checkbox extends Field
 		return $ret;
 	}
 
-	public function getData($storable = false)
-	{
-		if(isset($_POST[$this->getName()]))
-		{
-			return parent::getData();
-		}
-		else
-		{
-			return array($this->getName(false) => null);
-		}
-	}
-
 	public function getRequired()
 	{
 		return false;

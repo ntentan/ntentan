@@ -93,11 +93,6 @@ abstract class Field extends Element
 		return $this->value;
 	}
 
-	public function getDisplayValue()
-	{
-		return $this->value;
-	}
-
 	/**
      * Sets the required status of the field.
      *
@@ -117,35 +112,6 @@ abstract class Field extends Element
 	public function getRequired()
 	{
 		return $this->required;
-	}
-
-	/**
-	 * Returns the data held by this field. This data is returned as a
-	 * key value pair. The key is the name of the field and the value
-	 * represents the value of the field.
-	 */
-	public function getData($storable)
-	{
-		if($this->getMethod()=="POST")
-		{
-			if(isset($_POST[$this->getName()]))
-			{ 
-                $this->setValue($_POST[$this->getName()]);
-			}
-		}
-		else if($this->getMethod()=="GET")
-		{
-			if(isset($_GET[$this->getName()]))
-			{
-                $this->setValue($_GET[$this->getName()]);
-			}
-		}
-		else
-		{
-			throw new Exception("The method for this field has not been set.");
-			$this->setValue("");
-		}
-		return array($this->getName(false) => $this->getValue());
 	}
 
 	//! Sets the data that is stored in this field.

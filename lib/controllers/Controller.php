@@ -201,7 +201,7 @@ class Controller
         $arguments = func_get_args();
         $component = array_shift($arguments);
         Ntentan::addIncludePath(Ntentan::getFilePath("lib/controllers/components/$component"));
-        $componentName = "\\ntentan\\controllers\\components\\$component\\" . ucfirst($component);
+        $componentName = "\\ntentan\\controllers\\components\\$component\\" . Ntentan::camelize($component) . 'Component';
         $componentClass = new ReflectionClass($componentName);
         $componentInstance = $componentClass->newInstanceArgs($arguments);
         $componentInstance->filePath = Ntentan::getFilePath("lib/controllers/components/$component");

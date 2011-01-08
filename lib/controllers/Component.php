@@ -164,19 +164,32 @@ class Component extends Controller
      * Note that all the views rendered by the component are also rendered using
      * the View class.
      *  
-     * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
-     * @param $file
+     * @param string $file
      */
     public function useTemplate($file)
+    {
+        $this->view->template = $this->getTemplatePath($file);
+    }
+
+    /**
+     * 
+     * @param string $file
+     * @return string|false
+     */
+    public function getTemplatePath($file)
     {
         $templateFile = $this->controller->filePath . $file;
         if(file_exists($templateFile))
         {
-            $this->view->template = $templateFile;
+            return $templateFile;
+        }
+        else if(file_exists($this->filePath . "/templates/$file"))
+        {
+            return $this->filePath . "/templates/$file";
         }
         else
         {
-            $this->view->template = $this->filePath . "/templates/$file";
+            return false;
         }
     }
 

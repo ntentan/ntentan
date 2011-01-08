@@ -30,15 +30,7 @@ function table_renderer_element($element, $showfields=true)
 	$ret .="<td class='fapi-layout-table-field'>";
     if($element->getType()=="Field")
     {
-        if($element->getShowField())
-        {
-            $ret .= $element->render();
-        }
-        else
-        {
-            $ret .= $element->getDisplayValue();
-            $ret .= "<input type='hidden' name='".$element->getName()."' value='".$element->getValue()."'/>";
-        }
+        $ret .= $element->render();
     }
     else
     {
