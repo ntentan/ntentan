@@ -79,13 +79,24 @@ class AdminComponent extends Component
     public $postEditCallback;
 
     /**
-     *
+     * A custom prefix to automatically append to the beginning of all URLS
      * @var string
      */
-    public $preDeleteCallback;
-    public $postDeleteCallback;
     public $prefix;
+
+    /**
+     * Whether the admin component is in console mode or not. In console mode,
+     * the admin component provides a full blown admin console site which could
+     * be used as the basis to build an admin section for any site or web
+     * application.
+     * @var boolean
+     */
     public $consoleMode = false;
+
+    /**
+     * The route to use for redirections when in console mode.
+     * @var string
+     */
     private $consoleModeRoute;
     public $sections = array();
     public $model;
@@ -112,14 +123,22 @@ class AdminComponent extends Component
 
     public function addOperation($operation)
     {
+        if(is_string($operation))
+        {
+            $operation = array(
+                'label' => \ucwords($operation),
+                'operation' => $operation
+            );
+        }
+
         if(!isset($operation["controller"]))
         {
-            $operation["controller"] = 
-                $this->consoleMode ? 
+            $operation["controller"] =
+                $this->consoleMode ?
                     $this->consoleModeRoute :
                     $this->controller->route;
         }
-        
+
         $this->operations[$operation["operation"]] = array(
             "label" => $operation["label"],
             "link" => 
@@ -401,6 +420,10 @@ class AdminComponent extends Component
                 if(end($arguments) == "confirm")
                 {
                     array_pop($arguments);
+                    $sectionkey = implode(".", $arguments);
+                    $this->model = Model::load($this->sections[$sectionkey]['model']);
+                    $this->entity = $this->sections[$sectionkey]['entity'];
+                    $this->consoleModeRoute = "{$this->prefix}{$this->controller->route}/console/{$this->sections[$sectionkey]['route']}";
                     $this->confirm($action, $index);
                 }
                 else
