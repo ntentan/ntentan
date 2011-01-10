@@ -6,6 +6,7 @@ use ntentan\Ntentan;
 abstract class TemplateEngine
 {
     private $loadedHelpers = array();
+    public $template;
     
     private function loadHelper($helper)
     {
@@ -29,5 +30,5 @@ abstract class TemplateEngine
         return $this->loadedHelpers[$property];
     }
     
-    abstract public function out($template, $data);
+    abstract public function out($data);
 }

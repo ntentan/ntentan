@@ -33,7 +33,7 @@ use ntentan\utils\Janitor;
  * 
  * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
  */
-class Admin extends Component
+class AdminComponent extends Component
 {
     /**
      * An array which holds a list of all the fields which would be displayed in
@@ -101,6 +101,7 @@ class Admin extends Component
     private $app;
     public $hasEditOperation = true;
     public $hasAddOperation = true;
+    private $entity;
 
     public function __construct($prefix = null)
     {
@@ -115,7 +116,7 @@ class Admin extends Component
         {
             $operation["controller"] = 
                 $this->consoleMode ? 
-                    $this->controller->route . "/console/" . $this->getModel()->getName() : 
+                    $this->consoleModeRoute :
                     $this->controller->route;
         }
         
@@ -133,7 +134,7 @@ class Admin extends Component
     {
         if($this->consoleMode)
         {
-            return "{$this->controller->route}/console/{$this->getModel()->getName()}";
+            return $this->consoleModeRoute;
         }
         else
         {
@@ -169,7 +170,7 @@ class Admin extends Component
     {
         if($this->consoleMode)
         {
-            $pageExtensionMethodName = Ntentan::camelize($this->model->getName(),".","", true) . 'AdminPage';
+            $pageExtensionMethodName = Ntentan::camelize(Ntentan::plural($this->entity),".","", true) . 'AdminPage';
             if(method_exists($this->controller, $pageExtensionMethodName))
             {
                 $pageExtensionMethod = new ReflectionMethod($this->controller, $pageExtensionMethodName);
@@ -193,7 +194,7 @@ class Admin extends Component
 
         $this->set("operations_template", $this->operationsTemplate);
         $this->set("row_template", $this->rowTemplate);
-        $this->set("model", ucfirst($this->getModel()->getName()));
+        $this->set("entity", \ucfirst(Ntentan::plural($this->entity)));
         $this->set("notifications", $this->notifications);
         $this->set("heading_level", $this->headingLevel);
         $this->set("headings", $this->headings);
@@ -261,7 +262,7 @@ class Admin extends Component
 
         if($count > $itemsPerPage)
         {
-            $pageControllerRoute = $this->consoleMode === true ? "{$this->controller->route}/console/" . $this->model->getName() : $this->controller->route;
+            $pageControllerRoute = $this->consoleMode === true ? $this->consoleModeRoute : $this->controller->route;
             if($pageNumber > 1)
             {
                 $pagingLinks[] = array(
@@ -329,7 +330,8 @@ class Admin extends Component
             $newSection = array(
                 'route' => $section,
                 'label' => \ucwords(str_replace('/', ' ', $section)),
-                'model' => str_replace('/', '.', $section)
+                'model' => str_replace('/', '.', $section),
+                'entity' => Ntentan::singular(end(explode('.', str_replace('/', '.', $section))))
             );
             $section = $newSection;
         }
@@ -341,11 +343,12 @@ class Admin extends Component
         $this->addWidget("menu", "item_actions_menu");
         $this->itemActionsMenuWidget->addItem(
             array(
-                "label" => "Add new " . strtolower(Ntentan::singular($this->model->getName())),
+                "label" => "Add new " . $this->entity,
                 "url"   =>  Ntentan::getUrl($this->getCurrentRoute() . "/add")
             )
         );
-        $this->view->layout->title = ucfirst($this->model->getName()) . " | " . $this->app["name"] . " Administrator Console";
+        $this->view->layout->title = ucfirst($this->entity) . " | " . $this->app["name"] . " Administrator Console";
+        $this->itemOperationUrl = Ntentan::getUrl($this->getCurrentRoute() . '/edit');
         $this->page($pageNumber);
     }
 
@@ -357,22 +360,15 @@ class Admin extends Component
         $this->set("app_name", $this->app["name"]);
         $this->view->layout->addStyleSheet(
             array(
-                Ntentan::getFilePath(
-                    "lib/controllers/components/admin/css/admin.css"
-                ),
-                Ntentan::getFilePath(
-                    "css/fx.css"
-                ),
-                Ntentan::getFilePath(
-                    "lib/views/helpers/forms/css/forms.css"
-                ),
+                Ntentan::getFilePath("lib/controllers/components/admin/css/admin.css"),
+                Ntentan::getFilePath("css/fx.css"),
+                Ntentan::getFilePath("lib/views/helpers/forms/css/forms.css"),
                 Ntentan::getFilePath("css/grid.css")
             )
         );
-        $this->view->layout->addJavaScript(
-            Ntentan::getFilePath('js/jquery.js')
-        );
-        
+
+        $this->view->layout->addJavaScript(Ntentan::getFilePath('js/jquery.js'));
+
         //Setup the menus to be used in this administrator section
         $this->addWidget("menu", "default_menu");
         foreach($this->sections as $section)
@@ -388,11 +384,14 @@ class Admin extends Component
             $this->view->layout->title = $this->app["name"] . " Administrator Console";
         }
         else
-        { 
+        {
             if(end($arguments) == "add")
             {
                 array_pop($arguments);
-                $this->model = Model::load(implode(".", $arguments));
+                $sectionkey = implode(".", $arguments);
+                $this->model = Model::load($this->sections[$sectionkey]['model']);
+                $this->entity = $this->sections[$sectionkey]['entity'];
+                $this->consoleModeRoute = "{$this->prefix}{$this->controller->route}/console/{$this->sections[$sectionkey]['route']}";
                 $this->add();
             }
             else if(is_numeric(end($arguments)))
@@ -402,23 +401,23 @@ class Admin extends Component
                 if(end($arguments) == "confirm")
                 {
                     array_pop($arguments);
-                    $this->model = Model::load(implode(".", $arguments));
                     $this->confirm($action, $index);
                 }
                 else
                 {
+                    $sectionkey = implode(".", $arguments);
+                    $this->model = Model::load($this->sections[$sectionkey]['model']);
+                    $this->entity = $this->sections[$sectionkey]['entity'];
+                    $this->consoleModeRoute = "{$this->prefix}{$this->controller->route}/console/{$this->sections[$sectionkey]['route']}";
                     switch($action)
                     {
                         case "edit":
-                            $this->model = Model::load(implode(".", $arguments));
                             $this->edit($index);
                             break;
                         case "delete":
-                            $this->model = Model::load(implode(".", $arguments));
                             $this->delete($index);
                             break;
                         case 'page':
-                            $this->model = Model::load(implode(".", $arguments));
                             $this->showConsolePage($index);
                             break;
                     }
@@ -426,7 +425,10 @@ class Admin extends Component
             }
             else
             {
-                $this->model = Model::load(implode(".", $arguments));
+                $sectionkey = implode(".", $arguments);
+                $this->model = Model::load($this->sections[$sectionkey]['model']);
+                $this->entity = $this->sections[$sectionkey]['entity'];
+                $this->consoleModeRoute = "{$this->prefix}{$this->controller->route}/console/{$this->sections[$sectionkey]['route']}";
                 $this->showConsolePage(1);
             }
         }
@@ -469,7 +471,7 @@ class Admin extends Component
     }
 
     public function edit($id)
-    {
+    {        
         $this->useTemplate("edit.tpl.php");
         $description = $this->getModel()->describe();
         $this->set("fields", $description["fields"]);
@@ -482,7 +484,16 @@ class Admin extends Component
             $data[$key] = Janitor::cleanHtml($value);
         }
         $this->set("data", $data);
-        $this->set("item", ucfirst(Ntentan::singular($this->getModel()->getName())));
+        $this->set("entity", $this->entity);
+        $formTemplate = $this->getTemplatePath("{$this->entity}_form.tpl.php");
+        if($formTemplate === false)
+        {
+            $this->set('form_template', $this->getTemplatePath("form.tpl.php"));
+        }
+        else
+        {
+            $this->set('form_template', $formTemplate);
+        }
         
         if(count($_POST) > 0)
         {
@@ -500,6 +511,16 @@ class Admin extends Component
                 $this->set('errors', $item->invalidFields);
             }
         }
+
+        if($this->consoleMode)
+        {
+            $editExtensionMethodName = Ntentan::camelize(Ntentan::plural($this->entity),".","", true) . 'AdminEdit';
+            if(method_exists($this->controller, $editExtensionMethodName))
+            {
+                $editExtensionMethod = new ReflectionMethod($this->controller, $editExtensionMethodName);
+                $editExtensionMethod->invoke($this->controller);
+            }
+        }
     }
 
     public function add()
@@ -510,7 +531,16 @@ class Admin extends Component
         $this->set("heading_level", $this->headingLevel);
         $this->set("headings", $this->headings);
         $this->set("fields", $description["fields"]);
-        $this->set("model", ucfirst(Ntentan::singular($this->getModel()->getName())));
+        $this->set("entity", $this->entity);
+        $formTemplate = $this->getTemplatePath("{$this->entity}_form.tpl.php");
+        if($formTemplate === false)
+        {
+            $this->set('form_template', $this->getTemplatePath("form.tpl.php"));
+        }
+        else
+        {
+            $this->set('form_template', $formTemplate);
+        }
 
         if(count($_POST) > 0)
         {
@@ -532,6 +562,15 @@ class Admin extends Component
             {
                 $this->set("data", $_POST);
                 $this->set("errors", $model->invalidFields);
+            }
+        }
+        if($this->consoleMode)
+        {
+            $addExtensionMethodName = Ntentan::camelize(Ntentan::plural($this->entity),".","", true) . 'AdminAdd';
+            if(method_exists($this->controller, $addExtensionMethodName))
+            {
+                $addExtensionMethod = new ReflectionMethod($this->controller, $addExtensionMethodName);
+                $addExtensionMethod->invoke($this->controller);
             }
         }
     }

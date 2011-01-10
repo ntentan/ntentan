@@ -69,18 +69,6 @@ class SelectionList extends Field
 		return $ret;
 	}
 
-	public function getDisplayValue()
-	{
-		foreach($this->options as $option)
-		{
-			if($option->value == $this->getValue())
-			{
-				return $option->label;
-			}
-		}
-        return $this->value;
-	}
-
 	public function setOptions($options, $merge = true)
 	{
 	    if($merge) 

@@ -55,3 +55,4 @@ function t($template, $data)
 {
     return Template::out($template, $data);
 }
+

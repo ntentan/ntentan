@@ -640,8 +640,10 @@ class Model implements ArrayAccess, Iterator
                 }
             }
         }
-        if(count($this->invalidFields) == 0) 
-            return true; 
+        if(count($this->invalidFields) == 0)
+        {
+            return true;
+        }
         else 
         {
             return false;    

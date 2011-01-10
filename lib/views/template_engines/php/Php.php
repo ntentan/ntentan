@@ -5,14 +5,14 @@ use ntentan\views\template_engines\TemplateEngine;
 
 class Php extends TemplateEngine
 {
-    public function out($template, $templateData)
+    public function out($templateData)
     {
         foreach($templateData as $key => $value)
         {
             $$key = $value;
         }
         ob_start();
-        include $template;
+        include $this->template;
         return ob_get_clean();
     }
 }

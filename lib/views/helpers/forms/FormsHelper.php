@@ -167,7 +167,7 @@ class FormsHelper extends Helper
             }
             return $this->container->renderHead();
         }
-        elseif($function == "get")
+        else if($function == "get")
         {
             $name = $arguments[0]['name'];
             $elementObject = $this->createModelField($arguments[0]);
@@ -178,7 +178,7 @@ class FormsHelper extends Helper
             }
             return $elementObject;
         }
-        elseif($function == "close")
+        else if($function == "close")
         {
             if($arguments[0] != "")
             {
@@ -190,7 +190,7 @@ class FormsHelper extends Helper
             }
             return $this->container->renderFoot();
         }
-        elseif(substr($function, 0, 5) == "open_")
+        else if(substr($function, 0, 5) == "open_")
         {
             $container = "ntentan\\views\\helpers\\forms\\api\\" . Ntentan::camelize(substr($function, 5, strlen($function)));
             $containerClass = new ReflectionClass($container);

@@ -1,6 +1,6 @@
 <tr onmouseover="$(this).addClass('mouseover')"
     onmouseout="$(this).removeClass('mouseover')"
-    onclick="document.location='<?php echo $variables['item_operation_url'] ?>/<?php echo $row['id'] ?>'" >
+    <?php echo $variables['item_operation_url'] == '' ? '' : "onclick=\"document.location='".($variables['item_operation_url'] .'/'. $row['id'])."'\"" ?> >
 <?php
 foreach($row as $index => $column)
 {

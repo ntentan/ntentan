@@ -85,16 +85,4 @@ class ModelSearchField extends Field
 		$ret .= "<div class='fapi-popup' id='{$id}_search_area'></div>";
 		return $ret;
 	}
-
-    public function getDisplayValue()
-    {
-		$jsonSearchFields = array_reverse($this->searchFields);
-		$data = $this->model[$this->getValue()];
-        $val = "<b>".$data[0][$jsonSearchFields[0]]."</b> ";
-		for($i=1;$i<count($jsonSearchFields);$i++)
-		{
-			$val .= $data[0][$jsonSearchFields[$i]]." ";
-		}
-        return $val;
-    }
 }

@@ -154,7 +154,7 @@ class Mysql extends SqlDatabase
                 $field["primary_key"] = true;
             }
 
-            if($mysqlField["COLUMN_DEFAULT"] !== null)
+            if($mysqlField["COLUMN_DEFAULT"] != null)
             {
                 $field["default"] = $mysqlField["COLUMN_DEFAULT"];
             }

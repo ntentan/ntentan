@@ -88,15 +88,7 @@ class Inline extends Renderer
         
         if($element->getType()=="ntentan\views\helpers\forms\api\Field")
         {
-            if($element->getShowField())
-            {
-                $ret .= "<div>" . $element->render() . "</div>";
-            }
-            else
-            {
-                $ret .= $element->getDisplayValue();
-                $ret .= "<input type='hidden' name='".$element->getName()."' value='".$element->getValue()."'/>";
-            }
+            $ret .= "<div>" . $element->render() . "</div>";
         }
         else if($element->getType() == "checkbox")
         {

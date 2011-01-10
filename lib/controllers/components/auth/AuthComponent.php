@@ -31,7 +31,7 @@ use \ntentan\controllers\components\Component;
  * 
  * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
  */
-class Auth extends Component
+class AuthComponent extends Component
 {
     /**
      * The route through which the login method of the auth component should be

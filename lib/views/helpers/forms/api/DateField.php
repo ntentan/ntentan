@@ -25,25 +25,19 @@ class DateField extends TextField
         parent::__construct($label,$name,$description);
     }
 
-    public function getDisplayValue()
-    {
-        return $this->value==""?"":date("jS F, Y",$this->value);
-    }
-
     public function render()
     {
     	$this->addCSSClass( "fapi-textfield");
-    	$this->addAttribute( "class" , "fapi-sidefield ".$this->getCSSClasses());
+    	$this->addAttribute( "class" , "fapi-datefield ".$this->getCSSClasses());
     	$this->addAttribute( "id" , $this->getId());
     	$this->addAttribute( "name" , $this->getName());
     	$this->addAttribute( "value" , $this->getValue()!==""?date("Y-m-d",(int)$this->getValue()) : "" );
     	$id = $this->getId();
-        return "<input ".$this->getAttributes()." /><input class='fapi-sidebutton' type='button' value='..' onclick=\"$('#date-picker-$id').datepicker({altField:'#$id',changeYear:true,changeMonth:true,changeDate:true,maxDate:null,yearRange:'1900:2300',dateFormat:'mm/dd/yy'}).slideToggle()\" /><div class='fapi-datepicker' id='date-picker-$id'></div>";
+        return "<input ".$this->getAttributes()." />";
     }
 
     public function setValue($value)
     {
-    	//if($value==0) throw new Exception("Try");
         if(is_numeric($value))
 		{
 			parent::setValue($value);

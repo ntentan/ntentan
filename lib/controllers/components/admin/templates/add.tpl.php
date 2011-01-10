@@ -1,10 +1,8 @@
-<h2>Add <?php echo $model ?></h2>
-<?php echo $console_menu_block; ?>
-<div id='form-area'>
-<?php 
-include "form.tpl.php";
-$form->setErrors($errors);
-$form->setData($data);
-echo $form;
-?>
-</div>
+<h<?php echo $heading_level ?>>Add new <?php echo $entity ?></h<?php echo $heading_level?>>
+<?php
+echo $console_menu_block;
+echo $this->form->open();
+$this->form->setErrors($errors);
+$this->form->setData($data);
+echo t($form_template, array('fields' => $fields));
+echo $this->form->close('Save');
