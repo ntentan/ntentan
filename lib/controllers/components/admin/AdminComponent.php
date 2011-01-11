@@ -98,6 +98,12 @@ class AdminComponent extends Component
      * @var string
      */
     private $consoleModeRoute;
+
+    /**
+     * A structured array which is used to describe the side menu when the
+     * admin component is in console mode.
+     * @var array
+     */
     public $sections = array();
     public $model;
     public $headings = true;
@@ -442,6 +448,18 @@ class AdminComponent extends Component
                             break;
                         case 'page':
                             $this->showConsolePage($index);
+                            break;
+                        default:
+                            $extensionMethodName = Ntentan::camelize(Ntentan::plural($this->entity),".","", true) . 'Admin' . Ntentan::camelize($action);
+                            if(method_exists($this->controller, $extensionMethodName))
+                            {
+                                $extensionMethod = new ReflectionMethod($this->controller, $extensionMethodName);
+                                $extensionMethod->invoke($this->controller, $index);
+                            }
+                            else
+                            {
+                                throw new \ntentan\models\exceptions\MethodNotFoundException("Could not find $extensionMethodName method in the admin controller");
+                            }
                             break;
                     }
                 }

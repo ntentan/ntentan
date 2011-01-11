@@ -15,4 +15,9 @@ class Php extends TemplateEngine
         include $this->template;
         return ob_get_clean();
     }
+
+    public function truncate($text, $length, $terminator = '...')
+    {
+        return substr($text, 0, $length) . $terminator;
+    }
 }
