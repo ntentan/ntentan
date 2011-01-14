@@ -42,9 +42,10 @@ class DatesHelper extends Helper
 	public function parse($time)
 	{
 		$this->timestamp =strtotime($time);
+        return $this;
 	}
 
-	public function format($format, $date = null)
+	public function format($format = 'jS F, Y', $date = null)
 	{
 		return date($format, $this->selectTimestamp($date));
 	}

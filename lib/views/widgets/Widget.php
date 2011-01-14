@@ -34,6 +34,11 @@ class Widget extends Presentation
     protected $name;
     protected $alias;
     private $filePath;
+
+    public function __construct($args)
+    {
+        
+    }
     
     public function setFilePath($filePath)
     {

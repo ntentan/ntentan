@@ -20,4 +20,9 @@ class Php extends TemplateEngine
     {
         return substr($text, 0, $length) . $terminator;
     }
+
+    public function nl2br($text)
+    {
+        return str_replace("\n", '<br/>', $text);
+    }
 }
