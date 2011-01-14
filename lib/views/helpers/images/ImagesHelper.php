@@ -35,6 +35,8 @@ class ImagesHelper extends Helper
         @imagejpeg($dest_im, $dest, 100);
         imagedestroy($im);
         imagedestroy($dest_im);
+
+        return $dest;
     }
 
     /**

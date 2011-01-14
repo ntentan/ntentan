@@ -153,6 +153,17 @@ class Ntentan
 	 */
 	public static function boot()
 	{
+        Ntentan::setup();
+        // Do not go beyond this point if running in CLI mode
+        if(defined('STDIN')===true)
+        {
+            return null;
+        }
+        Ntentan::route();
+	}
+
+    public static function setup()
+    {
 	    // Check if the library was properly setup
 	    if(!file_exists("config/ntentan.php"))
 	    {
@@ -161,14 +172,14 @@ class Ntentan
 	        );
 	        die();
 	    }
-	    
+
 	    // Setup the include path
 	    require "config/ntentan.php";
 	    Ntentan::$basePath = $ntentan_home;
 	    Ntentan::$modulesPath = $modules_path;
         Ntentan::$prefix = $url_prefix;
         Ntentan::$cacheMethod = $cache_method == '' ? Ntentan::$cacheMethod : $cache_method;
-        
+
         Ntentan::addIncludePath(
             array
             (
@@ -186,13 +197,10 @@ class Ntentan
                 Ntentan::$layoutsPath,
             )
         );
-        
-        // Do not go beyond this point if running in CLI mode
-        if(defined('STDIN')===true)
-        {
-            return null;
-        }
-        
+    }
+
+    public static function route()
+    {
         // Implement the routing engine
         Ntentan::$requestedRoute = $_GET["q"];
         Ntentan::$route = $_GET["q"];
@@ -219,7 +227,7 @@ class Ntentan
 		            foreach($route["globals"] as $key => $value)
 		            {
 		                define(
-		                    $key, 
+		                    $key,
 		                    str_replace(array_keys($parts), $parts, $value)
 		                );
 		            }
@@ -227,13 +235,13 @@ class Ntentan
                 break;
             }
 		}
-		
+
         if(Ntentan::$route == "") {
             Ntentan::$route = Ntentan::$defaultRoute;
         }
-        
+
 		$module = controllers\Controller::load(Ntentan::$route);
-	}
+    }
 
     /**
      * A utility method to add a path to the list of include paths.

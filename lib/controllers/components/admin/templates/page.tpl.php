@@ -47,12 +47,6 @@ if(is_array($variables))
     }
 }
 echo $this->list;
+echo $pagination_widget;
 ?>
-<?php if(isset($pages)):?>
-<div class='item-pages-list'>
-    <?php foreach ($pages as $page):?>
-    <a <?php echo $page['selected'] ? "class='selected'" : "" ?> href='<?php echo $page["link"] ?>'><?php echo $page["label"] ?></a>
-    <?php endforeach;?>
-</div>
-<?php endif?>
 </div>

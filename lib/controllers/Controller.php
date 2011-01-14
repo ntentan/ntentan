@@ -210,8 +210,17 @@ class Controller
         $this->componentInstances[$component] = $componentInstance;
     }
 
-    public function addWidget($widgetName, $alias = null)
+    public function addWidget($widgetName, $param2 = null, $alias = null)
     {
+        if(is_array($param2))
+        {
+            $constructorArg = $param2;
+        }
+        else if(is_string($param2))
+        {
+            $alias = $param2;
+        }
+        
         $widgetFile = "widgets/$widgetName/" . Ntentan::camelize($widgetName) . "Widget.php";
         if(file_exists($widgetFile))
         {
@@ -229,8 +238,9 @@ class Controller
         {
             Ntentan::error("Widget <code><b>$widgetName</b></code> not found");
         }
-        
-        $widgetInstance = new $widgetClass();
+
+        $widgetClass = new ReflectionClass($widgetClass);
+        $widgetInstance = $widgetClass->newInstance($constructorArg);
         $widgetInstance->setName($widgetName);
         $widgetInstance->setFilePath($path);
         if($alias == null) $alias = $widgetName;
@@ -357,7 +367,7 @@ class Controller
             $controller->init();
             if($controller->hasMethod())
             {
-                $ret = $controller->runMethod(array_slice($routeArray,$i+2));
+                $controller->runMethod(array_slice($routeArray,$i+2));
             }
             else
             {
@@ -431,12 +441,12 @@ class Controller
         $path = $method === null ? $this->method : $method;
         if(method_exists($this, $path))
         {
-            $this->mainPreRender();
             $controllerClass = new ReflectionClass($this->getName());
             $method = $controllerClass->GetMethod($path);
             $this->view->template = Ntentan::$modulesPath . "/{$this->route}/" . Ntentan::deCamelize($path) . ".tpl.php";
             $method->invokeArgs($this, $params);
             $this->view->widgets = $this->widgets;
+            $this->mainPreRender();
             $ret = $this->view->out($this->getData());
             $this->mainPostRender();
         }
