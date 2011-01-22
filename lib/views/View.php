@@ -65,9 +65,9 @@ class View extends Presentation
         }
     }
     
-    public function setContentType($contentType, $encoding="utf-8")
+    public function setContentType($contentType, $encoding="ISO-8859-1")
     {
-    	header("Content-type: $contentType; charset=$encoding");
+    	header("Content-type: $contentType;charset=$encoding");
     }
 
     public function out($viewData)

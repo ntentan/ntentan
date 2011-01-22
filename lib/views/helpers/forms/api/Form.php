@@ -30,6 +30,7 @@ class Form extends Container
 	public $showSubmit = true;
 	public $successUrl;
     protected $method = "POST";
+    private $action;
     
     private static $numForms;
 	
@@ -39,11 +40,14 @@ class Form extends Container
 	{
 		$this->setId($id);
         $this->method = $method;
-        $this->addAttribute(
-            "action", 
-            $_SERVER["REQUEST_URI"]
-        );
+        $this->action = $_SERVER["REQUEST_URI"];
 	}
+
+    public function action($action)
+    {
+        $this->action = $action;
+        return $this;
+    }
 
     public function addFileUploadSupport($maxFileSize = "")
     {
@@ -53,9 +57,10 @@ class Form extends Container
     
     public function renderHead()
     {
-        $this->addAttribute("method",$this->method);
-        $this->addAttribute("id",$this->getId());
-        $this->addAttribute("class","fapi-form");
+        $this->addAttribute("method", $this->method);
+        $this->addAttribute("id", $this->getId());
+        $this->addAttribute("class", "fapi-form");
+        $this->addAttribute('action', $this->action);
 
         return '<form '.$this->getAttributes().'>';
     }
@@ -86,11 +91,6 @@ class Form extends Container
 		Container::setShowField($show_field);
 		$this->setShowSubmit($show_field);
 	}
-
-    public function __toString()
-    {
-        return $this->render();
-    }
 
     public function setId($id)
     {

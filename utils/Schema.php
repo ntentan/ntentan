@@ -162,6 +162,5 @@ class Schema extends Util
         }
 
         fputs($schemaFile, ");");
-
     }
 }

@@ -156,7 +156,7 @@ class Controller
             if($this->viewInstance == null)
             {
                 $this->viewInstance = new View();
-                $this->viewInstance->layout = "main";
+                $this->viewInstance->layout = "main.tpl.php";
                 $this->viewInstance->defaultTemplatePath = $this->filePath;
             }
             return $this->viewInstance;
@@ -269,6 +269,11 @@ class Controller
             $this->variables[$params1] = $params2;
         }
     }
+
+    protected function getVariable($variable)
+    {
+        return $this->variables[$variable];
+    }
     
     /**
      * Appends a string to an already setup template variable.
@@ -280,9 +285,9 @@ class Controller
         $this->variables[$params1] .= $params2;
     }
 
-    protected function getData()
+    protected function getData($variable = null)
     {
-        return $this->variables;
+        return $variable != null ? $this->variables[$variable] : $this->variables;
     }
 
 	/**
