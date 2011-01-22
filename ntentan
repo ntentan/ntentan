@@ -29,6 +29,10 @@ Please specify an action to perform.
     die();
 
 }
+else
+{
+    include "config/ntentan.php";
+}
 
 require_once(NTENTAN_HOME . "lib/Ntentan.php");
 require_once(NTENTAN_HOME . "utils/Util.php");
@@ -47,7 +51,7 @@ array_shift($argv);
 if(class_exists("ntentan\\utils\\$utilClassName"))
 {
     $utilClass = "ntentan\\utils\\$utilClassName";
-    $util = new $utilClass();
+    $util = new $utilClass($modules_path);
     $util->execute($argv);
 }
 else

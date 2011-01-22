@@ -9,15 +9,76 @@ class Create extends Util
     protected $shortOptionsMap = array(
         "i" => "interactive"
     );
+
+    private function mkdir($name)
+    {
+        $basePath = str_replace('.', '/', $this->module);
+        $path = $basePath . "/$name";
+        echo "Creating directory $path\n";
+        if(!\is_writable($basePath))
+        {
+            echo "You do not have permissions to created this directory\n";
+            die();
+        }
+        if(\is_dir($path))
+        {
+            echo "Directory $name already exists. Skipping creation ...\n";
+        }
+        else
+        {
+            mkdir($path);
+        }
+        return $path;
+    }
+
+    public function model($options)
+    {
+        if(is_string($options))
+        {
+            $name = $options;
+        }
+        else
+        {
+            $name = $options['stand_alone_values'][0];
+        }
+
+        $directory = Create::mkdir($name);
+        $modelClassName = Ntentan::camelize($name);
+        $table = end(explode(".", $name));
+
+        echo "Creating model class file $directory/$modelClassName.php\n";
+
+        $this->templateCopy(
+            NTENTAN_HOME . 'utils/files/schema_templates/_Model.php',
+            "$directory/$modelClassName.php",
+            array(
+                'module' => $this->module,
+                'table_name' => $table,
+                'has_many' => null,
+                'belongs_to' => null,
+                'class_name' => $modelClassName
+            )
+        );
+
+        echo "Done!\n";
+    }
     
     /**
      * 
-     * @param array $name
+     * @param array $options
      */
-    private function controllerDirectory($name)
+    public function controller($options)
     {
-        $directory = str_replace('.', '/', $this->module) . "/$name";
-        mkdir($directory);
+        if(is_string($options))
+        {
+            $name = $options;
+        }
+        else
+        {
+            $name = $options['stand_alone_values'][0];
+        }
+
+        $directory = Create::mkdir($name);
         $className = Ntentan::camelize($name) . 'Controller';
         $this->templateCopy(
             NTENTAN_HOME . "utils/files/create_templates/_Controller.php",
@@ -28,22 +89,6 @@ class Create extends Util
                 'class_name' => $className
             )
         );
-    }
-
-    /**
-     * 
-     * @param array $options
-     */
-    public function controller($options)
-    {
-        if(is_array($options))
-        {
-
-        }
-        else if(is_string($options))
-        {
-            Create::_controllerCore($options);
-        }
     }
 
     /**
@@ -135,7 +180,7 @@ class Create extends Util
         mkdir('cache');
 
         echo "Creating home controller ...\n";
-        Create::controllerDirectory('home');
+        Create::controllerFiles('home');
         $this->templateCopy(
             NTENTAN_HOME . 'utils/files/create_templates/_home_run.tpl.php',
             "$module/home/run.tpl.php"

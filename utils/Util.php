@@ -30,6 +30,11 @@ class Util
 {
     protected $shortOptionsMap = array();
     protected $module;
+
+    public function __construct($module)
+    {
+        $this->module = $module;
+    }
     
     public function execute($arguments)
     {

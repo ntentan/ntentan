@@ -58,7 +58,7 @@ abstract class Container extends Element
 	protected $callback;
 	protected $callbackData;
 	public $isContainer = true;
-	private $rendererInstance = null;
+	public $rendererMode = 'all';
 
 	/**
 	 * Returns the renderer which is currently being used by the class.
@@ -173,14 +173,20 @@ abstract class Container extends Element
 		return $ret;
 	}
 	
-	abstract public function renderHead();
-	abstract public function renderFoot();
+	abstract protected function renderHead();
+	abstract protected function renderFoot();
 	
 	public function render()
 	{
-	    return $this->renderHead() . 
-	           $this->renderElements() . 
-	           $this->renderFoot();
+        switch($this->rendererMode)
+        {
+            case 'head';
+                return $this->renderHead();
+            case 'foot':
+                return $this->renderFoot();
+            case 'elements':
+                return $this->renderElements();
+        }
 	}
 
 	//! Sets whether the fields should be exposed for editing. If this
@@ -283,4 +289,9 @@ abstract class Container extends Element
             }
         }
 	}
+
+    public function __toString()
+    {
+        return $this->render();
+    }
 }

@@ -322,7 +322,6 @@ class Model implements ArrayAccess, Iterator
         if(substr($method, 0, 10) == "getAllWith")
         {
             $field = Ntentan::deCamelize(substr($method, 10));
-            $type = 'all';
             $conditions = array();
             foreach($arguments as $argument)
             {
@@ -338,12 +337,13 @@ class Model implements ArrayAccess, Iterator
             }
             $params["conditions"] = $conditions;
             if(!isset($params["fetch_related"])) $params["fetch_related"] = true;
+            $type = isset($params['limit']) ? $params['limit'] : 'all';
             return $this->get($type, $params);
         }
         
         if($method == "getAll")
         {
-            return $this->get('all', $arguments[0]);
+            return $this->get(isset($arguments[0]['limit']) ? $arguments[0]['limit'] : 'all', $arguments[0]);
         }
 
         if(substr($method, 0, 3) == "get")

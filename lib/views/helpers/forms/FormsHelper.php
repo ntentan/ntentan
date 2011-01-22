@@ -165,7 +165,8 @@ class FormsHelper extends Helper
             {
                 $this->container->setId($arguments[0]);
             }
-            return $this->container->renderHead();
+            $this->container->rendererMode = 'head';
+            return $this->container;
         }
         else if($function == "get")
         {
@@ -188,7 +189,8 @@ class FormsHelper extends Helper
             {
                 $this->container->showSubmit = false;
             }
-            return $this->container->renderFoot();
+            $this->container->rendererMode = 'foot';
+            return $this->container;
         }
         else if(substr($function, 0, 5) == "open_")
         {

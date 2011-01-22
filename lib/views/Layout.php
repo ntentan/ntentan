@@ -47,7 +47,7 @@ class Layout
         switch($variable)
         {
             case "name":
-                $this->layoutPath = Ntentan::$layoutsPath . "$value.tpl.php";
+                $this->layoutPath = $value === false ? false : Ntentan::$layoutsPath . "$value";
                 break;
             case "file":
                 $this->layoutPath = $value;
@@ -153,17 +153,17 @@ class Layout
         $layoutData["contents"] = $contents;
         $layoutData = array_merge($layoutData, $viewData);
 
-        if(file_exists($this->layoutPath))
-        {
-            return Template::out($this->layoutPath, $layoutData);
-        }
-        else if($this->name == false)
+        if($this->layoutPath === false)
         {
             return $contents;
         }
+        else if(file_exists($this->layoutPath))
+        {
+            return Template::out($this->layoutPath, $layoutData);
+        }
         else
         {
-            echo Ntentan::message("Layout path does not exist <code><b>{$this->layoutPath}</b></code>");
+            echo Ntentan::message("Layout file does not exist <code><b>{$this->layoutPath}</b></code>");
             die();
         }
     }

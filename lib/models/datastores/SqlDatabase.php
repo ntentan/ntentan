@@ -258,11 +258,11 @@ abstract class SqlDatabase extends DataStore
         // Add the limiting clauses
         if($params["type"] == 'first')
         {
-        	$query .= "LIMIT 1";
+        	$query .= " LIMIT 1";
         }
         else if(is_numeric($params["type"]))
         {
-        	$query .= "LIMIT $offset {$params["type"]}";
+        	$query .= " LIMIT $offset {$params["type"]}";
         }
 
         $results = $this->query($query);
