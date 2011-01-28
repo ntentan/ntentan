@@ -25,7 +25,7 @@ use ntentan\Ntentan;
  */
 abstract class Cache
 {
-    const DEFAULT_TTL = 360;
+    const DEFAULT_TTL = 3600;
     private static $instance = null;
     
     private static function instance()
@@ -40,8 +40,9 @@ abstract class Cache
         return Cache::$instance; 
     }
     
-    public static function add($key, $object, $ttl = 3600)
+    public static function add($key, $object, $ttl = 0)
     {
+        $ttl = $ttl > 2592000 || $ttl == 0 ? $ttl : $ttl + time();
         Cache::instance()->addImplementation($key, $object, $ttl);
     }
     
@@ -55,7 +56,7 @@ abstract class Cache
         return Cache::instance()->existsImplementation($key);
     }
     
-    abstract protected function addImplementation($key, $object, $ttl);
+    abstract protected function addImplementation($key, $object, $expires);
     abstract protected function getImplementation($key);
     abstract protected function existsImplementation($key);
 }

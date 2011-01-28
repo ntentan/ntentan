@@ -20,6 +20,13 @@
     -moz-box-shadow: 3px 3px 3px rgba(0, 0, 0, .5);
 }
 
+.small-soft-shadow-bottom
+{
+    box-shadow: 0px 3px 3px rgba(0, 0, 0, .5);
+    -webkit-box-shadow: 0px 3px 3px rgba(0, 0, 0, .5);
+    -moz-box-shadow: 0px 3px 3px rgba(0, 0, 0, .5);
+}
+
 /** rounded */
 .rounded-5px
 {

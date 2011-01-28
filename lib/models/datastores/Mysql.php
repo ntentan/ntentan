@@ -28,7 +28,8 @@ class Mysql extends SqlDatabase
 {
 	private static $db;
 	
-    protected function connect($parameters) {
+    protected function connect($parameters)
+    {
         $this->schema = $parameters["database"];
         Mysql::$db = new mysqli(
             $parameters["hostname"],
@@ -38,7 +39,8 @@ class Mysql extends SqlDatabase
         );
     }
     
-    protected function query($query) {
+    protected function query($query) 
+    {
         $queryResult = Mysql::$db->query($query);
         
         if($queryResult === false)
