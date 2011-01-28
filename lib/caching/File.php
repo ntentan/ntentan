@@ -22,10 +22,14 @@ use ntentan\exceptions\FileNotFoundException;
 
 class File extends Cache
 {
-    protected function addImplementation($key, $object, $ttl)
+    protected function addImplementation($key, $object, $expires)
     {
         if(file_exists("cache"))
         {
+            $object = array(
+                'expires' => $expires,
+                'object' => $object
+            );
             file_put_contents("cache/$key", serialize($object));
         }
         else
@@ -36,11 +40,27 @@ class File extends Cache
     
     protected function existsImplementation($key)
     {
-        return file_exists("cache/$key");
+        if(file_exists("cache/$key"))
+        {
+            $cacheObject = unserialize(file_get_contents("cache/$key"));
+            if($cacheObject['expires'] > time() || $cacheObject['expires'] == 0)
+            {
+                return true;
+            }
+        }
+        return false;
     }
     
     protected function getImplementation($key)
     {
-        return unserialize(file_get_contents("cache/$key"));
+        $cacheObject = unserialize(file_get_contents("cache/$key"));
+        if($cacheObject['expires'] > time() || $cacheObject['expires'] == 0)
+        {
+            return $cacheObject['object'] ;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

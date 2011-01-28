@@ -245,6 +245,7 @@ class Controller
         $widgetInstance->setFilePath($path);
         if($alias == null) $alias = $widgetName;
         $widgetInstance->setAlias($alias);
+        $widgetInstance->init();
         $this->widgets[$alias] = $widgetInstance;
     }
     
@@ -260,12 +261,20 @@ class Controller
      */
     protected function set($params1, $params2 = null)
     {
-        if(is_array($params1))
+        if(is_object($params1) && \method_exists($params1, "toArray"))
+        {
+            $this->variables = array_merge($this->variables, $params1->toArray());
+        }
+        else if(is_array($params1))
         {
             $this->variables = array_merge($this->variables, $params1);
         }
         else
         {
+            if(\is_object($params2) && method_exists($params2, "toArray"))
+            {
+                $params2 = $params2->toArray();
+            }
             $this->variables[$params1] = $params2;
         }
     }

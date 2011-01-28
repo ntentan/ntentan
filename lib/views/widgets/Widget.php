@@ -21,6 +21,7 @@ namespace ntentan\views\widgets;
 use ntentan\views\template_engines\Template;
 use ntentan\Ntentan;
 use ntentan\views\Presentation;
+use ntentan\caching\Cache;
 
 /**
  * Enter description here ...
@@ -34,8 +35,14 @@ class Widget extends Presentation
     protected $name;
     protected $alias;
     private $filePath;
+    public $cacheLifetime = 3600;
 
     public function __construct($args)
+    {
+        
+    }
+
+    public function init()
     {
         
     }
@@ -84,15 +91,35 @@ class Widget extends Presentation
 
     public function __toString()
     {
-        $this->preRender();
-        if($this->template == "")
+        $cacheKey = $this->getCacheKey();
+        if(Cache::exists($cacheKey))
         {
-            $widget = $this->getName();
-            $this->template = $this->filePath . "/$widget.tpl.php";
+            $output = Cache::get($cacheKey);
         }
-        $this->set('alias', $this->alias);
-        $output = Template::out($this->template, $this->data);
-        $this->postRender();
+        else
+        {
+            $this->preRender();
+            if($this->template == "")
+            {
+                $widget = $this->getName();
+                $this->template = $this->filePath . "/$widget.tpl.php";
+            }
+            $this->set('alias', $this->alias);
+            $output = Template::out($this->template, $this->data);
+
+            $this->postRender();
+            Cache::add($cacheKey, $output, $this->cacheLifetime);
+        }
         return $output;
+    }
+
+    private function getCacheKey()
+    {
+        return $this->alias . '_' . $this->getName() . '_widget';
+    }
+
+    public function cached()
+    {
+        return Cache::exists($this->getCacheKey());
     }
 }
