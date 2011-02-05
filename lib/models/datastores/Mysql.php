@@ -39,7 +39,7 @@ class Mysql extends SqlDatabase
         );
     }
     
-    protected function query($query) 
+    public function query($query)
     {
         $queryResult = Mysql::$db->query($query);
         

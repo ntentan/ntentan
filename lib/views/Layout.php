@@ -108,10 +108,10 @@ class Layout
                     throw new FileNotFoundException("Javascript file <code><b>$javaScript</b></code> not found!");
                 }
             }
-            file_put_contents("public/bundle.js", $javaScripts);
+            file_put_contents("public/js/bundle.js", $javaScripts);
             $layoutData["javascripts"] =
                 "<script type='text/javascript' src='"
-                .   Ntentan::getUrl('public/bundle.js')
+                .   Ntentan::getUrl('public/js/bundle.js')
                 .   "'></script>";
         }
 
@@ -137,8 +137,8 @@ class Layout
                     throw new FileNotFoundException("Stylesheet file <b><code>{$sheet["path"]}</code></b> not found!");
                 }
             }
-            $url = Ntentan::getUrl("public/" . $media . ".css");
-            $path = "public/$media.css";
+            $url = Ntentan::getUrl("public/css/" . $media . ".css");
+            $path = "public/css/$media.css";
             file_put_contents($path, $$media);
             $layoutData["stylesheets"] .= "<link rel='stylesheet' type='text/css' href='$url' media='$media' />";
         }

@@ -302,12 +302,25 @@ class Ntentan
      * Returns the default datastore as defined in the config/db.php 
      * configuration file.
      */
-    public static function getDefaultDataStore()
+    public static function getDefaultDataStore($instance = false)
     {
     	if(file_exists(Ntentan::$dbConfigFile)) {
             include Ntentan::$dbConfigFile;
-            if(isset($datastores["default"])) { 
-                return $datastores["default"];
+            if(isset($datastores["default"])) {
+                if($instance === true)
+                {
+                    $dataStoreClass = "\\ntentan\\models\\datastores\\" . Ntentan::camelize($datastores['default']["datastore"]);
+                    if(class_exists($dataStoreClass)) {
+                        $dataStore = new $dataStoreClass($datastores['default']);
+                        return $dataStore;
+                    } else {
+                        throw new exceptions\DataStoreException("Datastore {$dataStoreClass} doesn't exist.");
+                    }
+                }
+                else
+                {
+                    return $datastores["default"];
+                }
             } else {
             	echo Ntentan::message("Invalid datastore specified. Please specify a default datastore");
             	die();
