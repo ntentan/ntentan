@@ -20,18 +20,31 @@
 namespace ntentan\views\helpers\forms\api;
 
 /**
- * 
- * @author ekow
- *
+ * A selection list class for the forms helper. This class renders an HTML
+ * select form object with its associated options.
  */
 class SelectionList extends Field
 {
-	//! Array of options.
+	/**
+     * An array of options to display with this selection list
+     * @var array
+     */
 	protected $options = array();
 
-	//! A boolean value set if multiple selections.
+	/**
+     * When set true, this selection list would allow multiple selections
+     * @var boolean
+     */
 	protected $multiple;
 
+    /**
+     * Constructs a new selection list. This constructor could be invoked through
+     * the form helper's $this->form->get_* method as $this->form->get_selection_list().
+     *
+     * @param string $label The label for the selection list
+     * @param string $name The name of the selection list
+     * @param string $description A brief description for the selection list
+     */
 	public function __construct($label="", $name="", $description="")
 	{
 		Field::__construct($name);
@@ -39,7 +52,12 @@ class SelectionList extends Field
 		$this->addOption("","");
 	}
 
-	//! Sets weather multiple selections could be made.
+	/**
+     * Sets whether multiple selections are allowed. This method automatically
+     * appends the array symbol '[]' to the name of the selection list object.
+     * @param boolean $multiple
+     * @return SelectionList
+     */
 	public function setMultiple($multiple)
 	{
 		$this->name.="[]";
@@ -47,15 +65,30 @@ class SelectionList extends Field
 		return $this;
 	}
 
-	//! Add an option to the selection list.
-	//! \param $label The label of the options
-	//! \param $value The value associated with the label.
+	/**
+     * Add an option to the selection list.
+     * @param string $label
+     * @param string $value
+     * @return SelectionList
+     */
 	public function addOption($label="", $value="")
 	{
 		if($value==="") $value=$label;
 		$this->options[$value] = $label;
 		return $this;
 	}
+
+    /**
+     * An alias for SelectionList::addOption
+     * @param string $label
+     * @param string $value
+     * @return SelectionList
+     */
+    public function option($label='', $value='')
+    {
+        $this->addOption($label, $value);
+        return $this;
+    }
 
 	public function render()
 	{
@@ -69,6 +102,16 @@ class SelectionList extends Field
 		return $ret;
 	}
 
+    /**
+     * Set the options using a key value pair datastructure represented in the form of
+     * a structured array.
+     *
+     * @param array $options An array of options
+     * @param boolean $merge If set to true the options in the array are merged
+     *                       with existing options
+     * 
+     * @return SelectionList
+     */
 	public function setOptions($options, $merge = true)
 	{
 	    if($merge) 
@@ -84,7 +127,11 @@ class SelectionList extends Field
 	    }
 	    return $this;
 	}
-	
+
+    /**
+     * Return the array of options
+     * @return array
+     */
 	public function getOptions()
 	{
 		return $options;

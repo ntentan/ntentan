@@ -21,13 +21,23 @@ namespace ntentan\caching;
 use ntentan\Ntentan;
 
 /**
- * Abstract cache class.
+ * Abstract cache class. This class forms the base through which all other
+ * caching classes are written. It also implements a sigleton interface which
+ * means that the applications never directly instantiate their own copies
+ * of the cache class.
  */
 abstract class Cache
 {
     const DEFAULT_TTL = 3600;
     private static $instance = null;
-    
+
+    /**
+     * Generates an instance of a Cache class. This method is here to provide
+     * a more transparent interface through which caching classes could be
+     * instantiated.
+     * 
+     * @return Cache
+     */
     private static function instance()
     {
         if(Cache::$instance == null)
@@ -39,18 +49,39 @@ abstract class Cache
         }
         return Cache::$instance; 
     }
-    
+
+    /**
+     * Store an item into the cache.
+     * @param string $key A unique identifier for the object to be stored.
+     * @param mixed $object The object to be stored.
+     * @param integer $ttl The time to live of the object. This figure could be
+     *                     expressed in seconds provided the number of secods
+     *                     doesn't exceed 2592000. If it exceeds, the value is
+     *                     taken as a date expressed in unix timestamps.
+     */
     public static function add($key, $object, $ttl = 0)
     {
         $ttl = $ttl > 2592000 || $ttl == 0 ? $ttl : $ttl + time();
         Cache::instance()->addImplementation($key, $object, $ttl);
     }
-    
+
+    /**
+     * Retrieve an item from the cache. If the item doesn't exist this method
+     * returns a false.
+     * 
+     * @param string $key
+     * @return mixed
+     */
     public static function get($key)
     {
         return Cache::instance()->getImplementation($key);
     }
-    
+
+    /**
+     * Checks if a particular item exists in the cache.
+     * @param string $key
+     * @return boolean
+     */
     public static function exists($key)
     {
         return Cache::instance()->existsImplementation($key);
