@@ -19,6 +19,7 @@
 namespace ntentan\models\datastores;
 
 use ntentan\Ntentan;
+use ntentan\models\exceptions\DataStoreException;
 
 class Postgresql extends SqlDatabase {
 	private $db;
@@ -35,7 +36,7 @@ class Postgresql extends SqlDatabase {
         );
 	}
 	
-    protected function query($query)
+    public function query($query)
     {
         $queryResult = pg_query($this->db, $query);
         
@@ -204,10 +205,9 @@ class Postgresql extends SqlDatabase {
 	
     public function describe()
     {
-        $fields = array();
         $description = array();
         $description["name"] = $this->model->getName();
-        $description["fields"] = $fields;
+        $description["fields"] = $this->describeTable($this->table, $this->schema);
         return $description;
     }
 
