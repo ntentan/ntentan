@@ -47,6 +47,10 @@ class File extends Cache
             {
                 return true;
             }
+            else if($cacheObject['expires'] == -1)
+            {
+                return false;
+            }
         }
         return false;
     }
@@ -57,6 +61,10 @@ class File extends Cache
         if($cacheObject['expires'] > time() || $cacheObject['expires'] == 0)
         {
             return $cacheObject['object'] ;
+        }
+        else if($cacheObject['expires'] == -1)
+        {
+            return false;
         }
         else
         {
