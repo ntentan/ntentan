@@ -24,7 +24,7 @@ class File extends Cache
 {
     protected function addImplementation($key, $object, $expires)
     {
-        if(file_exists("cache"))
+        if(file_exists("cache") && is_writable("cache"))
         {
             $object = array(
                 'expires' => $expires,
@@ -34,7 +34,9 @@ class File extends Cache
         }
         else
         {
-            throw new FileNotFoundException("Directory <b><code>cache</code></b> not found!");
+            throw new FileNotFoundException(
+                "The file cache directory <b><code>cache</code></b> was not found or is not writable!"
+            );
         }
     }
     

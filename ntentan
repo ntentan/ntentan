@@ -2,6 +2,7 @@
 <?php
 
 define('NTENTAN_HOME', '/home/ekow/Projects/ntentan/');
+error_reporting(E_ALL ^ E_NOTICE);
 
 // Check if the ntentan framework has been initialized
 if(!file_exists("config/ntentan.php") && $argv[1] != "create" && $argv[2] != "app")
@@ -28,6 +29,10 @@ Please specify an action to perform.
 ";
     die();
 
+}
+else if($argv[1] == 'create')
+{
+    //
 }
 else
 {

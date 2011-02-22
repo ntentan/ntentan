@@ -16,11 +16,15 @@
  * limitations under the License.
  */
 
+
 /**
  * Root namespace for all ntentan classes
  * @author ekow
  */
 namespace ntentan;
+
+session_start();
+
 
 /**
  * Include the autoloading function. This function automatically includes the 
@@ -33,7 +37,6 @@ include "autoload.php";
  */
 include "globals.php";
 
-session_start();
 date_default_timezone_set("Africa/Accra");
 set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
 

@@ -240,7 +240,9 @@ class Postgresql extends SqlDatabase {
             $description["tables"][$table["table_name"]]["belongs_to"] = array();
             $description["tables"][$table["table_name"]]["has_many"] = array();
 
-            // Get the schemas which belong to
+            $tableDescription = $this->describeTable($table['table_name'], $this->schema);
+
+            // Get the schemas which belong to this schema
             $belongsToTables = $this->query(
                 sprintf(
                     "select constraint_column_usage.table_name, column_name
@@ -259,7 +261,7 @@ class Postgresql extends SqlDatabase {
             foreach($belongsToTables as $belongsToTable)
             {
                 $singular = Ntentan::singular($belongsToTable["table_name"]);
-                if($belongsToTable['column_name'] == $singular . '_id')
+                if(array_search($singular . '_id', \array_keys($tableDescription))!==false)
                 {
                     $description["tables"][$table["table_name"]]["belongs_to"][] =
                         $singular;

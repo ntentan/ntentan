@@ -173,14 +173,24 @@ class Create extends Util
             )
         );
 
-        echo "Creating public directory";
+        echo "Creating public directory..\n";
         mkdir('public');
+        mkdir('css');
+        mkdir('js');
+        mkdir('images');
 
-        echo "Creating cache directory";
+        echo "Creating cache directory..\n";
         mkdir('cache');
 
+        echo "Creating layout directory..\n";
+        mkdir('layouts');
+        $this->templateCopy(
+            NTENTAN_HOME . 'utils/files/create_templates/_main.tpl.php',
+            'layouts/main.tpl.php'
+        );
+
         echo "Creating home controller ...\n";
-        Create::controllerFiles('home');
+        Create::controller('home');
         $this->templateCopy(
             NTENTAN_HOME . 'utils/files/create_templates/_home_run.tpl.php',
             "$module/home/run.tpl.php"

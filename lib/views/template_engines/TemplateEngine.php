@@ -14,6 +14,19 @@ abstract class TemplateEngine
         $helperClass = "\\ntentan\\views\\helpers\\$helper\\" . Ntentan::camelize($helper) . "Helper";
         return new $helperClass();
     }
+
+    public function loadAsset($asset)
+    {
+        if(file_exists(dirname("public/$asset")) && \is_writable(dirname("public/$asset")))
+        {
+            copy("assets/$asset", "public/$asset");
+        }
+        else
+        {
+            throw new \Exception("File not found ");
+        }
+        return Ntentan::getUrl("public/$asset");
+    }
     
     public function __get($property)
     {

@@ -37,6 +37,7 @@ class FormsHelper extends Helper
     public static $renderer = "inline";
     private $data = array();
     private $errors = array();
+    public $echo = true;
     
     public function __construct()
     {
@@ -156,6 +157,11 @@ class FormsHelper extends Helper
         }
         return self::$rendererInstance;
     }
+
+    public static function getStylesheet()
+    {
+        return Ntentan::getFilePath('lib/views/helpers/forms/css/forms.css');
+    }
     
     public function __call($function, $arguments)
     {
@@ -166,7 +172,7 @@ class FormsHelper extends Helper
                 $this->container->setId($arguments[0]);
             }
             $this->container->rendererMode = 'head';
-            return $this->container;
+            $return = $this->container;
         }
         else if($function == "get")
         {
@@ -177,7 +183,7 @@ class FormsHelper extends Helper
             {
                 $elementObject->addErrors($this->errors[$name]);
             }
-            return $elementObject;
+            $return = $elementObject;
         }
         else if($function == "close")
         {
@@ -190,21 +196,21 @@ class FormsHelper extends Helper
                 $this->container->showSubmit = false;
             }
             $this->container->rendererMode = 'foot';
-            return $this->container;
+            $return = $this->container;
         }
         else if(substr($function, 0, 5) == "open_")
         {
             $container = "ntentan\\views\\helpers\\forms\\api\\" . Ntentan::camelize(substr($function, 5, strlen($function)));
             $containerClass = new ReflectionClass($container);
             $containerObject = $containerClass->newInstanceArgs($arguments);
-            return $containerObject->renderHead();
+            $return = $containerObject->renderHead();
         }
         elseif(substr($function, 0, 6) == "close_")
         {
             $container = "ntentan\\views\\helpers\\forms\\api\\" . Ntentan::camelize(substr($function, 6, strlen($function)));
             $containerClass = new ReflectionClass($container);
             $containerObject = $containerClass->newInstanceArgs($arguments);
-            return $containerObject->renderFoot();
+            $return = $containerObject->renderFoot();
         }
         elseif(substr($function, 0, 4) == "get_")
         {
@@ -217,18 +223,26 @@ class FormsHelper extends Helper
             {
                 $elementObject->addErrors($this->errors[$name]);
             }
-            return $elementObject;
+            $return = $elementObject;
         }
         elseif(substr($function, 0, 4) == "add_")
         {
             $element = "ntentan\\views\\helpers\\forms\\api\\" . Ntentan::camelize(substr($function, 4, strlen($function)));
             $elementClass = new ReflectionClass($element);
             $elementObject = $elementClass->newInstanceArgs($arguments);
-            return $this->container->add($elementObject);
+            $return = $this->container->add($elementObject);
         }
         else
         {
             throw new Exception("Function <code><b>$function</b></code> not found in form helper.");
+        }
+        if($this->echo)
+        {
+            echo $return;
+        }
+        else
+        {
+            return $return;
         }
     }
 }
