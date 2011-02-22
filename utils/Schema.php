@@ -54,7 +54,7 @@ class Schema extends Util
             $backend = $this->getUserResponse(
                 "Which datastore backend should be used",
                 array(
-                    "mysql", "pgsql"
+                    "mysql", "postgresql"
                 ),
                 "mysql"
             );

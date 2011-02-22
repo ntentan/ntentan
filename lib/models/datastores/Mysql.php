@@ -206,7 +206,8 @@ class Mysql extends SqlDatabase
             $description["tables"][$table["table_name"]] = array();
             $description["tables"][$table["table_name"]]["belongs_to"] = array();
             $description["tables"][$table["table_name"]]["has_many"] = array();
-            
+            $tableDescription = $this->describeTable($table['table_name'], $this->schema);
+        
             // Get the schemas which belong to
             $belongsToTables = $this->query(
                 sprintf(
@@ -225,8 +226,8 @@ class Mysql extends SqlDatabase
             
             foreach($belongsToTables as $belongsToTable)
             {
-                $singular = Ntentan::singular($belongsToTable["referenced_table_name"]);
-                if($belongsToTable['column_name'] == $singular . '_id')
+                $singular = Ntentan::singular($belongsToTable["table_name"]);
+                if(array_search($singular . '_id', \array_keys($tableDescription))!==false)
                 {
                     $description["tables"][$table["table_name"]]["belongs_to"][] =
                         $singular;
