@@ -61,6 +61,12 @@ class Postgresql extends SqlDatabase {
     	return "\"$field\"";
     }
 
+    protected function limit($limitParams)
+    {
+        return (isset($limitParams['limit']) ? " LIMIT {$limitParams['limit']}":'') .
+               (isset($limitParams['offset']) ? " OFFSET {$limitParams['offset']}":'');
+    }
+
     protected function resolveName($fieldPath, $reformat=false, $description = null)
     {
         if($reformat === true)

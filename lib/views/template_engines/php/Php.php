@@ -5,7 +5,7 @@ use ntentan\views\template_engines\TemplateEngine;
 
 class Php extends TemplateEngine
 {
-    public function out($templateData)
+    public function out($templateData, $view)
     {
         foreach($templateData as $key => $value)
         {

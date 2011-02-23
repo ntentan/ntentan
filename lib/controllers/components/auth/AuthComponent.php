@@ -110,7 +110,7 @@ class AuthComponent extends Component
         else
         {
             $this->loginRoute = $this->loginRoute == null ? $this->controller->route . "/login" : $this->loginRoute;
-            $this->logoutRoute = $this->logoutRoute == null ? $this->controller->route . "/login" : $this->logoutRoute;
+            $this->logoutRoute = $this->logoutRoute == null ? $this->controller->route . "/logout" : $this->logoutRoute;
 
             $this->set("login_message", $this->authMethodInstance->message);
             $this->set("login_status", false);
@@ -119,7 +119,11 @@ class AuthComponent extends Component
                 Ntentan::redirect(
                     Ntentan::getUrl(
                         $this->loginRoute .
-                        (Ntentan::$requestedRoute == "" ? "" : "?redirect=" . urlencode(Ntentan::$requestedRoute))
+                        (
+                            Ntentan::$requestedRoute == ""
+                            ? "" :
+                            "?redirect=" . urlencode(Ntentan::$requestedRoute)
+                        )
                     ),
                     true
                 );

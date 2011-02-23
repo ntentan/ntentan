@@ -118,7 +118,7 @@ class AdminComponent extends Component
     private $app;
     public $hasEditOperation = true;
     public $hasAddOperation = true;
-    private $entity;
+    public $entity;
 
     public function __construct($prefix = null)
     {
@@ -193,6 +193,10 @@ class AdminComponent extends Component
 
     public function page($pageNumber)
     {
+        if($pageNumber < 1)
+        {
+            throw new \Exception("Illegal page number in admin component. Page numbers cannot be less than 1");
+        }
         if($this->consoleMode)
         {
             $pageExtensionMethodName = Ntentan::camelize(Ntentan::plural($this->entity),".","", true) . 'AdminPage';
@@ -216,7 +220,6 @@ class AdminComponent extends Component
                     'lib/controllers/components/admin/templates/row.tpl.php'
                 ):
                 $this->rowTemplate;
-
         $this->set("operations_template", $this->operationsTemplate);
         $this->set("row_template", $this->rowTemplate);
         $this->set("entity", \ucfirst(Ntentan::plural($this->entity)));
@@ -336,7 +339,7 @@ class AdminComponent extends Component
         $this->set("app_name", $this->app["name"]);
         $this->view->layout->addStyleSheet(
             array(
-                Ntentan::getFilePath("lib/controllers/components/admin/css/admin.css"),
+                $this->getStylesheet(),
                 Ntentan::getFilePath("css/fx.css"),
                 Ntentan::getFilePath("lib/views/helpers/forms/css/forms.css"),
                 Ntentan::getFilePath("css/grid.css")
@@ -570,5 +573,10 @@ class AdminComponent extends Component
     private function getModel()
     {
         return is_object($this->model) ? $this->model : $this->controller->model;
+    }
+
+    public function getStylesheet()
+    {
+        return Ntentan::getFilePath('lib/controllers/components/admin/css/admin.css');
     }
 }

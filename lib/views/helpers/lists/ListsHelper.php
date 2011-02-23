@@ -53,5 +53,10 @@ class ListsHelper extends Helper
             )
         );
     }
+
+    public static function getStyleSheet()
+    {
+        return Ntentan::getFilePath('lib/views/helpers/lists/css/default.css');
+    }
 }
 

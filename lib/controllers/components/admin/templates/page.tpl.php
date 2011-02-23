@@ -1,5 +1,10 @@
-<?php if($headings): ?>
+<?php 
+$view->layout->addStylesheet($this->list->getStylesheet());
+if($headings):
+?>
+<?php if($entity != ''): ?>
 <h<?php echo $heading_level?>><?php echo $entity ?></h<?php echo $heading_level?>>
+<?php endif; ?>
 <?php endif ?>
 <div id="item-actions-menu">
     <?php echo $item_actions_menu_widget ?>

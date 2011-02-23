@@ -249,20 +249,15 @@ abstract class SqlDatabase extends DataStore
                 $query .= " ORDER BY {$params["sort"]} ";
             }
         }
-        
-        if(isset($params["offset"]))
-        {
-            $offset = $params["offset"] . ", ";
-        }
 
         // Add the limiting clauses
         if($params["type"] == 'first')
         {
-        	$query .= " LIMIT 1";
+        	$query .= $this->limit(array("limit"=>'1')); //" LIMIT 1";
         }
         else if(is_numeric($params["type"]))
         {
-        	$query .= " LIMIT $offset {$params["type"]}";
+        	$query .= $this->limit(array("limit"=>$params['type'], "offset"=>$params['offset']));//" LIMIT $offset {$params["type"]}";
         }
 
         $results = $this->query($query);
@@ -440,6 +435,7 @@ abstract class SqlDatabase extends DataStore
     protected abstract function escape($query);
     protected abstract function quote($field);
     protected abstract function getLastInsertId();
+    protected abstract function limit($limitParams);
     public abstract function describeModel();
     public abstract function describeTable($table, $schema);
 }

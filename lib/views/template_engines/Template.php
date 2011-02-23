@@ -23,11 +23,11 @@ class Template
         return Template::$engineCache[$engine];
     }
 
-    public static function out($template, $templateData)
+    public static function out($template, $templateData, $view = null)
     {
         if(is_string($template))
         {
-            return Template::getEngine($template)->out($templateData);
+            return Template::getEngine($template)->out($templateData, $view);
         }
         else
         {
@@ -35,7 +35,7 @@ class Template
             {
                 if(Template::fileExists($singleTemplate))
                 {
-                    return Template::getEngine($template)->out($templateData);
+                    return Template::getEngine($template)->out($templateData, $view);
                 }
             }
         }
