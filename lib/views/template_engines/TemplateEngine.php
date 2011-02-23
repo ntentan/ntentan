@@ -43,5 +43,5 @@ abstract class TemplateEngine
         return $this->loadedHelpers[$property];
     }
     
-    abstract public function out($data);
+    abstract public function out($data, $view);
 }

@@ -84,11 +84,11 @@ class View extends Presentation
         //ob_start();
         if(file_exists( $this->template ))
         {
-            $data = Template::out($this->template, $viewData);
+            $data = Template::out($this->template, $viewData, $this);
         }
         else if(file_exists($this->defaultTemplatePath . $this->template))
         {
-            $data = Template::out($this->defaultTemplatePath . $this->template, $viewData);
+            $data = Template::out($this->defaultTemplatePath . $this->template, $viewData, $this);
         }
         else if($this->template === false)
         {

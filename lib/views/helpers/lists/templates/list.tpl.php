@@ -1,3 +1,4 @@
+<?php  ?>
 <table class='item-table'>
     <?php if($has_headers === true): ?>
     <thead>

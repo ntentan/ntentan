@@ -35,5 +35,3 @@ class HiddenField extends Field
 		return __CLASS__;
 	}
 }
-
-?>

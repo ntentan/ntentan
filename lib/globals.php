@@ -51,8 +51,8 @@ function s($string)
  * @param string $template
  * @param array $data
  */
-function t($template, $data)
+function t($template, $data, $view = null)
 {
-    return Template::out($template, $data);
+    return Template::out($template, $data, $view);
 }
 
