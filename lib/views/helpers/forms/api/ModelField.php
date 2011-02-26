@@ -14,10 +14,10 @@ class ModelField extends SelectionList
         $modelInstance = Model::load($model);
         $data = $modelInstance->get('all');
         $this->setName(Ntentan::singular($model) . "_id");
-        
+
         for($i = 0; $i < $data->count(); $i++)
         {
-            $this->addOption($data[$i], $data[$i]["id"]);
+            $this->addOption($value == null ? $data[$i] : $data[$i][$value], $data[$i]["id"]);
         }
 	}
 }

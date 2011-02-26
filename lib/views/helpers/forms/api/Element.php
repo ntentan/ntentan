@@ -192,6 +192,19 @@ abstract class Element
 		return $this->label;
 	}
 
+    public function label($label = null)
+    {
+        if($label === null)
+        {
+            return $this->label;
+        }
+        else
+        {
+            $this->label = $label;
+            return $this;
+        }
+    }
+
     /**
      * Gets the description which is attached to this element. The description
 	 * is normally displayed under the element when rendering HTML.

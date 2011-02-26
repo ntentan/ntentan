@@ -207,6 +207,7 @@ class Controller
         $componentInstance->filePath = Ntentan::getFilePath("lib/controllers/components/$component");
         $componentInstance->setController($this);
         $componentInstance->init();
+        $this->components[] = $component;
         $this->componentInstances[$component] = $componentInstance;
     }
 

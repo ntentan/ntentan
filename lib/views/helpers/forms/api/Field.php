@@ -104,6 +104,19 @@ abstract class Field extends Element
 		return $this;
 	}
 
+    public function required($required = null)
+    {
+        if($required === null)
+        {
+            return $this->required;
+        }
+        else
+        {
+            $this->required = $required;
+            return $this;
+        }
+    }
+
 	/**
      * Returns the required status of the field.
      *

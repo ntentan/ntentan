@@ -90,7 +90,9 @@ span.fapi-required
 
 input[type='text'].fapi-error
 {
-	border:1px solid red;
+	border-width: 2px;
+    border-style: solid;
+    border-color: #ff908b;
 }
 
 div.fapi-error
@@ -106,6 +108,13 @@ div.fapi-error > ul
 	list-style:none;
 	padding:5px;
 	margin:0px;
+}
+
+div.fapi-error > ul > li
+{
+	font-weight:bold;
+    font-size:0.8em;
+    color:#dd4740
 }
 
 table.fapi-table
@@ -126,7 +135,8 @@ fieldset
     border-left:none;
     border-right:none;
 	border-bottom:2px solid #e0e0e0;
-    padding:0px;
+    padding:10px;
+    background-color:#f8f8f8;
     margin-bottom: 10px;
 }
 

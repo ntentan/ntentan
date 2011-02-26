@@ -37,7 +37,7 @@ class FormsHelper extends Helper
     public static $renderer = "inline";
     private $data = array();
     private $errors = array();
-    public $echo = true;
+    public $echo = false;
     
     public function __construct()
     {
