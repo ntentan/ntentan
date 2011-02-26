@@ -1,5 +1,5 @@
 <?php
-/* 
+/**
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
  * 
