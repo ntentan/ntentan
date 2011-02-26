@@ -257,7 +257,7 @@ abstract class SqlDatabase extends DataStore
         }
         else if(is_numeric($params["type"]))
         {
-        	$query .= $this->limit(array("limit"=>$params['type'], "offset"=>$params['offset']));//" LIMIT $offset {$params["type"]}";
+        	$query .= $this->limit(array("limit"=>$params['type'], "offset"=>$params['offset']));
         }
 
         $results = $this->query($query);

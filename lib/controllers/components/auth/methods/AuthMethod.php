@@ -22,7 +22,7 @@ abstract class AuthMethod
             $_SESSION["logged_in"] = true;
             $_SESSION["username"] = $username;
             $_SESSION["user_id"] = $result["id"];
-            $_SESSION["user"] = $result->getData();
+            $_SESSION["user"] = $result->toArray();
             return true;
         }
         else

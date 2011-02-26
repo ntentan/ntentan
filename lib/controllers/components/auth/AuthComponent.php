@@ -33,6 +33,11 @@ use \ntentan\controllers\components\Component;
  */
 class AuthComponent extends Component
 {
+
+    const REDIRECT      = 0;
+    const CALL_FUNCTION = 1;
+    const DO_NOTHING    = 2;
+
     /**
      * The route through which the login method of the auth component should be
      * invoked. This path should point to a controller which exists and implements 
@@ -50,11 +55,20 @@ class AuthComponent extends Component
     public $logoutRoute;
 
     /**
-     *
+     * Route for redirection when login is successful. Redirection is only
+     * performed when the AuthComponent::onSuccess property is set for
+     * redirection.
+     * 
      * @var string
      */
     public $redirectRoute = "/";
-    public $redirectOnSuccess = true;
+
+    /**
+     * Function to ca
+     * @var <type>
+     */
+    public $successFunction = null;
+    public $onSuccess = AuthComponent::REDIRECT;
     public $name = __CLASS__;
     public $authMethod = "http_basic";
     private $_usersModel = "users";
@@ -75,10 +89,16 @@ class AuthComponent extends Component
     {
         // Allow the roles component to activate the authentication if it is
         // available. If not just run the authenticator from this section.
-        if($this->controller->hasComponent("roles")) return;
-        if($_SESSION["logged_in"] === false || !isset($_SESSION["logged_in"]))
+        if($this->controller->hasComponent("roles"))
         {
-            $this->login();
+            return;
+        }
+        else
+        {
+            if($_SESSION["logged_in"] === false || !isset($_SESSION["logged_in"]))
+            {
+                $this->login();
+            }
         }
     }
     
@@ -98,13 +118,20 @@ class AuthComponent extends Component
         
         if($this->authMethodInstance->login())
         {
-            if($this->redirectOnSuccess)
+            switch($this->onSuccess)
             {
-                Ntentan::redirect($this->redirectRoute);
-            }
-            else
-            {
-                $this->set("login_status", true);
+                case AuthComponent::REDIRECT:
+                    Ntentan::redirect($this->redirectRoute);
+                    break;
+                case AuthComponent::CALL_FUNCTION:
+                    $decomposed = explode("::", $this->successFunction);
+                    $className = $decomposed[0];
+                    $methodName = $decomposed[1];
+                    $method = new \ReflectionMethod($className, $methodName);
+                    $method->invoke(null);
+                    break;
+                default:
+                    $this->set('login_status', true);
             }
         }
         else
@@ -122,7 +149,7 @@ class AuthComponent extends Component
                         (
                             Ntentan::$requestedRoute == ""
                             ? "" :
-                            "?redirect=" . urlencode(Ntentan::$requestedRoute)
+                            (Ntentan::$requestedRoute == $this->logoutRoute ? "" : "?redirect=" . urlencode(Ntentan::$requestedRoute))
                         )
                     ),
                     true

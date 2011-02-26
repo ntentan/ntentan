@@ -288,4 +288,9 @@ class Mysql extends SqlDatabase
     {
         //Mysql::$db->commit();
     }
+
+    protected function limit($limitParams)
+    {
+        return " LIMIT " . (isset($limitParams['offset']) ? $limitParams['offset'] . ", {$limitParams['limit']}" : $limitParams['limit']);
+    }
 }
