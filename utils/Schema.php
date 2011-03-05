@@ -115,49 +115,70 @@ class Schema extends Util
         {
             fputs($schemaFile, "    '$table' => array(\n");
             $fields = $this->getDatastore()->describeTable($table, $schema);
+            foreach($fields as $name => $field)
+            {
+                fputs($schemaFile, "        '$name' => array(\n");
+                foreach($field as $parameter => $value)
+                {
+                    if(is_string($value))
+                        fputs($schemaFile, "            '$parameter' => '$value',\n");
+                    else if(is_numeric($value))
+                        fputs($schemaFile, "            '$parameter' => $value,\n");
+                    else if(is_bool($value))
+                        fputs($schemaFile, "            '$parameter' => ".($value ? 'true' : 'false').",\n");
+                }
+                fputs($schemaFile, "        ),\n");
+            }
+            fputs($schemaFile, "    ),\n");
             if($options['create'])
             {
-                echo "Generating model class for $table table\n";
-
                 // Get class name
                 $modelDir = "$modules_path/$table";
-                @mkdir($modelDir, 0755, true);
-                $modelClassName = Ntentan::camelize($table);
-                $belongsToProperty = "";
-                $hasManyProperty = "";
-
-                // Get belongs to property
-                if(count($properties["belongs_to"]) > 0)
+                if(file_exists($modelDir))
                 {
-                    $belongsToProperty = "    public \$belongsTo = array(\n";
-                    foreach($properties["belongs_to"] as $belongsTo)
-                    {
-                        $belongsToProperty .= "        '$belongsTo',\n";
-                    }
-                    $belongsToProperty .= "    );\n";
+                    echo "Skipping the creation of class for $table table\n";
                 }
-
-                if(count($properties["has_many"]) > 0)
+                else
                 {
-                    $hasManyProperty = "    public \$hasMany = array(\n";
-                    foreach($properties["has_many"] as $hasMany)
-                    {
-                        $hasManyProperty .= "        '$hasMany',\n";
-                    }
-                    $hasManyProperty .= "    );\n";
-                }
+                    echo "Generating model class for $table table\n";
+                    @mkdir($modelDir, 0755, true);
+                    $modelClassName = Ntentan::camelize($table);
+                    $belongsToProperty = "";
+                    $hasManyProperty = "";
 
-                $this->templateCopy(
-                    Ntentan::getFilePath('utils/files/schema_templates/_Model.php'),
-                    "$modelDir/$modelClassName.php",
-                    array(
-                        'module' => $modules_path,
-                        'table_name' => $table,
-                        'has_many' => $hasManyProperty,
-                        'belongs_to' => $belongsToProperty,
-                        'class_name' => $modelClassName
-                    )
-                );
+                    // Get belongs to property
+                    if(count($properties["belongs_to"]) > 0)
+                    {
+                        $belongsToProperty = "    public \$belongsTo = array(\n";
+                        foreach($properties["belongs_to"] as $belongsTo)
+                        {
+                            $belongsToProperty .= "        '$belongsTo',\n";
+                        }
+                        $belongsToProperty .= "    );\n";
+                    }
+
+                    if(count($properties["has_many"]) > 0)
+                    {
+                        $hasManyProperty = "    public \$hasMany = array(\n";
+                        foreach($properties["has_many"] as $hasMany)
+                        {
+                            $hasManyProperty .= "        '$hasMany',\n";
+                        }
+                        $hasManyProperty .= "    );\n";
+                    }
+
+                    $this->templateCopy(
+                        Ntentan::getFilePath('utils/files/schema_templates/_Model.php'),
+                        "$modelDir/$modelClassName.php",
+                        array(
+                            'module' => $modules_path,
+                            'table_name' => $table,
+                            'has_many' => $hasManyProperty,
+                            'belongs_to' => $belongsToProperty,
+                            'class_name' => $modelClassName
+                        )
+                    );
+                }
             }
         }
 

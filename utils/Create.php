@@ -17,7 +17,7 @@ class Create extends Util
         echo "Creating directory $path\n";
         if(!\is_writable($basePath))
         {
-            echo "You do not have permissions to created this directory\n";
+            echo "You do not have permissions to create this directory\n";
             die();
         }
         if(\is_dir($path))
@@ -69,6 +69,12 @@ class Create extends Util
      */
     public function controller($options)
     {
+        if($this->module == null)
+        {
+            include "config/ntentan.php";
+            $this->module = $modules_path;
+        }
+
         if(is_string($options))
         {
             $name = $options;
