@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
  *
@@ -173,7 +173,7 @@ class AdminComponent extends Component
         {
             $this->addOperation(
                 array(
-                    "label"=> "Edit", 
+                    "label" => "Edit",
                     "operation" => "edit"
                 )
             );
@@ -206,6 +206,7 @@ class AdminComponent extends Component
                 $pageExtensionMethod->invoke($this->controller, $pageNumber);
             }
         }
+        
         $this->setupOperations();
         $this->operationsTemplate = 
             $this->operationsTemplate == null ? 
@@ -337,6 +338,8 @@ class AdminComponent extends Component
         $this->useLayout("console.tpl.php");
         $this->useTemplate("run.tpl.php");
         $this->set("app_name", $this->app["name"]);
+        $this->headingLevel = '3';
+
         $this->view->layout->addStyleSheet(
             array(
                 $this->getStylesheet(),

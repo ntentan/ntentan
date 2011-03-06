@@ -16,9 +16,18 @@ class Php extends TemplateEngine
         return ob_get_clean();
     }
 
-    public function truncate($text, $length, $terminator = '...')
+    public function strip_html($text)
     {
-        return substr($text, 0, $length) . $terminator;
+        return \ntentan\utils\Janitor::cleanHtml($text, true);
+    }
+
+    public function truncate($text, $length, $terminator = ' ...')
+    {
+        while((\mb_substr($text, $length, 1)) != ' ')
+        {
+            $length--;
+        }
+        return mb_substr($text, 0, $length) . $terminator;
     }
 
     public function nl2br($text)

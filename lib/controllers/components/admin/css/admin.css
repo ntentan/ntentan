@@ -34,6 +34,7 @@ body
 {
 	margin:0px;
 	padding:10px;
+    padding-bottom:0px;
 	color:#ffffff;
 }
 
@@ -41,6 +42,8 @@ h2
 {
 	margin:0px;
 	margin-bottom:5px;
+    padding:10px;
+    padding-top:0px;
 }
 
 #admin-contents

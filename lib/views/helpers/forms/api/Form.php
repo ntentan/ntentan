@@ -1,5 +1,5 @@
 <?php
-/* 
+/**
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
  * 
@@ -61,6 +61,7 @@ class Form extends Container
         $this->addAttribute("id", $this->getId());
         $this->addAttribute("class", "fapi-form");
         $this->addAttribute('action', $this->action);
+        $this->addAttribute('accept-charset', 'utf-8');
 
         return '<form '.$this->getAttributes().'>';
     }

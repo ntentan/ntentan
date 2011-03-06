@@ -11,7 +11,7 @@ class Janitor
         }
         else
         {
-            return strip_tags($str);
+            return strip_tags($string);
         }
     }
 
