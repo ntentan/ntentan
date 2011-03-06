@@ -153,6 +153,19 @@ class Layout
         $layoutData["contents"] = $contents;
         $layoutData = array_merge($layoutData, $viewData);
 
+        //Generate the ntentan javascript
+        $url_prefix = Ntentan::$prefix;
+        $layoutData['ntentan_javascript'] = <<<JS
+<script type='text/javascript'>
+    var ntentan = {
+        url : function(route)
+        {
+            return '$url_prefix' + '/' + route;
+        }
+    }
+</script>
+JS;
+
         if($this->layoutPath === false)
         {
             return $contents;
