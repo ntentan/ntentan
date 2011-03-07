@@ -340,6 +340,11 @@ class Model implements ArrayAccess, Iterator
             $type = isset($params['limit']) ? $params['limit'] : 'all';
             return $this->get($type, $params);
         }
+
+        if($method == 'getFirst')
+        {
+            return $this->get(isset($arguments[0]['limit']) ? $arguments[0]['limit'] : 'first', $arguments[0]);
+        }
         
         if($method == "getAll")
         {
@@ -349,15 +354,6 @@ class Model implements ArrayAccess, Iterator
         if(substr($method, 0, 3) == "get")
         {
             $modelName = strtolower(substr($method,3));
-            /*if(is_array($this->hasMany))
-            {
-                $key = array_search($modelName, $this->hasMany);
-                $model = Model::load($this->hasMany[$key]);
-            }
-            else
-            {
-                $model = Model::load($this->hasMany);
-            }*/
             $modelMethod = new ReflectionMethod($model, "get");
             $foreignKey = $this->name . "_id";
             //$arguments[1]["conditions"] = array($this->name . "_id" => $this->data["id"]);
