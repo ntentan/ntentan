@@ -576,6 +576,7 @@ class Model implements ArrayAccess, Iterator
 
     public function toArray()
     {
+        if(!is_array($this->data)) return null;
         $keys = array_keys($this->data);
 
         $returnData = array();
