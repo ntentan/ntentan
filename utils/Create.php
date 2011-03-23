@@ -22,7 +22,7 @@ class Create extends Util
         }
         if(\is_dir($path))
         {
-            echo "Directory $name already exists. Skipping creation ...\n";
+            echo "Directory $name already exists. I will skip creating it ...\n";
         }
         else
         {
@@ -95,6 +95,8 @@ class Create extends Util
                 'class_name' => $className
             )
         );
+
+        echo "Controller $className created\n";
     }
 
     /**

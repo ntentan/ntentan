@@ -432,7 +432,7 @@ abstract class SqlDatabase extends DataStore
         $query = "DELETE FROM {$this->table} WHERE id = '{$key}'";
         $this->query($query);
     }
-    
+
     protected abstract function connect($parameters);
     public abstract function query($query);
     protected abstract function escape($query);

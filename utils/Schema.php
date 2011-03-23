@@ -101,35 +101,63 @@ class Schema extends Util
             die("Aborting schema import.");
         }
     }
-    
-    public function import($options)
+
+    private function writeSchemaToFile($schema)
     {
-        require "config/ntentan.php";
-        echo "Extracting schema information from database ... \n";
-        $model = $this->getDatastore()->describeModel();
-        $schema = $this->getDatastore()->schema;
         $schemaFile = fopen('config/schema.php', 'w');
         fputs($schemaFile, "<?php\n\$schema = array(\n");
-
-        foreach($model["tables"] as $table => $properties)
+        foreach($schema as $name => $table)
         {
-            fputs($schemaFile, "    '$table' => array(\n");
-            $fields = $this->getDatastore()->describeTable($table, $schema);
-            foreach($fields as $name => $field)
+            fputs($schemaFile, "    '$name' => array(\n");
+            foreach($table as $name => $field)
             {
                 fputs($schemaFile, "        '$name' => array(\n");
-                foreach($field as $parameter => $value)
+                foreach($field as $parameter  => $value)
                 {
                     if(is_string($value))
                         fputs($schemaFile, "            '$parameter' => '$value',\n");
                     else if(is_numeric($value))
                         fputs($schemaFile, "            '$parameter' => $value,\n");
                     else if(is_bool($value))
-                        fputs($schemaFile, "            '$parameter' => ".($value ? 'true' : 'false').",\n");
+                        fputs($schemaFile, "            '$parameter' => " . ($value ? 'true' : 'false') . ",\n");
                 }
                 fputs($schemaFile, "        ),\n");
             }
             fputs($schemaFile, "    ),\n");
+        }
+        fputs($schemaFile, ");");
+        fclose($schemaFile);
+    }
+
+    public function export($options)
+    {
+        require "config/ntentan.php";
+        require "config/schema.php";
+
+        
+    }
+
+    public function import($options)
+    {
+        require "config/ntentan.php";
+        echo "Extracting schema information from database ... \n";
+        $model = $this->getDatastore()->describeModel();
+        $schema = $this->getDatastore()->schema;
+        $schemaDescription = array();
+
+        foreach($model["tables"] as $table => $properties)
+        {
+            $schemaDescription[$table] = array();
+            $fields = $this->getDatastore()->describeTable($table, $schema);
+            foreach($fields as $name => $field)
+            {
+                $schemaDescription[$table][$name] = array();
+                foreach($field as $parameter => $value)
+                {
+                    $schemaDescription[$table][$name][$parameter] = $value;
+                }
+            }
+
             if($options['create'])
             {
                 // Get class name
@@ -181,7 +209,6 @@ class Schema extends Util
                 }
             }
         }
-
-        fputs($schemaFile, ");");
+        $this->writeSchemaToFile($schemaDescription);
     }
 }
