@@ -413,11 +413,14 @@ abstract class SqlDatabase extends DataStore
 
     protected function _update($data)
     {
-        $fields = array_keys($data);
+        $description = $this->model->describe();
+        $fields = array_keys($description['fields']);
         foreach($data as $field => $value)
         {
             if($field == "id") continue;
             if(is_array($value)) continue;
+            if(array_search($field, $fields) === false) continue;
+
             $values[] = $this->quote($field) . " = '". $this->escape($value) . "'";
         }
         $query = "UPDATE {$this->table} SET " . implode(", ", $values) . " WHERE id = '{$data["id"]}'";
