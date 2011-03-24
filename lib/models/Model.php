@@ -93,7 +93,7 @@ class Model implements ArrayAccess, Iterator
         $this->name = strtolower(Ntentan::deCamelize($modelName));
         
         $this->iteratorPosition = 0;
-        $this->modelRoute = implode(".",array_slice(explode("\\", $modelInformation->getName()),1 , -1));
+        $this->modelRoute = implode(".",array_slice(explode("\\", $modelInformation->getName()),2 , -1));
         
         $dataStoreParams = Ntentan::getDefaultDataStore();
         $dataStoreClass = __NAMESPACE__ . "\\datastores\\" . Ntentan::camelize($dataStoreParams["datastore"]);
@@ -116,8 +116,8 @@ class Model implements ArrayAccess, Iterator
     {
         $classNameArray = explode('.', $className);
         $className = Ntentan::camelize(end($classNameArray));
-        $fullClassName = "\\" . str_replace("/", "\\", Ntentan::$modulesPath) . "\\" . implode("\\", $classNameArray) . "\\$className";
-        $modelClassFile = Ntentan::$modulesPath . '/' . implode('/', $classNameArray) . "/$className.php" ;
+        $fullClassName = "\\" . str_replace("/", "\\", Ntentan::$modulesPath) . "\\modules\\" . implode("\\", $classNameArray) . "\\$className";
+        $modelClassFile = Ntentan::$modulesPath . '/modules/' . implode('/', $classNameArray) . "/$className.php" ;
         if(!file_exists($modelClassFile))
         {
             throw new ModelNotFoundException("Model class <b><code>$fullClassName</code></b> not found");

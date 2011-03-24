@@ -21,7 +21,7 @@ error_reporting(E_ALL ^ E_NOTICE);
  * Auto loading function. The function whic his responsible for loading all
  * unloaded classes.
  * 
- * @param unknown_type $class
+ * @param string $class
  */
 function __autoload($class)
 {
@@ -29,12 +29,23 @@ function __autoload($class)
     $class = array_pop($fullPath);
     if($fullPath[0] == \ntentan\Ntentan::$modulesPath)
     {
-        \ntentan\Ntentan::addIncludePath(implode("/",$fullPath));
+        //\ntentan\Ntentan::addIncludePath(implode("/",$fullPath));
+        $basePath = implode("/",$fullPath);
     }
     else if($fullPath[0] == 'ntentan')
     {
         array_shift($fullPath);
-        \ntentan\Ntentan::addIncludePath(\ntentan\Ntentan::getFilePath('lib/' . implode("/",$fullPath)));
+        //\ntentan\Ntentan::addIncludePath(\ntentan\Ntentan::getFilePath('lib/' . implode("/",$fullPath)));
+        $basePath = \ntentan\Ntentan::getFilePath('lib/' . implode("/",$fullPath));
     }
-    require_once $class . ".php";
+
+    $classFile = $basePath . '/' . $class . '.php';
+    if(file_exists($classFile))
+    {
+        require_once $classFile;
+    }
+    else
+    {
+        throw new ntentan\exceptions\FileNotFoundException("Class file <code><b>$classFile</b></code> for <code><b>$class</b></code> class not found.");
+    }
 }
