@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-namespace ntentan\views\widgets\menu;
+namespace ntentan\widgets\menu;
 
 use ntentan\Ntentan;
-use ntentan\views\widgets\Widget;
+use ntentan\widgets\Widget;
 
 /**
  * Standard menu widget which ships with the menu widget.

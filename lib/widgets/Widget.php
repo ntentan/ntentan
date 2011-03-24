@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-namespace ntentan\views\widgets;
+namespace ntentan\widgets;
 
 use ntentan\views\template_engines\Template;
 use ntentan\Ntentan;

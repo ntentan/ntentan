@@ -222,18 +222,18 @@ class Controller
             $alias = $param2;
         }
         
-        $widgetFile = "widgets/$widgetName/" . Ntentan::camelize($widgetName) . "Widget.php";
+        $widgetFile = Ntentan::$modulesPath . "/widgets/$widgetName/" . Ntentan::camelize($widgetName) . "Widget.php";
         if(file_exists($widgetFile))
         {
             require_once $widgetFile;
             $widgetClass = "\\" . Ntentan::$modulesPath . "\\widgets\\$widgetName\\" . Ntentan::camelize($widgetName) . 'Widget';
-            $path = "widgets/$widgetName";
+            $path = Ntentan::$modulesPath . "/widgets/$widgetName";
         }
-        else if(file_exists(Ntentan::getFilePath("lib/views/widgets/$widgetName/" . Ntentan::camelize($widgetName) . "Widget.php")))
+        else if(file_exists(Ntentan::getFilePath("lib/widgets/$widgetName/" . Ntentan::camelize($widgetName) . "Widget.php")))
         {
-            Ntentan::addIncludePath(Ntentan::getFilePath("lib/views/widgets/$widgetName"));
-            $widgetClass = "\\ntentan\\views\\widgets\\$widgetName\\" . Ntentan::camelize($widgetName) . 'Widget';
-            $path = Ntentan::getFilePath("lib/views/widgets/$widgetName");
+            Ntentan::addIncludePath(Ntentan::getFilePath("lib/controllers/widgets/$widgetName"));
+            $widgetClass = "\\ntentan\\widgets\\$widgetName\\" . Ntentan::camelize($widgetName) . 'Widget';
+            $path = Ntentan::getFilePath("lib/widgets/$widgetName");
         }
         else
         {
@@ -329,7 +329,7 @@ class Controller
 		{
 			$p = $routeArray[$i];
             $pCamelized = Ntentan::camelize($p);
-            $filePath = Ntentan::$modulesPath . "$controllerRoute/$p/";
+            $filePath = Ntentan::$modulesPath . "/modules/$controllerRoute/$p/";
 			if(file_exists($filePath . "{$pCamelized}Controller.php"))
 			{
 				$controllerName = $pCamelized."Controller";
@@ -353,7 +353,7 @@ class Controller
         else
         {
             Ntentan::addIncludePath(Ntentan::$modulesPath . "/$controllerRoute/"); //$controllerName.php";
-            $controllerNamespace = "\\" . str_replace("/", "\\", Ntentan::$modulesPath . "/$controllerRoute/");
+            $controllerNamespace = "\\" . str_replace("/", "\\", Ntentan::$modulesPath . "/modules/$controllerRoute/");
             $controllerName = $controllerNamespace . $controllerName;
             if(class_exists($controllerName))
             {
@@ -458,7 +458,7 @@ class Controller
         {
             $controllerClass = new ReflectionClass($this->getName());
             $method = $controllerClass->GetMethod($path);
-            $this->view->template = Ntentan::$modulesPath . "/{$this->route}/" . Ntentan::deCamelize($path) . ".tpl.php";
+            $this->view->template = Ntentan::$modulesPath . "/modules/{$this->route}/" . Ntentan::deCamelize($path) . ".tpl.php";
             $method->invokeArgs($this, $params);
             $this->view->widgets = $this->widgets;
             $this->mainPreRender();

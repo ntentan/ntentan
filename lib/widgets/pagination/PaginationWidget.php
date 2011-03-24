@@ -1,7 +1,7 @@
 <?php
-namespace ntentan\views\widgets\pagination;
+namespace ntentan\widgets\pagination;
 
-use ntentan\views\widgets\Widget;
+use ntentan\widgets\Widget;
 use ntentan\Ntentan;
 
 class PaginationWidget extends Widget
