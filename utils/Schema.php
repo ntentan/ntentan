@@ -161,7 +161,7 @@ class Schema extends Util
             if($options['create'])
             {
                 // Get class name
-                $modelDir = "$modules_path/$table";
+                $modelDir = "$modules_path/modules/$table";
                 if(file_exists($modelDir))
                 {
                     echo "Skipping the creation of class for $table table\n";

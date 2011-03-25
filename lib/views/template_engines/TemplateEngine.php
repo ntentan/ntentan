@@ -15,15 +15,15 @@ abstract class TemplateEngine
         return new $helperClass();
     }
 
-    public function loadAsset($asset)
+    public function loadAsset($asset, $copyFrom = null)
     {
         if(file_exists(dirname("public/$asset")) && \is_writable(dirname("public/$asset")))
         {
-            copy("assets/$asset", "public/$asset");
+            copy("assets/".($copyFrom==null ? $asset : $copyFrom), "public/$asset");
         }
         else
         {
-            throw new \Exception("File not found ");
+            throw new \Exception("File not found or not writable <b><code>public/$asset</code></b>");
         }
         return Ntentan::getUrl("public/$asset");
     }

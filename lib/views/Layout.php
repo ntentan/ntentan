@@ -20,7 +20,9 @@ namespace ntentan\views;
 
 use ntentan\views\template_engines\Template;
 use ntentan\Ntentan;
+
 use ntentan\exceptions\FileNotFoundException;
+use ntentan\exceptions\FileNotWritableException;
 
 /**
  * 
@@ -139,7 +141,14 @@ class Layout
             }
             $url = Ntentan::getUrl("public/css/" . $media . ".css");
             $path = "public/css/$media.css";
-            file_put_contents($path, $$media);
+            if(is_writable(dirname($path)))
+            {
+                file_put_contents($path, $$media);
+            }
+            else
+            {
+                throw new FileNotWritableException("Cannot write to <code><b>$path</b></code>");
+            }
             $layoutData["stylesheets"] .= "<link rel='stylesheet' type='text/css' href='$url' media='$media' />";
         }
 
