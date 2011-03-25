@@ -1,5 +1,5 @@
 <?php
-namespace {module}\{name};
+namespace {module}\modules\{name};
 use ntentan\controllers\Controller;
 
 class {class_name} extends Controller

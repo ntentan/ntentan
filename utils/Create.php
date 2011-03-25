@@ -13,7 +13,7 @@ class Create extends Util
     private function mkdir($name)
     {
         $basePath = str_replace('.', '/', $this->module);
-        $path = $basePath . "/$name";
+        $path = $basePath . "/modules/$name";
         echo "Creating directory $path\n";
         if(!\is_writable($basePath))
         {
@@ -161,7 +161,12 @@ class Create extends Util
 
         echo "Creating config directory ...\n";
         mkdir("config");
+
+        echo "Creating module directory ...\n";
         mkdir($module);
+        mkdir("$module/modules");
+        mkdir("$module/lib");
+        mkdir("$module/widgets");
         $this->module = $module;
 
         $this->templateCopy(
@@ -183,9 +188,16 @@ class Create extends Util
 
         echo "Creating public directory..\n";
         mkdir('public');
-        mkdir('css');
-        mkdir('js');
-        mkdir('images');
+        mkdir('public/css');
+        mkdir('public/js');
+        mkdir('public/images');
+
+        echo "Creating assets directory..\n";
+        mkdir('assets');
+        mkdir('assets/css');
+        mkdir('assets/js');
+        mkdir('assets/images');
+
 
         echo "Creating cache directory..\n";
         mkdir('cache');
@@ -201,7 +213,7 @@ class Create extends Util
         Create::controller('home');
         $this->templateCopy(
             NTENTAN_HOME . 'utils/files/create_templates/_home_run.tpl.php',
-            "$module/home/run.tpl.php"
+            "$module/modules/home/run.tpl.php"
         );
     }
 }
