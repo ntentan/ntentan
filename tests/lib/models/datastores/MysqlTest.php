@@ -32,11 +32,4 @@ class MysqlTest extends \ntentan\test_cases\SqlDatabaseTestCase
         $parameters['database'] = 'ntentan_test';
         return new \ntentan\models\datastores\Mysql($parameters);
     }
-
-    public function testGetDatastore()
-    {
-        $this->assertEquals($this->users->getDataStore(), 'mysql');
-        $this->assertEquals($this->roles->getDataStore(), 'mysql');
-        $this->assertEquals($this->departments->getDataStore(), 'mysql');
-    }
 }

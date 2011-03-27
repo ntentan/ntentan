@@ -1,8 +1,8 @@
 <?php
 namespace {module}\modules\{name};
-use ntentan\controllers\Controller;
+{includes};
 
-class {class_name} extends Controller
+class {class_name} extends {super_class}
 {
     /**
      * The default action method for this controller

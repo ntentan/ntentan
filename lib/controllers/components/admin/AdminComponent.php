@@ -230,7 +230,8 @@ class AdminComponent extends Component
         $this->set("item_operation_url", $this->itemOperationUrl);
         $itemsPerPage = 10;
         $model = $this->getModel();
-        $table = $model->getDataStore(true)->table;
+        //$table = $model->getDataStore(true)->table;
+        $table = $model->dataStore->table;
         if($this->showTemplate) $this->useTemplate("page.tpl.php");
         $listFields = $this->listFields;
         $description = $model->describe();

@@ -65,9 +65,9 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
 
     public function testSetModel()
     {
-        $this->assertEquals($this->users->getDatastore(true)->table, "users");
-        $this->assertEquals($this->roles->getDatastore(true)->table, "roles");
-        $this->assertEquals($this->departments->getDatastore(true)->table, "departments");
+        $this->assertEquals($this->users->dataStore->table, "users");
+        $this->assertEquals($this->roles->dataStore->table, "roles");
+        $this->assertEquals($this->departments->dataStore->table, "departments");
     }
 
     public function testDescribe()
@@ -258,13 +258,13 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
             )
         );
 
-        $rolesDescription = $this->roles->getDataStore(true)->describeModel();
+        $rolesDescription = $this->roles->dataStore->describeModel();
         $this->assertEquals($rolesDescription['roles'], $description['roles']);
-        $usersDescription = $this->users->getDataStore(true)->describeModel();
+        $usersDescription = $this->users->dataStore->describeModel();
         $this->assertEquals($usersDescription['users'], $description['users']);
-        $departmentsDescription = $this->departments->getDataStore(true)->describeModel();
+        $departmentsDescription = $this->departments->dataStore->describeModel();
         $this->assertEquals($departmentsDescription['departments'], $description['departments']);
-        //$this->assertEquals($this->departments->getDataStore(true)->describeModel(), $description);
+        //$this->assertEquals($this->departments->dataStore->describeModel(), $description);
     }
 
     public function testGetName()

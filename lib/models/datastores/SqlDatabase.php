@@ -81,7 +81,7 @@ abstract class SqlDatabase extends DataStore
 
     protected function setSchema($schema) {
         $this->_schema = $schema;
-        $this->quotedSchema = $this->quoteSchema;
+        $this->quotedSchema = $this->quote($schema);
     }
 
     /**
@@ -91,6 +91,21 @@ abstract class SqlDatabase extends DataStore
     public function setModel($model)
     {
         parent::setModel($model);
+        //Detect a new schema to override the default schema for the application
+
+        $path = explode('.', $this->model->modelRoute);
+        $base = Ntentan::$modulesPath . '/modules';
+        foreach($path as $directory)
+        {
+            $configFile = $base . '/' . $directory . '/config.php';
+            if(file_exists($configFile))
+            {
+                include $configFile;
+                $this->setSchema($schema);
+            }
+            $base .= '/' . $directory;
+        }
+
         $this->table = end(explode(".", $model->getName()));
     }
 
@@ -216,7 +231,7 @@ abstract class SqlDatabase extends DataStore
         }
 
         // Generate the base query
-        $query = "SELECT $fields FROM {$this->table} $joins ";
+        $query = "SELECT $fields FROM ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->table} $joins ";
 
         // Generate conditions
         if($params["conditions"] !== null && is_array($params["conditions"]))

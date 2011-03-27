@@ -1,5 +1,5 @@
 <?php
-namespace {module}\modules\{table_name};
+namespace {module}\modules\{name};
 
 use ntentan\models\Model;
 

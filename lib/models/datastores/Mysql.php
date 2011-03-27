@@ -293,4 +293,9 @@ class Mysql extends SqlDatabase
     {
         return " LIMIT " . (isset($limitParams['offset']) ? $limitParams['offset'] . ", {$limitParams['limit']}" : $limitParams['limit']);
     }
+
+    public function __toString()
+    {
+        return 'mysql';
+    }
 }
