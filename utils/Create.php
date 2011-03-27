@@ -7,7 +7,8 @@ use ntentan\Ntentan;
 class Create extends Util
 {
     protected $shortOptionsMap = array(
-        "i" => "interactive"
+        "i" => "interactive",
+        "t" =>  "ignore-template"
     );
 
     private function mkdir($name)
@@ -33,6 +34,11 @@ class Create extends Util
 
     public function model($options)
     {
+        if($this->module == null)
+        {
+            include "config/ntentan.php";
+            $this->module = $modules_path;
+        }
         if(is_string($options))
         {
             $name = $options;
@@ -42,8 +48,8 @@ class Create extends Util
             $name = $options['stand_alone_values'][0];
         }
 
-        $directory = Create::mkdir($name);
-        $modelClassName = Ntentan::camelize($name);
+        $directory = Create::mkdir(str_replace('.', '/', $name));
+        $modelClassName = Ntentan::camelize(end(explode(".", $name)));
         $table = end(explode(".", $name));
 
         echo "Creating model class file $directory/$modelClassName.php\n";
@@ -53,7 +59,7 @@ class Create extends Util
             "$directory/$modelClassName.php",
             array(
                 'module' => $this->module,
-                'table_name' => $table,
+                'name' => str_replace('.', "\\", $name),
                 'has_many' => null,
                 'belongs_to' => null,
                 'class_name' => $modelClassName
@@ -84,17 +90,43 @@ class Create extends Util
             $name = $options['stand_alone_values'][0];
         }
 
-        $directory = Create::mkdir($name);
-        $className = Ntentan::camelize($name) . 'Controller';
+        $directory = Create::mkdir(str_replace('.', '/',$name));
+        $className = Ntentan::camelize(end(explode('.', $name))) . 'Controller';
+
+        if(file_exists("{$this->module}/lib/ApplicationController.php"))
+        {
+            $superClass = "ApplicationController";
+            $includes = "use {$this->module}\lib\ApplicationController";
+        }
+        else
+        {
+            $superClass = "Controller";
+            $includes = "use ntentan\controllers\Controller";
+        }
+
         $this->templateCopy(
             NTENTAN_HOME . "utils/files/create_templates/_Controller.php",
             "$directory/$className.php",
             array(
                 'module' => $this->module,
-                'name' => $name,
-                'class_name' => $className
+                'name' => str_replace('.', "\\", $name),
+                'class_name' => $className,
+                'super_class' => $superClass,
+                'includes' => $includes
             )
         );
+
+        if(!$options['ignore-template'])
+        {
+            $this->templateCopy(
+                NTENTAN_HOME . "utils/files/create_templates/_run.tpl.php",
+                "$directory/run.tpl.php",
+                array(
+                    'class' => $className,
+                    'path' => "$directory/run.tpl.php"
+                )
+            );
+        }
 
         echo "Controller $className created\n";
     }

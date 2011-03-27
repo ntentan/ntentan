@@ -24,11 +24,14 @@ use ntentan\models\exceptions\DataStoreException;
 class Postgresql extends SqlDatabase {
 	private $db;
 	
-	public function connect($parameters) {
-	    
-		if(isset($parameters["schema"])) {
+	public function connect($parameters)
+    {
+		if(isset($parameters["schema"]))
+        {
 	    	$this->schema = $parameters["schema"];
-	    } else {
+	    } 
+        else
+        {
 	    	$this->schema = "public";
 	    }
         $this->db = pg_connect(
@@ -93,12 +96,12 @@ class Postgresql extends SqlDatabase {
                 $description = $model->describe();
                 if($description[$fieldPath] == 'boolean')
                 {
-                    $fieldPath = $this->quote($model->getDataStore(true)->table) . '.' . $this->quote($fieldName);
+                    $fieldPath = $this->quote($model->datasStore->table) . '.' . $this->quote($fieldName);
                     return "CASE WHEN $fieldPath = true THEN 1 WHEN $fieldPath = false THEN 0 END ";
                 }
                 else
                 {
-                    return $this->quote($model->getDataStore(true)->table) . '.' . $this->quote($fieldName);
+                    return $this->quote($model->dataStore->table) . '.' . $this->quote($fieldName);
                 }
                 
             }
@@ -138,8 +141,7 @@ class Postgresql extends SqlDatabase {
 
         if(count($pgFields) == 0)
         {
-            die("Database table [{$table}] not found.");
-            throw new DataStoreException("Database table [{$ta}] not found.");
+            throw new DataStoreException("Database table [{$table}] not found.");
         }
 
         foreach($pgFields as $index => $pgField)
@@ -313,5 +315,10 @@ class Postgresql extends SqlDatabase {
     public function end()
     {
         $this->query("COMMIT");
+    }
+
+    public function __toString()
+    {
+        return 'postgresql';
     }
 }

@@ -33,11 +33,4 @@ class PostgreSqlTest extends \ntentan\test_cases\SqlDatabaseTestCase
         $parameters['database'] = 'ntentan_test';
         return new \ntentan\models\datastores\Mysql($parameters);
     }
-
-    public function testGetDatastore()
-    {
-        $this->assertEquals($this->users->getDataStore(), 'postgresql');
-        $this->assertEquals($this->roles->getDataStore(), 'postgresql');
-        $this->assertEquals($this->departments->getDataStore(), 'postgresql');
-    }
 }

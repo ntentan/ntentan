@@ -49,13 +49,13 @@ class Model implements ArrayAccess, Iterator
      * An instance of the datastore.
      * @var DataStore
      */
-    private $_dataStoreInstance;
+    //private $_dataStoreInstance;
 
     /**
      * The name of the current datastore 
      * @var string
      */
-    protected $dataStore;
+    public $dataStore;
 
     /**
      * Field for checking the relationship between two different models
@@ -97,11 +97,13 @@ class Model implements ArrayAccess, Iterator
         
         $dataStoreParams = Ntentan::getDefaultDataStore();
         $dataStoreClass = __NAMESPACE__ . "\\datastores\\" . Ntentan::camelize($dataStoreParams["datastore"]);
-        if(class_exists($dataStoreClass)) {
-            $this->dataStore = $dataStoreParams["datastore"];
+        if(class_exists($dataStoreClass))
+        {
             $dataStore = new $dataStoreClass($dataStoreParams);
             $this->setDataStore($dataStore);
-        } else {
+        } 
+        else
+        {
             throw new exceptions\DataStoreException("Datastore {$dataStoreClass} doesn't exist.");
         }
     }
@@ -170,11 +172,11 @@ class Model implements ArrayAccess, Iterator
 
     public function setDataStore($dataStore)
     {
-        $this->_dataStoreInstance = $dataStore;
-        $this->_dataStoreInstance->setModel($this);
+        $this->dataStore = $dataStore;
+        $this->dataStore->setModel($this);
     }
 
-    public function getDataStore($instance = false)
+    /*public function getDataStore($instance = false)
     {
         if($instance)
         {
@@ -184,7 +186,7 @@ class Model implements ArrayAccess, Iterator
         {
             return $this->dataStore;
         }
-    }
+    }*/
     
     public function getName()
     {
@@ -194,7 +196,7 @@ class Model implements ArrayAccess, Iterator
     public function get($type = 'all', $params = null)
     {
         $params["type"] = $type;
-        $result = $this->_dataStoreInstance->get($params);
+        $result = $this->dataStore->get($params);
         return $result;
     }
 
