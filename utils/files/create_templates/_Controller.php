@@ -1,6 +1,6 @@
 <?php
 namespace {module}\modules\{name};
-{includes};
+{includes}
 
 class {class_name} extends {super_class}
 {

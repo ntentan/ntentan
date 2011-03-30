@@ -34,9 +34,9 @@ use \ntentan\controllers\components\Component;
 class AuthComponent extends Component
 {
 
-    const REDIRECT      = 0;
-    const CALL_FUNCTION = 1;
-    const DO_NOTHING    = 2;
+    const REDIRECT      = 1;
+    const CALL_FUNCTION = 2;
+    const DO_NOTHING    = 3;
 
     /**
      * The route through which the login method of the auth component should be
@@ -69,6 +69,8 @@ class AuthComponent extends Component
      */
     public $successFunction = null;
     public $onSuccess = AuthComponent::REDIRECT;
+    public $onFailure = AuthComponent::REDIRECT;
+    public $failureFunction;
     public $name = __CLASS__;
     public $authMethod = "http_basic";
     private $_usersModel = "users";
@@ -136,24 +138,39 @@ class AuthComponent extends Component
         }
         else
         {
-            $this->loginRoute = $this->loginRoute == null ? $this->controller->route . "/login" : $this->loginRoute;
-            $this->logoutRoute = $this->logoutRoute == null ? $this->controller->route . "/logout" : $this->logoutRoute;
-
-            $this->set("login_message", $this->authMethodInstance->message);
-            $this->set("login_status", false);
-            if(Ntentan::$route != $this->loginRoute)
+            switch($this->onFailure)
             {
-                Ntentan::redirect(
-                    Ntentan::getUrl(
-                        $this->loginRoute .
-                        (
-                            Ntentan::$requestedRoute == ""
-                            ? "" :
-                            (Ntentan::$requestedRoute == $this->logoutRoute ? "" : "?redirect=" . urlencode(Ntentan::$requestedRoute))
-                        )
-                    ),
-                    true
-                );
+                case AuthComponent::CALL_FUNCTION:
+                    $decomposed = explode("::", $this->failureFunction);
+                    $className = $decomposed[0];
+                    $methodName = $decomposed[1];
+                    $method = new \ReflectionMethod($className, $methodName);
+                    $method->invoke(null);
+                    break;
+                case AuthComponent::REDIRECT:
+                    $this->loginRoute = $this->loginRoute == null ? $this->controller->route . "/login" : $this->loginRoute;
+                    $this->logoutRoute = $this->logoutRoute == null ? $this->controller->route . "/logout" : $this->logoutRoute;
+
+                    $this->set("login_message", $this->authMethodInstance->message);
+                    $this->set("login_status", false);
+                    if(Ntentan::$route != $this->loginRoute)
+                    {
+                        Ntentan::redirect(
+                            Ntentan::getUrl(
+                                $this->loginRoute .
+                                (
+                                    Ntentan::$requestedRoute == ""
+                                    ? "" :
+                                    (Ntentan::$requestedRoute == $this->logoutRoute ? "" : "?redirect=" . urlencode(Ntentan::$requestedRoute))
+                                )
+                            ),
+                            true
+                        );
+                    }
+                    break;
+                default:
+                    $this->set('login_status', false);
+                    break;
             }
         }
     }
