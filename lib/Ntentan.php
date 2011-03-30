@@ -486,6 +486,11 @@ class Ntentan
             true,
             $exception->getTrace()
         );
+
+        $logFile = fopen("logs/exceptions.log", "a");
+        fputs($logFile, "[" . date("Y-m-d H:i:s") . "] [exception] " . $exception->getMessage() . "\n");
+        fputs($logFile, "[" . date("Y-m-d H:i:s") . "] [exception] " . $exception->getTraceAsString() . "\n");
+        fclose($logFile);
     }
 }
 

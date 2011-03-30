@@ -121,7 +121,7 @@ abstract class SqlDatabase extends DataStore
             $fieldName = array_pop($modelPathArray);
             $modelPath = implode(".", $modelPathArray);
             $model = Model::load($modelPath);
-            return $this->quote($model->getDataStore(true)->table) . '.' . $this->quote($fieldName);
+            return $this->quote($model->dataStore->table) . '.' . $this->quote($fieldName);
         }
     }
 
@@ -162,9 +162,9 @@ abstract class SqlDatabase extends DataStore
                 if(is_array($relatedModel) && isset($relatedModel["through"]))
                 {
                     $firstRelatedModel = Model::load(Model::getBelongsTo($relatedModel[0]));
-                    $firstDatastore = $firstRelatedModel->getDataStore(true);
+                    $firstDatastore = $firstRelatedModel->dataStore;
                     $secondRelatedModel = Model::load($relatedModel["through"]);
-                    $secondDatastore = $secondRelatedModel->getDataStore(true);
+                    $secondDatastore = $secondRelatedModel->dataStore;
                     $joins .= " JOIN {$firstDatastore->table} ON {$firstDatastore->table}.id = {$secondDatastore->table}." . Ntentan::singular($firstDatastore->table) . "_id ";
                 }
                 else
@@ -186,7 +186,7 @@ abstract class SqlDatabase extends DataStore
                     }
                     
                     $model = Model::load(Model::getBelongsTo($relatedModel));
-                    $datastore = $model->getDataStore(true);
+                    $datastore = $model->dataStore;
                     $joinedModelDescription = $model->describe();
                     $joinedModelFields = array_keys($joinedModelDescription["fields"]);
                     if($alias == null)
@@ -222,7 +222,7 @@ abstract class SqlDatabase extends DataStore
                 foreach($params["through"] as $relatedModel)
                 {
                     $modelInstance = Model::load($relatedModel);
-                    $currentTable = $modelInstance->getDataStore(true)->table;
+                    $currentTable = $modelInstance->dataStore->table;
                     $foreignKey = Ntentan::singular($previousTable) . "_id";
                     $joins .= " JOIN $currentTable ON $previousTable.id = $currentTable.$foreignKey ";
                     $previousTable = $currentTable;
@@ -363,7 +363,7 @@ abstract class SqlDatabase extends DataStore
         if($fields[0] == "0")
         {
             $fields = array_keys($data[0]);
-            $query = "INSERT INTO {$this->table} (".implode(",", $fields).") VALUES ";
+            $query = "INSERT INTO ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->table} (".implode(",", $fields).") VALUES ";
             $baseQueries = array();
             foreach($data as $row)
             {
@@ -393,13 +393,20 @@ abstract class SqlDatabase extends DataStore
                     $dataFields[] = $field;
                 }
             }
-            $query = "INSERT INTO {$this->table} (" . implode(", ", $dataFields) . ") VALUES (" . implode(", ", $values) . ")";
+            $query = "INSERT INTO ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->table} (" . implode(", ", $dataFields) . ") VALUES (" . implode(", ", $values) . ")";
             $this->query($query);
-            $id = $this->getLastInsertId();
+            if(array_search('id', $dataFields) === false)
+            {
+                $id = $this->getLastInsertId();
+            }
+            else
+            {
+                $id = $data['id'];
+            }
             foreach($subData as $modelName => $data)
             {
                 $model = Model::load($modelName);
-                $table = $model->getDataStore(true)->table;
+                $table = $model->dataStore->table;
                 $fields = array_keys($data[0]);
                 $fields[] = Ntentan::singular($this->model->name) . "_id";
                 $query = "INSERT INTO $table (" . implode(", ", $fields) . ") VALUES ";
@@ -438,7 +445,7 @@ abstract class SqlDatabase extends DataStore
 
             $values[] = $this->quote($field) . " = '". $this->escape($value) . "'";
         }
-        $query = "UPDATE {$this->table} SET " . implode(", ", $values) . " WHERE id = '{$data["id"]}'";
+        $query = "UPDATE ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->table} SET " . implode(", ", $values) . " WHERE id = '{$data["id"]}'";
         $this->query($query);
     }
     

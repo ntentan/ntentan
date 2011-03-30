@@ -8,7 +8,8 @@ class Create extends Util
 {
     protected $shortOptionsMap = array(
         "i" => "interactive",
-        "t" =>  "ignore-template"
+        "t" => "ignore-template",
+        "e" => "extends"
     );
 
     private function mkdir($name)
@@ -93,15 +94,20 @@ class Create extends Util
         $directory = Create::mkdir(str_replace('.', '/',$name));
         $className = Ntentan::camelize(end(explode('.', $name))) . 'Controller';
 
-        if(file_exists("{$this->module}/lib/ApplicationController.php"))
+        if(isset($options['extends']))
+        {
+            $includes = "use {$options['extends']};";
+            $superClass = end(explode("\\", $options['extends']));
+        }
+        else if(file_exists("{$this->module}/lib/ApplicationController.php"))
         {
             $superClass = "ApplicationController";
-            $includes = "use {$this->module}\lib\ApplicationController";
+            $includes = "use {$this->module}\lib\ApplicationController;";
         }
         else
         {
             $superClass = "Controller";
-            $includes = "use ntentan\controllers\Controller";
+            $includes = "use ntentan\controllers\Controller;";
         }
 
         $this->templateCopy(

@@ -240,12 +240,12 @@ class Model implements ArrayAccess, Iterator
     {
         if($this->validate(true))
         {
-            $this->_dataStoreInstance->begin();
+            $this->dataStore->begin();
             $this->preSaveCallback();
-            $this->_dataStoreInstance->setModel($this);
-            $id = $this->_dataStoreInstance->put();
+            $this->dataStore->setModel($this);
+            $id = $this->dataStore->put();
             $this->postSaveCallback($id);
-            $this->_dataStoreInstance->end();
+            $this->dataStore->end();
             return $id;
         }
         else
@@ -259,8 +259,8 @@ class Model implements ArrayAccess, Iterator
         if($this->validate())
         {
             $this->preUpdateCallback();
-            $this->_dataStoreInstance->setModel($this);
-            $this->_dataStoreInstance->update();
+            $this->dataStore->setModel($this);
+            $this->dataStore->update();
             $this->postUpdateCallback();
             return true;
         }
@@ -463,9 +463,9 @@ class Model implements ArrayAccess, Iterator
 
     public function describe()
     {
-        if(!Cache::exists("model_" . $this->getName()))
+        if(!Cache::exists("model_" . str_replace(".", "_", $this->modelRoute)))
         {
-            $description = $this->_dataStoreInstance->describe();
+            $description = $this->dataStore->describe();
             if(is_array($this->mustBeUnique))
             {
                 foreach($description["fields"] as $i => $field)
@@ -559,9 +559,9 @@ class Model implements ArrayAccess, Iterator
                     }
                 }
             }
-            Cache::add("model_" . $this->getName(), $description);
+            Cache::add("model_" . $this->modelRoute, $description);
         }
-        return Cache::get("model_" . $this->getName());
+        return Cache::get("model_" . $this->modelRoute);
     }
 
     public function __toString()
