@@ -175,18 +175,6 @@ class Model implements ArrayAccess, Iterator
         $this->dataStore = $dataStore;
         $this->dataStore->setModel($this);
     }
-
-    /*public function getDataStore($instance = false)
-    {
-        if($instance)
-        {
-            return $this->_dataStoreInstance;
-        }
-        else
-        {
-            return $this->dataStore;
-        }
-    }*/
     
     public function getName()
     {

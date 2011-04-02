@@ -143,7 +143,6 @@ abstract class SqlDatabase extends DataStore
             $fields = array();
             foreach($params["fields"] as $index => $field)
             {
-                //$fields[$index] = $this->quote($description["name"]). "." . $this->quote($field);
                 $fields[$index] = $this->resolveName($field, true, $description);
                 if($params["fetch_belongs_to"] && $description["fields"][$field]["foreign_key"] === true && $description["fields"][$field]["alias"] != '')
                 {
@@ -175,20 +174,23 @@ abstract class SqlDatabase extends DataStore
                         $alias = $relatedModel["as"];
                         $relatedModel = $relatedModel[0];
                     }
-                    
+
+                    // If the related belongs to field was not queried then skip
                     if($alias != null && array_search($alias, $params["fields"]) === false) 
                     {
                         continue;
                     }
-                    else if($alias == null && array_search(Ntentan::singular($relatedModel) . "_id", $params["fields"]) === false)
+                    else if($alias == null && array_search(Ntentan::singular(end(explode('.', $relatedModel))) . "_id", $params["fields"]) === false)
                     {
                         continue;
                     }
-                    
+
                     $model = Model::load(Model::getBelongsTo($relatedModel));
                     $datastore = $model->dataStore;
                     $joinedModelDescription = $model->describe();
                     $joinedModelFields = array_keys($joinedModelDescription["fields"]);
+                    $joinedSchema = $model->dataStore->schema;
+                    
                     if($alias == null)
                     {
                         $joinedTable = $joinedModelDescription["name"];
@@ -203,10 +205,10 @@ abstract class SqlDatabase extends DataStore
                         $joinedModelFields[$index] = 
                             $this->quote($joinedTable)
                              . "." . $this->quote($field) . " AS "
-                             . $this->quote($joinedTable . ".$field");
+                             . $this->quote($model->modelRoute . ".$field");
                     }
                     $fields = $fields . ", " . implode(", ", $joinedModelFields);
-                    $joins .= " JOIN {$datastore->table} "
+                    $joins .= " JOIN " . ($datastore->schema == "" ? '' : "{$datastore->schema}.") . $datastore->table . " "
                            . ($alias != null ? "AS $alias" : "")
                            . " ON " . ($alias != null ? $alias : $datastore->table) . ".id = {$this->table}." 
                            . ($alias != null ? $alias : Ntentan::singular($datastore->table) . "_id ");
