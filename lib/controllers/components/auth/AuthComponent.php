@@ -75,6 +75,7 @@ class AuthComponent extends Component
     public $authMethod = "http_basic";
     private $_usersModel = "users";
     protected $authMethodInstance;
+    public $excludedRoutes = array();
 
     public function __set($variable, $value)
     {
@@ -97,10 +98,38 @@ class AuthComponent extends Component
         }
         else
         {
+            foreach($this->excludedRoutes as $excludedRoute)
+            {
+                if(preg_match("/$excludedRoute/i", Ntentan::$route) > 0)
+                {
+                    return;
+                }
+            }
+            
             if($_SESSION["logged_in"] === false || !isset($_SESSION["logged_in"]))
             {
                 $this->login();
             }
+        }
+    }
+
+    public function redirectToLogin()
+    {
+        $this->set("login_message", $this->authMethodInstance->message);
+        $this->set("login_status", false);
+        if(Ntentan::$route != $this->loginRoute)
+        {
+            Ntentan::redirect(
+                Ntentan::getUrl(
+                    $this->loginRoute .
+                    (
+                        Ntentan::$requestedRoute == ""
+                        ? "" :
+                        (Ntentan::$requestedRoute == $this->logoutRoute ? "" : "?redirect=" . urlencode(Ntentan::$requestedRoute))
+                    )
+                ),
+                true
+            );
         }
     }
     
@@ -125,13 +154,15 @@ class AuthComponent extends Component
                 case AuthComponent::REDIRECT:
                     Ntentan::redirect($this->redirectRoute);
                     break;
+
                 case AuthComponent::CALL_FUNCTION:
                     $decomposed = explode("::", $this->successFunction);
                     $className = $decomposed[0];
                     $methodName = $decomposed[1];
                     $method = new \ReflectionMethod($className, $methodName);
-                    $method->invoke(null);
+                    $method->invoke(null, $this->controller);
                     break;
+                
                 default:
                     $this->set('login_status', true);
             }
@@ -145,29 +176,15 @@ class AuthComponent extends Component
                     $className = $decomposed[0];
                     $methodName = $decomposed[1];
                     $method = new \ReflectionMethod($className, $methodName);
-                    $method->invoke(null);
+                    $method->invoke(null, $this->controller);
                     break;
+
                 case AuthComponent::REDIRECT:
                     $this->loginRoute = $this->loginRoute == null ? $this->controller->route . "/login" : $this->loginRoute;
                     $this->logoutRoute = $this->logoutRoute == null ? $this->controller->route . "/logout" : $this->logoutRoute;
-
-                    $this->set("login_message", $this->authMethodInstance->message);
-                    $this->set("login_status", false);
-                    if(Ntentan::$route != $this->loginRoute)
-                    {
-                        Ntentan::redirect(
-                            Ntentan::getUrl(
-                                $this->loginRoute .
-                                (
-                                    Ntentan::$requestedRoute == ""
-                                    ? "" :
-                                    (Ntentan::$requestedRoute == $this->logoutRoute ? "" : "?redirect=" . urlencode(Ntentan::$requestedRoute))
-                                )
-                            ),
-                            true
-                        );
-                    }
+                    $this->redirectToLogin();
                     break;
+
                 default:
                     $this->set('login_status', false);
                     break;
