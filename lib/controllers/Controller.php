@@ -206,9 +206,9 @@ class Controller
         $componentInstance = $componentClass->newInstanceArgs($arguments);
         $componentInstance->filePath = Ntentan::getFilePath("lib/controllers/components/$component");
         $componentInstance->setController($this);
-        $componentInstance->init();
         $this->components[] = $component;
         $this->componentInstances[$component] = $componentInstance;
+        $componentInstance->init();
     }
 
     public function addWidget($widgetName, $param2 = null, $alias = null)

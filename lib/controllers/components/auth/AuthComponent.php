@@ -34,9 +34,9 @@ use \ntentan\controllers\components\Component;
 class AuthComponent extends Component
 {
 
-    const REDIRECT      = 1;
-    const CALL_FUNCTION = 2;
-    const DO_NOTHING    = 3;
+    const REDIRECT      = 'redirect';
+    const CALL_FUNCTION = 'call_function';
+    const DO_NOTHING    = 'do_nothing';
 
     /**
      * The route through which the login method of the auth component should be
@@ -75,7 +75,17 @@ class AuthComponent extends Component
     public $authMethod = "http_basic";
     private $_usersModel = "users";
     protected $authMethodInstance;
-    public $excludedRoutes = array();
+    public $excludedRoutes;
+
+    public function __construct($parameters)
+    {
+        $this->authMethod = $parameters['method'];
+        $this->loginRoute = $parameters['login_route'];
+        $this->logoutRoute = $parameters['logout_route'];
+        $this->onFailure = $parameters['on_failure'];
+        $this->failureFunction = $parameters['failure_function'];
+        $this->excludedRoutes = is_array($parameters['excluded_routes']) ? $parameters['excluded_routes'] : array();
+    }
 
     public function __set($variable, $value)
     {
@@ -88,7 +98,7 @@ class AuthComponent extends Component
         }
     }
 
-    public function preRender()
+    public function init()
     {
         // Allow the roles component to activate the authentication if it is
         // available. If not just run the authenticator from this section.
