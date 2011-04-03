@@ -136,6 +136,11 @@ class Ntentan
     public static $route;
 
     public static $prefix;
+
+    private static $singulars = array();
+    private static $plurals = array();
+    private static $camelisations = array();
+    private static $deCamelisations = array();
     
     /**
      * The path to the file which holds the database configuration/
@@ -360,18 +365,24 @@ class Ntentan
      */
     public static function singular($word)
     {
-        if(substr($word,-3) == "ies")
+        $singular = array_search($word, Ntentan::$singulars);
+        if($singular === false)
         {
-            return substr($word, 0, strlen($word) - 3) . "y";
+            if(substr($word,-3) == "ies")
+            {
+                $singular = substr($word, 0, strlen($word) - 3) . "y";
+            }
+            else if(substr($word, -1) == "s")
+            {
+                $singular = substr($word, 0, strlen($word) - 1);
+            }
+            else
+            {
+                $singular = $word;
+            }
+            Ntentan::$singulars[$singular] = $word;
         }
-        else if(substr($word, -1) == "s")
-        {
-            return substr($word, 0, strlen($word) - 1);
-        }
-        else
-        {
-            return $word;
-        }
+        return $singular;
     }
     
     /**
@@ -380,14 +391,20 @@ class Ntentan
      */
     public static function plural($word)
     {
-        if(substr($word, -1) == "y")
+        $plural = array_search($word, Ntentan::$plurals);
+        if($plural === false)
         {
-            return substr($word, 0, strlen($word) - 1) . "ies";
+            if(substr($word, -1) == "y")
+            {
+                $plural = substr($word, 0, strlen($word) - 1) . "ies";
+            }
+            elseif(substr($word, -1) != "s")
+            {
+                $plural = $word . "s";
+            }
+            Ntentan::$plurals[$plural] = $word;
         }
-        elseif(substr($word, -1) != "s")
-        {
-            return $word . "s";
-        }
+        return $plural;
     }
     
     /**
@@ -400,15 +417,21 @@ class Ntentan
      */
     public static function camelize($string, $delimiter=".", $baseDelimiter = "", $firstPartLowercase = false)
     {
-        if($baseDelimiter == "") $baseDelimiter = $delimiter;
-        $parts = explode($delimiter, $string);
-        $ret = "";
-        foreach($parts as $i => $part)
+        $key = $string . $delimiter . $baseDelimiter . ($firstPartLowercase?"1":"0") . "_camel";
+        $camelized = array_search($key, Ntentan::$camelisations);
+        if($camelized === false)
         {
-            $part = $delimiter == $baseDelimiter ? ucfirst(Ntentan::camelize($part, "_", $baseDelimiter)) : ucfirst($part);
-            $ret .= $firstPartLowercase === true ? lcfirst($part) : $part;
+            if($baseDelimiter == "") $baseDelimiter = $delimiter;
+            $parts = explode($delimiter, $string);
+            $camelized = "";
+            foreach($parts as $i => $part)
+            {
+                $part = $delimiter == $baseDelimiter ? ucfirst(Ntentan::camelize($part, "_", $baseDelimiter)) : ucfirst($part);
+                $camelized .= $firstPartLowercase === true ? lcfirst($part) : $part;
+            }
+            Ntentan::$camelisations[$camelized] = $key;
         }
-        return $ret;
+        return $camelized;
     }
     
     /**
@@ -417,15 +440,20 @@ class Ntentan
      */
     public static function deCamelize($string)
     {
-        $deCamelized = "";
-        for($i = 0; $i < strlen($string); $i++)
+        $deCamelized = array_search($string, Ntentan::$deCamelisations);
+        if($deCamelized === false)
         {
-            $char = substr($string, $i, 1);
-            if(ctype_upper($char) && $i > 0)
+            $deCamelized = "";
+            for($i = 0; $i < strlen($string); $i++)
             {
-                $deCamelized .= "_";
+                $char = substr($string, $i, 1);
+                if(ctype_upper($char) && $i > 0)
+                {
+                    $deCamelized .= "_";
+                }
+                $deCamelized .= strtolower($char);
             }
-            $deCamelized .= strtolower($char);
+            Ntentan::$deCamelisations[$deCamelized] = $string;
         }
         return $deCamelized;
     }

@@ -26,21 +26,25 @@ use ntentan\models\exceptions\DataStoreException;
 
 class Mysql extends SqlDatabase
 {
-	private static $db;
+	private static $db = false;
 	
     protected function connect($parameters)
     {
         $this->schema = $parameters["database"];
-        Mysql::$db = new mysqli(
-            $parameters["hostname"],
-            $parameters["username"],
-            $parameters["password"],
-            $parameters["database"]
-        );
+        if(Mysql::$db === false)
+        {
+            Mysql::$db = new mysqli(
+                $parameters["hostname"],
+                $parameters["username"],
+                $parameters["password"],
+                $parameters["database"]
+            );
+        }
     }
     
     public function query($query)
     {
+        print $query . '<br/>';
         $queryResult = Mysql::$db->query($query);
         
         if($queryResult === false)

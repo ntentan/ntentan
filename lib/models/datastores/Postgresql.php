@@ -22,31 +22,34 @@ use ntentan\Ntentan;
 use ntentan\models\exceptions\DataStoreException;
 
 class Postgresql extends SqlDatabase {
-	private $db;
+	private static $db = false;
 	
 	public function connect($parameters)
     {
-		if(isset($parameters["schema"]))
+        if(self::$db == false)
         {
-	    	$this->schema = $parameters["schema"];
-	    } 
-        else
-        {
-	    	$this->schema = "public";
-	    }
-        $this->db = pg_connect(
-            "host={$parameters["host"]} dbname={$parameters["database"]} user={$parameters["username"]} password={$parameters["password"]}"
-        );
+            if(isset($parameters["schema"]))
+            {
+                $this->schema = $parameters["schema"];
+            }
+            else
+            {
+                $this->schema = "public";
+            }
+            self::$db = pg_connect(
+                "host={$parameters["host"]} dbname={$parameters["database"]} user={$parameters["username"]} password={$parameters["password"]}"
+            );
+        }
 	}
 	
     public function query($query)
     {
         $query = mb_convert_encoding($query, 'UTF-8', \mb_detect_encoding($query));
-        $queryResult = pg_query($this->db, $query);
+        $queryResult = pg_query(self::$db, $query);
         
         if($queryResult === false)
         {
-            throw new DataStoreException ("PostgreSQL Says : ".\pg_last_error($this->db)." [$query]");
+            throw new DataStoreException ("PostgreSQL Says : ".\pg_last_error(self::$db)." [$query]");
         }
         $result = array();
         while($row = pg_fetch_assoc($queryResult))
@@ -58,7 +61,7 @@ class Postgresql extends SqlDatabase {
     }
     
     protected function escape($string) {
-        return pg_escape_string($this->db, $string);
+        return pg_escape_string(self::$db, $string);
     }
     
     protected function quote($field) {
