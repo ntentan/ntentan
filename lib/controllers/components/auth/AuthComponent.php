@@ -77,13 +77,13 @@ class AuthComponent extends Component
     protected $authMethodInstance;
     public $excludedRoutes;
 
-    public function __construct($parameters)
+    public function __construct($parameters = array())
     {
-        $this->authMethod = $parameters['method'];
-        $this->loginRoute = $parameters['login_route'];
-        $this->logoutRoute = $parameters['logout_route'];
-        $this->onFailure = $parameters['on_failure'];
-        $this->failureFunction = $parameters['failure_function'];
+        $this->authMethod = isset($parameters['method']) ? $parameters['method'] : $this->authMethod;
+        $this->loginRoute = isset($parameters['login_route']) ? $parameters['login_route'] : $this->loginRoute;
+        $this->logoutRoute = isset($parameters['logout_route']) ? $parameters['logout_route'] : $this->logoutRoute;
+        $this->onFailure = isset($parameters['on_failure']) ? $parameters['on_failure'] : $this->onFailure;
+        $this->failureFunction = isset($parameters['failure_function']) ? $parameters['failure_function'] : $this->failureFunction;
         $this->excludedRoutes = is_array($parameters['excluded_routes']) ? $parameters['excluded_routes'] : array();
     }
 

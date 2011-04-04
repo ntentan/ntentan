@@ -155,7 +155,7 @@ class AdminComponent extends Component
         );
     }
     
-    private function getCurrentRoute()
+    public function getCurrentRoute()
     {
         if($this->consoleMode)
         {
