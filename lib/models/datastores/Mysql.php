@@ -44,7 +44,6 @@ class Mysql extends SqlDatabase
     
     public function query($query)
     {
-        print $query . '<br/>';
         $queryResult = Mysql::$db->query($query);
         
         if($queryResult === false)

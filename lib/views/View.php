@@ -32,6 +32,7 @@ class View extends Presentation
     public $template;
     public $widgets;
     public $defaultTemplatePath;
+    public $encoding;
 
     public function __construct()
     {
@@ -67,6 +68,7 @@ class View extends Presentation
     
     public function setContentType($contentType, $encoding="utf-8")
     {
+        $this->encoding = $encoding;
     	header("Content-type: $contentType;charset=$encoding");
     }
 

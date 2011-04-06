@@ -453,7 +453,6 @@ class Model implements ArrayAccess, Iterator
     {
         if(!Cache::exists("model_" . $this->modelRoute))
         {
-            print "Cache Failed {$this->modelRoute}" ;
             $description = $this->dataStore->describe();
             if(is_array($this->mustBeUnique))
             {

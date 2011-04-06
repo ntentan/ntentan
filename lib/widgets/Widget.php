@@ -35,7 +35,7 @@ class Widget extends Presentation
     protected $name;
     protected $alias;
     private $filePath;
-    public $cacheLifetime = 0;
+    public $cacheLifetime = -1;
 
     public function __construct($args)
     {
