@@ -21,7 +21,8 @@ namespace ntentan\caching;
 /**
  * The volitle cache is a special cache which keeps its data only during the
  * lifetime of the request to the server. This cache is normally used during
- * testing to ensure that nothing is stored in between test cases.
+ * testing to ensure that nothing is stored in between test cases. It could
+ * also be used for debugging.
  */
 class Volatile extends Cache
 {

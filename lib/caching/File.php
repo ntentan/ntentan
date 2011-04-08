@@ -20,6 +20,9 @@ namespace ntentan\caching;
 
 use ntentan\exceptions\FileNotFoundException;
 
+/**
+ * A file caching backend
+ */
 class File extends Cache
 {
     protected function addImplementation($key, $object, $expires)
