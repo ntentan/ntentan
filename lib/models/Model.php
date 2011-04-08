@@ -93,7 +93,8 @@ class Model implements ArrayAccess, Iterator
         $this->name = strtolower(Ntentan::deCamelize($modelName));
         
         $this->iteratorPosition = 0;
-        $this->modelRoute = implode(".",array_slice(explode("\\", $modelInformation->getName()),2 , -1));
+        $skip = count(explode("/", Ntentan::$modulesPath));
+        $this->modelRoute = implode(".",array_slice(explode("\\", $modelInformation->getName()), count(explode("/", Ntentan::$modulesPath)) + 1, -1));
         
         $dataStoreParams = Ntentan::getDefaultDataStore();
         $dataStoreClass = __NAMESPACE__ . "\\datastores\\" . Ntentan::camelize($dataStoreParams["datastore"]);

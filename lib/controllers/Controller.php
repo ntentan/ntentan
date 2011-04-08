@@ -335,7 +335,47 @@ class Controller
 				$controllerName = $pCamelized."Controller";
 				$controllerRoute .= "/$p";
                 $modelRoute .= "$p";
-				break;
+
+                if($controllerRoute[0] == "/") $controllerRoute = substr($controllerRoute,1);
+
+                if($controllerName == "")
+                {
+                    Ntentan::error("Path not found! [$route]");
+                }
+                else
+                {
+                    Ntentan::addIncludePath(Ntentan::$modulesPath . "/$controllerRoute/"); //$controllerName.php";
+                    $controllerNamespace = "\\" . str_replace("/", "\\", Ntentan::$modulesPath . "/modules/$controllerRoute/");
+                    $controllerName = $controllerNamespace . $controllerName;
+                    if(class_exists($controllerName))
+                    {
+                        $controller = new $controllerName();
+                        $controller->method = $routeArray[$i + 1] != '' ? Ntentan::camelize($routeArray[$i + 1]) : $controller->defaultMethodName;
+                        if($controller->hasMethod())
+                        {
+                            foreach($controller->components as $component)
+                            {
+                                $controller->addComponent($component);
+                            }
+                        }
+                        else
+                        {
+                            $modelRoute .= ".";
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        Ntentan::error("Controller class <b><code>$controllerName</code></b> not found.");
+                    }
+                    
+                    $controller->setRoute($controllerRoute);
+                    $controller->setName($controllerName);
+                    $controller->modelRoute = $modelRoute;
+                    $controller->filePath = $filePath;
+                    $controller->init();
+                    $controller->runMethod(array_slice($routeArray,$i+2));
+                }
 			}
 			else
 			{
@@ -343,53 +383,6 @@ class Controller
                 $modelRoute .= "$p.";
 			}
 		}
-
-        $controllerRoute = substr($controllerRoute,1);
-
-        if($controllerName == "")
-        {
-            Ntentan::error("Path not found! [$route]");
-        }
-        else
-        {
-            Ntentan::addIncludePath(Ntentan::$modulesPath . "/$controllerRoute/"); //$controllerName.php";
-            $controllerNamespace = "\\" . str_replace("/", "\\", Ntentan::$modulesPath . "/modules/$controllerRoute/");
-            $controllerName = $controllerNamespace . $controllerName;
-            if(class_exists($controllerName))
-            {
-                $controller = new $controllerName();
-                foreach($controller->components as $component)
-                {
-                    $controller->addComponent($component);
-                }
-            }
-            else
-            {
-            	Ntentan::error("Controller class <b><code>$controllerName</code></b> not found.");
-            }
-            if($i != count($routeArray)-1)
-            {
-                $controller->method = Ntentan::camelize($routeArray[$i+1],".","",true);
-            }
-            else
-            {
-                $controller->method = $controller->defaultMethodName;
-            }
-            $controller->setRoute($controllerRoute);
-            $controller->setName($controllerName);
-            $controller->modelRoute = $modelRoute;
-            $controller->filePath = $filePath;
-            $controller->init();
-            if($controller->hasMethod())
-            {
-                $controller->runMethod(array_slice($routeArray,$i+2));
-            }
-            else
-            {
-                echo Ntentan::message("Method not found <code><b>$controllerName::{$controller->method}()</b></code>");
-                die();
-            }
-        }
 	}
     
 	/**

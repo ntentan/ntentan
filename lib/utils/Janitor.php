@@ -1,6 +1,9 @@
 <?php
 namespace ntentan\utils;
 
+/**
+ * 
+ */
 class Janitor
 {
     public static function cleanHtml($string, $strip = false)

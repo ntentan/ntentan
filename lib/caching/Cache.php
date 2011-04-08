@@ -86,8 +86,16 @@ abstract class Cache
     {
         return Cache::instance()->existsImplementation($key);
     }
-    
+
+    /**
+     * Implementation of the add function by the appropriate caching backend
+     * @param string $key
+     */
     abstract protected function addImplementation($key, $object, $expires);
+
+    /**
+     *
+     */
     abstract protected function getImplementation($key);
     abstract protected function existsImplementation($key);
 }

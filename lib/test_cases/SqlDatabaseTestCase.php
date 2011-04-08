@@ -3,9 +3,9 @@ namespace ntentan\test_cases;
 
 require_once 'lib/models/Model.php';
 require_once 'PHPUnit/Framework.php';
-require_once 'mocks/users/Users.php';
-require_once 'mocks/roles/Roles.php';
-require_once 'mocks/departments/Departments.php';
+require_once 'mocks/modules/users/Users.php';
+require_once 'mocks/modules/roles/Roles.php';
+require_once 'mocks/modules/departments/Departments.php';
 require_once 'lib/Ntentan.php';
 require_once 'lib/models/exceptions/ModelNotFoundException.php';
 require_once 'lib/models/exceptions/DataStoreException.php';
