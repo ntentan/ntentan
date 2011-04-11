@@ -350,15 +350,19 @@ class Controller
                     if(class_exists($controllerName))
                     {
                         $controller = new $controllerName();
-                        $controller->method = $routeArray[$i + 1] != '' ? Ntentan::camelize($routeArray[$i + 1]) : $controller->defaultMethodName;
-                        if($controller->hasMethod())
+                        $controller->method = $routeArray[$i + 1] != '' ? Ntentan::camelize($routeArray[$i + 1], ".", "", true) : $controller->defaultMethodName;
+                        foreach($controller->components as $component)
                         {
-                            foreach($controller->components as $component)
-                            {
-                                $controller->addComponent($component);
-                            }
+                            $controller->addComponent($component);
                         }
-                        else
+                        
+                        $controller->setRoute($controllerRoute);
+                        $controller->setName($controllerName);
+                        $controller->modelRoute = $modelRoute;
+                        $controller->filePath = $filePath;
+                        $controller->init();
+
+                        if(!$controller->hasMethod())
                         {
                             $modelRoute .= ".";
                             continue;
@@ -369,12 +373,8 @@ class Controller
                         Ntentan::error("Controller class <b><code>$controllerName</code></b> not found.");
                     }
                     
-                    $controller->setRoute($controllerRoute);
-                    $controller->setName($controllerName);
-                    $controller->modelRoute = $modelRoute;
-                    $controller->filePath = $filePath;
-                    $controller->init();
                     $controller->runMethod(array_slice($routeArray,$i+2));
+                    return;
                 }
 			}
 			else
@@ -383,6 +383,7 @@ class Controller
                 $modelRoute .= "$p.";
 			}
 		}
+        Ntentan::error("Controller not found.");
 	}
     
 	/**

@@ -22,11 +22,12 @@
     $params = '';
     foreach($item as $key => $value)
     {
-        if($key == 'url' || $key == 'label') continue;
+        if($key == 'url' || $key == 'label' || $key == 'selected') continue;
         $params .= "$key = '$value' ";
     }
-    ?>
-<li <?php echo $params ?> class='menu-item <?php echo \ntentan\Ntentan::$route == $item["url"] ? "menu-selected" : "" ?> <?php echo str_replace(" ","_",strtolower($item["label"])) ?>-menu-item'>
+$id = str_replace(" ","_",strtolower($item["label"])) . '-menu-item';
+?>
+<li <?php echo $params ?> id="<?php echo $id ?>" class='menu-item <?php echo $item['selected'] ? "menu-selected " : ""; echo $id; ?>'>
 <?php if($has_links == true):?>
 <a href='<?php echo isset($item["url"]) ? $item["url"] : str_replace(" ", "_", strtolower($item["label"]))?>'><?php echo $item["label"]?></a>
 <?php endif?>
