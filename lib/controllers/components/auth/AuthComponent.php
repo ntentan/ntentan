@@ -76,6 +76,7 @@ class AuthComponent extends Component
     private $_usersModel = "users";
     protected $authMethodInstance;
     public $excludedRoutes;
+    public $authenticated;
 
     public function __construct($parameters = array())
     {
@@ -85,6 +86,7 @@ class AuthComponent extends Component
         $this->onFailure = isset($parameters['on_failure']) ? $parameters['on_failure'] : $this->onFailure;
         $this->failureFunction = isset($parameters['failure_function']) ? $parameters['failure_function'] : $this->failureFunction;
         $this->excludedRoutes = is_array($parameters['excluded_routes']) ? $parameters['excluded_routes'] : array();
+        $this->authenticated = $_SESSION['logged_in'];
     }
 
     public function __set($variable, $value)
@@ -159,6 +161,7 @@ class AuthComponent extends Component
         
         if($this->authMethodInstance->login())
         {
+            $this->authenticated = true;
             switch($this->onSuccess)
             {
                 case AuthComponent::REDIRECT:
