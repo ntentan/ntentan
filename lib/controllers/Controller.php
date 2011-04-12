@@ -117,13 +117,6 @@ class Controller
     public $method;
     
     /**
-     * An associative array which stores the blocks which have been loaded for
-     * this controller.
-     * @var array
-     */
-    protected $widgets = array();
-    
-    /**
      * Returns the name of the controller.
      * @return string
      */
@@ -211,7 +204,7 @@ class Controller
         $componentInstance->init();
     }
 
-    public function addWidget($widgetName, $param2 = null, $alias = null)
+    /*public function addWidget($widgetName, $param2 = null, $alias = null)
     {
         if(is_array($param2))
         {
@@ -248,7 +241,7 @@ class Controller
         $widgetInstance->setAlias($alias);
         $widgetInstance->init();
         $this->widgets[$alias] = $widgetInstance;
-    }
+    }*/
     
     public function hasWidget($widgetName)
     {
@@ -455,7 +448,7 @@ class Controller
             $method = $controllerClass->GetMethod($path);
             $this->view->template = Ntentan::$modulesPath . "/modules/{$this->route}/" . Ntentan::deCamelize($path) . ".tpl.php";
             $method->invokeArgs($this, $params);
-            $this->view->widgets = $this->widgets;
+            /*$this->view->widgets = $this->widgets;*/
             $ret = $this->view->out($this->getData());
             $this->mainPostRender();
         }
@@ -467,7 +460,7 @@ class Controller
                 {
                     $this->mainPreRender();
                     $component->variables = $this->variables;
-                    $component->widgets = $this->widgets;
+                    /*$component->widgets = $this->widgets;*/
                     $component->runMethod($params, $path);
                     $this->mainPostRender();
                 }

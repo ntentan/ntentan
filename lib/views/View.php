@@ -76,12 +76,12 @@ class View extends Presentation
     {
         // Render all the blocks into string variables
         $widgets = array();
-        foreach($this->widgets as $alias => $widget)
+        /*foreach($this->widgets as $alias => $widget)
         {
             $widgetName = $alias."_widget";
             $viewData[$widgetName] = (string)$widget;
             $widgets[$blockName] = $viewData[$widgetName];
-        }
+        }*/
         
         //ob_start();
         if($this->template === false)

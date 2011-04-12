@@ -1,5 +1,5 @@
 <?php
-namespace ntentan\widgets\pagination;
+namespace ntentan\views\widgets\pagination;
 
 use ntentan\widgets\Widget;
 use ntentan\Ntentan;
