@@ -451,11 +451,11 @@ class Controller
         if(method_exists($this, $path))
         {
             $controllerClass = new ReflectionClass($this->getName());
+            $this->mainPreRender();
             $method = $controllerClass->GetMethod($path);
             $this->view->template = Ntentan::$modulesPath . "/modules/{$this->route}/" . Ntentan::deCamelize($path) . ".tpl.php";
             $method->invokeArgs($this, $params);
             $this->view->widgets = $this->widgets;
-            $this->mainPreRender();
             $ret = $this->view->out($this->getData());
             $this->mainPostRender();
         }
