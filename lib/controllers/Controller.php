@@ -149,7 +149,6 @@ class Controller
             if($this->viewInstance == null)
             {
                 $this->viewInstance = new View();
-                $this->viewInstance->layout = "main.tpl.php";
                 $this->viewInstance->defaultTemplatePath = $this->filePath;
             }
             return $this->viewInstance;
@@ -204,45 +203,6 @@ class Controller
         $componentInstance->init();
     }
 
-    /*public function addWidget($widgetName, $param2 = null, $alias = null)
-    {
-        if(is_array($param2))
-        {
-            $constructorArg = $param2;
-        }
-        else if(is_string($param2))
-        {
-            $alias = $param2;
-        }
-        
-        $widgetFile = Ntentan::$modulesPath . "/widgets/$widgetName/" . Ntentan::camelize($widgetName) . "Widget.php";
-        if(file_exists($widgetFile))
-        {
-            require_once $widgetFile;
-            $widgetClass = "\\" . Ntentan::$modulesPath . "\\widgets\\$widgetName\\" . Ntentan::camelize($widgetName) . 'Widget';
-            $path = Ntentan::$modulesPath . "/widgets/$widgetName";
-        }
-        else if(file_exists(Ntentan::getFilePath("lib/widgets/$widgetName/" . Ntentan::camelize($widgetName) . "Widget.php")))
-        {
-            Ntentan::addIncludePath(Ntentan::getFilePath("lib/controllers/widgets/$widgetName"));
-            $widgetClass = "\\ntentan\\widgets\\$widgetName\\" . Ntentan::camelize($widgetName) . 'Widget';
-            $path = Ntentan::getFilePath("lib/widgets/$widgetName");
-        }
-        else
-        {
-            Ntentan::error("Widget <code><b>$widgetName</b></code> not found");
-        }
-
-        $widgetClass = new ReflectionClass($widgetClass);
-        $widgetInstance = $widgetClass->newInstance($constructorArg);
-        $widgetInstance->setName($widgetName);
-        $widgetInstance->setFilePath($path);
-        if($alias == null) $alias = $widgetName;
-        $widgetInstance->setAlias($alias);
-        $widgetInstance->init();
-        $this->widgets[$alias] = $widgetInstance;
-    }*/
-    
     public function hasWidget($widgetName)
     {
         return isset($this->widgets[$widgetName]);

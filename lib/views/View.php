@@ -28,42 +28,15 @@ use ntentan\Ntentan;
  */
 class View extends Presentation
 {
-    private $_layout;
+    public $layout;
     public $template;
-    public $widgets;
     public $defaultTemplatePath;
     public $encoding;
 
     public function __construct()
     {
-        $this->_layout = new Layout();
         $this->setContentType("text/html");
-    }
-    
-    public function __get($property)
-    {
-        switch($property)
-        {
-            case "layout":
-                return $this->_layout;
-                break;
-            default:
-                throw new \Exception("Parameter $property not found in view class");
-                return parent::__get($property);
-        }
-    }
-
-    public function __set($property, $value)
-    {
-        switch($property)
-        {
-            case "layout":
-                $this->_layout->name = $value;
-                break;
-            case "layoutFile":
-                $this->_layout->file = $value;
-                break;
-        }
+        $this->layout = "layouts/main.tpl.php";
     }
     
     public function setContentType($contentType, $encoding="utf-8")
@@ -74,19 +47,9 @@ class View extends Presentation
 
     public function out($viewData)
     {
-        // Render all the blocks into string variables
-        $widgets = array();
-        /*foreach($this->widgets as $alias => $widget)
-        {
-            $widgetName = $alias."_widget";
-            $viewData[$widgetName] = (string)$widget;
-            $widgets[$blockName] = $viewData[$widgetName];
-        }*/
-        
-        //ob_start();
         if($this->template === false)
         {
-            // Do nothing
+            $data = null;
         }
         else if(file_exists( $this->template ))
         {
@@ -101,10 +64,14 @@ class View extends Presentation
             Ntentan::error("View template <b><code>{$this->template}</code></b> not Found!");
         }
 
-        if(!Ntentan::isAjax())
+        if($this->layout !== false && !Ntentan::isAjax())
         {
-            $data = $this->_layout->out($data, $widgets, $viewData);
+            $viewData['contents'] = $data;
+            return Template::out($this->layout, $viewData, $this);
         }
-        return $data;
+        else
+        {
+            return $data;
+        }
     }
 }

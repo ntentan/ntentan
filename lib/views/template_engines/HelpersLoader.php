@@ -1,9 +1,4 @@
 <?php
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace ntentan\views\template_engines;
 
 use ntentan\Ntentan;
@@ -12,7 +7,7 @@ class HelpersLoader
 {
     private $loadedHelpers = array();
 
-    public function __get($helper)
+    private function getHelper($helper)
     {
         $helperPlural = Ntentan::plural($helper);
         $helper = $helperPlural == null ? $helper : $helperPlural;
@@ -27,5 +22,16 @@ class HelpersLoader
             $this->loadedHelpers[$helper] = new $helperClass();
         }
         return $this->loadedHelpers[$helper];
+    }
+
+    public function __get($helper)
+    {
+        return $this->getHelper($helper);
+    }
+
+    public function __call($helper, $arguments)
+    {
+        $helper = $this->getHelper($helper);
+        return $helper->help($arguments);
     }
 }

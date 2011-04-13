@@ -163,6 +163,11 @@ class FormsHelper extends Helper
         return Ntentan::getFilePath('lib/views/helpers/forms/css/forms.css');
     }
     
+    public function help($arguments)
+    {
+        
+    }
+
     public function __call($function, $arguments)
     {
         if($function == "open")

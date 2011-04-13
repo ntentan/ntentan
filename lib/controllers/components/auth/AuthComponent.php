@@ -33,8 +33,14 @@ use \ntentan\controllers\components\Component;
  */
 class AuthComponent extends Component
 {
-
+    /**
+     *
+     */
     const REDIRECT      = 'redirect';
+    
+    /**
+     *
+     */
     const CALL_FUNCTION = 'call_function';
     const DO_NOTHING    = 'do_nothing';
 

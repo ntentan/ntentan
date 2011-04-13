@@ -32,44 +32,29 @@ class Widget extends Presentation
 {
     protected $data = array();
     protected $template;
-    protected $name;
-    protected $alias;
-    private $filePath;
+    public $name;
+    public $filePath;
     public $cacheLifetime = -1;
-
-    public function __construct($args)
-    {
-        
-    }
+    public $alias;
 
     public function init()
     {
         
     }
-    
-    public function setFilePath($filePath)
-    {
-        $this->filePath = $filePath;
-    }
 
-    public function getName() {
-    	return $this->name;
+    public function setData($data)
+    {
+        $this->data = $data;
     }
     
-    public function setName($name) {
-    	$this->name = $name;
-    }
-
-    public function setAlias($alias)
+    protected function set($params1, $params2 = null)
     {
-        $this->alias = $alias;
-    }
-
-    protected function set($params1, $params2 = null) {
-    	
-        if(is_array($params1)) {
+        if(is_array($params1))
+        {
             $this->data = array_merge($this->data, $params1);
-        } else {
+        } 
+        else
+        {
             $this->data[$params1] = $params2;
         }
     }
@@ -101,21 +86,26 @@ class Widget extends Presentation
             $this->preRender();
             if($this->template == "")
             {
-                $widget = $this->getName();
-                $this->template = $this->filePath . "/$widget.tpl.php";
+                $this->template = $this->filePath . "/{$this->name}.tpl.php";
             }
-            $this->set('alias', $this->alias);
             $output = Template::out($this->template, $this->data);
-
+            
             $this->postRender();
             Cache::add($cacheKey, $output, $this->cacheLifetime);
         }
         return $output;
     }
 
+    public function alias($alias)
+    {
+        $this->alias = $alias;
+        $this->set('alias', $alias);
+        return $this;
+    }
+
     private function getCacheKey()
     {
-        return $this->alias . '_' . $this->getName() . '_widget';
+        return ($this->alias == '' ? $this->name : $this->alias) . '_widget';
     }
 
     public function cached()

@@ -11,9 +11,14 @@ abstract class TemplateEngine
     
     public function loadAsset($asset, $copyFrom = null)
     {
-        if(file_exists(dirname("public/$asset")) && \is_writable(dirname("public/$asset")))
+        $assetPath = "assets/".($copyFrom==null ? $asset : $copyFrom);
+        if(file_exists($assetPath) && file_exists(dirname("public/$asset")) && is_writable(dirname("public/$asset")))
         {
-            copy("assets/".($copyFrom==null ? $asset : $copyFrom), "public/$asset");
+            copy($assetPath, "public/$asset");
+        }
+        else if(file_exists(Ntentan::getFilePath("assets/$asset")) && file_exists(dirname("public/$asset")) && is_writable(dirname("public/$asset")))
+        {
+            copy(Ntentan::getFilePath("assets/$asset"), "public/$asset");
         }
         else
         {

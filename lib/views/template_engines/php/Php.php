@@ -16,6 +16,11 @@ class Php extends TemplateEngine
         return ob_get_clean();
     }
 
+    public function load_asset($asset, $copyFrom = null)
+    {
+        return $this->loadAsset($asset, $copyFrom);
+    }
+
     public function strip_html($text)
     {
         return \ntentan\utils\Janitor::cleanHtml($text, true);
