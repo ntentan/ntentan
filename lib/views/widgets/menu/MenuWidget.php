@@ -24,14 +24,15 @@ use ntentan\views\widgets\Widget;
 /**
  * Standard menu widget which ships with the menu widget.
  */
-class MenuWidget extends Widget {
-    
-    protected $items = array();
+class MenuWidget extends Widget
+{
     public $hasLinks = true;
-    
-    public function addItem($item)
+
+    public function init()
     {
-        $items = func_get_args();
+        $menuItems = array();
+        $items = $this->getData();
+        $this->setData(array());
         foreach($items as $item)
         {
             if(is_string($item) || is_numeric($item))
@@ -42,10 +43,9 @@ class MenuWidget extends Widget {
                 );
             }
             $item['selected'] = $item['url'] == Ntentan::getUrl(Ntentan::$route);
-
-            $this->items[] = $item;
+            $menuItems[] = $item;
         }
-        $this->set('items', $this->items);
+        $this->set('items', $menuItems);
     }
     
     public function preRender()
