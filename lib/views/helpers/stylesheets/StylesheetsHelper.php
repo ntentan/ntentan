@@ -11,12 +11,31 @@ use ntentan\views\helpers\Helper;
 
 class StylesheetsHelper extends Helper
 {
+    private $loadedStylesheets = array();
+
     public function help($arguments)
     {
-        foreach($arguments as $argument)
+        if(is_array($arguments))
+        {
+            foreach($arguments as $argument)
+            {
+                if($argument == '') continue;
+                $stylesheets .= "<link rel='stylesheet' type='text/css' href='$argument' />";
+            }
+        }
+        else
+        {
+            $stylesheets .= "<link rel='stylesheet' type='text/css' href='$arguments' />";
+        }
+        foreach($this->loadedStylesheets as $argument)
         {
             $stylesheets .= "<link rel='stylesheet' type='text/css' href='$argument' />";
         }
         return $stylesheets;
+    }
+
+    public function add($stylesheet)
+    {
+        $this->loadedStylesheets[] = $stylesheet;
     }
 }

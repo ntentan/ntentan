@@ -28,10 +28,9 @@ class MenuWidget extends Widget
 {
     public $hasLinks = true;
 
-    public function init()
+    public function init($items)
     {
         $menuItems = array();
-        $items = $this->getData();
         $this->setData(array());
         foreach($items as $item)
         {

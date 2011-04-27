@@ -101,7 +101,7 @@ class DatesHelper extends Helper
      * @param string $time
      * @return DatesHelper
      */
-	public function parse($time)
+	public function help($time)
 	{
 		$this->timestamp =$this->internalParse($time);
         return $this;

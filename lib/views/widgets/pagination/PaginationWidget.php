@@ -1,16 +1,45 @@
 <?php
 namespace ntentan\views\widgets\pagination;
 
-use ntentan\widgets\Widget;
+use ntentan\views\widgets\Widget;
 use ntentan\Ntentan;
 
 class PaginationWidget extends Widget
 {
-    public function __construct($args)
+    private $pageNumber;
+    private $numberOfPages;
+    private $baseRoute;
+
+    public function init($pageNumber, $numberOfPages, $baseRoute)
     {
-        $pageNumber = $args['page'];
-        $numPages = $args['number_of_pages'];
-        $baseRoute = $args['base_route'];
+        $this->pageNumber = $pageNumber;
+        $this->numberOfPages = $numberOfPages;
+        $this->baseRoute = $baseRoute;
+    }
+
+    public function set_page_number($pageNumber)
+    {
+        $this->pageNumber = $pageNumber;
+        return $this;
+    }
+
+    public function set_number_of_pages($numberOfPages)
+    {
+        $this->numberOfPages = $numberOfPages;
+        return $this;
+    }
+
+    public function set_base_route($baseRoute)
+    {
+        $this->baseRoute = $baseRoute;
+        return $this;
+    }
+
+    public function preRender()
+    {
+        $pageNumber = $this->pageNumber;
+        $numPages = $this->numberOfPages;
+        $baseRoute = $this->baseRoute;
 
         if($pageNumber > 1)
         {

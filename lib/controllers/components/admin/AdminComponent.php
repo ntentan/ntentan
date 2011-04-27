@@ -23,6 +23,7 @@ use ntentan\controllers\components\Component;
 use ntentan\models\Model;
 use \ReflectionMethod;
 use ntentan\utils\Janitor;
+use ntentan\models\exceptions\MethodNotFoundException;
 
 /**
  * Admin component provides an interface through which data in a model could be
@@ -293,14 +294,22 @@ class AdminComponent extends Component
         if($count > $itemsPerPage)
         {
             $pageControllerRoute = $this->consoleMode === true ? $this->consoleModeRoute : $this->controller->route;
-            $this->addWidget(
+            $this->set(
+                array(
+                    'pagination' => true,
+                    'page_number' => $pageNumber,
+                    'number_of_pages' => $numPages,
+                    'base_route' => "{$this->prefix}/$pageControllerRoute/page/"
+                )
+            );
+            /*$this->addWidget(
                 'pagination',
                 array(
                     'page'=>$pageNumber,
                     'number_of_pages'=>$numPages,
                     'base_route'=>"{$this->prefix}/$pageControllerRoute/page/"
                 )
-            );
+            );*/
         }
     }
     
@@ -321,14 +330,14 @@ class AdminComponent extends Component
 
     private function showConsolePage($pageNumber)
     {
-        $this->addWidget("menu", "item_actions_menu");
+        /*$this->addWidget("menu", "item_actions_menu");
         $this->itemActionsMenuWidget->addItem(
             array(
                 "label" => "Add new " . $this->entity,
                 "url"   =>  Ntentan::getUrl($this->getCurrentRoute() . "/add")
             )
-        );
-        $this->view->layout->title = ucfirst($this->entity) . " | " . $this->app["name"] . " Administrator Console";
+        );*/
+        //$this->view->layout->title = ucfirst($this->entity) . " | " . $this->app["name"] . " Administrator Console";
         $this->itemOperationUrl = Ntentan::getUrl($this->getCurrentRoute() . '/edit');
         $this->page($pageNumber);
     }
@@ -339,32 +348,23 @@ class AdminComponent extends Component
         $this->useLayout("console.tpl.php");
         $this->useTemplate("run.tpl.php");
         $this->set("app_name", $this->app["name"]);
+        $this->set("stylesheet", Ntentan::getFilePath("lib/controllers/components/admin/css/admin.css"));
         $this->headingLevel = '3';
 
-        $this->view->layout->addStyleSheet(
-            array(
-                $this->getStylesheet(),
-                Ntentan::getFilePath("css/fx.css"),
-                Ntentan::getFilePath("lib/views/helpers/forms/css/forms.css"),
-                Ntentan::getFilePath("css/grid.css")
-            )
-        );
-
-        $this->view->layout->addJavaScript(Ntentan::getFilePath('js/jquery.js'));
-
         //Setup the menus to be used in this administrator section
-        $this->addWidget("menu", "default_menu");
+        $menuItems = array();
         foreach($this->sections as $section)
         {
             $item['label'] = $section['label'];
             $item['url'] = Ntentan::getUrl($this->controller->route . "/console/{$section['route']}");
-            $this->defaultMenuWidget->addItem($item);
+            $menuItems[] = $item;
         }
+        $this->set('sections_menu', $menuItems);
         
         $arguments = func_get_args();
         if(count($arguments) == 0)
         {
-            $this->view->layout->title = $this->app["name"] . " Administrator Console";
+            //$this->view->layout->title = $this->app["name"] . " Administrator Console";
         }
         else
         {
@@ -416,7 +416,7 @@ class AdminComponent extends Component
                             }
                             else
                             {
-                                throw new \ntentan\models\exceptions\MethodNotFoundException("Could not find $extensionMethodName method in the admin controller");
+                                throw new MethodNotFoundException("Could not find $extensionMethodName method in the admin controller");
                             }
                             break;
                     }

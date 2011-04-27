@@ -11,6 +11,7 @@ abstract class TemplateEngine
     
     public function loadAsset($asset, $copyFrom = null)
     {
+
         $assetPath = "assets/".($copyFrom==null ? $asset : $copyFrom);
         if(file_exists($assetPath) && file_exists(dirname("public/$asset")) && is_writable(dirname("public/$asset")))
         {
@@ -19,6 +20,10 @@ abstract class TemplateEngine
         else if(file_exists(Ntentan::getFilePath("assets/$asset")) && file_exists(dirname("public/$asset")) && is_writable(dirname("public/$asset")))
         {
             copy(Ntentan::getFilePath("assets/$asset"), "public/$asset");
+        }
+        else if(file_exists($copyFrom) && is_writable(dirname("public/$asset")))
+        {
+            copy($copyFrom, "public/$asset");
         }
         else
         {
@@ -37,6 +42,7 @@ abstract class TemplateEngine
                     $this->widgetsLoader = new WidgetsLoader();
                 }
                 return $this->widgetsLoader;
+
 
             case "helpers":
                 if($this->helpersLoader == null)

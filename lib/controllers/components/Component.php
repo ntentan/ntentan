@@ -69,6 +69,7 @@ class Component extends Controller
 
     /**
      * Sets the controller name of this component.
+     * 
      * @param string $controllerName
      */
     public function setControllerName($controllerName)
@@ -89,7 +90,7 @@ class Component extends Controller
      * (non-PHPdoc)
      * @see controllers/ntentan\controllers.Controller::set()
      */
-    public function set($params1, $params2)
+    public function set($params1, $params2 = null)
     {
         $this->controller->set($params1, $params2);
     }
@@ -173,6 +174,7 @@ class Component extends Controller
 
     /**
      * 
+     *
      * @param string $file
      * @return string|false
      */
@@ -207,11 +209,22 @@ class Component extends Controller
         $layoutFile = Ntentan::$layoutsPath . $file;
         if(file_exists($layoutFile))
         {
-            $this->view->layoutFile = $layoutFile;
+            $this->view->layout = $layoutFile;
         }
         else
         {
-            $this->view->layoutFile = $this->filePath . "/layouts/$file";
+            $this->view->layout = $this->filePath . "/layouts/$file";
         }
+    }
+
+    public function hasMethod($method)
+    {
+        $ret = false;
+        $path = $method === null ? $this->method : $method;
+        if(method_exists($this, $path))
+        {
+            $ret = true;
+        }
+        return $ret;
     }
 }

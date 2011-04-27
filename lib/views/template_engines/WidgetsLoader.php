@@ -7,6 +7,7 @@
 namespace ntentan\views\template_engines;
 
 use ntentan\Ntentan;
+use ntentan\views\widgets\Widget;
 use \ReflectionClass;
 
 class WidgetsLoader
@@ -17,7 +18,7 @@ class WidgetsLoader
     {
         if(!isset($this->loadedWidgets[$widget]))
         {
-            $widgetFile = Ntentan::$modulesPath . "/widgets/$widget/" . Ntentan::camelize($widgetName) . "Widget.php";
+            $widgetFile = Ntentan::$modulesPath . "/widgets/$widget/" . Ntentan::camelize($widget) . "Widget.php";
             if(file_exists($widgetFile))
             {
                 require_once $widgetFile;
@@ -41,12 +42,23 @@ class WidgetsLoader
         }
         return $this->loadedWidgets[$widget];
     }
+
+    public function cached($alias)
+    {
+        return Widget::cached($alias);
+    }
     
     public function __call($widget, $arguments)
     {
         $widgetInstance = $this->loadWidget($widget);
-        $widgetInstance->setData($arguments);
-        $widgetInstance->init();
+        $method = new \ReflectionMethod($widgetInstance, 'init');
+        $method->invokeArgs($widgetInstance, $arguments);
+        return $widgetInstance;
+    }
+
+    public function __get($widget)
+    {
+        $widgetInstance = $this->loadWidget($widget);
         return $widgetInstance;
     }
 }

@@ -17,6 +17,36 @@
  */
 
 error_reporting(E_ALL ^ E_NOTICE);
+
+function get_class_file($class)
+{
+    $fullPath = explode("\\", $class);
+
+    //Get rid of any initial empty class name
+    if($fullPath[0] == "") array_shift ($fullPath);
+    $class = array_pop($fullPath);
+
+    
+    if($fullPath[0] == \ntentan\Ntentan::$modulesPath)
+    {
+        $basePath = implode("/",$fullPath);
+    }
+    else if($fullPath[0] == 'ntentan' && $fullPath[1] == "plugins")
+    {
+        array_shift($fullPath);
+        array_shift($fullPath);
+        $basePath = \ntentan\Ntentan::getPluginPath(implode("/",$fullPath));
+    }
+    else if($fullPath[0] == 'ntentan')
+    {
+        array_shift($fullPath);
+        $basePath = \ntentan\Ntentan::getFilePath('lib/' . implode("/",$fullPath));
+    }
+
+    $classFile = $basePath . '/' . $class . '.php';
+    return $classFile;
+}
+
 /**
  * Auto loading function. The function whic his responsible for loading all
  * unloaded classes.
@@ -25,21 +55,7 @@ error_reporting(E_ALL ^ E_NOTICE);
  */
 function __autoload($class)
 {
-    $fullPath = explode("\\", $class);
-    $class = array_pop($fullPath);
-    if($fullPath[0] == \ntentan\Ntentan::$modulesPath)
-    {
-        //\ntentan\Ntentan::addIncludePath(implode("/",$fullPath));
-        $basePath = implode("/",$fullPath);
-    }
-    else if($fullPath[0] == 'ntentan')
-    {
-        array_shift($fullPath);
-        //\ntentan\Ntentan::addIncludePath(\ntentan\Ntentan::getFilePath('lib/' . implode("/",$fullPath)));
-        $basePath = \ntentan\Ntentan::getFilePath('lib/' . implode("/",$fullPath));
-    }
-
-    $classFile = $basePath . '/' . $class . '.php';
+    $classFile = get_class_file($class);
     if(file_exists($classFile))
     {
         require_once $classFile;

@@ -19,8 +19,24 @@
 <html>
 <head>
     <title><?php echo $title ?></title>
-    <?php echo $stylesheets ?>
-    <?php echo $javascripts ?>
+    <?php
+        echo $this->helpers->stylesheet(
+            array(
+                $this->load_asset('css/admin.css', $stylesheet),
+                $this->load_asset("css/fx.css"),
+                $this->load_asset('css/forms.css', n("lib/views/helpers/forms/css/forms.css")),
+                $this->load_asset("css/grid.css"),
+                $this->load_asset('css/list.css', n('lib/views/helpers/lists/css/default.css')),
+                $extra_stylesheet
+            )
+        );
+        echo $this->helpers->javascript(
+            array(
+                $this->load_asset('js/jquery.js'),
+                $extra_javascript
+            )
+        );
+    ?>
 </head>
 <body>
 <div class="row" id="header">
@@ -33,7 +49,8 @@
     </div>
 </div>
 <div class="row">
-    <div class="column grid_20_4"><?php echo $default_menu_widget ?></div>
+    <div class="column grid_20_4">
+        <?php echo $this->widgets->menu($sections_menu) ?></div>
     <div class="column grid_20_16">
         <div id="admin-contents">
             <?php echo $contents ?>

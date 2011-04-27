@@ -372,7 +372,7 @@ abstract class SqlDatabase extends DataStore
                 $values = array();
                 foreach($row as $value)
                 {
-                    $values[] = $value === "" ? "NULL" : "'".$this->escape($value) . "'";
+                    $values[] = ($value === "" || $value === null ) ? "NULL" : "'".$this->escape($value) . "'";
                 }
                 $baseQueries[] = "( ".implode(", ", $values)." )";
             }
@@ -391,7 +391,7 @@ abstract class SqlDatabase extends DataStore
                 }
                 else
                 {
-                    $values[] = $value === "" ? "NULL" : "'" . $this->escape($value) . "'";
+                    $values[] = ($value === "" || $value === null)  ? "NULL" : "'" . $this->escape($value) . "'";
                     $dataFields[] = $field;
                 }
             }

@@ -1,5 +1,5 @@
 <?php 
-$view->layout->addStylesheet($this->list->getStylesheet());
+//$view->layout->addStylesheet($this->helpers->list->getStylesheet());
 if($headings):
 ?>
 <?php if($entity != ''): ?>
@@ -7,7 +7,7 @@ if($headings):
 <?php endif; ?>
 <?php endif ?>
 <div id="item-actions-menu">
-    <?php echo $item_actions_menu_widget ?>
+    <?php echo $this->widgets->menu(array(array('label'=>'Add', 'route'=>'add'))) ?>
 </div>
 <?php if($notifications & is_numeric($notification_type)):?>
 <div class="notification"><?php
@@ -29,29 +29,29 @@ case 3:
 <div>
 <?php
 $headers[] = "";
-$this->list->headers = $headers;
-$this->list->data = $data;
-$this->list->rowTemplate = $row_template;
+$this->helpers->list->headers = $headers;
+$this->helpers->list->data = $data;
+$this->helpers->list->rowTemplate = $row_template;
 if(is_array($cell_templates))
 {
-    $this->list->cellTemplates = $cell_templates;
+    $this->helpers->list->cellTemplates = $cell_templates;
 }
 
-if($this->list->cellTemplates['id'] == null)
+if($this->helpers->list->cellTemplates['id'] == null)
 { 
-    $this->list->cellTemplates['id'] = $operations_template;
+    $this->helpers->list->cellTemplates['id'] = $operations_template;
 }
-$this->list->variables["operations"] = $operations;
-$this->list->variables['item_operation_url'] = $item_operation_url;
+$this->helpers->list->variables["operations"] = $operations;
+$this->helpers->list->variables['item_operation_url'] = $item_operation_url;
 
 if(is_array($variables))
 {
     foreach($variables as $variable => $value)
     {
-        $this->list->variables[$variable] = $value;
+        $this->helpers->list->variables[$variable] = $value;
     }
 }
-echo $this->list;
-echo $pagination_widget;
+echo $this->helpers->list;
+if($pagination) echo $this->widgets->pagination($page_number, $number_of_pages, $base_route);
 ?>
 </div>
