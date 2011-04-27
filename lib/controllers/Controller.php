@@ -65,20 +65,15 @@ class Controller
      * @var Array
      */
     public $variables = array();
+
+    public $components = array();
+
+    public $componentInstances = array();
     
     /**
-     * An array of the names of all the components loaded for use by this 
-     * controller.
-     * @var array
+     *
      */
-    protected $components = array();
-
-    /**
-     * An array of the instances of the components loaded for use by this
-     * controller.
-     * @var array
-     */
-    private $componentInstances = array();
+    private static $loadedComponents = array();
 
     /**
      * The instance of the view template which is going to be used to render 
@@ -192,15 +187,36 @@ class Controller
     {
         $arguments = func_get_args();
         $component = array_shift($arguments);
-        Ntentan::addIncludePath(Ntentan::getFilePath("lib/controllers/components/$component"));
-        $componentName = "\\ntentan\\controllers\\components\\$component\\" . Ntentan::camelize($component) . 'Component';
-        $componentClass = new ReflectionClass($componentName);
-        $componentInstance = $componentClass->newInstanceArgs($arguments);
-        $componentInstance->filePath = Ntentan::getFilePath("lib/controllers/components/$component");
-        $componentInstance->setController($this);
-        $this->components[] = $component;
-        $this->componentInstances[$component] = $componentInstance;
-        $componentInstance->init();
+        if(!$this->loadComponent($component, $arguments, '\\ntentan\\controllers\\components'))
+        {
+            if(!$this->loadComponent($component, $arguments, "\\ntentan\\plugins\\components"))
+            {
+                throw new \Exception("Component not found <code><b>$component</b></code>");
+            }
+        }
+    }
+
+    private function loadComponent($component, $arguments, $path)
+    {
+        $componentName = "$path\\$component\\" . Ntentan::camelize($component) . 'Component';
+        if(file_exists(get_class_file($componentName)))
+        {
+            if(!isset(Controller::$loadedComponents[$component]))
+            {
+                $componentClass = new ReflectionClass($componentName);
+                $componentInstance = $componentClass->newInstanceArgs($arguments);
+                $componentInstance->filePath = Ntentan::getFilePath("lib/controllers/components/$component");
+                Controller::$loadedComponents[$component] = $componentInstance;
+            }
+            $this->componentInstances[$component] = Controller::$loadedComponents[$component];
+            $this->componentInstances[$component]->setController($this);
+            $this->componentInstances[$component]->init();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function hasWidget($widgetName)
@@ -336,7 +352,16 @@ class Controller
                 $modelRoute .= "$p.";
 			}
 		}
-        Ntentan::error("Controller not found.");
+        if(is_object($controller))
+        {
+            $message = "Controller method <code><b> {$routeArray[$i - 1]}()</b></code> not found for the <code><b>{$controllerName}</b></code> controller.";
+        }
+        else
+        {
+            $message = "Controller not found for route <code><b>" . Ntentan::$route . "</b></code>";
+        }
+
+        Ntentan::error($message);
 	}
     
 	/**
@@ -381,7 +406,7 @@ class Controller
         }
         else
         {
-            foreach($this->componentInstances as $component)
+            foreach($this->componentInstances as $i => $component)
             {
                 $ret = $component->hasMethod($path);
                 if($ret)
@@ -408,7 +433,6 @@ class Controller
             $method = $controllerClass->GetMethod($path);
             $this->view->template = Ntentan::$modulesPath . "/modules/{$this->route}/" . Ntentan::deCamelize($path) . ".tpl.php";
             $method->invokeArgs($this, $params);
-            /*$this->view->widgets = $this->widgets;*/
             $ret = $this->view->out($this->getData());
             $this->mainPostRender();
         }
@@ -420,7 +444,6 @@ class Controller
                 {
                     $this->mainPreRender();
                     $component->variables = $this->variables;
-                    /*$component->widgets = $this->widgets;*/
                     $component->runMethod($params, $path);
                     $this->mainPostRender();
                 }
@@ -467,7 +490,7 @@ class Controller
      */
     public function hasComponent($component)
     {
-        if(array_search($component, $this->components) !== false)
+        if(array_search($component, array_keys($this->componentInstances)) !== false)
         {
             return true;        
         }

@@ -102,4 +102,9 @@ class ImagesHelper extends Helper
         }
         return $destination;
     }
+
+    public function help($arguments)
+    {
+        
+    }
 }

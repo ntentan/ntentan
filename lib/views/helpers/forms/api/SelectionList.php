@@ -128,6 +128,12 @@ class SelectionList extends Field
 	    return $this;
 	}
 
+    public function options($options, $merge = true)
+    {
+        $this->setOptions($options, $merge);
+        return $this;
+    }
+
     /**
      * Return the array of options
      * @return array

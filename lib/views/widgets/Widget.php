@@ -28,7 +28,7 @@ use ntentan\caching\Cache;
  * @author ekow
  * @todo Look at the possibility of renaming blocks to widgets
  */
-class Widget extends Presentation
+abstract class Widget extends Presentation
 {
     protected $data = array();
     protected $template;
@@ -88,7 +88,14 @@ class Widget extends Presentation
             {
                 $this->template = $this->filePath . "/{$this->name}.tpl.php";
             }
-            $output = Template::out($this->template, $this->data);
+            if(\file_exists($this->template))
+            {
+                $output = Template::out($this->template, $this->data);
+            }
+            else
+            {
+                throw new \ntentan\exceptions\FileNotFoundException("Template <code><b>{$this->template}</b></code> for widget <code><b>{$this->name}</b></code> not found!");
+            }
             
             $this->postRender();
             Cache::add($cacheKey, $output, $this->cacheLifetime);

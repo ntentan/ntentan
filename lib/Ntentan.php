@@ -66,6 +66,11 @@ class Ntentan
      * @var string
      */
     public static $modulesPath = "modules/";
+
+    /**
+     *
+     */
+    public static $pluginsPath = "plugins/";
     
     /**
      * The directory uses for storing data which needs to be cached in the file
@@ -86,22 +91,6 @@ class Ntentan
      * @see Layout
      */
     public static $layoutsPath = "layouts/";
-    
-    /**
-     * The directory which contains the blocks for the current application.
-     * @var string
-     * @see Block
-     */
-    public static $blocksPath = "blocks/";
-    
-    /**
-     * The directory which contains the resources used by the application.
-     * Resources are public files such as images, stylesheets or javascripts
-     * which are referenced from the application. Static HTML pages could also
-     * be stored as resources.
-     * @var string
-     */
-    public static $resourcesPath = "resources/";
 
     /**
      * The default route to use when no route is specified in the URL.
@@ -187,6 +176,7 @@ class Ntentan
 	    Ntentan::$modulesPath = $modules_path;
         Ntentan::$prefix = $url_prefix;
         Ntentan::$cacheMethod = $cache_method == '' ? Ntentan::$cacheMethod : $cache_method;
+        Ntentan::$pluginsPath = $plugins_path;
 
         Ntentan::addIncludePath(
             array
@@ -279,6 +269,17 @@ class Ntentan
     public static function getFilePath($path)
     {
         return Ntentan::$basePath . $path;
+    }
+
+    /**
+     * Returns the path of a while which is supposed to be located within the
+     * plugins directory. This method is mostle used internally within the
+     * ntentan framework.
+     * @param string $path
+     */
+    public static function getPluginPath($path)
+    {
+        return Ntentan::$pluginsPath . $path;
     }
     
     /**
@@ -507,9 +508,10 @@ class Ntentan
      */
     public static function exceptionHandler($exception)
     {
+        $class = new \ReflectionObject($exception);
         echo Ntentan::message(
-            $exception->getMessage(),
-            null,
+            "Exception <code><b>{$class->getName()}</b></code> thrown in <code><b>{$exception->getFile()}</b></code> on line <code><b>{$exception->getLine()}</b></code>. " . $exception->getMessage(),
+            "Exception <code>" . $class->getName() . "</code> thrown",
             null,
             true,
             $exception->getTrace()

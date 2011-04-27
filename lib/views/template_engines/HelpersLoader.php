@@ -32,6 +32,7 @@ class HelpersLoader
     public function __call($helper, $arguments)
     {
         $helper = $this->getHelper($helper);
-        return $helper->help($arguments);
+        $method = new \ReflectionMethod($helper, 'help');
+        return $method->invokeArgs($helper, $arguments);
     }
 }

@@ -13,9 +13,17 @@ class JavascriptsHelper extends Helper
 {
     public function help($arguments)
     {
-        foreach($arguments as $argument)
+        if(is_array($arguments))
         {
-            $javascripts .= "<script type='text/javascript' src='$argument'></script>";
+            foreach($arguments as $argument)
+            {
+                if($argument == '') continue;
+                $javascripts .= "<script type='text/javascript' src='$argument'></script>";
+            }
+        }
+        else
+        {
+            $javascripts .= "<script type='text/javascript' src='$arguments'></script>";
         }
         return $javascripts;
     }

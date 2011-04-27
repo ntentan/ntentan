@@ -262,8 +262,8 @@ class Model implements ArrayAccess, Iterator
     public function delete()
     {
         $this->preDeleteCallback();
-        $this->_dataStoreInstance->setModel($this);
-        $this->_dataStoreInstance->delete();
+        $this->dataStore->setModel($this);
+        $this->dataStore->delete();
         $this->postDeleteCallback();
     }
     

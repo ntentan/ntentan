@@ -52,7 +52,14 @@ body {
 }
 #message p{
     padding:10px;
+    padding-top:0px;
     margin:0px;
+}
+
+#message h2{
+    margin:0px;
+    padding:0px;
+    padding-left:10px;
 }
 
 #trace
@@ -98,7 +105,10 @@ border-collapse:collapse;
 </head>
 <div id='message'>
 <h1>Ntentan Error</h1>
-<p><?php echo $message ?></p>
+<?php echo ($subTitle == '' ? '' : "<h2>$subTitle</h2>") ?>
+<p>
+<?php echo $message;?>
+</p>
 <?php if($showTrace===true):?>
 <div id='trace'>
 <h2>Debug Trace</h2>

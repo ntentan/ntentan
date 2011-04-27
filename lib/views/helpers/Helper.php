@@ -20,5 +20,8 @@ namespace ntentan\views\helpers;
 
 abstract class Helper
 {
-    public abstract function help($argument);
+    public function help()
+    {
+        
+    }
 }
