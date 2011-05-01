@@ -98,7 +98,7 @@ class AdminComponent extends Component
      * The route to use for redirections when in console mode.
      * @var string
      */
-    private $consoleModeRoute;
+    public $consoleModeRoute;
 
     /**
      * A structured array which is used to describe the side menu when the
@@ -112,7 +112,6 @@ class AdminComponent extends Component
     public $notifications = true;
     public $showTemplate = true;
     private $operations = array();
-    public $itemOperationUrl;
     public $operationsTemplate;
     public $rowOperation;
     public $rowTemplate;
@@ -120,13 +119,6 @@ class AdminComponent extends Component
     public $hasEditOperation = true;
     public $hasAddOperation = true;
     public $entity;
-
-    public function __construct($prefix = null)
-    {
-        $this->prefix = $prefix;
-        include "config/app.php";
-        $this->app = $app;
-    }
 
     public function addOperation($operation)
     {
@@ -156,18 +148,6 @@ class AdminComponent extends Component
         );
     }
     
-    public function getCurrentRoute()
-    {
-        if($this->consoleMode)
-        {
-            return $this->consoleModeRoute;
-        }
-        else
-        {
-            return "{$this->prefix}/{$this->controller->route}";
-        }
-    }
-
     private function setupOperations()
     {
         if($this->hasAddOperation)
@@ -228,7 +208,7 @@ class AdminComponent extends Component
         $this->set("notifications", $this->notifications);
         $this->set("heading_level", $this->headingLevel);
         $this->set("headings", $this->headings);
-        $this->set("item_operation_url", $this->itemOperationUrl);
+        $this->set("item_operation_url", Ntentan::getUrl($this->consoleModeRoute. '/edit'));
         $itemsPerPage = 10;
         $model = $this->getModel();
         //$table = $model->getDataStore(true)->table;
@@ -302,14 +282,6 @@ class AdminComponent extends Component
                     'base_route' => "{$this->prefix}/$pageControllerRoute/page/"
                 )
             );
-            /*$this->addWidget(
-                'pagination',
-                array(
-                    'page'=>$pageNumber,
-                    'number_of_pages'=>$numPages,
-                    'base_route'=>"{$this->prefix}/$pageControllerRoute/page/"
-                )
-            );*/
         }
     }
     
@@ -330,15 +302,6 @@ class AdminComponent extends Component
 
     private function showConsolePage($pageNumber)
     {
-        /*$this->addWidget("menu", "item_actions_menu");
-        $this->itemActionsMenuWidget->addItem(
-            array(
-                "label" => "Add new " . $this->entity,
-                "url"   =>  Ntentan::getUrl($this->getCurrentRoute() . "/add")
-            )
-        );*/
-        //$this->view->layout->title = ucfirst($this->entity) . " | " . $this->app["name"] . " Administrator Console";
-        $this->itemOperationUrl = Ntentan::getUrl($this->getCurrentRoute() . '/edit');
         $this->page($pageNumber);
     }
 
@@ -349,6 +312,7 @@ class AdminComponent extends Component
         $this->useTemplate("run.tpl.php");
         $this->set("app_name", $this->app["name"]);
         $this->set("stylesheet", Ntentan::getFilePath("lib/controllers/components/admin/css/admin.css"));
+        $this->set('route', Ntentan::$route);
         $this->headingLevel = '3';
 
         //Setup the menus to be used in this administrator section
@@ -364,7 +328,7 @@ class AdminComponent extends Component
         $arguments = func_get_args();
         if(count($arguments) == 0)
         {
-            //$this->view->layout->title = $this->app["name"] . " Administrator Console";
+            
         }
         else
         {
@@ -453,7 +417,7 @@ class AdminComponent extends Component
         $this->set("item", (string)$item);
         $this->set("message", $this->operations[$operation]["confirm_message"]);
         $this->set("heading_level", $this->headingLevel);
-        $route = $this->getCurrentRoute();
+        $route = $this->consoleModeRoute;
         $this->set("positive_route", Ntentan::getUrl("$route/$operation/$id"));
         $this->set("negative_route", Ntentan::getUrl($route));
     }
@@ -463,7 +427,7 @@ class AdminComponent extends Component
         $this->view = false;
         $item = $this->getModel()->getFirstWithId($id);
         $item->delete();
-        $route = $this->getCurrentRoute();
+        $route = $this->consoleModeRoute;
         Ntentan::redirect(
             "$route?n=3&i=" . base64_encode($item)
         );
@@ -477,7 +441,7 @@ class AdminComponent extends Component
         $this->set("heading_level", $this->headingLevel);
         $this->set("headings", $this->headings);
         $item = $this->getModel()->getFirstWithId($id);
-        $data = $item->getData();
+        $data = $item->toArray();
         foreach($data as $key => $value)
         {
             $data[$key] = Janitor::cleanHtml($value);
@@ -500,7 +464,7 @@ class AdminComponent extends Component
             $item->id = $id;
             if($item->update())
             {
-                $route = $this->getCurrentRoute();
+                $route = $this->consoleModeRoute;
                 Ntentan::redirect(
                     "$route?n=2&i=" . base64_encode($item)
                 );
@@ -548,7 +512,7 @@ class AdminComponent extends Component
             $id = $model->save();
             if($id > 0)
             {
-                $route = $this->getCurrentRoute();
+                $route = $this->consoleModeRoute;
                 
                 if(!$this->executeCallbackMethod($this->postAddCallback, $id, $model))
                 {

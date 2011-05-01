@@ -8,6 +8,7 @@ class Janitor
 {
     public static function cleanHtml($string, $strip = false)
     {
+        if(!is_string($string)) return;
         if($strip === false)
         {
             return htmlspecialchars($string);

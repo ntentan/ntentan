@@ -10,7 +10,7 @@ class PaginationWidget extends Widget
     private $numberOfPages;
     private $baseRoute;
 
-    public function init($pageNumber, $numberOfPages, $baseRoute)
+    public function init($pageNumber = null, $numberOfPages = null, $baseRoute = null)
     {
         $this->pageNumber = $pageNumber;
         $this->numberOfPages = $numberOfPages;
