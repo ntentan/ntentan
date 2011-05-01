@@ -210,6 +210,7 @@ class Controller
             }
             $this->componentInstances[$component] = Controller::$loadedComponents[$component];
             $this->componentInstances[$component]->setController($this);
+            $this->componentInstances[$component]->route = $this->route;
             $this->componentInstances[$component]->init();
             return true;
         }

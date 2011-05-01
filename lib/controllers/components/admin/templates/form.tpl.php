@@ -3,6 +3,6 @@
 foreach($fields as $field)
 {
     if($field["primary_key"]) continue;
-    echo $this->form->get($field);
+    echo $this->helpers->form->get($field);
 }?>
 </div>
