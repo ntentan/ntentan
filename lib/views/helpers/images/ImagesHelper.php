@@ -32,7 +32,7 @@ class ImagesHelper extends Helper
         $dest_im = imagecreatetruecolor($width, $height);
         imagecopyresampled($dest_im, $im, 0,0,0,0,$width,$height,$o_width,$o_height);
 
-        @imagejpeg($dest_im, $dest, 100);
+        @imagejpeg($dest_im, $dest, 90);
         imagedestroy($im);
         imagedestroy($dest_im);
 
@@ -60,7 +60,7 @@ class ImagesHelper extends Helper
         $im2 = imagecreatetruecolor ($width, $height);
 
         imagecopyresampled($im2,$im,0,0,$left,$top,$width,$height,$width,$height);
-        imagejpeg($im2, $dest, 100);
+        imagejpeg($im2, $dest, 90);
         imagedestroy($im);
         imagedestroy($im2);
     }
@@ -98,7 +98,6 @@ class ImagesHelper extends Helper
             }
 
             $this->crop( $tempImage, $destination, $width, $height, $head);
-            //unlink($tempImage);
         }
         return $destination;
     }

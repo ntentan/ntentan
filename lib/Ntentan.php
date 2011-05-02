@@ -161,19 +161,19 @@ class Ntentan
 
     public static function setup()
     {
-	    // Check if the library was properly setup
-	    if(!file_exists("config/ntentan.php"))
-	    {
-	        echo Ntentan::message(
-	            "Please ensure that ntentan is properly setup. The <code>config/ntentan.php</code> file is not present."
-	        );
-	        die();
-	    }
+        // Check if the library was properly setup
+        if(!file_exists("config/ntentan.php"))
+        {
+            echo Ntentan::message(
+                "Please ensure that ntentan is properly setup. The <code>config/ntentan.php</code> file is not present."
+            );
+            die();
+        }
 
-	    // Setup the include path
-	    require "config/ntentan.php";
-	    Ntentan::$basePath = $ntentan_home;
-	    Ntentan::$modulesPath = $modules_path;
+        // Setup the include path
+        require "config/ntentan.php";
+        Ntentan::$basePath = $ntentan_home;
+        Ntentan::$modulesPath = $modules_path;
         Ntentan::$prefix = $url_prefix;
         Ntentan::$cacheMethod = $cache_method == '' ? Ntentan::$cacheMethod : $cache_method;
         Ntentan::$pluginsPath = $plugins_path;
@@ -190,6 +190,7 @@ class Ntentan
                 Ntentan::getFilePath('lib/views/widgets/'),
                 Ntentan::getFilePath('lib/exceptions/'),
                 Ntentan::getFilePath('lib/caching/'),
+                Ntentan::getFilePath('/'),
                 "./",
                 Ntentan::$modulesPath,
                 Ntentan::$layoutsPath,

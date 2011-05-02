@@ -12,12 +12,12 @@ use \ReflectionClass;
 
 class WidgetsLoader
 {
-    private $loadedWidgets = array();
+    //private $loadedWidgets = array();
 
     public function loadWidget($widget)
     {
-        if(!isset($this->loadedWidgets[$widget]))
-        {
+        //if(!isset($this->loadedWidgets[$widget]))
+        //{
             $widgetFile = Ntentan::$modulesPath . "/widgets/$widget/" . Ntentan::camelize($widget) . "Widget.php";
             if(file_exists($widgetFile))
             {
@@ -36,11 +36,12 @@ class WidgetsLoader
                 Ntentan::error("Widget <code><b>$widget</b></code> not found");
             }
             $widgetClass = new ReflectionClass($widgetClass);
-            $this->loadedWidgets[$widget] = $widgetClass->newInstance();
-            $this->loadedWidgets[$widget]->filePath = $path;
-            $this->loadedWidgets[$widget]->name = $widget;
-        }
-        return $this->loadedWidgets[$widget];
+            $widgetInstance = $widgetClass->newInstance();
+            $widgetInstance->filePath = $path;
+            $widgetInstance->name = $widget;
+            return $widgetInstance;
+        //}
+        //return $this->loadedWidgets[$widget];
     }
 
     public function cached($alias)

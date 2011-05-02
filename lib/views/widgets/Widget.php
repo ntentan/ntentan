@@ -34,13 +34,16 @@ abstract class Widget extends Presentation
     protected $template;
     public $name;
     public $filePath;
-    public $cacheLifetime = -1;
-    public $alias;
+    private $cacheLifetime = -1;
+    public $cacheContents = false;
+    private $alias;
 
     public function init()
     {
         
     }
+    
+    public abstract function execute();
 
     public function setData($data)
     {
@@ -83,6 +86,7 @@ abstract class Widget extends Presentation
         }
         else
         {
+            $this->execute();
             $this->preRender();
             if($this->template == "")
             {
@@ -109,14 +113,30 @@ abstract class Widget extends Presentation
         $this->set('alias', $alias);
         return $this;
     }
+    
+    public function setAlias($alias)
+    {
+        $this->alias($alias);
+    }
+    
+    public function setCacheLifetime($cacheLifetime)
+    {
+        $this->cacheLifetime = $cacheLifetime;
+    }
 
     private function getCacheKey()
     {
-        return ($this->alias == '' ? $this->name : $this->alias) . '_widget';
+        return ($this->alias == '' ? $this->name : "{$this->alias}_{$this->name}" ) . '_widget';
     }
 
     public function cached()
     {
         return Cache::exists($this->getCacheKey());
+    }
+    
+    public function cache_lifetime($lifeTime)
+    {
+        $this->cacheLifetime = $lifeTime;
+        return $this;
     }
 }
