@@ -84,6 +84,10 @@ class Ntentan
      *
      */
     public static $cacheMethod = "file";
+    
+    public static $config;
+    
+    public static $debug = true;
 
     /**
      * The directory which contains the layouts for the current application.
@@ -131,6 +135,8 @@ class Ntentan
     private static $camelisations = array();
     private static $deCamelisations = array();
     
+    private static $loadedDatastores = array();
+    
     /**
      * The path to the file which holds the database configuration/
      * @var string
@@ -148,8 +154,8 @@ class Ntentan
 	 * ntentan is properly setup and then it implements the routing engine which
 	 * loads the controllers to handle the request.
 	 */
-	public static function boot()
-	{
+    public static function boot()
+    {
         Ntentan::setup();
         // Do not go beyond this point if running in CLI mode
         if(defined('STDIN')===true)
@@ -157,26 +163,20 @@ class Ntentan
             return null;
         }
         Ntentan::route();
-	}
+    }
 
-    public static function setup()
+    public static function setup($config)
     {
-        // Check if the library was properly setup
-        if(!file_exists("config/ntentan.php"))
-        {
-            echo Ntentan::message(
-                "Please ensure that ntentan is properly setup. The <code>config/ntentan.php</code> file is not present."
-            );
-            die();
-        }
-
-        // Setup the include path
-        require "config/ntentan.php";
-        Ntentan::$basePath = $ntentan_home;
-        Ntentan::$modulesPath = $modules_path;
-        Ntentan::$prefix = $url_prefix;
-        Ntentan::$cacheMethod = $cache_method == '' ? Ntentan::$cacheMethod : $cache_method;
-        Ntentan::$pluginsPath = $plugins_path;
+        
+        Ntentan::$basePath = $config['application']['ntentan_home'];
+        Ntentan::$modulesPath = $config['application']['modules_path'];
+        Ntentan::$prefix = $config['application']['prefix'];
+        define('CONTEXT', $config['application']['context']);
+        
+        Ntentan::$cacheMethod = $config[CONTEXT]['caching'] == '' ? Ntentan::$cacheMethod : $config[CONTEXT]['caching'];
+        Ntentan::$pluginsPath = $config[CONTEXT]['plugins'];
+        Ntentan::$debug = $config[CONTEXT]['debug'] == 'true' ? true : false;
+        Ntentan::$config = $config;
 
         Ntentan::addIncludePath(
             array
@@ -314,31 +314,36 @@ class Ntentan
      */
     public static function getDefaultDataStore($instance = false)
     {
-    	if(file_exists(Ntentan::$dbConfigFile)) {
-            include Ntentan::$dbConfigFile;
-            if(isset($datastores["default"])) {
-                if($instance === true)
+        if(isset(Ntentan::$config[CONTEXT]['datastore'])) 
+        {
+            if($instance === true)
+            {
+                
+                if(!isset(Ntentan::$loadedDatastores[Ntentan::$config[CONTEXT]['datastore']]))
                 {
-                    $dataStoreClass = "\\ntentan\\models\\datastores\\" . Ntentan::camelize($datastores['default']["datastore"]);
-                    if(class_exists($dataStoreClass)) {
-                        $dataStore = new $dataStoreClass($datastores['default']);
-                        return $dataStore;
-                    } else {
+                    $dataStoreClass = "\\ntentan\\models\\datastores\\" . Ntentan::camelize(Ntentan::$config[CONTEXT]['datastore']);
+                    if(class_exists($dataStoreClass)) 
+                    {
+                        Ntentan::$loadedDatastores[Ntentan::$config[CONTEXT]['datastore']] = new $dataStoreClass(Ntentan::$config[CONTEXT]);
+                    } 
+                    else 
+                    {
                         throw new exceptions\DataStoreException("Datastore {$dataStoreClass} doesn't exist.");
                     }
                 }
-                else
-                {
-                    return $datastores["default"];
-                }
-            } else {
-            	echo Ntentan::message("Invalid datastore specified. Please specify a default datastore");
-            	die();
+                var_dump(Ntentan::$loadedDatastores[Ntentan::$config[CONTEXT]['datastore']]);
+                return Ntentan::$loadedDatastores[Ntentan::$config[CONTEXT]['datastore']];
             }
-    	} else {
-    		throw new exceptions\FileNotFoundException("Could not locate the database configuration file <code><b>".Ntentan::$dbConfigFile."</b></code>");
-    		die();
-    	}
+            else
+            {
+                return Ntentan::$config[CONTEXT];
+            }
+        } 
+        else 
+        {
+            echo Ntentan::message("Invalid datastore specified. Please specify a default datastore");
+            die();
+        }
     }
 
     /**
@@ -479,9 +484,18 @@ class Ntentan
         if($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') return true; else return false;
     }
     
-    public static function error($message, $subTitle = null, $type = null) {
-    	echo Ntentan::message($message, $subTitle);
-    	die();
+    public static function error($message, $subTitle = null, $type = null) 
+    {
+        if(isset(Ntentan::$config[CONTEXT]['error_handler']) && Ntentan::$debug === false)
+        {
+            $_GET['q'] = Ntentan::$config[CONTEXT]['error_handler'];
+            Ntentan::route();        
+        }
+        else
+        {
+            echo Ntentan::message($message, $subTitle);
+            die();
+        }
     }
         
     public static function message($message, $subTitle = null, $type = null, $showTrace = true, $trace = false) 
@@ -508,7 +522,7 @@ class Ntentan
      * @param Exception $exception
      */
     public static function exceptionHandler($exception)
-    {
+    {        
         $class = new \ReflectionObject($exception);
         echo Ntentan::message(
             "Exception <code><b>{$class->getName()}</b></code> thrown in <code><b>{$exception->getFile()}</b></code> on line <code><b>{$exception->getLine()}</b></code>. " . $exception->getMessage(),

@@ -26,29 +26,26 @@ use ntentan\models\exceptions\DataStoreException;
 
 class Mysql extends SqlDatabase
 {
-	private static $db = false;
+    private $db = false;
 	
     protected function connect($parameters)
     {
-        $this->schema = $parameters["database"];
-        if(Mysql::$db === false)
-        {
-            Mysql::$db = new mysqli(
-                $parameters["hostname"],
-                $parameters["username"],
-                $parameters["password"],
-                $parameters["database"]
-            );
-        }
+        $this->schema = $parameters["database_name"];
+        $this->db = new mysqli(
+            $parameters["database_host"],
+            $parameters["database_user"],
+            $parameters["database_password"],
+            $parameters["database_name"]
+        );
     }
     
     public function query($query)
     {
-        $queryResult = Mysql::$db->query($query);
+        $queryResult = $this->db->query($query);
         
         if($queryResult === false)
         {
-            throw new DataStoreException ("MySQL Says : ". Mysql::$db->error . "[$query]");
+            throw new DataStoreException ("MySQL Says : ". $this->db->error . "[$query]");
         }
         else if($queryResult === true)
         {
@@ -279,17 +276,17 @@ class Mysql extends SqlDatabase
     
     protected function getLastInsertId()
     {
-        return Mysql::$db->insert_id;
+        return $this->db->insert_id;
     }
     
     public function begin()
     {
-        //Mysql::$db->autocommit(false);
+        //$this->db->autocommit(false);
     }
     
     public function end()
     {
-        //Mysql::$db->commit();
+        //$this->db->commit();
     }
 
     protected function limit($limitParams)

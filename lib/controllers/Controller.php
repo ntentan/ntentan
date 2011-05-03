@@ -434,8 +434,8 @@ class Controller
             $method = $controllerClass->GetMethod($path);
             $this->view->template = Ntentan::$modulesPath . "/modules/{$this->route}/" . Ntentan::deCamelize($path) . ".tpl.php";
             $method->invokeArgs($this, $params);
-            $ret = $this->view->out($this->getData());
             $this->mainPostRender();
+            $ret = $this->view->out($this->getData());
         }
         else
         {

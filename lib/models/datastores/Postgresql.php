@@ -21,26 +21,24 @@ namespace ntentan\models\datastores;
 use ntentan\Ntentan;
 use ntentan\models\exceptions\DataStoreException;
 
-class Postgresql extends SqlDatabase {
-	private static $db = false;
+class Postgresql extends SqlDatabase 
+{
+    public $db;
 	
-	public function connect($parameters)
+    public function connect($parameters)
     {
-        if(self::$db == false)
+        if(isset($parameters["database_schema"]))
         {
-            if(isset($parameters["schema"]))
-            {
-                $this->schema = $parameters["schema"];
-            }
-            else
-            {
-                $this->schema = "public";
-            }
-            self::$db = pg_connect(
-                "host={$parameters["host"]} dbname={$parameters["database"]} user={$parameters["username"]} password={$parameters["password"]}"
-            );
+            $this->schema = $parameters["database_schema"];
         }
-	}
+        else
+        {
+            $this->schema = "public";
+        }
+        self::$db = pg_connect(
+            "host={$parameters["database_host"]} dbname={$parameters["database_name"]} user={$parameters["database_user"]} password={$parameters["database_password"]}"
+        );
+    }
 	
     public function query($query)
     {
