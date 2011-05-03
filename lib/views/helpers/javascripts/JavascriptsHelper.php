@@ -7,25 +7,23 @@
 namespace ntentan\views\helpers\javascripts;
 
 use ntentan\Ntentan;
-use ntentan\views\helpers\Helper;
+use ntentan\minification\MinifiableHelper;
 
-class JavascriptsHelper extends Helper
+class JavascriptsHelper extends MinifiableHelper
 {
-    public function help($arguments)
+    protected function getExtension()
     {
-        if(is_array($arguments))
-        {
-            foreach($arguments as $argument)
-            {
-                if($argument == '') continue;
-                $javascripts .= "<script type='text/javascript' src='$argument'></script>";
-            }
-        }
-        else
-        {
-            $javascripts .= "<script type='text/javascript' src='$arguments'></script>";
-        }
-        return $javascripts;
+        return "js";
+    }
+    
+    protected function getMinifier()
+    {
+        return "js.packer";
+    }
+    
+    protected function getTag($url)
+    {
+        return "<script type='text/javascript' src='$url'></script>";
     }
 
     public function ntentan()

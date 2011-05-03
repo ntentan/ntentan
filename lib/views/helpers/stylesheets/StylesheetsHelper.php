@@ -1,41 +1,23 @@
 <?php
-/**
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace ntentan\views\helpers\stylesheets;
 
 use ntentan\Ntentan;
-use ntentan\views\helpers\Helper;
+use ntentan\minification\MinifiableHelper;
 
-class StylesheetsHelper extends Helper
+class StylesheetsHelper extends MinifiableHelper
 {
-    private $loadedStylesheets = array();
-
-    public function help($arguments)
+    protected function getExtension()
     {
-        if(is_array($arguments))
-        {
-            foreach($arguments as $argument)
-            {
-                if($argument == '') continue;
-                $stylesheets .= "<link rel='stylesheet' type='text/css' href='$argument' />";
-            }
-        }
-        else
-        {
-            $stylesheets .= "<link rel='stylesheet' type='text/css' href='$arguments' />";
-        }
-        foreach($this->loadedStylesheets as $argument)
-        {
-            $stylesheets .= "<link rel='stylesheet' type='text/css' href='$argument' />";
-        }
-        return $stylesheets;
+        return "css";
     }
-
-    public function add($stylesheet)
+    
+    protected function getMinifier()
     {
-        $this->loadedStylesheets[] = $stylesheet;
+        return "css.cssmin";
+    }
+    
+    protected function getTag($url)
+    {
+        return "<link type='text/css' rel='stylesheet' href='$url'>";
     }
 }

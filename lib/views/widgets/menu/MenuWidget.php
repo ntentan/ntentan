@@ -27,12 +27,17 @@ use ntentan\views\widgets\Widget;
 class MenuWidget extends Widget
 {
     public $hasLinks = true;
+    public $items = array();
 
     public function init($items)
     {
+        $this->items = $items;
+    }
+    
+    public function execute()
+    {
         $menuItems = array();
-        $this->setData(array());
-        foreach($items as $item)
+        foreach($this->items as $item)
         {
             if(is_string($item) || is_numeric($item))
             {
