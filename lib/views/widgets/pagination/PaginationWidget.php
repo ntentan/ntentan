@@ -35,7 +35,7 @@ class PaginationWidget extends Widget
         return $this;
     }
 
-    public function preRender()
+    public function execute()
     {
         $pageNumber = $this->pageNumber;
         $numPages = $this->numberOfPages;

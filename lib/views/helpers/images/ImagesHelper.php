@@ -84,7 +84,7 @@ class ImagesHelper extends Helper
             $imageWidth = imagesx($image);
             $imageHeight = imagesy($image);
             imagedestroy($image);
-            $tempImage = TEMP_IMAGE_DIRECTORY . uniqid() . ".jpeg";
+            $tempImage = 'cache/' . uniqid() . ".jpeg";
 
             $aspect = $imageWidth / $imageHeight;
 
