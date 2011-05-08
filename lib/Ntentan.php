@@ -154,9 +154,9 @@ class Ntentan
 	 * ntentan is properly setup and then it implements the routing engine which
 	 * loads the controllers to handle the request.
 	 */
-    public static function boot()
+    public static function boot($config)
     {
-        Ntentan::setup();
+        Ntentan::setup($config);
         // Do not go beyond this point if running in CLI mode
         if(defined('STDIN')===true)
         {
@@ -175,7 +175,7 @@ class Ntentan
         
         Ntentan::$cacheMethod = $config[CONTEXT]['caching'] == '' ? Ntentan::$cacheMethod : $config[CONTEXT]['caching'];
         Ntentan::$pluginsPath = $config[CONTEXT]['plugins'];
-        Ntentan::$debug = $config[CONTEXT]['debug'] == 'true' ? true : false;
+        Ntentan::$debug = $config[CONTEXT]['debug'] == true ? true : false;
         Ntentan::$config = $config;
 
         Ntentan::addIncludePath(
@@ -331,7 +331,6 @@ class Ntentan
                         throw new exceptions\DataStoreException("Datastore {$dataStoreClass} doesn't exist.");
                     }
                 }
-                var_dump(Ntentan::$loadedDatastores[Ntentan::$config[CONTEXT]['datastore']]);
                 return Ntentan::$loadedDatastores[Ntentan::$config[CONTEXT]['datastore']];
             }
             else

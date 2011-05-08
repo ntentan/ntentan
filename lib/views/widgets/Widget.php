@@ -1,8 +1,8 @@
 <?php
-/* 
+/*
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,22 +40,22 @@ abstract class Widget extends Presentation
 
     public function init()
     {
-        
+
     }
-    
+
     public abstract function execute();
 
     public function setData($data)
     {
         $this->data = $data;
     }
-    
+
     protected function set($params1, $params2 = null)
     {
         if(is_array($params1))
         {
             $this->data = array_merge($this->data, $params1);
-        } 
+        }
         else
         {
             $this->data[$params1] = $params2;
@@ -74,7 +74,7 @@ abstract class Widget extends Presentation
 
     public function postRender()
     {
-        
+
     }
 
     public function __toString()
@@ -88,19 +88,19 @@ abstract class Widget extends Presentation
         {
             $this->execute();
             $this->preRender();
+            Template::appendPath($this->filePath);
             if($this->template == "")
             {
-                $this->template = $this->filePath . "/{$this->name}.tpl.php";
+                $this->template = "{$this->name}_widget.tpl.php";
             }
-            if(\file_exists($this->template))
-            {
+            try{
                 $output = Template::out($this->template, $this->data);
             }
-            else
+            catch(Exception $e)
             {
-                throw new \ntentan\exceptions\FileNotFoundException("Template <code><b>{$this->template}</b></code> for widget <code><b>{$this->name}</b></code> not found!");
+                die('Template not Found!');
             }
-            
+
             $this->postRender();
             Cache::add($cacheKey, $output, $this->cacheLifetime);
         }
@@ -113,12 +113,12 @@ abstract class Widget extends Presentation
         $this->set('alias', $alias);
         return $this;
     }
-    
+
     public function setAlias($alias)
     {
         $this->alias($alias);
     }
-    
+
     public function setCacheLifetime($cacheLifetime)
     {
         $this->cacheLifetime = $cacheLifetime;
@@ -133,7 +133,7 @@ abstract class Widget extends Presentation
     {
         return Cache::exists($this->getCacheKey());
     }
-    
+
     public function cache_lifetime($lifeTime)
     {
         $this->cacheLifetime = $lifeTime;

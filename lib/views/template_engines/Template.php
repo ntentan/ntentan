@@ -2,10 +2,12 @@
 namespace ntentan\views\template_engines;
 
 use ntentan\Ntentan;
+use ntentan\caching\Cache;
 
 class Template
 {
     private static $engineCache;
+    private static $path;
 
     public static function getEngine($template)
     {
@@ -23,57 +25,35 @@ class Template
         return Template::$engineCache[$engine];
     }
 
+    public static function appendPath($path)
+    {
+        self::$path[] = $path;
+    }
+
+    public static function prependPath($path)
+    {
+        array_unshift(self::$path, $path);
+    }
+
     public static function out($template, $templateData, $view = null)
     {
-        if(is_string($template))
+        $cacheKey = "template_$template";
+        if(Cache::exists($cacheKey))
         {
-            return Template::getEngine($template)->out($templateData, $view);
+            $templateFile = Cache::get($cacheKey);
         }
         else
         {
-            foreach($template as $singleTemplate)
+            foreach(self::$path as $path)
             {
-                if(Template::fileExists($singleTemplate))
+                $templateFile = "$path/$template";
+                if(file_exists($templateFile))
                 {
-                    return Template::getEngine($template)->out($templateData, $view);
+                    Cache::add($cacheKey, $templateFile);
+                    break;
                 }
             }
         }
-    }
-
-    /**
-     * Based on code from PHP manual User Contribution by (plsnhat at gmail dot com)
-     * on the file_exists function. Comment contributed on 31-Jul-2009 02:30.
-     * @param <type> $filename
-     * @return <type>
-     */
-    private static function fileExists($filename) {
-        if(function_exists("get_include_path"))
-        {
-            $include_path = get_include_path();
-        }
-        elseif(false !== ($ip = ini_get("include_path")))
-        {
-            $include_path = $ip;
-        }
-        else
-        {
-            return false;
-        }
-
-        if(false !== strpos($include_path, PATH_SEPARATOR)) {
-            if(false !== ($temp = explode(PATH_SEPARATOR, $include_path)) && count($temp) > 0) {
-                for($n = 0; $n < count($temp); $n++) {
-                    if(false !== @file_exists($temp[$n] . $filename)) {
-                        return true;
-                    }
-                }
-                return false;
-            } else {return false;}
-        } elseif(!empty($include_path)) {
-            if(false !== @file_exists($include_path)) {
-                return true;
-            } else {return false;}
-        } else {return false;}
+        return Template::getEngine($templateFile)->out($templateData, $view);
     }
 }
