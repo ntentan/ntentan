@@ -1,7 +1,7 @@
 <?php
 /*
  * Copyright 2010 James Ekow Abaka Ainooson
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,9 +36,10 @@ class View extends Presentation
     public function __construct()
     {
         $this->setContentType("text/html");
-        $this->layout = "layouts/main.tpl.php";
+        $this->layout = "main.tpl.php";
+        Template::appendPath("views/default");
     }
-    
+
     public function setContentType($contentType, $encoding="utf-8")
     {
         $this->encoding = $encoding;
@@ -51,17 +52,9 @@ class View extends Presentation
         {
             $data = null;
         }
-        else if(file_exists( $this->template ))
-        {
-            $data = Template::out($this->template, $viewData, $this);
-        }
-        else if(file_exists($this->defaultTemplatePath . $this->template))
-        {
-            $data = Template::out($this->defaultTemplatePath . $this->template, $viewData, $this);
-        }
         else
         {
-            Ntentan::error("View template <b><code>{$this->template}</code></b> not Found!");
+            $data = Template::out($this->template, $viewData, $this);
         }
 
         if($this->layout !== false && !Ntentan::isAjax())

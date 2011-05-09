@@ -8,8 +8,8 @@ abstract class TemplateEngine
     public $template;
     private $widgetsLoader;
     private $helpersLoader;
-    
-    public function loadAsset($asset, $copyFrom = null)
+
+    public static function loadAsset($asset, $copyFrom = null)
     {
 
         $assetPath = "assets/".($copyFrom==null ? $asset : $copyFrom);
@@ -27,11 +27,12 @@ abstract class TemplateEngine
         }
         else
         {
-            throw new \Exception("File not found or not writable <b><code>public/$asset</code></b>");
+            Ntentan::error("File not found or not writable <b><code>public/$asset</code></b>");
+            die();
         }
-        return Ntentan::getUrl("public/$asset");
+        return "public/$asset";
     }
-    
+
     public function __get($property)
     {
         switch($property)
@@ -52,6 +53,6 @@ abstract class TemplateEngine
                 return $this->helpersLoader;
         }
     }
-    
+
     abstract public function out($data, $view);
 }

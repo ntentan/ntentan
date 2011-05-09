@@ -7,20 +7,20 @@
 namespace ntentan\views\helpers\javascripts;
 
 use ntentan\Ntentan;
-use ntentan\minification\MinifiableHelper;
+use ntentan\views\helpers\minifiables\MinifiablesHelper;
 
-class JavascriptsHelper extends MinifiableHelper
+class JavascriptsHelper extends MinifiablesHelper
 {
     protected function getExtension()
     {
         return "js";
     }
-    
+
     protected function getMinifier()
     {
         return "js.packer";
     }
-    
+
     protected function getTag($url)
     {
         return "<script type='text/javascript' src='$url'></script>";

@@ -1,8 +1,8 @@
 <?php
-/* 
+/*
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,20 +27,20 @@ use ntentan\models\Model;
 /**
  * The Controller class represents the base class for all controllers that are
  * built for the ntentan framework. Controllers are used to direct the flow of
- * your application logic. They are stored in modules and they contain methods 
- * which are called from the url. Parameters to the methods are also passed 
+ * your application logic. They are stored in modules and they contain methods
+ * which are called from the url. Parameters to the methods are also passed
  * through the URL. If a method is not specified, the default method is called.
  * The methods called by the controllers are expected to set data into variables
  * which are later rendered as output to the end user through views.
  *
  * @author  James Ekow Abaka Ainooson
- * @todo    Controllers must output data that can be passed to some kind of 
+ * @todo    Controllers must output data that can be passed to some kind of
  *          template engine like smarty.
  */
 class Controller
 {
     /**
-     * The name of the default method to execute when the controller is called 
+     * The name of the default method to execute when the controller is called
      * without any action methods specified.
      * @var string
      */
@@ -69,48 +69,48 @@ class Controller
     public $components = array();
 
     public $componentInstances = array();
-    
+
     /**
      *
      */
     private static $loadedComponents = array();
 
     /**
-     * The instance of the view template which is going to be used to render 
+     * The instance of the view template which is going to be used to render
      * the output of this controller.
      * @var View
      */
     public $viewInstance;
-    
+
     /**
      * The instance of the model class which shares the same package or namespace
      * with this controller.
      * @var Model
      */
     private $modelInstance;
-    
+
     /**
      * A route to the model of the default model this controller is liked to.
      * @var string
      */
     private $modelRoute;
-    
+
     /**
-     * Stores the data this controller holds for passing ot to the template. 
-     * This data is stored as an associative array in this variable. The values 
+     * Stores the data this controller holds for passing ot to the template.
+     * This data is stored as an associative array in this variable. The values
      * can be manipulated through the Controller::set() method.
      * @var array
      */
     public $data;
-    
+
     /**
      * The directory path to the file of this controller's class.
      * @var string
      */
     public $filePath;
-    
+
     public $method;
-    
+
     /**
      * Returns the name of the controller.
      * @return string
@@ -150,17 +150,17 @@ class Controller
 
         case "layout":
             return $this->view->layout;
-            
+
         case "model":
             if($this->modelInstance == null)
             {
                 $this->modelInstance = Model::load($this->modelRoute);
             }
             return $this->modelInstance;
-            
+
         case "directory":
             return Ntentan::$modulesPath . $this->route . "/";
-            
+
         default:
             if(substr($property, -6) == "Widget")
             {
@@ -226,7 +226,7 @@ class Controller
     }
 
     /**
-     * 
+     *
      * @param mixed $params1
      * @param string $params2
      */
@@ -254,7 +254,7 @@ class Controller
     {
         return $this->variables[$variable];
     }
-    
+
     /**
      * Appends a string to an already setup template variable.
      * @param string $params1
@@ -293,7 +293,7 @@ class Controller
             if($value == "") continue;
             $routeArray[] = $value;
         }
-        
+
         // Loop through the filtered path and extract the controller class
 		for($i = 0; $i<count($routeArray); $i++)
 		{
@@ -325,7 +325,7 @@ class Controller
                         {
                             $controller->addComponent($component);
                         }
-                        
+
                         $controller->setRoute($controllerRoute);
                         $controller->setName($controllerName);
                         $controller->modelRoute = $modelRoute;
@@ -342,7 +342,7 @@ class Controller
                     {
                         Ntentan::error("Controller class <b><code>$controllerName</code></b> not found.");
                     }
-                    
+
                     $controller->runMethod(array_slice($routeArray,$i+2));
                     return;
                 }
@@ -364,7 +364,7 @@ class Controller
 
         Ntentan::error($message);
 	}
-    
+
 	/**
 	 * Set the name of this controller
 	 * @param string $name
@@ -379,7 +379,7 @@ class Controller
     }
 
     /**
-     * Set the value of the route used to load this controller. 
+     * Set the value of the route used to load this controller.
      * @param string $route
      */
     public function setRoute($route)
@@ -432,7 +432,7 @@ class Controller
             $controllerClass = new ReflectionClass($this->getName());
             $this->mainPreRender();
             $method = $controllerClass->GetMethod($path);
-            $this->view->template = Ntentan::$modulesPath . "/modules/{$this->route}/" . Ntentan::deCamelize($path) . ".tpl.php";
+            $this->view->template = str_replace("/", "_", $this->route) . '_' . $path . '.tpl.php';
             $method->invokeArgs($this, $params);
             $this->mainPostRender();
             $ret = $this->view->out($this->getData());
@@ -477,11 +477,11 @@ class Controller
     }
 
     /**
-     * 
+     *
      */
     public function postRender()
     {
-        
+
     }
 
     /**
@@ -493,7 +493,7 @@ class Controller
     {
         if(array_search($component, array_keys($this->componentInstances)) !== false)
         {
-            return true;        
+            return true;
         }
         else
         {
@@ -508,6 +508,6 @@ class Controller
      */
     public function init()
     {
-        
+
     }
 }

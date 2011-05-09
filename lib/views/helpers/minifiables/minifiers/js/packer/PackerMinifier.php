@@ -1,7 +1,7 @@
 <?php
-namespace ntentan\minification\minifiers\js\packer;
+namespace ntentan\views\helpers\minifiables\minifiers\js\packer;
 
-use ntentan\minification\Minifier;
+use ntentan\views\helpers\minifiables\Minifier;
 
 class PackerMinifier extends Minifier
 {

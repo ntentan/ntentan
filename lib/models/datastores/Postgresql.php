@@ -35,7 +35,7 @@ class Postgresql extends SqlDatabase
         {
             $this->schema = "public";
         }
-        self::$db = pg_connect(
+        $this->db = pg_connect(
             "host={$parameters["database_host"]} dbname={$parameters["database_name"]} user={$parameters["database_user"]} password={$parameters["database_password"]}"
         );
     }
@@ -43,11 +43,11 @@ class Postgresql extends SqlDatabase
     public function query($query)
     {
         $query = mb_convert_encoding($query, 'UTF-8', \mb_detect_encoding($query));
-        $queryResult = pg_query(self::$db, $query);
+        $queryResult = pg_query($this->db, $query);
         
         if($queryResult === false)
         {
-            throw new DataStoreException ("PostgreSQL Says : ".\pg_last_error(self::$db)." [$query]");
+            throw new DataStoreException ("PostgreSQL Says : ".\pg_last_error($this->db)." [$query]");
         }
         $result = array();
         while($row = pg_fetch_assoc($queryResult))
@@ -59,7 +59,7 @@ class Postgresql extends SqlDatabase
     }
     
     protected function escape($string) {
-        return pg_escape_string(self::$db, $string);
+        return pg_escape_string($this->db, $string);
     }
     
     protected function quote($field) {

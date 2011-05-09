@@ -1,7 +1,7 @@
 <?php
-namespace ntentan\minification\minifiers\css\cssmin;
+namespace ntentan\views\helpers\minifiables\minifiers\css\cssmin;
 
-use ntentan\minification\Minifier;
+use ntentan\views\helpers\minifiables\Minifier;
 
 class CssminMinifier extends Minifier
 {

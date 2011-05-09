@@ -1,19 +1,27 @@
 <?php
 namespace ntentan\views\template_engines\php;
 
+use ntentan\Ntentan;
 use ntentan\views\template_engines\TemplateEngine;
 
 class Php extends TemplateEngine
 {
     public function out($templateData, $view)
     {
-        foreach($templateData as $key => $value)
+        if(file_exists($this->template))
         {
-            $$key = $value;
+            foreach($templateData as $key => $value)
+            {
+                $$key = $value;
+            }
+            ob_start();
+            include $this->template;
+            return ob_get_clean();
         }
-        ob_start();
-        include $this->template;
-        return ob_get_clean();
+        else
+        {
+            echo Ntentan::message("Template file <b><code>{$this->template}</code></b> not found");
+        }
     }
 
     public function load_asset($asset, $copyFrom = null)
