@@ -98,12 +98,13 @@ class ImagesHelper extends Helper
             }
 
             $this->crop( $tempImage, $destination, $width, $height, $head);
+            unlink($tempImage);
         }
         return $destination;
     }
 
     public function help($arguments)
     {
-        
+
     }
 }
