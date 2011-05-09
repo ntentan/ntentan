@@ -7,7 +7,7 @@ use ntentan\caching\Cache;
 class Template
 {
     private static $engineCache;
-    private static $path;
+    private static $path = array();
 
     public static function getEngine($template)
     {
