@@ -7,7 +7,6 @@ use ntentan\caching\Cache;
 class Template
 {
     private static $engineCache;
-    private static $path = array();
 
     public static function getEngine($template)
     {
@@ -25,26 +24,17 @@ class Template
         return Template::$engineCache[$engine];
     }
 
-    public static function appendPath($path)
-    {
-        self::$path[] = $path;
-    }
-
-    public static function prependPath($path)
-    {
-        array_unshift(self::$path, $path);
-    }
-
     public static function out($template, $templateData, $view = null)
     {
-        $cacheKey = "template_$template";
-        if(Cache::exists($cacheKey))
+        $cacheKey = "template_{$template}_" . TemplateEngine::getContext();
+        $path = TemplateEngine::getPath();
+        if(Cache::exists($cacheKey) && Ntentan::$debug === false)
         {
             $templateFile = Cache::get($cacheKey);
         }
         else
         {
-            foreach(self::$path as $path)
+            foreach(TemplateEngine::getPath() as $path)
             {
                 $templateFile = "$path/$template";
                 if(file_exists($templateFile))

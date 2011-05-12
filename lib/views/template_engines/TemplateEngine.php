@@ -8,6 +8,33 @@ abstract class TemplateEngine
     public $template;
     private $widgetsLoader;
     private $helpersLoader;
+    private static $path = array();
+    private static $context = 'default';
+
+    public static function appendPath($path)
+    {
+        self::$path[] = $path;
+    }
+
+    public static function prependPath($path)
+    {
+        array_unshift(self::$path, $path);
+    }
+
+    public static function getPath()
+    {
+        return self::$path;
+    }
+
+    public static function setContext($context)
+    {
+        self::$context = $context;
+    }
+
+    public static function getContext()
+    {
+        return self::$context;
+    }
 
     public static function loadAsset($asset, $copyFrom = null)
     {

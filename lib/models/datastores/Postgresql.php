@@ -1,8 +1,8 @@
 <?php
-/* 
+/*
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,10 +21,10 @@ namespace ntentan\models\datastores;
 use ntentan\Ntentan;
 use ntentan\models\exceptions\DataStoreException;
 
-class Postgresql extends SqlDatabase 
+class Postgresql extends SqlDatabase
 {
     public $db;
-	
+
     public function connect($parameters)
     {
         if(isset($parameters["database_schema"]))
@@ -39,12 +39,12 @@ class Postgresql extends SqlDatabase
             "host={$parameters["database_host"]} dbname={$parameters["database_name"]} user={$parameters["database_user"]} password={$parameters["database_password"]}"
         );
     }
-	
+
     public function query($query)
     {
         $query = mb_convert_encoding($query, 'UTF-8', \mb_detect_encoding($query));
         $queryResult = pg_query($this->db, $query);
-        
+
         if($queryResult === false)
         {
             throw new DataStoreException ("PostgreSQL Says : ".\pg_last_error($this->db)." [$query]");
@@ -54,14 +54,14 @@ class Postgresql extends SqlDatabase
         {
             $result[] = $row;
         }
-        
+
         return $result;
     }
-    
+
     protected function escape($string) {
         return pg_escape_string($this->db, $string);
     }
-    
+
     protected function quote($field) {
     	return "\"$field\"";
     }
@@ -104,7 +104,7 @@ class Postgresql extends SqlDatabase
                 {
                     return $this->quote($model->dataStore->table) . '.' . $this->quote($fieldName);
                 }
-                
+
             }
         }
         else
@@ -182,8 +182,12 @@ class Postgresql extends SqlDatabase
                     $type = "text";
                     break;
 
+                case '"char"':
+                    $type = "string";
+                    break;
+
                 default:
-                    throw new Exception("Unknown postgresql data type [{$pgField["data_type"]}] for field[{$pgField["column_name"]}] in table [{$this->database}]");
+                    throw new \Exception("Unknown postgresql data type [{$pgField["data_type"]}] for field[{$pgField["column_name"]}] in table [{$this->database}]");
             }
 
             $field = array(
@@ -212,7 +216,7 @@ class Postgresql extends SqlDatabase
         }
         return $fields;
     }
-	
+
     public function describe()
     {
         $description = array();

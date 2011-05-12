@@ -1,8 +1,8 @@
 <?php
-/* 
+/*
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,7 +26,7 @@ function get_class_file($class)
     if($fullPath[0] == "") array_shift ($fullPath);
     $class = array_pop($fullPath);
 
-    
+
     if($fullPath[0] == \ntentan\Ntentan::$modulesPath)
     {
         $basePath = implode("/",$fullPath);
@@ -50,7 +50,7 @@ function get_class_file($class)
 /**
  * Auto loading function. The function whic his responsible for loading all
  * unloaded classes.
- * 
+ *
  * @param string $class
  */
 function __autoload($class)

@@ -1,8 +1,8 @@
 <?php
-/* 
+/*
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,18 +29,18 @@ use \ReflectionObject;
 use \ReflectionMethod;
 
 /**
- * The Model class 
+ * The Model class
  */
 class Model implements ArrayAccess, Iterator
 {
     /**
-     * 
+     *
      * @var array
      */
     protected $data = array();
-    
+
     /**
-     * Previous data kept for validation purposes. 
+     * Previous data kept for validation purposes.
      * @var unknown_type
      */
     private $previousData;
@@ -52,7 +52,7 @@ class Model implements ArrayAccess, Iterator
     //private $_dataStoreInstance;
 
     /**
-     * The name of the current datastore 
+     * The name of the current datastore
      * @var string
      */
     public $dataStore;
@@ -71,7 +71,7 @@ class Model implements ArrayAccess, Iterator
     private static $modelCache;
     private $iteratorPosition;
     public $defaultField;
-    
+
     public function __construct()
     {
         if($this->belongsTo != null)
@@ -91,30 +91,30 @@ class Model implements ArrayAccess, Iterator
         $modelInformation = new ReflectionObject($this);
         $modelName = end(explode("\\", $modelInformation->getName()));
         $this->name = strtolower(Ntentan::deCamelize($modelName));
-        
+
         $this->iteratorPosition = 0;
         $skip = count(explode("/", Ntentan::$modulesPath));
         $this->modelRoute = implode(".",array_slice(explode("\\", $modelInformation->getName()), count(explode("/", Ntentan::$modulesPath)) + 1, -1));
-        
+
         $dataStoreParams = Ntentan::getDefaultDataStore();
         $dataStoreClass = __NAMESPACE__ . "\\datastores\\" . Ntentan::camelize($dataStoreParams["datastore"]);
         if(class_exists($dataStoreClass))
         {
             $dataStore = new $dataStoreClass($dataStoreParams);
             $this->setDataStore($dataStore);
-        } 
+        }
         else
         {
             throw new exceptions\DataStoreException("Datastore {$dataStoreClass} doesn't exist.");
         }
     }
-    
+
     public static function getBelongsTo($belongsTo)
     {
         return Ntentan::plural(is_array($belongsTo) ? $belongsTo[0] : $belongsTo);
     }
-    
-    
+
+
     public static function getClassName($className)
     {
         $classNameArray = explode('.', $className);
@@ -176,7 +176,7 @@ class Model implements ArrayAccess, Iterator
         $this->dataStore = $dataStore;
         $this->dataStore->setModel($this);
     }
-    
+
     public function getName()
     {
         return $this->name;
@@ -197,32 +197,32 @@ class Model implements ArrayAccess, Iterator
 
     public function preSaveCallback()
     {
-        
+
     }
 
     public function postSaveCallback($id)
     {
-        
+
     }
-    
+
     public function preUpdateCallback()
     {
-        
+
     }
-    
+
     public function postUpdateCallback()
     {
-        
+
     }
-    
+
     public function preDeleteCallback()
     {
-        
+
     }
-    
+
     public function postDeleteCallback()
     {
-        
+
     }
 
     public function save()
@@ -233,6 +233,7 @@ class Model implements ArrayAccess, Iterator
             $this->preSaveCallback();
             $this->dataStore->setModel($this);
             $id = $this->dataStore->put();
+            $this->id = $id;
             $this->postSaveCallback($id);
             $this->dataStore->end();
             return $id;
@@ -266,14 +267,14 @@ class Model implements ArrayAccess, Iterator
         $this->dataStore->delete();
         $this->postDeleteCallback();
     }
-    
+
     public static function __callstatic($method, $arguments)
     {
         $class = get_called_class();
         $object = new $class();
         return $object->__call($method, $arguments);
     }
-    
+
     public function __call($method, $arguments)
     {
         $executed = false;
@@ -309,7 +310,7 @@ class Model implements ArrayAccess, Iterator
             if(!isset($params["fetch_related"])) $params["fetch_related"] = true;
             return $this->get($type, $params);
         }
-        
+
         if(substr($method, 0, 10) == "getAllWith")
         {
             $field = Ntentan::deCamelize(substr($method, 10));
@@ -336,7 +337,7 @@ class Model implements ArrayAccess, Iterator
         {
             return $this->get(isset($arguments[0]['limit']) ? $arguments[0]['limit'] : 'first', $arguments[0]);
         }
-        
+
         if($method == "getAll")
         {
             return $this->get(isset($arguments[0]['limit']) ? $arguments[0]['limit'] : 'all', $arguments[0]);
@@ -422,29 +423,29 @@ class Model implements ArrayAccess, Iterator
     {
         return count($this->data);
     }
-    
+
     public function rewind()
     {
         $this->iteratorPosition = 0;
     }
-    
+
     public function current()
     {
         $newModel = clone $this;
         $newModel->setData($this->data[$this->iteratorPosition], true);
         return $newModel;
     }
-    
+
     public function key()
     {
         return $this->iteratorPosition;
     }
-    
+
     public function next()
     {
         $this->iteratorPosition++;
     }
-    
+
     public function valid()
     {
         return isset($this->data[$this->iteratorPosition]);
@@ -460,7 +461,7 @@ class Model implements ArrayAccess, Iterator
                 foreach($description["fields"] as $i => $field)
                 {
                     $uniqueField = false;
-                    
+
                     foreach($this->mustBeUnique as $unique)
                     {
                         if(is_array($unique))
@@ -487,7 +488,7 @@ class Model implements ArrayAccess, Iterator
                             }
                         }
                     }
-                    
+
                     if($uniqueField)
                     {
                         $description["fields"][$i]["unique"] = true;
@@ -498,7 +499,7 @@ class Model implements ArrayAccess, Iterator
                     }
                 }
             }
-    
+
             if(is_array($this->belongsTo))
             {
                 foreach($this->belongsTo as $belongsTo)
@@ -571,7 +572,7 @@ class Model implements ArrayAccess, Iterator
         $keys = array_keys($this->data);
 
         $returnData = array();
-        
+
         if($keys[0] == '0')
         {
             foreach($this->data as $index => $row)
@@ -598,7 +599,7 @@ class Model implements ArrayAccess, Iterator
         }
         return $returnData;
     }
-    
+
     public function validate($inserting = false)
     {
         $description = $this->describe();
@@ -622,7 +623,7 @@ class Model implements ArrayAccess, Iterator
                 $value = $this->get('first', array("conditions"=>array($field["name"] => $this->data[$field["name"]])));
                 if(count($value->getData()))
                 {
-                    $this->invalidFields[$field["name"]][] = isset($field["unique_violation_message"]) ? 
+                    $this->invalidFields[$field["name"]][] = isset($field["unique_violation_message"]) ?
                         $field["unique_violation_message"] :
                         "This field must be unique";
                 }
@@ -632,9 +633,9 @@ class Model implements ArrayAccess, Iterator
         {
             return true;
         }
-        else 
+        else
         {
-            return false;    
+            return false;
         }
     }
 }

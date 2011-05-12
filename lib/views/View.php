@@ -18,6 +18,7 @@
 
 namespace ntentan\views;
 
+use ntentan\views\template_engines\TemplateEngine;
 use ntentan\views\template_engines\Template;
 
 use ntentan\Ntentan;
@@ -37,7 +38,7 @@ class View extends Presentation
     {
         $this->setContentType("text/html");
         $this->layout = "main.tpl.php";
-        Template::appendPath("views/default");
+        TemplateEngine::appendPath("views/default");
     }
 
     public function setContentType($contentType, $encoding="utf-8")
