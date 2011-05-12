@@ -1,8 +1,8 @@
 <?php
-/* 
+/*
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,14 +23,14 @@ use ntentan\models\Model;
 
 /**
  * A class used as the base class datastore classes which store their data in SQL
- * Databases. This class generates standard SQL queries through which most 
+ * Databases. This class generates standard SQL queries through which most
  * SQL database systems could be manipulated. For system specific functions (like
- * connecting, interpreting queries, escaping strings etc.) this class exposes 
+ * connecting, interpreting queries, escaping strings etc.) this class exposes
  * abstract methods which need to be implemented by the actual datastore classes.
  * If a datastore needs to be written for any database system which supports
  * standard SQL queries, the this class would be a great foundation to build
  * upon
- * 
+ *
  * @author jainooson@gmail.com,
  * @package ntentan.models.datastores
  * @abstract
@@ -46,7 +46,7 @@ abstract class SqlDatabase extends DataStore
     {
         $this->connect($parameters);
     }
-    
+
     public function __set($property, $value) {
     	switch($property) {
     	case "table":
@@ -57,7 +57,7 @@ abstract class SqlDatabase extends DataStore
             break;
     	}
     }
-    
+
     public function __get($property) {
     	switch($property) {
     	case "table":
@@ -66,12 +66,12 @@ abstract class SqlDatabase extends DataStore
             return $this->_schema;
     	}
     }
-    
+
     /**
      * A protected function used internally to set the table names. This function
      * exists so that datastores which need to modify the table names could do
      * so by overriding it and providing their own implementation.
-     * 
+     *
      * @param unknown_type $table
      */
     protected function setTable($table) {
@@ -85,7 +85,7 @@ abstract class SqlDatabase extends DataStore
     }
 
     /**
-     * 
+     *
      * @param Model $model
      */
     public function setModel($model)
@@ -151,7 +151,7 @@ abstract class SqlDatabase extends DataStore
             }
             $fields = implode(", ", is_array($fields) ? $fields : explode(",", $fields));
         }
-        
+
         // Generate joins
         $joins = "";
         if($params["fetch_related"] === true || $params["fetch_belongs_to"] === true)
@@ -176,7 +176,7 @@ abstract class SqlDatabase extends DataStore
                     }
 
                     // If the related belongs to field was not queried then skip
-                    if($alias != null && array_search($alias, $params["fields"]) === false) 
+                    if($alias != null && array_search($alias, $params["fields"]) === false)
                     {
                         continue;
                     }
@@ -190,7 +190,7 @@ abstract class SqlDatabase extends DataStore
                     $joinedModelDescription = $model->describe();
                     $joinedModelFields = array_keys($joinedModelDescription["fields"]);
                     $joinedSchema = $model->dataStore->schema;
-                    
+
                     if($alias == null)
                     {
                         $joinedTable = $joinedModelDescription["name"];
@@ -199,10 +199,10 @@ abstract class SqlDatabase extends DataStore
                     {
                         $joinedTable = $alias;
                     }
-                    
+
                     foreach($joinedModelFields as $index => $field)
                     {
-                        $joinedModelFields[$index] = 
+                        $joinedModelFields[$index] =
                             $this->quote($joinedTable)
                              . "." . $this->quote($field) . " AS "
                              . $this->quote($model->modelRoute . ".$field");
@@ -210,12 +210,12 @@ abstract class SqlDatabase extends DataStore
                     $fields = $fields . ", " . implode(", ", $joinedModelFields);
                     $joins .= " JOIN " . ($datastore->schema == "" ? '' : "{$datastore->schema}.") . $datastore->table . " "
                            . ($alias != null ? "AS $alias" : "")
-                           . " ON " . ($alias != null ? $alias : $datastore->table) . ".id = {$this->table}." 
+                           . " ON " . ($alias != null ? $alias : $datastore->table) . ".id = {$this->table}."
                            . ($alias != null ? $alias : Ntentan::singular($datastore->table) . "_id ");
                 }
             }
         }
-        
+
         if(isset($params["through"]))
         {
             if(is_array($params["through"]))
@@ -289,7 +289,7 @@ abstract class SqlDatabase extends DataStore
                     $modelizedFields = array();
                     foreach($result as $field => $value)
                     {
-                        if(strpos($field,".")!==false) 
+                        if(strpos($field,".")!==false)
                         {
                             $fieldNameArray = explode(".", $field);
                             $fieldName = array_pop($fieldNameArray);
@@ -318,7 +318,7 @@ abstract class SqlDatabase extends DataStore
                 }
             }
         }
-        
+
         if($params["fetch_related"] === true || $params["fetch_has_many"] === true)
         {
             if(count($this->model->hasMany) > 0)
@@ -328,7 +328,7 @@ abstract class SqlDatabase extends DataStore
                     foreach($results as $index => $result)
                     {
                         $model = Model::load($hasMany);
-                        $relatedData = $model->get('all', 
+                        $relatedData = $model->get('all',
                             array("conditions"=>
                                 array(
                                     Ntentan::singular($this->model->getName()) . "_id" => $result["id"]
@@ -387,7 +387,7 @@ abstract class SqlDatabase extends DataStore
             {
                 if(is_array($value))
                 {
-                    $subData[$field] = $value; 
+                    $subData[$field] = $value;
                 }
                 else
                 {
@@ -432,7 +432,7 @@ abstract class SqlDatabase extends DataStore
 
     public function getDataStoreInfo()
     {
-    
+
     }
 
     protected function _update($data)
@@ -445,12 +445,19 @@ abstract class SqlDatabase extends DataStore
             if(is_array($value)) continue;
             if(array_search($field, $fields) === false) continue;
 
-            $values[] = $this->quote($field) . " = '". $this->escape($value) . "'";
+            if($value === null)
+            {
+                $values[] = $this->quote($field) . " = null";
+            }
+            else
+            {
+                $values[] = $this->quote($field) . " = '". $this->escape($value) . "'";
+            }
         }
         $query = "UPDATE ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->table} SET " . implode(", ", $values) . " WHERE id = '{$data["id"]}'";
         $this->query($query);
     }
-    
+
     protected function _delete($key)
     {
         $query = "DELETE FROM {$this->table} WHERE id = '{$key}'";

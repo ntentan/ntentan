@@ -1,8 +1,8 @@
 <?php
-/* 
+/*
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,7 +27,7 @@ session_start();
 
 
 /**
- * Include the autoloading function. This function automatically includes the 
+ * Include the autoloading function. This function automatically includes the
  * source files for all classes whose source files are not found.
  */
 include "autoload.php";
@@ -44,10 +44,10 @@ set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
 /**
  * A utility class for the Ntentan framework. This class contains the routing
  * framework used for routing the pages. Routing involves the analysis of the
- * URL and the loading of the controllers which are requested through the URL. 
- * This class also has several utility methods which help in the overall 
+ * URL and the loading of the controllers which are requested through the URL.
+ * This class also has several utility methods which help in the overall
  * operation of the entire framework.
- * 
+ *
  *  @author     James Ainooson <jainooson@gmail.com>
  *  @license    Apache License, Version 2.0
  *  @package    ntentan
@@ -55,12 +55,12 @@ set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
 class Ntentan
 {
     /**
-     * The home of the ntentan framework. The directory in which the code for 
+     * The home of the ntentan framework. The directory in which the code for
      * the ntentan framework resides.
      * @var string
      */
     public static $basePath = "ntentan/";
-    
+
     /**
      * The directory which holds the modules of the application.
      * @var string
@@ -71,7 +71,7 @@ class Ntentan
      *
      */
     public static $pluginsPath = "plugins/";
-    
+
     /**
      * The directory uses for storing data which needs to be cached in the file
      * cache. This path is only necessary when the file caching method is
@@ -84,10 +84,10 @@ class Ntentan
      *
      */
     public static $cacheMethod = "file";
-    
+
     public static $config;
-    
-    public static $debug = true;
+
+    public static $debug = false;
 
     /**
      * The directory which contains the layouts for the current application.
@@ -101,7 +101,7 @@ class Ntentan
      * @var unknown_type
      */
     public static $defaultRoute = "home";
-    
+
     /**
      * The route which was requested through the URL. In cases where the route
      * is altered by the routing engine, this route still remains the same as
@@ -110,16 +110,16 @@ class Ntentan
      * @var string
      */
     public static $requestedRoute;
-    
+
     /**
      * The routing table. An array of regular expressions and associated
      * operations. If a particular request sent in through the URL matches a
      * regular expression in the table, the associated operations are executed.
-     * 
+     *
      * @var array
      */
     public static $routes = array();
-    
+
     /**
      * The route which is currently being executed. If the routing engine has
      * modified the requested route, this property would hold the value of the
@@ -134,21 +134,21 @@ class Ntentan
     private static $plurals = array();
     private static $camelisations = array();
     private static $deCamelisations = array();
-    
+
     private static $loadedDatastores = array();
-    
+
     /**
      * The path to the file which holds the database configuration/
      * @var string
      */
     public static $dbConfigFile = "config/db.php";
-    
+
     /**
      * Current ntentan version
      * @var string
      */
     const VERSION = "0.5-rc1";
-    
+
 	/**
 	 * The main entry point of the Ntentan application. This method checks if
 	 * ntentan is properly setup and then it implements the routing engine which
@@ -167,14 +167,14 @@ class Ntentan
 
     public static function setup($config)
     {
-        
+
         Ntentan::$basePath = $config['application']['ntentan_home'];
         Ntentan::$modulesPath = $config['application']['modules_path'];
         Ntentan::$prefix = $config['application']['prefix'];
         define('CONTEXT', $config['application']['context']);
-        
+
         Ntentan::$cacheMethod = $config[CONTEXT]['caching'] == '' ? Ntentan::$cacheMethod : $config[CONTEXT]['caching'];
-        Ntentan::$pluginsPath = $config[CONTEXT]['plugins'];
+        Ntentan::$pluginsPath = $config[CONTEXT]['plugins'] == '' ? 'plugins/' : $config[CONTEXT]['plugins'];
         Ntentan::$debug = $config[CONTEXT]['debug'] == true ? true : false;
         Ntentan::$config = $config;
 
@@ -206,37 +206,39 @@ class Ntentan
         unset($_GET["q"]);
         unset($_REQUEST["q"]);
 
-        foreach(Ntentan::$routes as $route)
-		{
-            if(preg_match($route["pattern"], Ntentan::$route, $matches) == 1)
-		    {
-                $parts = array();
-		        if(isset($route["route"]))
-		        {
-                    $newRoute = $route["route"];
-                    foreach($matches as $key => $value)
-                    {
-                        $newRoute = str_replace("::$key", $value, $newRoute);
-                        $parts["::$key"] = $value;
-                    }
-                    Ntentan::$route = $newRoute;
-		        }
-		        if(is_array($route["globals"]))
-		        {
-		            foreach($route["globals"] as $key => $value)
-		            {
-		                define(
-		                    $key,
-		                    str_replace(array_keys($parts), $parts, $value)
-		                );
-		            }
-		        }
-                break;
-            }
-		}
-
         if(Ntentan::$route == "") {
             Ntentan::$route = Ntentan::$defaultRoute;
+        }
+        else
+        {
+            foreach(Ntentan::$routes as $route)
+            {
+                if(preg_match($route["pattern"], Ntentan::$route, $matches) == 1)
+                {
+                    $parts = array();
+                    if(isset($route["route"]))
+                    {
+                        $newRoute = $route["route"];
+                        foreach($matches as $key => $value)
+                        {
+                            $newRoute = str_replace("::$key", $value, $newRoute);
+                            $parts["::$key"] = $value;
+                        }
+                        Ntentan::$route = $newRoute;
+                    }
+                    if(is_array($route["globals"]))
+                    {
+                        foreach($route["globals"] as $key => $value)
+                        {
+                            define(
+                                $key,
+                                str_replace(array_keys($parts), $parts, $value)
+                            );
+                        }
+                    }
+                    break;
+                }
+            }
         }
 
 		$module = controllers\Controller::load(Ntentan::$route);
@@ -244,7 +246,7 @@ class Ntentan
 
     /**
      * A utility method to add a path to the list of include paths.
-     * @param array $paths 
+     * @param array $paths
      */
     public static function addIncludePath($paths)
     {
@@ -263,7 +265,7 @@ class Ntentan
 
     /**
      * Returns the path of a file which is supposed to be located within the
-     * ntentan framework's directory. This method is mostly used internally 
+     * ntentan framework's directory. This method is mostly used internally
      * within the ntentan framework.
      * @param string $path
      */
@@ -282,7 +284,7 @@ class Ntentan
     {
         return Ntentan::$pluginsPath . $path;
     }
-    
+
     /**
      * Returns a url which has been formatted purposedly for the application.
      * @param unknown_type $url
@@ -296,7 +298,7 @@ class Ntentan
      * Write a header to redirect the request to a new location. In cases where
      * a redirect parameter exists in the request, the $url parameter of this
      * method is totally ignored.
-     * 
+     *
      * @param string $url The url to redirect to. This could be a full URL or a
      *                    route to an Ntentan controller.
      * @param unknown_type $absolute
@@ -309,24 +311,24 @@ class Ntentan
     }
 
     /**
-     * Returns the default datastore as defined in the config/db.php 
+     * Returns the default datastore as defined in the config/db.php
      * configuration file.
      */
     public static function getDefaultDataStore($instance = false)
     {
-        if(isset(Ntentan::$config[CONTEXT]['datastore'])) 
+        if(isset(Ntentan::$config[CONTEXT]['datastore']))
         {
             if($instance === true)
             {
-                
+
                 if(!isset(Ntentan::$loadedDatastores[Ntentan::$config[CONTEXT]['datastore']]))
                 {
                     $dataStoreClass = "\\ntentan\\models\\datastores\\" . Ntentan::camelize(Ntentan::$config[CONTEXT]['datastore']);
-                    if(class_exists($dataStoreClass)) 
+                    if(class_exists($dataStoreClass))
                     {
                         Ntentan::$loadedDatastores[Ntentan::$config[CONTEXT]['datastore']] = new $dataStoreClass(Ntentan::$config[CONTEXT]);
-                    } 
-                    else 
+                    }
+                    else
                     {
                         throw new exceptions\DataStoreException("Datastore {$dataStoreClass} doesn't exist.");
                     }
@@ -337,8 +339,8 @@ class Ntentan
             {
                 return Ntentan::$config[CONTEXT];
             }
-        } 
-        else 
+        }
+        else
         {
             echo Ntentan::message("Invalid datastore specified. Please specify a default datastore");
             die();
@@ -390,7 +392,7 @@ class Ntentan
         }
         return $singular;
     }
-    
+
     /**
      * Returns the plural form of any singular english word which is passed to it.
      * @param string $word
@@ -412,9 +414,9 @@ class Ntentan
         }
         return $plural;
     }
-    
+
     /**
-     * Converts a dot separeted string or under-score separated string into 
+     * Converts a dot separeted string or under-score separated string into
      * a camelcase format.
      * @param string $string The string to be converted.
      * @param string $delimiter The delimiter to be used as the trigger for capitalisation
@@ -439,7 +441,7 @@ class Ntentan
         }
         return $camelized;
     }
-    
+
     /**
      * Converts a camel case string to an underscore separated string
      * @param unknown_type $string
@@ -482,13 +484,13 @@ class Ntentan
     {
         if($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') return true; else return false;
     }
-    
-    public static function error($message, $subTitle = null, $type = null) 
+
+    public static function error($message, $subTitle = null, $type = null)
     {
         if(isset(Ntentan::$config[CONTEXT]['error_handler']) && Ntentan::$debug === false)
         {
             $_GET['q'] = Ntentan::$config[CONTEXT]['error_handler'];
-            Ntentan::route();        
+            Ntentan::route();
         }
         else
         {
@@ -496,8 +498,8 @@ class Ntentan
             die();
         }
     }
-        
-    public static function message($message, $subTitle = null, $type = null, $showTrace = true, $trace = false) 
+
+    public static function message($message, $subTitle = null, $type = null, $showTrace = true, $trace = false)
     {
         if($showTrace === true)
         {
@@ -515,13 +517,13 @@ class Ntentan
         $message = ob_get_clean();
         return $message;
     }
-    
+
     /**
      * Default call back for displaying exceptions.
      * @param Exception $exception
      */
     public static function exceptionHandler($exception)
-    {        
+    {
         $class = new \ReflectionObject($exception);
         echo Ntentan::message(
             "Exception <code><b>{$class->getName()}</b></code> thrown in <code><b>{$exception->getFile()}</b></code> on line <code><b>{$exception->getLine()}</b></code>. " . $exception->getMessage(),
@@ -537,4 +539,3 @@ class Ntentan
         fclose($logFile);
     }
 }
-
