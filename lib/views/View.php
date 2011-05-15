@@ -41,7 +41,7 @@ class View extends Presentation
         TemplateEngine::appendPath("views/default");
     }
 
-    public function setContentType($contentType, $encoding="utf-8")
+    public function setContentType($contentType, $encoding="UTF-8")
     {
         $this->encoding = $encoding;
     	header("Content-type: $contentType;charset=$encoding");
@@ -55,13 +55,13 @@ class View extends Presentation
         }
         else
         {
-            $data = Template::out($this->template, $viewData, $this);
+            $data = TemplateEngine::render($this->template, $viewData, $this);
         }
 
         if($this->layout !== false && !Ntentan::isAjax())
         {
             $viewData['contents'] = $data;
-            return Template::out($this->layout, $viewData, $this);
+            return TemplateEngine::render($this->layout, $viewData, $this);
         }
         else
         {

@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+use ntentan\Ntentan;
+
 error_reporting(E_ALL ^ E_NOTICE);
 
 function get_class_file($class)
@@ -62,6 +64,6 @@ function __autoload($class)
     }
     else
     {
-        throw new ntentan\exceptions\FileNotFoundException("Class file <code><b>$classFile</b></code> for <code><b>$class</b></code> class not found.");
+        throw new \ntentan\exceptions\FileNotFoundException("Class file <code><b>$classFile</b></code> for <code><b>$class</b></code> class not found.");
     }
 }

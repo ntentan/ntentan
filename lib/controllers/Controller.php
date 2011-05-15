@@ -70,6 +70,8 @@ class Controller
 
     public $componentInstances = array();
 
+    public $rawMethod;
+
     /**
      *
      */
@@ -254,6 +256,11 @@ class Controller
     {
         return $this->variables[$variable];
     }
+    
+    protected function getRawMethod()
+    {
+        return $this->rawMethod;
+    }
 
     /**
      * Appends a string to an already setup template variable.
@@ -321,6 +328,7 @@ class Controller
                     {
                         $controller = new $controllerName();
                         $controller->method = $routeArray[$i + 1] != '' ? Ntentan::camelize($routeArray[$i + 1], ".", "", true) : $controller->defaultMethodName;
+                        $controller->rawMethod = $routeArray[$i + 1] != '' ? $routeArray[$i + 1]: $controller->defaultMethodName;
                         foreach($controller->components as $component)
                         {
                             $controller->addComponent($component);
@@ -429,13 +437,14 @@ class Controller
         $path = $method === null ? $this->method : $method;
         if(method_exists($this, $path))
         {
+            $this->preExecute();
             $controllerClass = new ReflectionClass($this->getName());
-            $this->mainPreRender();
             $method = $controllerClass->GetMethod($path);
-            $this->view->template = str_replace("/", "_", $this->route) . '_' . $path . '.tpl.php';
+            $this->view->template = str_replace("/", "_", $this->route) . '_' . $this->getRawMethod() . '.tpl.php';
             $method->invokeArgs($this, $params);
-            $this->mainPostRender();
-            $ret = $this->view->out($this->getData());
+            $this->preRender();
+            $return = $this->view->out($this->getData());
+            $return = $this->postRender($return);
         }
         else
         {
@@ -443,32 +452,12 @@ class Controller
             {
                 if($component->hasMethod($path))
                 {
-                    $this->mainPreRender();
                     $component->variables = $this->variables;
                     $component->runMethod($params, $path);
-                    $this->mainPostRender();
                 }
             }
         }
-        echo $ret;
-    }
-
-    public function mainPreRender()
-    {
-        foreach($this->componentInstances as $component)
-        {
-            $component->preRender();
-        }
-        $this->preRender();
-    }
-
-    public function mainPostRender()
-    {
-        foreach($this->componentInstances as $component)
-        {
-            $component->postRender();
-        }
-        $this->postRender();
+        echo $return;
     }
 
     public function preRender()
@@ -479,9 +468,14 @@ class Controller
     /**
      *
      */
-    public function postRender()
+    public function postRender($data)
     {
-
+        return $data;
+    }
+    
+    public function preExecute()
+    {
+        
     }
 
     /**

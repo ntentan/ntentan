@@ -6,7 +6,7 @@ use ntentan\views\template_engines\TemplateEngine;
 
 class Php extends TemplateEngine
 {
-    public function out($templateData, $view)
+    public function generate($templateData, $view)
     {
         if(file_exists($this->template))
         {

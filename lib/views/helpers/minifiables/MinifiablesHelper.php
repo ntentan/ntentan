@@ -67,7 +67,7 @@ abstract class MinifiablesHelper extends Helper
 
     public function add($script)
     {
-        $this->minifiableScripts[] = $script;
+        if($script != '') $this->minifiableScripts[] = $script;
         return $this;
     }
 }

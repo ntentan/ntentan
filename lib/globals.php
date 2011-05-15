@@ -1,8 +1,8 @@
 <?php
-/* 
+/*
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,7 @@
  */
 
 use ntentan\Ntentan;
-use ntentan\views\template_engines\Template;
+use ntentan\views\template_engines\TemplateEngine;
 
 /**
  * A shortcut wrapper function around the Ntentan::getUrl method
@@ -47,12 +47,12 @@ function s($string)
 }
 
 /**
- * A shortcut wrapper around the 
+ * A shortcut wrapper around the
  * @param string $template
  * @param array $data
  */
 function t($template, $data, $view = null)
 {
-    return Template::out($template, $data, $view);
+    return TemplateEngine::render($template, $data, $view);
 }
 

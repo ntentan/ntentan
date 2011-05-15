@@ -34,7 +34,7 @@ use \ReflectionMethod;
 class Model implements ArrayAccess, Iterator
 {
     /**
-     *
+     * 
      * @var array
      */
     protected $data = array();
@@ -68,7 +68,6 @@ class Model implements ArrayAccess, Iterator
     public $modelRoute;
     private $name;
     public $invalidFields = array();
-    private static $modelCache;
     private $iteratorPosition;
     public $defaultField;
 
@@ -568,14 +567,15 @@ class Model implements ArrayAccess, Iterator
 
     public function toArray()
     {
-        if(!is_array($this->data)) return null;
-        $keys = array_keys($this->data);
+        $data = $this->getData();
+        if(!is_array($data)) return null;
+        $keys = array_keys($data);
 
         $returnData = array();
 
         if($keys[0] == '0')
         {
-            foreach($this->data as $index => $row)
+            foreach($data as $index => $row)
             {
                 foreach($row as $key => $value)
                 {
@@ -585,11 +585,11 @@ class Model implements ArrayAccess, Iterator
         }
         else
         {
-            foreach($this->data as $key => $row)
+            foreach($data as $key => $row)
             {
-                if(is_object($this->data[$key]))
+                if(is_object($data[$key]))
                 {
-                    $returnData[$key] = $this->data[$key]->toArray();
+                    $returnData[$key] = $data[$key]->toArray();
                 }
                 else
                 {

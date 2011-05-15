@@ -1,8 +1,8 @@
 <?php
-/* 
+/*
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,14 +25,14 @@ use \ReflectionMethod;
 /**
  * The base class for all Componets. Components are little plugins which are
  * written to extend the functionality of Controllers. Components basically
- * provide extra pre defined action methods which extend the capability of any 
- * Controller into which it is loaded. Components can set variables in their 
- * parent controller through which they can directly interract with the views 
+ * provide extra pre defined action methods which extend the capability of any
+ * Controller into which it is loaded. Components can set variables in their
+ * parent controller through which they can directly interract with the views
  * and layouts.
- * 
+ *
  * Since components are subclasses of controllers, they have access to all the
  * utility methods which are available to controllers.
- * 
+ *
  * @author James Ekow Abaka Ainooson
  */
 class Component extends Controller
@@ -42,7 +42,7 @@ class Component extends Controller
      * @var string
      */
     protected $controllerName;
-    
+
     /**
      * An instance of the controller this instance of the component is attached
      * to.
@@ -55,8 +55,14 @@ class Component extends Controller
      */
     public function __construct()
     {
-        
+
     }
+    
+    protected function getRawMethod()
+    {
+        return $this->controller->rawMethod;
+    }
+    
 
     /**
      * Sets the controller instance of this component.
@@ -69,7 +75,7 @@ class Component extends Controller
 
     /**
      * Sets the controller name of this component.
-     * 
+     *
      * @param string $controllerName
      */
     public function setControllerName($controllerName)
@@ -118,7 +124,7 @@ class Component extends Controller
         }
         return $ret;
     }
-    
+
     /**
      * Execute a callback method
      */
@@ -152,68 +158,6 @@ class Component extends Controller
 
             default:
                 return parent::__get($property);
-        }
-    }
-    
-    /**
-     * Selects a template be used for rendering the output. This method allows
-     * the component to use template files found within its directory to render
-     * the output. If for some reason the controller using the component has a
-     * template file with the same name, the file found in the controller is
-     * used instead. In this way a mechanism is provided where the default templates
-     * provided with the components could be overidden by those in the controller.
-     * Note that all the views rendered by the component are also rendered using
-     * the View class.
-     *  
-     * @param string $file
-     */
-    public function useTemplate($file)
-    {
-        $this->view->template = $this->getTemplatePath($file);
-    }
-
-    /**
-     * 
-     *
-     * @param string $file
-     * @return string|false
-     */
-    public function getTemplatePath($file)
-    {
-        $templateFile = $this->controller->filePath . $file;
-        if(file_exists($templateFile))
-        {
-            return $templateFile;
-        }
-        else if(file_exists($this->filePath . "/templates/$file"))
-        {
-            return $this->filePath . "/templates/$file";
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    /**
-     * Specifies a layout to be used by the component. This method allows the
-     * component to override or provide a layout to be used for the rendering
-     * of the HTML code. The layout is first searched for in the components
-     * directory if it is not found then the applications layout directory is
-     * looked up.
-     * 
-     * @param string $file
-     */
-    public function useLayout($file)
-    {
-        $layoutFile = Ntentan::$layoutsPath . $file;
-        if(file_exists($layoutFile))
-        {
-            $this->view->layout = $layoutFile;
-        }
-        else
-        {
-            $this->view->layout = $this->filePath . "/layouts/$file";
         }
     }
 

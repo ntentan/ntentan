@@ -34,9 +34,12 @@ class Mysql extends SqlDatabase
         $this->db = new mysqli(
             $parameters["database_host"],
             $parameters["database_user"],
-            $parameters["database_password"],
-            $parameters["database_name"]
+            $parameters["database_password"]
         );
+        if(!$this->db->select_db($parameters["database_name"]))
+        {
+            throw new DataStoreException("Could not select database <code><b>{$parameters['database_name']}</b></code>");
+        }
     }
     
     public function query($query)
@@ -136,6 +139,7 @@ class Mysql extends SqlDatabase
                     break;
 
                 case "text":
+                case "mediumtext":
                     $type = "text";
                     break;
 
