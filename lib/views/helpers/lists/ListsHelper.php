@@ -1,8 +1,8 @@
 <?php
-/* 
+/*
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,7 +19,7 @@
 namespace ntentan\views\helpers\lists;
 
 use ntentan\Ntentan;
-use ntentan\views\template_engines\Template;
+use ntentan\views\template_engines\TemplateEngine;
 use ntentan\views\helpers\Helper;
 
 class ListsHelper extends Helper
@@ -31,17 +31,14 @@ class ListsHelper extends Helper
     public $defaultCellTemplate = null;
     public $cellTemplates = array();
     public $variables = array();
-    
+
     public function __toString()
     {
-        $this->rowTemplate = $this->rowTemplate == null ? 
-            Ntentan::getFilePath('lib/views/helpers/lists/templates/row.tpl.php') :
-            $this->rowTemplate;
-        $this->defaultCellTemplate = $this->defaultCellTemplate == null ? 
-            Ntentan::getFilePath('lib/views/helpers/lists/templates/default_cell.tpl.php') :
-            $this->defaultCellTemplate;
-        return Template::out(
-            Ntentan::getFilePath('lib/views/helpers/lists/templates/list.tpl.php'),
+        TemplateEngine::appendPath(Ntentan::getFilePath('lib/views/helpers/lists/templates'));
+        $this->rowTemplate = $this->rowTemplate == null ? 'row.tpl.php' : $this->rowTemplate;
+        $this->defaultCellTemplate = $this->defaultCellTemplate == null ? 'default_cell.tpl.php' : $this->defaultCellTemplate;
+        return TemplateEngine::render(
+            'list.tpl.php',
             array(
                 "headers"               =>  $this->headers,
                 "data"                  =>  $this->data,
@@ -52,11 +49,6 @@ class ListsHelper extends Helper
                 "has_headers"           =>  $this->hasHeaders
             )
         );
-    }
-
-    public static function getStyleSheet()
-    {
-        return Ntentan::getFilePath('lib/views/helpers/lists/css/default.css');
     }
 }
 

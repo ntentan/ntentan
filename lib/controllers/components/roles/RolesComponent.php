@@ -25,7 +25,7 @@ class RolesComponent extends Component
     public $anonymous = array();
     public $authenticated = array();
 
-    public function preRender()
+    public function preExecute()
     {
         if($_SESSION["logged_in"] === true)
         {

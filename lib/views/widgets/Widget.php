@@ -95,7 +95,7 @@ abstract class Widget extends Presentation
                 $this->template = "{$this->name}_widget.tpl.php";
             }
             try{
-                $output = Template::out($this->template, $this->data);
+                $output = TemplateEngine::render($this->template, $this->data);
             }
             catch(Exception $e)
             {

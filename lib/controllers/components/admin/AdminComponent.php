@@ -24,6 +24,7 @@ use ntentan\models\Model;
 use \ReflectionMethod;
 use ntentan\utils\Janitor;
 use ntentan\models\exceptions\MethodNotFoundException;
+use ntentan\views\template_engines\TemplateEngine;
 
 /**
  * Admin component provides an interface through which data in a model could be
@@ -31,7 +32,7 @@ use ntentan\models\exceptions\MethodNotFoundException;
  * the interface for adding, editing and deleting items in the model class found
  * within the attached controllers package or namespace. Apart from the manipulation
  * interface, the admin component also provides a full blown admin console site.
- * 
+ *
  * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
  */
 class AdminComponent extends Component
@@ -42,31 +43,31 @@ class AdminComponent extends Component
      * @var array
      */
     public $listFields = array();
-    
+
     /**
-     * A list of extra operations 
+     * A list of extra operations
      * @var array
      */
     public $extraOperations = array();
-    
+
     /**
      * The callback function to be called before adding data to the model. This
-     * callback works only when the user adds data to the model through the admin 
+     * callback works only when the user adds data to the model through the admin
      * component. If you want a callback which works with all other additions made
      * to the model (without necessarily going through the admin component),
-     * then you might want to consider going through the Model::preAddHook 
+     * then you might want to consider going through the Model::preAddHook
      * function.
      * @var string
      * @see Model::preAddHook()
      */
     public $preAddCallback;
-    
+
     /**
      * The callback function to be called after adding data to the model.
      * @var string
      */
     public $postAddCallback;
-    
+
     /**
      * The callback function to be called before editing the data in the model
      * @var string
@@ -120,6 +121,12 @@ class AdminComponent extends Component
     public $hasAddOperation = true;
     public $entity;
 
+    public function init()
+    {
+        TemplateEngine::appendPath(Ntentan::getFilePath('lib/controllers/components/admin/views/layouts'));
+        TemplateEngine::appendPath(Ntentan::getFilePath('lib/controllers/components/admin/views/templates'));
+    }
+
     public function addOperation($operation)
     {
         if(is_string($operation))
@@ -140,14 +147,14 @@ class AdminComponent extends Component
 
         $this->operations[$operation["operation"]] = array(
             "label" => $operation["label"],
-            "link" => 
+            "link" =>
                 $operation["confirm_message"] == "" ?
                 Ntentan::getUrl("{$this->prefix}/{$operation["controller"]}/{$operation["operation"]}/") :
                 Ntentan::getUrl("{$this->prefix}/{$operation["controller"]}/confirm/{$operation["operation"]}/"),
             "confirm_message" => $operation["confirm_message"]
         );
     }
-    
+
     private function setupOperations()
     {
         if($this->hasAddOperation)
@@ -159,7 +166,7 @@ class AdminComponent extends Component
                 )
             );
         }
-        
+
         if($this->hasEditOperation)
         {
             $this->addOperation(
@@ -187,21 +194,10 @@ class AdminComponent extends Component
                 $pageExtensionMethod->invoke($this->controller, $pageNumber);
             }
         }
-        
-        $this->setupOperations();
-        $this->operationsTemplate = 
-            $this->operationsTemplate == null ? 
-                Ntentan::getFilePath(
-                    'lib/controllers/components/admin/templates/operations.tpl.php'
-                ):
-                $this->operationsTemplate;
 
-        $this->rowTemplate =
-            $this->rowTemplate == null ?
-                Ntentan::getFilePath(
-                    'lib/controllers/components/admin/templates/row.tpl.php'
-                ):
-                $this->rowTemplate;
+        $this->setupOperations();
+        $this->operationsTemplate = $this->operationsTemplate == null ? 'operations.tpl.php': $this->operationsTemplate;
+
         $this->set("operations_template", $this->operationsTemplate);
         $this->set("row_template", $this->rowTemplate);
         $this->set("entity", \ucfirst(Ntentan::plural($this->entity)));
@@ -211,9 +207,8 @@ class AdminComponent extends Component
         $this->set("item_operation_url", Ntentan::getUrl($this->consoleModeRoute. '/edit'));
         $itemsPerPage = 10;
         $model = $this->getModel();
-        //$table = $model->getDataStore(true)->table;
         $table = $model->dataStore->table;
-        if($this->showTemplate) $this->useTemplate("page.tpl.php");
+        $this->view->template = "page.tpl.php";
         $listFields = $this->listFields;
         $description = $model->describe();
         if(count($listFields) == null)
@@ -232,7 +227,7 @@ class AdminComponent extends Component
                 "fetch_belongs_to"  =>  true
             )
         );
-        
+
         $count = $model->get('count');
         $data = $data->getData();
         $this->set("data", $data);
@@ -284,7 +279,7 @@ class AdminComponent extends Component
             );
         }
     }
-    
+
     public function addSection($section)
     {
         if(is_string($section))
@@ -308,10 +303,9 @@ class AdminComponent extends Component
     public function console()
     {
         // Setup layouts, templates and stuff
-        $this->useLayout("console.tpl.php");
-        $this->useTemplate("run.tpl.php");
+        $this->view->layout = 'admin.tpl.php';
         $this->set("app_name", $this->app["name"]);
-        $this->set("stylesheet", Ntentan::getFilePath("lib/controllers/components/admin/css/admin.css"));
+        $this->set("stylesheet", Ntentan::getFilePath("lib/controllers/components/admin/assets/css/admin.css"));
         $this->set('route', Ntentan::$route);
         $this->headingLevel = '3';
 
@@ -324,11 +318,11 @@ class AdminComponent extends Component
             $menuItems[] = $item;
         }
         $this->set('sections_menu', $menuItems);
-        
+
         $arguments = func_get_args();
         if(count($arguments) == 0)
         {
-            
+
         }
         else
         {
@@ -434,8 +428,8 @@ class AdminComponent extends Component
     }
 
     public function edit($id)
-    {        
-        $this->useTemplate("edit.tpl.php");
+    {
+        $this->view->template = 'edit.tpl.php';
         $description = $this->getModel()->describe();
         $this->set("fields", $description["fields"]);
         $this->set("heading_level", $this->headingLevel);
@@ -448,16 +442,8 @@ class AdminComponent extends Component
         }
         $this->set("data", $data);
         $this->set("entity", $this->entity);
-        $formTemplate = $this->getTemplatePath("{$this->entity}_form.tpl.php");
-        if($formTemplate === false)
-        {
-            $this->set('form_template', $this->getTemplatePath("form.tpl.php"));
-        }
-        else
-        {
-            $this->set('form_template', $formTemplate);
-        }
-        
+        $this->set('form_template', "{$this->entity}_form.tpl.php");
+
         if(count($_POST) > 0)
         {
             $item->setData($_POST, true);
@@ -488,22 +474,13 @@ class AdminComponent extends Component
 
     public function add()
     {
-        $this->useTemplate("add.tpl.php");
         $model = $this->getModel();
         $description = $model->describe();
         $this->set("heading_level", $this->headingLevel);
         $this->set("headings", $this->headings);
         $this->set("fields", $description["fields"]);
         $this->set("entity", $this->entity);
-        $formTemplate = $this->getTemplatePath("{$this->entity}_form.tpl.php");
-        if($formTemplate === false)
-        {
-            $this->set('form_template', $this->getTemplatePath("form.tpl.php"));
-        }
-        else
-        {
-            $this->set('form_template', $formTemplate);
-        }
+        $this->view->template = "{$this->entity}_add.tpl.php";
 
         if(count($_POST) > 0)
         {
@@ -513,7 +490,7 @@ class AdminComponent extends Component
             if($id > 0)
             {
                 $route = $this->consoleModeRoute;
-                
+
                 if(!$this->executeCallbackMethod($this->postAddCallback, $id, $model))
                 {
                     Ntentan::redirect(
@@ -537,7 +514,7 @@ class AdminComponent extends Component
             }
         }
     }
-    
+
     private function getModel()
     {
         return is_object($this->model) ? $this->model : $this->controller->model;

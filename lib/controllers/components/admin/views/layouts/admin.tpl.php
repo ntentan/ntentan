@@ -1,7 +1,7 @@
-<?php 
+<?php
 /*
  * Copyright 2010 James Ekow Abaka Ainooson
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,22 +20,17 @@
 <head>
     <title><?php echo $title ?></title>
     <?php
-        echo $this->helpers->stylesheet(
-            array(
-                $this->load_asset('css/admin.css', $stylesheet),
-                $this->load_asset("css/fx.css"),
-                $this->load_asset('css/forms.css', n("lib/views/helpers/forms/css/forms.css")),
-                $this->load_asset("css/grid.css"),
-                $this->load_asset('css/list.css', n('lib/views/helpers/lists/css/default.css')),
-                $extra_stylesheet
-            )
-        );
-        echo $this->helpers->javascript(
-            array(
-                $this->load_asset('js/jquery.js'),
-                $extra_javascript
-            )
-        );
+        echo $this->helpers->stylesheet
+            ->add($this->load_asset('css/admin.css', $stylesheet))
+            ->add($this->load_asset("css/fx.css"))
+            ->add($this->load_asset('css/forms.css', n("lib/views/helpers/forms/css/forms.css")))
+            ->add($this->load_asset("css/grid.css"))
+            ->add($this->load_asset('css/list.css', n('lib/views/helpers/lists/css/default.css')))
+            ->add($extra_stylesheet);
+
+        echo $this->helpers->javascript
+            ->add($this->load_asset('js/jquery.js'))
+            ->add($extra_javascript);
     ?>
 </head>
 <body>

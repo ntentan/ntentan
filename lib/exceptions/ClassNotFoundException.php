@@ -1,7 +1,8 @@
-/* 
+<?php
+/*
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,18 +16,11 @@
  * limitations under the License.
  */
 
-var curtab = 0;
+namespace ntentan\exceptions;
 
-function fapiSwitchTabTo(n)
+use \Exception;
+
+class ClassNotFoundException extends Exception
 {
-	if(n==curtab) return;
-	$("#fapi-tab-"+String(curtab)).toggle();
-	$("#fapi-tab-"+String(n)).toggle();
-	$("#fapi-tab-top-"+String(n)).removeClass("fapi-tab-unselected");
-	$("#fapi-tab-top-"+String(n)).addClass("fapi-tab-selected");
-	$("#fapi-tab-top-"+String(curtab)).removeClass("fapi-tab-selected");
-	$("#fapi-tab-top-"+String(curtab)).addClass("fapi-tab-unselected");
-	curtab=n;
+
 }
-
-

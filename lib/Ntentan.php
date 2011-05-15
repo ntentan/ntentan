@@ -525,17 +525,31 @@ class Ntentan
     public static function exceptionHandler($exception)
     {
         $class = new \ReflectionObject($exception);
+        if(is_writable("logs/exceptions.log"))
+        {
+            $logFile = fopen("logs/exceptions.log", "a");
+            fputs($logFile, "[" . date("Y-m-d H:i:s") . "] [exception] " . $exception->getMessage() . "\n");
+            fputs($logFile, "[" . date("Y-m-d H:i:s") . "] [exception] " . $exception->getTraceAsString() . "\n");
+            fclose($logFile);
+        }
+        else
+        {
+            $logged = false;
+        }
         echo Ntentan::message(
-            "Exception <code><b>{$class->getName()}</b></code> thrown in <code><b>{$exception->getFile()}</b></code> on line <code><b>{$exception->getLine()}</b></code>. " . $exception->getMessage(),
+            "Exception <code><b>{$class->getName()}</b></code> thrown in 
+             <code><b>{$exception->getFile()}</b></code> on line 
+             <code><b>{$exception->getLine()}</b></code>. " . 
+             $exception->getMessage() .
+             ( $logged === false ? 
+                 "<p>Failed to log this exception. Please check and ensure 
+                  that the file [logs/exceptions.log] exists and is 
+                  writable.</p>" : ""
+             ),
             "Exception <code>" . $class->getName() . "</code> thrown",
             null,
             true,
             $exception->getTrace()
         );
-
-        $logFile = fopen("logs/exceptions.log", "a");
-        fputs($logFile, "[" . date("Y-m-d H:i:s") . "] [exception] " . $exception->getMessage() . "\n");
-        fputs($logFile, "[" . date("Y-m-d H:i:s") . "] [exception] " . $exception->getTraceAsString() . "\n");
-        fclose($logFile);
     }
 }
