@@ -429,7 +429,7 @@ class AdminComponent extends Component
 
     public function edit($id)
     {
-        $this->view->template = 'edit.tpl.php';
+        $this->view->template = "{$this->entity}_edit.tpl.php";
         $description = $this->getModel()->describe();
         $this->set("fields", $description["fields"]);
         $this->set("heading_level", $this->headingLevel);
@@ -442,7 +442,6 @@ class AdminComponent extends Component
         }
         $this->set("data", $data);
         $this->set("entity", $this->entity);
-        $this->set('form_template', "{$this->entity}_form.tpl.php");
 
         if(count($_POST) > 0)
         {

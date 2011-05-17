@@ -26,11 +26,13 @@
             ->add($this->load_asset('css/forms.css', n("lib/views/helpers/forms/css/forms.css")))
             ->add($this->load_asset("css/grid.css"))
             ->add($this->load_asset('css/list.css', n('lib/views/helpers/lists/css/default.css')))
-            ->add($extra_stylesheet);
+            ->context('admin');
+        echo $this->helpers->stylesheet($extra_stylesheet);
 
         echo $this->helpers->javascript
             ->add($this->load_asset('js/jquery.js'))
-            ->add($extra_javascript);
+            ->context('admin');
+        echo $this->helpers->javascript($extra_javascript);
     ?>
 </head>
 <body>

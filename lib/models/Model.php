@@ -185,13 +185,13 @@ class Model implements ArrayAccess, Iterator
     {
         if($type == null)
         {
-            $params["type"] = $type;
-            $result = $this->dataStore->get($params);
-            return $result;
+            return new ModelQuery($this);
         }
         else
         {
-            return new ModelQuery($this);
+            $params["type"] = $type;
+            $result = $this->dataStore->get($params);
+            return $result;
         }
     }
 

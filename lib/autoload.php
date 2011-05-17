@@ -64,6 +64,6 @@ function __autoload($class)
     }
     else
     {
-        throw new \ntentan\exceptions\FileNotFoundException("Class file <code><b>$classFile</b></code> for <code><b>$class</b></code> class not found.");
+        throw new \Exception("Class file <code><b>$classFile</b></code> for <code><b>$class</b></code> class not found.");
     }
 }

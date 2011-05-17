@@ -62,7 +62,7 @@ abstract class TemplateEngine
 
     public static function loadAsset($asset, $copyFrom = null)
     {
-        $assetPath = "assets/".($copyFrom==null ? $asset : $copyFrom);
+        $assetPath = ($copyFrom==null ? "assets/$asset" : $copyFrom);
         if(file_exists($assetPath) && file_exists(dirname("public/$asset")) && is_writable(dirname("public/$asset")))
         {
             copy($assetPath, "public/$asset");
@@ -77,7 +77,14 @@ abstract class TemplateEngine
         }
         else
         {
-            Ntentan::error("File not found or not writable <b><code>public/$asset</code></b>");
+            if(!file_exists($assetPath))
+            {
+                Ntentan::error("File not found <b><code>$assetPath</code></b>");
+            }
+            else if(!is_writable("public/$asset"))
+            {
+                Ntentan::error("Destination <b><code>public/$asset</code></b> is not writable");
+            }
             die();
         }
         return "public/$asset";
@@ -119,7 +126,7 @@ abstract class TemplateEngine
             $extension = implode(".", $extension);
             for($i = 0; $i < count($breakDown); $i++)
             {
-                $testTemplate = implode("_", array_slice($breakDown, -$i)) . ".$extension";
+                $testTemplate = implode("_", array_slice($breakDown, $i, count($breakDown) - $i)) . ".$extension";
                 foreach(TemplateEngine::getPath() as $path)
                 {
                     $newTemplateFile = "$path/$testTemplate";
@@ -135,7 +142,8 @@ abstract class TemplateEngine
         }
         if($templateFile == null)
         {
-            Ntentan::error("Could not find a suitable template file for the current request <b><code>{$template}</code></b>");
+            $pathString = "[" . implode('; ', TemplateEngine::getPath()) . "]";
+            Ntentan::error("Could not find a suitable template file for the current request <b><code>{$template}</code></b>. Template path <b>$pathString</b>");
             die();
         }
         else
