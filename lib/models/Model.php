@@ -183,9 +183,16 @@ class Model implements ArrayAccess, Iterator
 
     public function get($type = 'all', $params = null)
     {
-        $params["type"] = $type;
-        $result = $this->dataStore->get($params);
-        return $result;
+        if($type == null)
+        {
+            return new ModelQuery($this);
+        }
+        else
+        {
+            $params["type"] = $type;
+            $result = $this->dataStore->get($params);
+            return $result;
+        }
     }
 
     public function getFields()

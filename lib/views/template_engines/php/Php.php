@@ -4,6 +4,9 @@ namespace ntentan\views\template_engines\php;
 use ntentan\Ntentan;
 use ntentan\views\template_engines\TemplateEngine;
 
+/**
+ * 
+ */
 class Php extends TemplateEngine
 {
     public function generate($templateData, $view)

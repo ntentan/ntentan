@@ -14,7 +14,7 @@ abstract class MinifiablesHelper extends Helper
     protected abstract function getExtension();
     protected abstract function getMinifier();
     protected abstract function getTag($url);
-
+    
     public function __toString()
     {
         $filename = "public/".$this->getExtension()."/bundle_{$this->context}." . $this->getExtension();
@@ -70,4 +70,11 @@ abstract class MinifiablesHelper extends Helper
         if($script != '') $this->minifiableScripts[] = $script;
         return $this;
     }
+    
+    public function context($context)
+    {
+        $this->context = $context;
+        return $this;
+    }
+    
 }
