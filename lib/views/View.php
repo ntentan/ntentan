@@ -49,23 +49,30 @@ class View extends Presentation
 
     public function out($viewData)
     {
-        if($this->template === false)
+        try
         {
-            $data = null;
-        }
-        else
-        {
-            $data = TemplateEngine::render($this->template, $viewData, $this);
-        }
+            if($this->template === false)
+            {
+                $data = null;
+            }
+            else
+            {
+                $data = TemplateEngine::render($this->template, $viewData, $this);
+            }
 
-        if($this->layout !== false && !Ntentan::isAjax())
-        {
-            $viewData['contents'] = $data;
-            return TemplateEngine::render($this->layout, $viewData, $this);
+            if($this->layout !== false && !Ntentan::isAjax())
+            {
+                $viewData['contents'] = $data;
+                return TemplateEngine::render($this->layout, $viewData, $this);
+            }
+            else
+            {
+                return $data;
+            }
         }
-        else
+        catch(Exception $e)
         {
-            return $data;
+            print "Error!";
         }
     }
 }

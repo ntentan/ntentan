@@ -193,7 +193,10 @@ class Controller
         {
             if(!$this->loadComponent($component, $arguments, "\\ntentan\\plugins\\components"))
             {
-                throw new \Exception("Component not found <code><b>$component</b></code>");
+                if(!$this->loadComponent($component, $arguments, "\\" . Ntentan::$modulesPath . "\\components"))
+                {
+                    throw new exceptions\ComponentNotFoundException("Component not found <code><b>$component</b></code>");
+                }
             }
         }
     }
@@ -437,7 +440,6 @@ class Controller
         $path = $method === null ? $this->method : $method;
         if(method_exists($this, $path))
         {
-            $this->preExecute();
             $controllerClass = new ReflectionClass($this->getName());
             $method = $controllerClass->GetMethod($path);
             $this->view->template = str_replace("/", "_", $this->route) . '_' . $this->getRawMethod() . '.tpl.php';
@@ -473,11 +475,6 @@ class Controller
         return $data;
     }
     
-    public function preExecute()
-    {
-        
-    }
-
     /**
      * Checks whether this controller has a particular component loaded.
      * @param string $component

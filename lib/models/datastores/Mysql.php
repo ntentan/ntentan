@@ -26,29 +26,32 @@ use ntentan\models\exceptions\DataStoreException;
 
 class Mysql extends SqlDatabase
 {
-    private $db = false;
+    private static $db = false;
 	
     protected function connect($parameters)
     {
         $this->schema = $parameters["database_name"];
-        $this->db = new mysqli(
-            $parameters["database_host"],
-            $parameters["database_user"],
-            $parameters["database_password"]
-        );
-        if(!$this->db->select_db($parameters["database_name"]))
+        if(self::$db === false)
         {
-            throw new DataStoreException("Could not select database <code><b>{$parameters['database_name']}</b></code>");
+            self::$db = new mysqli(
+                $parameters["database_host"],
+                $parameters["database_user"],
+                $parameters["database_password"]
+            );
+            if(!self::$db->select_db($parameters["database_name"]))
+            {
+                throw new DataStoreException("Could not select database <code><b>{$parameters['database_name']}</b></code>");
+            }
         }
     }
     
     public function query($query)
     {
-        $queryResult = $this->db->query($query);
+        $queryResult = self::$db->query($query);
         
         if($queryResult === false)
         {
-            throw new DataStoreException ("MySQL Says : ". $this->db->error . "[$query]");
+            throw new DataStoreException ("MySQL Says : ". self::$db->error . "[$query]");
         }
         else if($queryResult === true)
         {
@@ -89,7 +92,7 @@ class Mysql extends SqlDatabase
              where pk.table_name = '{$table}' and pk.table_schema='{$schema}'
              and constraint_type = 'UNIQUE'"
         );
-
+        
         $mysqlFields = $this->query("select * from information_schema.columns where table_schema='{$schema}' and table_name='{$table}'");
 
         if(count($mysqlFields) == 0)
@@ -280,17 +283,17 @@ class Mysql extends SqlDatabase
     
     protected function getLastInsertId()
     {
-        return $this->db->insert_id;
+        return self::$db->insert_id;
     }
     
     public function begin()
     {
-        //$this->db->autocommit(false);
+        //self::$db->autocommit(false);
     }
     
     public function end()
     {
-        //$this->db->commit();
+        //self::$db->commit();
     }
 
     protected function limit($limitParams)

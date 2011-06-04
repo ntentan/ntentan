@@ -23,7 +23,7 @@ use ntentan\models\exceptions\DataStoreException;
 
 class Postgresql extends SqlDatabase
 {
-    public $db;
+    public $db = false;
 
     public function connect($parameters)
     {
