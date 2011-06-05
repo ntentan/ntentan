@@ -86,6 +86,11 @@ abstract class Cache
     {
         return Cache::instance()->existsImplementation($key);
     }
+    
+    public static function remove($key)
+    {
+        return Cache::instance()->removeImplementation($key);
+    }
 
     /**
      * Implementation of the add function by the appropriate caching backend
@@ -98,4 +103,5 @@ abstract class Cache
      */
     abstract protected function getImplementation($key);
     abstract protected function existsImplementation($key);
+    abstract protected function removeImplementation($key);
 }

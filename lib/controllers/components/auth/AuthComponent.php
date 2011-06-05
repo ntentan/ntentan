@@ -90,6 +90,7 @@ class AuthComponent extends Component
         $this->loginRoute = isset($parameters['login_route']) ? $parameters['login_route'] : $this->loginRoute;
         $this->logoutRoute = isset($parameters['logout_route']) ? $parameters['logout_route'] : $this->logoutRoute;
         $this->onFailure = isset($parameters['on_failure']) ? $parameters['on_failure'] : $this->onFailure;
+        $this->redirectRoute = isset($parameters['redirect_route']) ? $parameters['redirect_route'] : $this->redirectRoute;
         $this->failureFunction = isset($parameters['failure_function']) ? $parameters['failure_function'] : $this->failureFunction;
         $this->excludedRoutes = is_array($parameters['excluded_routes']) ? $parameters['excluded_routes'] : array();
         $this->authenticated = $_SESSION['logged_in'];
@@ -106,7 +107,7 @@ class AuthComponent extends Component
         }
     }
 
-    public function preExecute()
+    public function init()
     {
         // Allow the roles component to activate the authentication if it is
         // available. If not just run the authenticator from this section.

@@ -50,16 +50,17 @@ body {
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#808080, endColorstr=#606060)";
     text-shadow: 0px 1px 0px #a0a0a0;
 }
-#message p{
+#message-body{
     padding:10px;
-    padding-top:0px;
     margin:0px;
+    color:black;
 }
 
 #message h2{
     margin:0px;
-    padding:0px;
-    padding-left:10px;
+    padding:10px;
+    background-color:#a0a0a0;
+    color:white;
 }
 
 #trace
@@ -74,11 +75,11 @@ body {
     font-size:small;
 }
 
-#trace h2
+/*#trace h2
 {
 margin:0px;
 padding:0px;
-}
+}*/
 
 #trace table
 {
@@ -90,14 +91,16 @@ border-collapse:collapse;
 {
     text-align:left;
     background-color:#e0e0e0;
-    padding:5px;
+    padding:10px;
 }
 
 #trace table > tbody > tr > td
 {
     text-align:left;
     background-color:#f8f8f8;
-    padding:5px;
+    padding:10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 </style>
@@ -106,9 +109,9 @@ border-collapse:collapse;
 <div id='message'>
 <h1>Ntentan Error</h1>
 <?php echo ($subTitle == '' ? '' : "<h2>$subTitle</h2>") ?>
-<p>
+<div id="message-body">
 <?php echo $message;?>
-</p>
+</div>
 <?php if($showTrace===true):?>
 <div id='trace'>
 <h2>Debug Trace</h2>
@@ -123,7 +126,7 @@ border-collapse:collapse;
         <td><code><?php echo $trace_item["line"]?></code></td>
         <td>
             <code>
-                <?php echo $trace_item["class"].$trace_item["type"].$trace_item["function"]; ?>
+                <b><?php echo $trace_item["class"].$trace_item["type"].$trace_item["function"]; ?></b>
             </code>
         </td>
     </tr>

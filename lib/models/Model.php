@@ -46,12 +46,6 @@ class Model implements ArrayAccess, Iterator
     private $previousData;
 
     /**
-     * An instance of the datastore.
-     * @var DataStore
-     */
-    //private $_dataStoreInstance;
-
-    /**
      * The name of the current datastore
      * @var string
      */

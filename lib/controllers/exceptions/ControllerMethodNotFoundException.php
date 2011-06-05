@@ -1,5 +1,7 @@
 <?php
-class ControllerMethodNotFoundException extends Exception
+namespace ntentan\controllers\exceptions;
+
+class ControllerMethodNotFoundException extends \Exception
 {
     public $method;
     public $controller;

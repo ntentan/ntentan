@@ -39,7 +39,7 @@ class Php extends TemplateEngine
 
     public function truncate($text, $length, $terminator = ' ...')
     {
-        while((\mb_substr($text, $length, 1)) != ' ')
+        while(mb_substr($text, $length, 1) != ' ' && $length > 0)
         {
             $length--;
         }

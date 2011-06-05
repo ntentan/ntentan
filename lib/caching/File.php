@@ -76,4 +76,9 @@ class File extends Cache
             return false;
         }
     }
+    
+    protected function removeImplementation($key)
+    {
+        unlink("cache/$key");
+    }
 }
