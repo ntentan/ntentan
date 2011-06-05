@@ -59,7 +59,7 @@ class Model implements ArrayAccess, Iterator
     public $hasMany = array();
     public $mustBeUnique;
     public $belongsToModelInstances = array();
-    public $modelRoute;
+    private $route;
     private $name;
     public $invalidFields = array();
     private $iteratorPosition;
@@ -87,7 +87,7 @@ class Model implements ArrayAccess, Iterator
 
         $this->iteratorPosition = 0;
         $skip = count(explode("/", Ntentan::$modulesPath));
-        $this->modelRoute = implode(".",array_slice(explode("\\", $modelInformation->getName()), count(explode("/", Ntentan::$modulesPath)) + 1, -1));
+        $this->route = implode(".",array_slice(explode("\\", $modelInformation->getName()), count(explode("/", Ntentan::$modulesPath)) + 1, -1));
 
         $dataStoreParams = Ntentan::getDefaultDataStore();
         $dataStoreClass = __NAMESPACE__ . "\\datastores\\" . Ntentan::camelize($dataStoreParams["datastore"]);
@@ -173,6 +173,11 @@ class Model implements ArrayAccess, Iterator
     public function getName()
     {
         return $this->name;
+    }
+    
+    public function getRoute()
+    {
+        return $this->route;
     }
 
     public function get($type = 'all', $params = null)
@@ -284,7 +289,7 @@ class Model implements ArrayAccess, Iterator
             $type = 'all';
             foreach($arguments as $argument)
             {
-                $params["conditions"][$this->modelRoute . "." . $field] = $argument;
+                $params["conditions"][$this->route . "." . $field] = $argument;
             }
             return $this->get($type, $params);
         }
@@ -303,7 +308,7 @@ class Model implements ArrayAccess, Iterator
                 }
                 else
                 {
-                    $conditions[$this->modelRoute . "." . $field] = $argument;
+                    $conditions[$this->route . "." . $field] = $argument;
                 }
             }
             $params["conditions"] = $conditions;
@@ -324,7 +329,7 @@ class Model implements ArrayAccess, Iterator
                 }
                 else
                 {
-                    $conditions[$this->modelRoute . "." . $field] = $argument;
+                    $conditions[$this->route . "." . $field] = $argument;
                 }
             }
             $params["conditions"] = $conditions;
@@ -453,7 +458,7 @@ class Model implements ArrayAccess, Iterator
 
     public function describe()
     {
-        if(!Cache::exists("model_" . $this->modelRoute))
+        if(!Cache::exists("model_" . $this->route))
         {
             $description = $this->dataStore->describe();
             if(is_array($this->mustBeUnique))
@@ -549,9 +554,9 @@ class Model implements ArrayAccess, Iterator
                     }
                 }
             }
-            Cache::add("model_" . $this->modelRoute, $description);
+            Cache::add("model_" . $this->route, $description);
         }
-        return Cache::get("model_" . $this->modelRoute);
+        return Cache::get("model_" . $this->route);
     }
 
     public function __toString()
