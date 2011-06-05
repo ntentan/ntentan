@@ -93,7 +93,7 @@ abstract class SqlDatabase extends DataStore
         parent::setModel($model);
         //Detect a new schema to override the default schema for the application
 
-        $path = explode('.', $this->model->modelRoute);
+        $path = explode('.', $this->model->getRoute());
         $base = Ntentan::$modulesPath . '/modules';
         foreach($path as $directory)
         {
@@ -106,7 +106,20 @@ abstract class SqlDatabase extends DataStore
             $base .= '/' . $directory;
         }
 
-        $this->table = end(explode(".", $model->getName()));
+        do
+        {
+            $table = implode("_", $path);
+            if($this->doesTableExist($table, $this->schema))
+            {
+                $this->table = $table;
+                break;
+            }
+            else
+            {
+                array_shift($path);
+            }
+        }
+        while(count($tableArray > 0));
     }
 
     protected function resolveName($fieldPath, $reformat=false, $description = null)
@@ -205,7 +218,7 @@ abstract class SqlDatabase extends DataStore
                         $joinedModelFields[$index] =
                             $this->quote($joinedTable)
                              . "." . $this->quote($field) . " AS "
-                             . $this->quote($model->modelRoute . ".$field");
+                             . $this->quote($model->getRoute() . ".$field");
                     }
                     $fields = $fields . ", " . implode(", ", $joinedModelFields);
                     $joins .= " JOIN " . ($datastore->schema == "" ? '' : "{$datastore->schema}.") . $datastore->table . " "
@@ -472,4 +485,5 @@ abstract class SqlDatabase extends DataStore
     protected abstract function limit($limitParams);
     public abstract function describeModel();
     public abstract function describeTable($table, $schema);
+    public abstract function doesTableExist($table, $schema);
 }

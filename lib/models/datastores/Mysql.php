@@ -67,6 +67,12 @@ class Mysql extends SqlDatabase
         }
         return $result;
     }
+    
+    public function doesTableExist($table, $schema)
+    {
+        $exists = $this->query("select count(*) as `exists` from information_schema.tables where table_name = '$table' and table_schema = '$schema'");
+        return $exists[0]['exists'];
+    }
 
     public function describeTable($table, $schema)
     {
@@ -117,6 +123,7 @@ class Mysql extends SqlDatabase
                     break;
 
                 case "double":
+                case "float":
                     $type = "double";
                     break;
 
