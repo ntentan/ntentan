@@ -304,9 +304,12 @@ class AdminComponent extends Component
     {
         // Setup layouts, templates and stuff
         $this->view->layout = 'admin.tpl.php';
-        $this->set("app_name", $this->app["name"]);
+        $this->set("app_name", Ntentan::$config['application']['name']);
         $this->set("stylesheet", Ntentan::getFilePath("lib/controllers/components/admin/assets/css/admin.css"));
         $this->set('route', Ntentan::$route);
+        $profile = $this->authComponent->getProfile();
+        $this->set('username', $profile['username']);
+        
         $this->headingLevel = '3';
 
         //Setup the menus to be used in this administrator section

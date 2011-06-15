@@ -5,6 +5,6 @@
     name CDATA #REQUIRED
 >
 <!ELEMENT column (#PCDATA)>
-<!ELEMENT row (value | null | none)*>
+<!ELEMENT row (value | null)*>
 <!ELEMENT value (#PCDATA)>
 <!ELEMENT null EMPTY>

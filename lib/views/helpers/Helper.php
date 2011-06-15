@@ -18,7 +18,7 @@
 
 namespace ntentan\views\helpers;
 
-abstract class Helper
+class Helper
 {
     public function help()
     {

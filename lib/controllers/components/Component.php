@@ -144,23 +144,6 @@ class Component extends Controller
         }
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see controllers/ntentan\controllers.Controller::__get()
-     */
-    public function __get($property)
-    {
-        switch ($property)
-        {
-            case "view":
-                return $this->controller->view;//Instance;
-                break;
-
-            default:
-                return parent::__get($property);
-        }
-    }
-
     public function hasMethod($method)
     {
         $ret = false;
@@ -171,4 +154,19 @@ class Component extends Controller
         }
         return $ret;
     }
+    
+    protected function getViewInstance()
+    {
+        return $this->controller->getViewInstance();
+    }
+    
+    protected function setViewInstance($viewInstance)
+    {
+        $this->controller->setViewInstance($viewInstance);
+    }
+    
+    protected function getComponentInstance($component = false)
+    {
+    	return $this->controller->getComponentInstance($component);
+    }    
 }
