@@ -37,17 +37,17 @@
 </head>
 <body>
 <div class="row" id="header">
-    <div class="column grid_10_8">
-        <h1>Administrator Console</h1>
-        <h2><?php echo $app_name ?></h2>
+    <div class="column grid_10_6">
+        <h1><?php echo $app_name ?></h1>
+        <h2>Administrator Console</h2>
     </div>
-    <div class="column grid_10_2">
-        Login Information
+    <div class="column grid_10_4">
+        <div id='profile'>Logged in as <?php echo $username ?>. <a href="<?php echo $logout_route ?>">Log out</a></div>
     </div>
 </div>
 <div class="row">
     <div class="column grid_20_4">
-        <?php echo $this->widgets->menu($sections_menu) ?></div>
+        <?php echo $this->widgets->menu($sections_menu)->alias('sections') ?></div>
     <div class="column grid_20_16">
         <div id="admin-contents">
             <?php echo $contents ?>

@@ -18,6 +18,8 @@
 
 namespace ntentan\controllers;
 
+use ntentan\controllers\exceptions\ComponentNotFoundException;
+
 use \ReflectionClass;
 use \ReflectionObject;
 use ntentan\Ntentan;
@@ -68,7 +70,7 @@ class Controller
 
     public $components = array();
 
-    public $componentInstances = array();
+    private $componentInstances = array();
 
     public $rawMethod;
 
@@ -82,7 +84,7 @@ class Controller
      * the output of this controller.
      * @var View
      */
-    public $viewInstance;
+    private $viewInstance;
 
     /**
      * The instance of the model class which shares the same package or namespace
@@ -143,12 +145,14 @@ class Controller
         switch ($property)
         {
         case "view":
-            if($this->viewInstance == null)
+            $viewInstance = $this->getViewInstance();
+            if($viewInstance == null)
             {
-                $this->viewInstance = new View();
-                $this->viewInstance->defaultTemplatePath = $this->filePath;
+                $viewInstance = new View();
+                $this->setViewInstance($viewInstance);
+                $viewInstance->defaultTemplatePath = $this->filePath;
             }
-            return $this->viewInstance;
+            return $viewInstance;
 
         case "layout":
             return $this->view->layout;
@@ -172,7 +176,7 @@ class Controller
             else if(substr($property, -9) == "Component")
             {
                 $component = substr($property, 0, strlen($property) - 9);
-                return $this->componentInstances[$component];
+                return $this->getComponentInstance($component);
             }
             else
             {
@@ -491,7 +495,36 @@ class Controller
             return false;
         }
     }
-
+    
+    protected function getViewInstance()
+    {
+        return $this->viewInstance;
+    }
+    
+    protected function setViewInstance($viewInstance)
+    {
+        $this->viewInstance = $viewInstance;
+    }
+    
+    protected function getComponentInstance($component = false)
+    {
+    	if($component === false)
+    	{
+    		return $this->componentInstances;
+    	}
+    	else
+    	{
+    		if(is_object($this->componentInstances[$component]))
+    		{
+    			return $this->componentInstances[$component];
+    		}
+    		else
+    		{
+    			throw new ComponentNotFoundException("Component <code><b>$component</b></code> not currently loaded.");
+    		}
+    	}
+    }
+    
     /**
      * Function called automatically after the controller is initialized. This
      * method should be overriden by controllers which want to initialize
