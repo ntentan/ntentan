@@ -93,6 +93,7 @@ class AuthComponent extends Component
         $this->redirectRoute = isset($parameters['redirect_route']) ? $parameters['redirect_route'] : $this->redirectRoute;
         $this->failureFunction = isset($parameters['failure_function']) ? $parameters['failure_function'] : $this->failureFunction;
         $this->excludedRoutes = is_array($parameters['excluded_routes']) ? $parameters['excluded_routes'] : array();
+        $this->usersModel = isset($parameters['users_model']) ? $parameters['users_model'] : $this->_usersModel;
         $this->authenticated = $_SESSION['logged_in'];
     }
 

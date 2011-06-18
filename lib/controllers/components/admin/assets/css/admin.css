@@ -104,7 +104,9 @@ div#item-actions-menu > ul > li > a
 	background-color:#f0f0f0;
 	padding:3px;
 	border-radius:3px;
-	font-size:small;
+	font-size:x-small;
+	text-decoration:none;
+	color:#202020;
 }
 
 div#item-actions-menu > ul > li > a:hover

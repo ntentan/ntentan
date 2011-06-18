@@ -334,8 +334,6 @@ class Controller
                     if(class_exists($controllerName))
                     {
                         $controller = new $controllerName();
-                        $controller->method = $routeArray[$i + 1] != '' ? Ntentan::camelize($routeArray[$i + 1], ".", "", true) : $controller->defaultMethodName;
-                        $controller->rawMethod = $routeArray[$i + 1] != '' ? $routeArray[$i + 1]: $controller->defaultMethodName;
                         foreach($controller->components as $component)
                         {
                             $controller->addComponent($component);
@@ -346,7 +344,12 @@ class Controller
                         $controller->modelRoute = $modelRoute;
                         $controller->filePath = $filePath;
                         $controller->init();
-
+                        if($controller->method == '')
+                        {
+                        	$controller->method = $routeArray[$i + 1] != '' ? Ntentan::camelize($routeArray[$i + 1], ".", "", true) : $controller->defaultMethodName;
+                        	$controller->rawMethod = $routeArray[$i + 1] != '' ? $routeArray[$i + 1]: $controller->defaultMethodName;
+                        }
+                        
                         if(!$controller->hasMethod())
                         {
                             $modelRoute .= ".";
