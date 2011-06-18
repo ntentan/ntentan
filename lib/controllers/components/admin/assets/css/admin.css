@@ -49,6 +49,13 @@ body
     font-size:16px;
 }
 
+h3
+{
+	margin:0px;
+	padding:0px;
+	padding-bottom:5px;
+}
+
 #admin-contents
 {
 	padding:10px;
@@ -62,6 +69,47 @@ div#item-actions-menu > ul
     margin:0px;
     padding:0px;
     background-color:#d0d0d0;
+}
+
+div#item-actions-menu > ul > li
+{
+    display:inline-block;
+    padding-top:10px;
+    padding-bottom:10px;
+}
+
+div#item-actions-menu > ul > li > a
+{
+    padding:5px;
+    padding-left:10px;
+    padding-right:10px;
+    margin:5px;
+    text-decoration:none;
+    font-weight:bold;
+    color:black;
+    background-color:#f0f0f0;
+    border-top:1px solid #fdfdfd;
+    border-left:1px solid #fdfdfd;
+    border-bottom:1px solid #c0c0c0;
+    border-right:1px solid #c0c0c0;
+    border-radius:4px;
+	background-image: -moz-linear-gradient(#fcfcfc, #d0d0d0);
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fcfcfc), to(#d0d0d0));
+	background-image: -webkit-linear-gradient(#fcfcfc, #d0d0d0);
+	background-image: -o-linear-gradient(#fcfcfc, #d0d0d0);        
+}
+
+.admin-operation
+{
+	background-color:#f0f0f0;
+	padding:3px;
+	border-radius:3px;
+	font-size:small;
+}
+
+div#item-actions-menu > ul > li > a:hover
+{
+    color:white;
 }
 
 ul#sections-menu
@@ -85,24 +133,9 @@ ul#sections-menu > li > a:hover
 	background-color:#fafafa;
 }
 
-div#item-actions-menu > ul > li
+ul#sections-menu > li.menu-selected
 {
-    display:inline-block;
-    padding-top:7px;
-    padding-bottom:7px;
-}
-
-div#item-actions-menu > ul > li > a
-{
-    padding:7px;
-    text-decoration:none;
-    font-weight:bold;
-    color:black;
-}
-
-div#item-actions-menu > ul > li > a:hover
-{
-    color:white;
+	background-color:white;
 }
 
 div.item-pages-list > a

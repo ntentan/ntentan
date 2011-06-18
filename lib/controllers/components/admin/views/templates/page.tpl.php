@@ -39,6 +39,7 @@ if($this->helpers->list->cellTemplates['id'] == null)
 { 
     $this->helpers->list->cellTemplates['id'] = $operations_template;
 }
+
 $this->helpers->list->variables["operations"] = $operations;
 $this->helpers->list->variables['item_operation_url'] = $item_operation_url;
 
