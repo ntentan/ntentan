@@ -15,8 +15,8 @@
  * limitations under the License.
  *
  */
-?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+?><!DOCTYPE HTML>
+<html lang='en'>
 <head>
     <title><?php echo $title ?></title>
     <?php
@@ -46,9 +46,9 @@
     </div>
 </div>
 <div class="row">
-    <div class="column grid_20_4">
+    <div class="column grid_20_3">
         <?php echo $this->widgets->menu($sections_menu)->alias('sections') ?></div>
-    <div class="column grid_20_16">
+    <div class="column grid_20_17">
         <div id="admin-contents">
             <?php echo $contents ?>
         </div>

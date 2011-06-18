@@ -40,7 +40,7 @@ abstract class MinifiablesHelper extends Helper
         {
             $tags = $this->getTag(Ntentan::getUrl($filename));
         }
-
+        
         foreach($this->otherScripts as $script)
         {
             $tags .= $this->getTag(Ntentan::getUrl($script));
@@ -58,9 +58,9 @@ abstract class MinifiablesHelper extends Helper
                 $this->otherScripts[]= $argument;
             }
         }
-        else
+        else if($arguments != '')
         {
-            $this->otherScripts[]= $arguments;
+        	$this->otherScripts[]= $arguments;
         }
         return $this;
     }
