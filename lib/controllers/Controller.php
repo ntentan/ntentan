@@ -449,7 +449,14 @@ class Controller
         {
             $controllerClass = new ReflectionClass($this->getName());
             $method = $controllerClass->GetMethod($path);
-            $this->view->template = str_replace("/", "_", $this->route) . '_' . $this->getRawMethod() . '.tpl.php';
+            //$this->view->template = str_replace("/", "_", $this->route) . '_' . $this->getRawMethod() . '.tpl.php';
+            if($this->view->template == null)
+            {
+                $this->view->template = 
+                    str_replace("/", "_", $this->route) 
+                    . '_' . $this->getRawMethod() 
+                    . '.tpl.php';
+            }
             $method->invokeArgs($this, $params);
             $this->preRender();
             $return = $this->view->out($this->getData());
