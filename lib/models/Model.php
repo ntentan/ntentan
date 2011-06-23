@@ -33,6 +33,9 @@ use \ReflectionMethod;
  */
 class Model implements ArrayAccess, Iterator
 {
+	const RELATIONSHIP_BELONGS_TO = 'belongs_to';
+	
+	const RELATIONSHIP_HAS_MANY = 'has_many';
     /**
      * 
      * @var array
@@ -107,7 +110,6 @@ class Model implements ArrayAccess, Iterator
         return Ntentan::plural(is_array($belongsTo) ? $belongsTo[0] : $belongsTo);
     }
 
-
     public static function getClassName($className)
     {
         $classNameArray = explode('.', $className);
@@ -119,6 +121,21 @@ class Model implements ArrayAccess, Iterator
             throw new ModelNotFoundException("Model class <b><code>$fullClassName</code></b> not found");
         }
         return $fullClassName;
+    }
+
+    public static function splitName($modelField)
+    {
+    	$modelArray = explode('.', $modelField);
+    	$return['field'] = array_pop($modelArray);
+    	$return['model'] = implode('.', $modelArray);
+    	
+    	return $return;
+    }
+    
+    public static function extractModelName($modelField)
+    {
+    	$split = self::splitName($modelField);
+    	return $split['model'];
     }
 
     /**
@@ -162,6 +179,18 @@ class Model implements ArrayAccess, Iterator
     public function getData()
     {
         return $this->data;
+    }
+    
+    public function getRelationshipWith($modelType)
+    {
+    	foreach($this->hasMany as $related)
+    	{
+    		if($related == $modelType) return Model::RELATIONSHIP_HAS_MANY;
+    	}
+    	foreach($this->belongsTo as $related)
+    	{
+    		if($related == $modelType) return Model::RELATIONSHIP_BELONGS_TO;
+    	}
     }
 
     public function setDataStore($dataStore)
@@ -311,7 +340,7 @@ class Model implements ArrayAccess, Iterator
                     $conditions[$this->route . "." . $field] = $argument;
                 }
             }
-            $params["conditions"] = $conditions;
+            $params["conditions"] = is_array($params['conditions']) ? array_merge($conditions, $params['conditions']) : $conditions;
             if(!isset($params["fetch_related"])) $params["fetch_related"] = true;
             return $this->get($type, $params);
         }

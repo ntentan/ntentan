@@ -141,7 +141,7 @@ abstract class SqlDatabase extends DataStore
     protected function _get($params)
     {
         // Get a list of fields convert it to a count if that is what is needed
-        if($params["type"] == "count")
+    	if($params["type"] == "count")
         {
             $fields = "COUNT(*)";
         }
@@ -156,6 +156,16 @@ abstract class SqlDatabase extends DataStore
             $fields = array();
             foreach($params["fields"] as $index => $field)
             {
+                if($params["fetch_related"] === true || $params["fetch_belongs_to"] === true)
+                {
+                    $modelName = Model::extractModelName($field);
+                    if($this->model->getRelationshipWith($modelName) == Model::RELATIONSHIP_HAS_MANY)
+                    {
+                        $hasManyFields[$modelName][] = $field;
+                        continue;
+                    }
+                }
+            	
                 $fields[$index] = $this->resolveName($field, true, $description);
                 if($params["fetch_belongs_to"] && $description["fields"][$field]["foreign_key"] === true && $description["fields"][$field]["alias"] != '')
                 {
@@ -249,11 +259,21 @@ abstract class SqlDatabase extends DataStore
         $query = "SELECT $fields FROM ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->table} $joins ";
 
         // Generate conditions
+        $hasManyConditions = array();
         if($params["conditions"] !== null && is_array($params["conditions"]))
         {
             // Go through the array of conditions and generate an SQL condition
             foreach($params["conditions"] as $field => $condition)
             {
+                if($params["fetch_related"] === true || $params["fetch_belongs_to"] === true)
+                {
+                	$modelName = Model::extractModelName($field);
+            	    if($this->model->getRelationshipWith($modelName) == Model::RELATIONSHIP_HAS_MANY)
+            	    {
+                        $hasManyConditions[$modelName][$field] = $condition;
+                        continue;
+                    }
+                }
                 if(is_array($condition))
                 {
                     foreach($condition as $clause)
@@ -331,6 +351,7 @@ abstract class SqlDatabase extends DataStore
                 }
             }
         }
+        
 
         if($params["fetch_related"] === true || $params["fetch_has_many"] === true)
         {
@@ -342,10 +363,15 @@ abstract class SqlDatabase extends DataStore
                     {
                         $model = Model::load($hasMany);
                         $relatedData = $model->get('all',
-                            array("conditions"=>
-                                array(
-                                    Ntentan::singular($this->model->getName()) . "_id" => $result["id"]
-                                )
+                            array(
+                                "conditions"=>
+	                                array_merge(
+	                                    array(
+	                                        Ntentan::singular($this->model->getName()) . "_id" => $result["id"]
+	                                    ),
+	                                    $hasManyConditions[$hasMany]
+	                                ),
+	                            "fields" => $hasManyFields[$hasMany]
                             )
                         );
                         $results[$index][$hasMany] = $relatedData;
