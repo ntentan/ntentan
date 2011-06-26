@@ -137,6 +137,32 @@ abstract class SqlDatabase extends DataStore
             return $this->quote($model->dataStore->table) . '.' . $this->quote($fieldName);
         }
     }
+    
+    /**
+     * A simple function to allow for the formatting of the names of any
+     * related models. If the $params['expand_related_model_names'] is true
+     * then models located in packages such as 'package.model' would be
+     * returned as 'model'. If this value is false however, the model
+     * name is returned having all dots replaced with underscores. Please
+     * note that the result of this function may be cached for performace
+     * purposes.
+     * 
+     * @param $relatedModelName string
+     * @param $params array
+     * @return string
+     * @todo Implement caching of this functions operations
+     */
+    protected function formatRelatedModelName($relatedModelName, $params)
+    {
+    	if($params['expand_related_model_names'] === true)
+    	{
+    		return str_replace('.', '_', $relatedModelName);
+    	}
+    	else
+    	{
+    		return end(explode('.', $relatedModelName));
+    	}
+    } 
 
     protected function _get($params)
     {
@@ -346,7 +372,7 @@ abstract class SqlDatabase extends DataStore
                         }
                         $wrapperModel = Model::load($wrapperModelName);
                         $wrapperModel->setData($results[$index][$modelizedField], true);
-                        $results[$index][$modelizedField] = $wrapperModel;
+                        $results[$index][$this->formatRelatedModelName($modelizedField, $params)] = $wrapperModel;
                     }
                 }
             }
@@ -369,12 +395,12 @@ abstract class SqlDatabase extends DataStore
 	                                    array(
 	                                        Ntentan::singular($this->model->getName()) . "_id" => $result["id"]
 	                                    ),
-	                                    $hasManyConditions[$hasMany]
+	                                    is_array($hasManyConditions[$hasMany]) ? $hasManyConditions[$hasMany] : array()
 	                                ),
 	                            "fields" => $hasManyFields[$hasMany]
                             )
                         );
-                        $results[$index][$hasMany] = $relatedData;
+                        $results[$index][$this->formatRelatedModelName($hasMany, $params)] = $relatedData;
                     }
                 }
             }
