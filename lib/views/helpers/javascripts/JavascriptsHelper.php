@@ -18,12 +18,12 @@ class JavascriptsHelper extends MinifiablesHelper
 
     protected function getMinifier()
     {
-        return "js.packer";
+        return "js.jsminplus";
     }
 
     protected function getTag($url)
     {
-        return "<script type='text/javascript' src='$url'></script>";
+        return "<script type='text/javascript' src='$url' charset='utf-8'></script>";
     }
 
     public function ntentan()
