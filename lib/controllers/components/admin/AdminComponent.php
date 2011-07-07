@@ -181,10 +181,13 @@ class AdminComponent extends Component
 
     public function page($pageNumber)
     {
+    	// Check for wrong page numbers
         if($pageNumber < 1)
         {
             throw new \Exception("Illegal page number in admin component. Page numbers cannot be less than 1");
         }
+        
+        //execute the page enxtension method
         if($this->consoleMode)
         {
             $pageExtensionMethodName = Ntentan::camelize(Ntentan::plural($this->entity),".","", true) . 'AdminPage';
@@ -193,7 +196,14 @@ class AdminComponent extends Component
                 $pageExtensionMethod = new ReflectionMethod($this->controller, $pageExtensionMethodName);
                 $pageExtensionMethod->invoke($this->controller, $pageNumber);
             }
+            $pageControllerRoute = $this->consoleModeRoute;
         }
+        else
+        {
+        	$pageControllerRoute = $this->controller->route;
+        	$this->entity = Ntentan::singular($this->controller->model->getName());
+        }
+        
 
         $this->setupOperations();
         $this->operationsTemplate = $this->operationsTemplate == null ? 'operations.tpl.php': $this->operationsTemplate;
@@ -205,9 +215,10 @@ class AdminComponent extends Component
         $this->set("heading_level", $this->headingLevel);
         $this->set("headings", $this->headings);
         $this->set("item_operation_url", Ntentan::getUrl($this->consoleModeRoute. '/edit'));
+        $this->set('route', $pageControllerRoute);
         $itemsPerPage = 10;
         $model = $this->getModel();
-        $table = $model->dataStore->table;
+        
         $this->view->template = "page.tpl.php";
         $listFields = $this->listFields;
         $description = $model->describe();
@@ -217,6 +228,7 @@ class AdminComponent extends Component
             array_shift($listFields);
         }
         $listFields[] = "id";
+        
 
         $data = $model->get(
             $itemsPerPage,
@@ -268,7 +280,6 @@ class AdminComponent extends Component
 
         if($count > $itemsPerPage)
         {
-            $pageControllerRoute = $this->consoleMode === true ? $this->consoleModeRoute : $this->controller->route;
             $this->set(
                 array(
                     'pagination' => true,
@@ -306,7 +317,7 @@ class AdminComponent extends Component
         $this->view->layout = 'admin.tpl.php';
         $this->set("app_name", Ntentan::$config['application']['name']);
         $this->set("stylesheet", Ntentan::getFilePath("lib/controllers/components/admin/assets/css/admin.css"));
-        $this->set('route', Ntentan::$route);
+        
         $profile = $this->authComponent->getProfile();
         $this->set('username', $profile['username']);
         
