@@ -420,12 +420,12 @@ class AdminComponent extends Component
     public function confirm($operation, $id)
     {
         $this->setupOperations();
-        $this->useTemplate("confirm.tpl.php");
+        $this->view->template = "confirm.tpl.php";
         $item = $this->getModel()->getFirstWithId($id);
         $this->set("item", (string)$item);
         $this->set("message", $this->operations[$operation]["confirm_message"]);
         $this->set("heading_level", $this->headingLevel);
-        $route = $this->consoleModeRoute;
+        $route = $this->consoleMode ? $this->consoleModeRoute : $this->controller->route;
         $this->set("positive_route", Ntentan::getUrl("$route/$operation/$id"));
         $this->set("negative_route", Ntentan::getUrl($route));
     }
