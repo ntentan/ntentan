@@ -517,6 +517,11 @@ class Ntentan
         $message = ob_get_clean();
         return $message;
     }
+    
+    private static function getLogFile($file = Ntentan::DEFAULT_LOG_FILE)
+    {
+    	fopen($file, 'a');
+    }
 
     /**
      * Default call back for displaying exceptions.
