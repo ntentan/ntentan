@@ -16,3 +16,35 @@
  * limitations under the License.
  */
 
+namespace ntentan\caching;
+
+/**
+ * A memcache caching backend
+ */
+class Memcache extends Cache
+{
+	private $cache;
+	
+	public function __construct()
+	{
+		$cache = new Memcache();
+		$cache->addServer('localhost');
+	}
+	
+    protected function addImplementation($key, $object, $expires)
+    {
+        
+    }
+    
+    protected function existsImplementation($key)
+    {
+    }
+    
+    protected function getImplementation($key)
+    {
+    }
+    
+    protected function removeImplementation($key)
+    {
+    }
+}

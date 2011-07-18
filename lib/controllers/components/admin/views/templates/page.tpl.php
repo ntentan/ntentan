@@ -1,3 +1,4 @@
+<?php $modelSingular = strtolower(\ntentan\Ntentan::singular($entity));?>
 <?php if($headings):?>
     <?php if($entity != ''): ?>
         <h<?php echo $heading_level?>><?php echo $entity ?></h<?php echo $heading_level?>>
@@ -5,11 +6,10 @@
 <?php endif ?>
         
 <div id="item-actions-menu">
-    <?php echo $this->widgets->menu(array(array('label'=>'Add', 'url'=>u("$route/add")))); ?>
+    <?php echo $this->widgets->menu(array(array('label'=>"Add new $modelSingular", 'url'=>u("$route/add"))))->alias('actions'); ?>
 </div>
 <?php if($notifications & is_numeric($notification_type)):?>
 <div class="notification"><?php
-$modelSingular = strtolower(\ntentan\Ntentan::singular($model));
 switch($notification_type)
 {
     case 1:

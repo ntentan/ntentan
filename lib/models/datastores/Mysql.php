@@ -38,6 +38,7 @@ class Mysql extends SqlDatabase
                 $parameters["database_user"],
                 $parameters["database_password"]
             );
+            //self::$db->set_charset('utf8');
             if(!self::$db->select_db($parameters["database_name"]))
             {
                 throw new DataStoreException("Could not select database <code><b>{$parameters['database_name']}</b></code>");
