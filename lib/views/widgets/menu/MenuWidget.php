@@ -46,7 +46,7 @@ class MenuWidget extends Widget
                     'url' => Ntentan::getUrl(strtolower(str_replace(' ', '_', $item)))
                 );
             }
-            $item['selected'] = $item['url'] == Ntentan::getUrl(Ntentan::$route);
+            $item['selected'] = $item['url'] == substr(Ntentan::getUrl(Ntentan::$route), 0, strlen($item['url']));
             $menuItems[] = $item;
         }
         $this->set('items', $menuItems);

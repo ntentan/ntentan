@@ -99,21 +99,8 @@ abstract class Element
 	public function __construct($label="", $description="", $id="")
 	{
 		$this->setLabel($label);
-		$this->setDescription($description);
-		$this->setId($id);
-	}
-
-	/**
-	 * Public accessor for setting the ID of the element.
-     *
-     * @deprecated
-	 * @return Element
-	 */
-	public function setId($id)
-	{
-		$this->id = str_replace(".","_",$id);
-		$this->addAttribute("id",$this->id);
-		return $this;
+		$this->description($description);
+		$this->id($id);
 	}
 
     public function id($id = false)
@@ -129,20 +116,7 @@ abstract class Element
             return $this;
         }
     }
-
-	/**
-	 * Public accessor for getting the Id of the element.
-	 */
-	public function getId()
-	{
-	    if($this->id == "")
-	    {
-	        $this->setId("element" . ++Element::$count);
-	    }
-	    return $this->id;
-	}
-
-
+    
 	/**
 	 * Public accessor for setting the name property of the field.
 	 *

@@ -29,7 +29,7 @@ class UploadField extends Field
 
 	public function render()
 	{
-		$this->setAttribute("id",$this->getId());
+		$this->setAttribute("id",$this->id());
 		$this->addAttribute("name",$this->getName());
 		$attributes = $this->getAttributes();
 		$ret .= "<input $attributes />";

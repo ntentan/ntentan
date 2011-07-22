@@ -529,6 +529,7 @@ class AdminComponent extends Component
                 $this->set("errors", $model->invalidFields);
             }
         }
+
         if($this->consoleMode)
         {
             $addExtensionMethodName = Ntentan::camelize(Ntentan::plural($this->entity),".","", true) . 'AdminAdd';

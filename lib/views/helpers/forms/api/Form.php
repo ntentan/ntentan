@@ -95,7 +95,7 @@ class Form extends Container
 
     public function setId($id)
     {
-        parent::setId($id == "" ? "form" . Form::$numForms++ : $id);
+        parent::id($id == "" ? "form" . Form::$numForms++ : $id);
         return $this;
     }
 }

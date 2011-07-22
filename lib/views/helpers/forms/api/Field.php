@@ -39,31 +39,6 @@ abstract class Field extends Element
 	protected $value;
 
 	/**
-	 * The enabled state of the field.
-	 */
-	protected $enabled;
-
-	//! The name of a custom validation function which can be used to
-	//! perform further validations on the field.
-	protected $validationFunc;
-
-	//! A validation constraint which expects that the value entered in
-	//! this field is unique in the database.
-	protected $unique;
-	
-	public $isField = true;
-
-	public function getId()
-	{
-		$id = parent::getId();
-		if($id == "" && $this->ajax)
-		{
-			$id = str_replace(".","_",$this->getName());
-		}
-		return $id;
-	}
-
-	/**
 	 * The constructor for the field element.
 	 */
 	public function __construct($name="", $value="")
@@ -168,9 +143,9 @@ abstract class Field extends Element
 	public function getCSSClasses()
 	{
 		$classes=parent::getCSSClasses();
-		if($this->error) $classes.="fapi-error ";
+		if($this->error) $classes.="error ";
 		if($this->getRequired()) $classes .="required ";
-		return $classes;
+		return trim($classes);
 	}
 
 	public function getOptions()
