@@ -58,7 +58,7 @@ class Form extends Container
     public function renderHead()
     {
         $this->addAttribute("method", $this->method);
-        $this->addAttribute("id", $this->getId());
+        $this->addAttribute("id", $this->id());
         $this->addAttribute("class", "fapi-form");
         $this->addAttribute('action', $this->action);
         $this->addAttribute('accept-charset', 'utf-8');

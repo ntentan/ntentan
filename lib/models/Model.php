@@ -34,8 +34,8 @@ use \ReflectionMethod;
 class Model implements ArrayAccess, Iterator
 {
 	const RELATIONSHIP_BELONGS_TO = 'belongs_to';
-	
 	const RELATIONSHIP_HAS_MANY = 'has_many';
+	
     /**
      * 
      * @var array
@@ -219,8 +219,13 @@ class Model implements ArrayAccess, Iterator
         {
             $params["type"] = $type;
             $result = $this->dataStore->get($params);
-            return $result;
+            return $this->postGetCallback($result, $type);
         }
+    }
+    
+    protected function postGetCallback($results, $type)
+    {
+    	return $results;
     }
 
     public function getFields()
