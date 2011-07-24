@@ -231,6 +231,12 @@ class Postgresql extends SqlDatabase
         return $lastval[0]["last"];
     }
 
+    public function doesTableExist($table, $schema)
+    {
+        $exists = $this->query("select count(*) as `exists` from information_schema.tables where table_name = '$table' and table_schema = '$schema'");
+        return $exists[0]['exists'];
+    }
+
     /**
      * (non-PHPdoc)
      * @see models/datastores/ntentan\models\datastores.SqlDatabase::describeSchema()

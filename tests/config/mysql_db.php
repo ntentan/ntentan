@@ -4,6 +4,6 @@ $datastores["default"] =
         "datastore" => "mysql",
         "username"  => "root",
         "password"  => "root",
-        "database"  => "ntentan_test",
+        "database"  => "ntentan_tests",
         "host"      => "localhost"
     );
