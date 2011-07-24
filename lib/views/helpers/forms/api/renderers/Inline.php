@@ -37,10 +37,10 @@ class Inline extends Renderer
         $label = $element->getLabel();
         if($label != '')
         {
-            $ret .= "<label class='fapi-label'>".$label;
+            $ret .= "<label class='label'>".$label;
             if($element->getRequired() && $label!="" && $element->getShowField())
             {
-                $ret .= "<span class='fapi-required'>*</span>";
+                $ret .= "<span class='required'>*</span>";
             }
             $ret .= "</label><br/>";
         }
@@ -61,7 +61,7 @@ class Inline extends Renderer
     		return $element->render();
     	}
     
-        $ret .= "<div class='fapi-element-div' ".($element->getId()==""?"":"id='".$element->getId()."_wrapper'")." ".$element->getAttributes(Element::SCOPE_WRAPPER).">";
+        $ret .= "<div class='element-div' ".($element->id()==""?"":"id='".$element->id()."_wrapper'")." ".$element->getAttributes(Element::SCOPE_WRAPPER).">";
 
         if($element->getType() == "checkbox")
         {
@@ -76,7 +76,7 @@ class Inline extends Renderer
     
         if($element->hasError())
         {
-            $ret .= "<div class='fapi-error'>";
+            $ret .= "<div class='error'>";
             $ret .= "<ul>";
             foreach($element->getErrors() as $error)
             {
@@ -103,7 +103,7 @@ class Inline extends Renderer
         {
             if($element->getDescription() != "")
             {
-                $ret .= "<div ".($element->getId()==""?"":"id='".$element->getId()."_desc'")." class='fapi-description'>".$element->getDescription()."</div>";
+                $ret .= "<div ".($element->getId()==""?"":"id='".$element->getId()."_desc'")." class='description'>".$element->getDescription()."</div>";
             }
         }
         $ret .= "</div>";
