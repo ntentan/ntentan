@@ -9,91 +9,67 @@ class PaginationWidget extends Widget
     private $pageNumber;
     private $numberOfPages;
     private $baseRoute;
+    private $numberOfLinks;
+    private $halfNumberOfLinks;
 
-    public function init($pageNumber = null, $numberOfPages = null, $baseRoute = null)
+    public function init($pageNumber = null, $numberOfPages = null, $baseRoute = null, $numberOfLinks = 21)
     {
         $this->pageNumber = $pageNumber;
         $this->numberOfPages = $numberOfPages;
         $this->baseRoute = $baseRoute;
-    }
-
-    public function set_page_number($pageNumber)
-    {
-        $this->pageNumber = $pageNumber;
-        return $this;
-    }
-
-    public function set_number_of_pages($numberOfPages)
-    {
-        $this->numberOfPages = $numberOfPages;
-        return $this;
-    }
-
-    public function set_base_route($baseRoute)
-    {
-        $this->baseRoute = $baseRoute;
-        return $this;
+        $this->numberOfLinks = $numberOfLinks;
+        $this->halfNumberOfLinks = ceil($numberOfLinks / 2);
     }
 
     public function execute()
     {
-        $pageNumber = $this->pageNumber;
-        $numPages = $this->numberOfPages;
         $baseRoute = $this->baseRoute;
 
-        if($pageNumber > 1)
+        if($this->pageNumber > 1)
         {
             $pagingLinks[] = array(
-                "link" => Ntentan::getUrl(
-                    $baseRoute . ($pageNumber - 1)
-                ),
+                "link" => is_string($baseRoute) ? Ntentan::getUrl($baseRoute . ($this->pageNumber - 1)) : $baseRoute($this->pageNumber - 1),
                 "label" => "< Prev"
             );
         }
 
-        if($numPages <= 21 || $pageNumber < 11)
+        if($this->numberOfPages <= $this->numberOfLinks || $this->pageNumber < $this->halfNumberOfLinks)
         {
-            for($i = 1; $i <= ($numPages > 21 ? 21 : $numPages) ; $i++)
+            for($i = 1; $i <= ($this->numberOfPages > $this->numberOfLinks ? $this->numberOfLinks : $this->numberOfPages) ; $i++)
             {
                 $pagingLinks[] = array(
-                    "link" => Ntentan::getUrl(
-                        $baseRoute . $i
-                    ),
+                    "link" => is_string($baseRoute) ? Ntentan::getUrl($baseRoute . $i) : $baseRoute($i),
                     "label" => "$i",
-                    "selected" => $pageNumber == $i
+                    "selected" => $this->pageNumber == $i
                 );
             }
         }
         else
         {
-            if($numPages - $pageNumber < 11)
+            if($this->numberOfPages - $this->pageNumber < $this->halfNumberOfLinks)
             {
-                $startOffset = $pageNumber - (20 - ($numPages - $pageNumber));
-                $endOffset = $pageNumber + ($numPages - $pageNumber);
+                $startOffset = $this->pageNumber - (($this->numberOfLinks - 1) - ($this->numberOfPages - $this->pageNumber));
+                $endOffset = $this->pageNumber + ($this->numberOfPages - $this->pageNumber);
             }
             else
             {
-                $startOffset = $pageNumber - 10;
-                $endOffset = $pageNumber + 10;
+                $startOffset = $this->pageNumber - ($this->halfNumberOfLinks - 1);
+                $endOffset = $this->pageNumber + ($this->halfNumberOfLinks - 1);
             }
             for($i = $startOffset ; $i <= $endOffset; $i++)
             {
                 $pagingLinks[] = array(
-                    "link" => Ntentan::getUrl(
-                        $baseRoute . $i
-                    ),
+                    "link" => is_string($baseRoute) ? Ntentan::getUrl($baseRoute . $i) : $baseRoute($i),
                     "label" => "$i",
-                    "selected" => $pageNumber == $i
+                    "selected" => $this->pageNumber == $i
                 );
             }
         }
 
-        if($pageNumber < $numPages)
+        if($this->pageNumber < $this->numberOfPages)
         {
             $pagingLinks[] = array(
-                "link" => Ntentan::getUrl(
-                    $baseRoute . ($pageNumber + 1)
-                ),
+                "link" => is_string($baseRoute) ? Ntentan::getUrl($baseRoute . ($this->pageNumber + 1)) : $baseRoute($this->pageNumber + 1),
                 "label" => "Next >"
             );
         }

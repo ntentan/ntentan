@@ -1,7 +1,7 @@
 <?php
 
 require_once 'PHPUnit/Framework.php';
-require_once 'lib/test_cases/SqlDatabaseTestCase.php';
+require_once 'tests/lib/SqlDatabaseTestCase.php';
 require_once 'lib/models/datastores/DataStore.php';
 require_once 'lib/models/datastores/SqlDatabase.php';
 require_once 'lib/models/datastores/Postgresql.php';

@@ -1,7 +1,7 @@
 <?php
 
 require_once 'PHPUnit/Framework.php';
-require_once 'lib/test_cases/SqlDatabaseTestCase.php';
+require_once 'tests/lib/SqlDatabaseTestCase.php';
 require_once 'lib/models/datastores/DataStore.php';
 require_once 'lib/models/datastores/SqlDatabase.php';
 require_once 'lib/models/datastores/Mysql.php';
@@ -20,7 +20,7 @@ class MysqlTest extends \ntentan\test_cases\SqlDatabaseTestCase
 
     protected function getConnection()
     {
-        $pdo = new PDO('mysql:host=localhost;dbname=ntentan_test', 'root', 'root');
+        $pdo = new PDO('mysql:host=localhost;dbname=ntentan_tests', 'root', 'root');
         return $this->createDefaultDBConnection($pdo);//, 'test');
     }
 

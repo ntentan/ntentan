@@ -3,9 +3,9 @@ namespace ntentan\test_cases;
 
 require_once 'lib/models/Model.php';
 require_once 'PHPUnit/Framework.php';
-require_once 'mocks/modules/users/Users.php';
-require_once 'mocks/modules/roles/Roles.php';
-require_once 'mocks/modules/departments/Departments.php';
+require_once 'tests/mocks/modules/users/Users.php';
+require_once 'tests/mocks/modules/roles/Roles.php';
+require_once 'tests/mocks/modules/departments/Departments.php';
 require_once 'lib/Ntentan.php';
 require_once 'lib/models/exceptions/ModelNotFoundException.php';
 require_once 'lib/models/exceptions/DataStoreException.php';
@@ -32,7 +32,7 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
     protected function getDataSet()
     {
         return new \PHPUnit_Extensions_Database_DataSet_XmlDataSet(
-            'lib/test_cases/fixtures/sqldatabase.xml'
+            'tests/fixtures/sqldatabase.xml'
         );
     }
 
