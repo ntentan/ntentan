@@ -1,5 +1,5 @@
 <?php
-namespace lib\test_cases\mocks\modules\users;
+namespace tests\mocks\modules\users;
 
 class Users extends \ntentan\models\Model
 {   

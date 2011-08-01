@@ -110,6 +110,8 @@ class Ntentan
      * @var string
      */
     public static $requestedRoute;
+    
+    public static $routeKey;
 
     /**
      * The routing table. An array of regular expressions and associated
@@ -167,7 +169,10 @@ class Ntentan
 
     public static function setup($config)
     {
-
+    	if(is_string($config))
+    	{
+    		$config = parse_ini_file($config, true);
+    	}
         Ntentan::$basePath = $config['application']['ntentan_home'];
         Ntentan::$modulesPath = $config['application']['modules_path'];
         Ntentan::$prefix = $config['application']['prefix'];
@@ -203,6 +208,7 @@ class Ntentan
         // Implement the routing engine
         Ntentan::$requestedRoute = $_GET["q"];
         Ntentan::$route = $_GET["q"];
+        Ntentan::$routeKey = str_replace('/', '_', Ntentan::$route);
         unset($_GET["q"]);
         unset($_REQUEST["q"]);
 

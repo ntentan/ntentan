@@ -42,4 +42,9 @@ class Volatile extends Cache
     {
         return $this->data[$key];
     }
+    
+    protected function removeImplementation($key)
+    {
+    	
+    }
 }

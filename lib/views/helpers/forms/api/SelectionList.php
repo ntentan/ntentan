@@ -92,7 +92,7 @@ class SelectionList extends Field
 
 	public function render()
 	{
-		$this->addAttribute("id",$this->getId());
+		$this->addAttribute("id",$this->id());
 		$ret = "<select {$this->getAttributes()} class='fapi-list ".$this->getCSSClasses()."' name='".$this->getName()."' ".($this->multiple?"multiple='multiple'":"").">";
 		foreach($this->options as $value => $label)
 		{

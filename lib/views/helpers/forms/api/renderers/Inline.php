@@ -103,7 +103,7 @@ class Inline extends Renderer
         {
             if($element->getDescription() != "")
             {
-                $ret .= "<div ".($element->getId()==""?"":"id='".$element->getId()."_desc'")." class='description'>".$element->getDescription()."</div>";
+                $ret .= "<div ".($element->id()==""?"":"id='".$element->id()."_desc'")." class='description'>".$element->getDescription()."</div>";
             }
         }
         $ret .= "</div>";

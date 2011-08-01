@@ -1,4 +1,4 @@
-<?php
+o<?php
 
 require_once 'PHPUnit/Framework.php';
 

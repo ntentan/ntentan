@@ -109,7 +109,6 @@ class FormsHelper extends Helper
                 else
                 {
                     $element = new api\TextField(ucwords(str_replace("_", " ", $field["name"])), $field["name"]);
-                    $element->setAsNumeric();
                 }
                 break;
 

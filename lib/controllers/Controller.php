@@ -18,6 +18,8 @@
 
 namespace ntentan\controllers;
 
+use ntentan\caching\Cache;
+
 use ntentan\controllers\exceptions\ComponentNotFoundException;
 
 use \ReflectionClass;
@@ -344,6 +346,14 @@ class Controller
                         $controller->modelRoute = $modelRoute;
                         $controller->filePath = $filePath;
                         $controller->init();
+                        
+                        // Trap for the cache
+                        if($controller->view->cacheTimeout !== false && Cache::exists("view_" . Ntentan::$routeKey) && Ntentan::$debug === false)
+                        {
+                            echo Cache::get('view_' . Ntentan::$route);
+                            return;
+                        }
+                        
                         if($controller->method == '')
                         {
                         	$controller->method = $routeArray[$i + 1] != '' ? Ntentan::camelize($routeArray[$i + 1], ".", "", true) : $controller->defaultMethodName;
@@ -379,7 +389,6 @@ class Controller
         {
             $message = "Controller not found for route <code><b>" . Ntentan::$route . "</b></code>";
         }
-
         Ntentan::error($message);
 	}
 
@@ -471,6 +480,10 @@ class Controller
                     $component->runMethod($params, $path);
                 }
             }
+        }
+        if($this->view->cacheTimeout !== false && Ntentan::$debug !== false)
+        {
+            Cache::add('view_' . Ntentan::$routeKey, $return, $this->view->cacheTimeout);
         }
         echo $return;
     }
