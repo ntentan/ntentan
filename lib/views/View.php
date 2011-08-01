@@ -33,6 +33,7 @@ class View extends Presentation
     public $template;
     public $defaultTemplatePath;
     public $encoding;
+    public $cacheTimeout = false;
 
     public function __construct()
     {
@@ -63,16 +64,18 @@ class View extends Presentation
             if($this->layout !== false && !Ntentan::isAjax())
             {
                 $viewData['contents'] = $data;
-                return TemplateEngine::render($this->layout, $viewData, $this);
+                $output = TemplateEngine::render($this->layout, $viewData, $this);
             }
             else
             {
-                return $data;
+                $output = $data;
             }
         }
         catch(Exception $e)
         {
             print "Error!";
         }
+        
+        return $output;
     }
 }

@@ -54,7 +54,7 @@ class Checkbox extends Field
 	public function setCheckedValue($checkedValue)
 	{
 		$this->checkedValue = $checkedValue;
-		$this->addAttribute("id", $this->getId());
+		$this->addAttribute("id", $this->id());
 		return $this;
     }
 

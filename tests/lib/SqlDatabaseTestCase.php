@@ -2,7 +2,6 @@
 namespace ntentan\test_cases;
 
 require_once 'lib/models/Model.php';
-require_once 'PHPUnit/Framework.php';
 require_once 'tests/mocks/modules/users/Users.php';
 require_once 'tests/mocks/modules/roles/Roles.php';
 require_once 'tests/mocks/modules/departments/Departments.php';
@@ -48,8 +47,6 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
     protected function setUp()
     {
         parent::setUp();
-        \ntentan\Ntentan::$modulesPath = 'lib/test_cases/mocks';
-        \ntentan\Ntentan::$cacheMethod = 'volatile';
         $this->users = \ntentan\models\Model::load('users');
         $this->roles = \ntentan\models\Model::load('roles');
         $this->departments = \ntentan\models\Model::load('departments');
@@ -61,11 +58,12 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
      */
     protected function tearDown()
     {
+        
     }
 
     public function testSetModel()
     {
-        $this->assertEquals($this->users->dataStore->table, "users");
+    	$this->assertEquals($this->users->dataStore->table, "users");
         $this->assertEquals($this->roles->dataStore->table, "roles");
         $this->assertEquals($this->departments->dataStore->table, "departments");
     }
@@ -76,7 +74,7 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
             'name' => 'roles',
             'fields' => array(
                 'id' => array(
-                     'name' => 'id',
+                    'name' => 'id',
                     'type' => 'integer',
                     'required' => true,
                     'length' => null,
@@ -145,7 +143,7 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
                 'role_id' => array(
                     'name' => 'role_id',
                     'type' => 'integer',
-                    'required' => false,
+                    'required' => true,
                     'length' => null,
                     'comment' => '',
                     'model' => 'roles',
@@ -226,8 +224,7 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
                 'department'
             )
         );
-
-        $this->assertEquals($this->users->describe(), $usersDescription);
+        
         $this->assertEquals($this->roles->describe(), $rolesDescription);
         $this->assertEquals($this->departments->describe(), $departmentsDescription);
     }
@@ -333,7 +330,7 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
                 )
             )->toArray()
         );
-
+        
         $this->assertEquals(
             $roleNameData,
             $this->roles->get(
@@ -344,13 +341,13 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
                 )
             )->toArray()
         );
-
+        
         $roles = $this->roles->get(
             'all', array(
                 'fetch_related' => true
             )
         )->toArray();
-
+        
         $this->assertEquals(
             $roles[1],
             array(
@@ -375,7 +372,7 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
                 )
             )
         );
-
+        
         $users = $this->users->get('all', array('fetch_related'=>true, 'fetch_belongs_to'=>true))->toArray();
         $this->assertEquals(
             $users[0],
@@ -409,7 +406,6 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
             array('name' => 'Dummy Role')
         );
         $this->assertEquals($this->roles->getData(), array('name'=>'Dummy Role'));
-
         $this->roles->setData(
             array('id' => '2')
         );
@@ -435,5 +431,15 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
     public function testSave()
     {
         
+    }
+    
+    public function testUpdate()
+    {
+    	
+    }
+    
+    public function testDelete()
+    {
+    	
     }
 }

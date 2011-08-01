@@ -1,5 +1,5 @@
 <?php
-namespace lib\test_cases\mocks\modules\roles;
+namespace tests\mocks\modules\roles;
 
 class Roles extends \ntentan\models\Model
 {
