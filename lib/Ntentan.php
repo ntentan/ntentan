@@ -110,8 +110,6 @@ class Ntentan
      * @var string
      */
     public static $requestedRoute;
-    
-    public static $routeKey;
 
     /**
      * The routing table. An array of regular expressions and associated
@@ -186,20 +184,21 @@ class Ntentan
         Ntentan::addIncludePath(
             array
             (
-                Ntentan::getFilePath('lib/controllers/'),
-                Ntentan::getFilePath('lib/models/'),
-                Ntentan::getFilePath('lib/models/datastores/'),
-                Ntentan::getFilePath('lib/models/exceptions/'),
-                Ntentan::getFilePath('lib/views/'),
-                Ntentan::getFilePath('lib/views/template_engines/'),
-                Ntentan::getFilePath('lib/views/widgets/'),
-                Ntentan::getFilePath('lib/exceptions/'),
-                Ntentan::getFilePath('lib/caching/'),
-                Ntentan::getFilePath('/'),
+                'lib/controllers/',
+                'lib/models/',
+                'lib/models/datastores/',
+                'lib/models/exceptions/',
+                'lib/views/',
+                'lib/views/template_engines/',
+                'lib/views/widgets/',
+                'lib/exceptions/',
+                'lib/caching/',
+                '/',
                 "./",
                 Ntentan::$modulesPath,
                 Ntentan::$layoutsPath,
-            )
+            ),
+            Ntentan::$basePath
         );
     }
 
@@ -208,7 +207,6 @@ class Ntentan
         // Implement the routing engine
         Ntentan::$requestedRoute = $_GET["q"];
         Ntentan::$route = $_GET["q"];
-        Ntentan::$routeKey = str_replace('/', '_', Ntentan::$route);
         unset($_GET["q"]);
         unset($_REQUEST["q"]);
 
@@ -254,14 +252,11 @@ class Ntentan
      * A utility method to add a path to the list of include paths.
      * @param array $paths
      */
-    public static function addIncludePath($paths)
+    public static function addIncludePath($paths, $prefix = null)
     {
         if(is_array($paths))
         {
-            foreach($paths as $path)
-            {
-                set_include_path(get_include_path() . PATH_SEPARATOR . $path);
-            }
+            set_include_path(get_include_path() . PATH_SEPARATOR . $prefix . implode(PATH_SEPARATOR . $prefix, $paths));
         }
         else
         {
@@ -298,6 +293,11 @@ class Ntentan
     public static function getUrl($url)
     {
         return Ntentan::$prefix . ($url[0]!="/" ? "/$url" : $url);
+    }
+    
+    public static function getRouteKey()
+    {
+         return str_replace('/', '_', Ntentan::$route);
     }
 
     /**

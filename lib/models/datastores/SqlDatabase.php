@@ -20,6 +20,7 @@ namespace ntentan\models\datastores;
 
 use ntentan\Ntentan;
 use ntentan\models\Model;
+use ntentan\models\exceptions\DataStoreException;
 
 /**
  * A class used as the base class datastore classes which store their data in SQL
@@ -119,7 +120,12 @@ abstract class SqlDatabase extends DataStore
                 array_shift($path);
             }
         }
-        while(count($tableArray > 0));
+        while(count($path)  > 0);
+        
+        if($this->table == null)
+        {
+            throw new DataStoreException("Suitable database table not found for model <b><code>{$this->model->getName()}</code></b>");
+        }
     }
 
     protected function resolveName($fieldPath, $reformat=false, $description = null)
