@@ -102,11 +102,6 @@ class Mysql extends SqlDatabase
         
         $mysqlFields = $this->query("select * from information_schema.columns where table_schema='{$schema}' and table_name='{$table}'");
 
-        if(count($mysqlFields) == 0)
-        {
-            throw new Exception("Database table [{$table}] not found.");
-        }
-
         foreach($mysqlFields as $index => $mysqlField)
         {
             switch($mysqlField["DATA_TYPE"])

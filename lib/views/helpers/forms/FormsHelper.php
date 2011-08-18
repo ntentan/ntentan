@@ -125,6 +125,9 @@ class FormsHelper extends Helper
             case "date":
                 $element = new api\DateField(Ntentan::toSentence($field["name"]), $field["name"]);
                 break;
+            
+            case "":
+                throw new \Exception("Empty data type for {$field['name']}");
                 
             default:
                 throw new \Exception("Unknown data type {$field["type"]}");
