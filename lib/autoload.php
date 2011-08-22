@@ -16,36 +16,48 @@
  * limitations under the License.
  */
 
+
 use ntentan\Ntentan;
+use ntentan\caching\Cache;
 
 error_reporting(E_ALL ^ E_NOTICE);
 
 function get_class_file($class)
 {
-    $fullPath = explode("\\", $class);
-
-    //Get rid of any initial empty class name
-    if($fullPath[0] == "") array_shift ($fullPath);
-    $class = array_pop($fullPath);
-
-
-    if($fullPath[0] == \ntentan\Ntentan::$modulesPath)
+    $key = "file_$class";
+    if(Cache::exists($key))
     {
-        $basePath = implode("/",$fullPath);
+        $classFile = Cache::get($key);
     }
-    else if($fullPath[0] == 'ntentan' && $fullPath[1] == "plugins")
+    else
     {
-        array_shift($fullPath);
-        array_shift($fullPath);
-        $basePath = \ntentan\Ntentan::getPluginPath(implode("/",$fullPath));
-    }
-    else if($fullPath[0] == 'ntentan')
-    {
-        array_shift($fullPath);
-        $basePath = \ntentan\Ntentan::getFilePath('lib/' . implode("/",$fullPath));
-    }
+        $fullPath = explode("\\", $class);
 
-    $classFile = $basePath . '/' . $class . '.php';
+        //Get rid of any initial empty class name
+        if($fullPath[0] == "") array_shift ($fullPath);
+        $class = array_pop($fullPath);
+
+
+        if($fullPath[0] == \ntentan\Ntentan::$modulesPath)
+        {
+            $basePath = implode("/",$fullPath);
+        }
+        else if($fullPath[0] == 'ntentan' && $fullPath[1] == "plugins")
+        {
+            array_shift($fullPath);
+            array_shift($fullPath);
+            $basePath = \ntentan\Ntentan::getPluginPath(implode("/",$fullPath));
+        }
+        else if($fullPath[0] == 'ntentan')
+        {
+            array_shift($fullPath);
+            $basePath = \ntentan\Ntentan::getFilePath('lib/' . implode("/",$fullPath));
+        }
+
+        $classFile = $basePath . '/' . $class . '.php';
+        Cache::add($key, $classFile);
+    }
+    
     return $classFile;
 }
 

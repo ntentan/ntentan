@@ -25,6 +25,11 @@ use ntentan\exceptions\FileNotFoundException;
  */
 class File extends Cache
 {
+    private function hashKey($key)
+    {
+        return md5($key);
+    }
+    
     protected function addImplementation($key, $object, $expires)
     {
         if(file_exists("cache") && is_writable("cache"))
@@ -33,6 +38,7 @@ class File extends Cache
                 'expires' => $expires,
                 'object' => $object
             );
+            $key = $this->hashKey($key);
             file_put_contents("cache/$key", serialize($object));
         }
         else
@@ -45,6 +51,7 @@ class File extends Cache
     
     protected function existsImplementation($key)
     {
+        $key = $this->hashKey($key);
         if(file_exists("cache/$key"))
         {
             $cacheObject = unserialize(file_get_contents("cache/$key"));
@@ -62,6 +69,7 @@ class File extends Cache
     
     protected function getImplementation($key)
     {
+        $key = $this->hashKey($key);
         $cacheObject = unserialize(file_get_contents("cache/$key"));
         if($cacheObject['expires'] > time() || $cacheObject['expires'] == 0)
         {
@@ -79,6 +87,7 @@ class File extends Cache
     
     protected function removeImplementation($key)
     {
+        $key = $this->hashKey($key);
         unlink("cache/$key");
     }
 }

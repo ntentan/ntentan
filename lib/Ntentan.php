@@ -40,6 +40,8 @@ include "globals.php";
 date_default_timezone_set("Africa/Accra");
 set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
 
+include "caching/Cache.php";
+use ntentan\caching\Cache;
 
 /**
  * A utility class for the Ntentan framework. This class contains the routing
@@ -59,7 +61,7 @@ class Ntentan
      * the ntentan framework resides.
      * @var string
      */
-    public static $basePath = "ntentan/";
+    public static $basePath;
 
     /**
      * The directory which holds the modules of the application.
@@ -127,21 +129,12 @@ class Ntentan
      * @var string
      */
     public static $route;
-
     public static $prefix;
-
     private static $singulars = array();
     private static $plurals = array();
     private static $camelisations = array();
     private static $deCamelisations = array();
-
     private static $loadedDatastores = array();
-
-    /**
-     * The path to the file which holds the database configuration/
-     * @var string
-     */
-    public static $dbConfigFile = "config/db.php";
 
     /**
      * Current ntentan version
@@ -154,23 +147,29 @@ class Ntentan
 	 * ntentan is properly setup and then it implements the routing engine which
 	 * loads the controllers to handle the request.
 	 */
-    public static function boot($config)
+    public static function boot($config, $caching = null)
     {
+        if(Cache::exists('nt_camelisations'))
+        {
+            Ntentan::$camelisations = Cache::get('nt_camelisations');
+        }
+        else
+        {
+            Ntentan::$camelisations = array();
+        }
+        
         Ntentan::setup($config);
         // Do not go beyond this point if running in CLI mode
-        if(defined('STDIN')===true)
+        /*if(defined('STDIN')===true)
         {
             return null;
-        }
+        }*/
         Ntentan::route();
+        Cache::add('nt_camelisations', Ntentan::$camelisations);
     }
 
     public static function setup($config)
     {
-    	if(is_string($config))
-    	{
-    		$config = parse_ini_file($config, true);
-    	}
         Ntentan::$basePath = $config['application']['ntentan_home'];
         Ntentan::$modulesPath = $config['application']['modules_path'];
         Ntentan::$prefix = $config['application']['prefix'];
@@ -178,7 +177,7 @@ class Ntentan
 
         Ntentan::$cacheMethod = $config[CONTEXT]['caching'] == '' ? Ntentan::$cacheMethod : $config[CONTEXT]['caching'];
         Ntentan::$pluginsPath = $config[CONTEXT]['plugins'] == '' ? 'plugins/' : $config[CONTEXT]['plugins'];
-        Ntentan::$debug = $config[CONTEXT]['debug'] == true ? true : false;
+        Ntentan::$debug = $config[CONTEXT]['debug'];
         Ntentan::$config = $config;
 
         Ntentan::addIncludePath(
