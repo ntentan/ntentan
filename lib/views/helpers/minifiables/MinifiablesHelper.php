@@ -60,7 +60,7 @@ abstract class MinifiablesHelper extends Helper
         }
         else if($arguments != '')
         {
-        	$this->otherScripts[]= $arguments;
+            $this->otherScripts[]= $arguments;
         }
         return $this;
     }
