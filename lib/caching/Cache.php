@@ -93,15 +93,26 @@ abstract class Cache
     }
 
     /**
-     * Implementation of the add function by the appropriate caching backend
+     * Implementation of the add function by the appropriate caching backend.
      * @param string $key
      */
     abstract protected function addImplementation($key, $object, $expires);
 
     /**
-     *
+     * Implementation of the get function by the appropriate caching backend.
+     * @param string $key
      */
     abstract protected function getImplementation($key);
+    
+    /**
+     * Implementation of the exists function by the appropriate caching backend
+     * @param string $key
+     */
     abstract protected function existsImplementation($key);
+    
+    /**
+     * Implementation of the remove function by the appropriate caching backend
+     * @param string $key
+     */
     abstract protected function removeImplementation($key);
 }

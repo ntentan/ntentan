@@ -70,8 +70,19 @@ class Controller
      */
     public $variables = array();
 
+    /**
+     * An array to hold the names of all the loaded components of this instance
+     * of the controller class.
+     * @var type Array
+     */
     public $components = array();
 
+    /**
+     * An array to hold the instances of all the loaded components of this instance
+     * of the controller class. The controller names in the Controller::variables
+     * property correspond directly with the instances in this array.
+     * @var type Array
+     */
     private $componentInstances = array();
 
     public $rawMethod;

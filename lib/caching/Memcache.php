@@ -23,14 +23,14 @@ namespace ntentan\caching;
  */
 class Memcache extends Cache
 {
-	private $cache;
-	
-	public function __construct()
-	{
-		$cache = new Memcache();
-		$cache->addServer('localhost');
-	}
-	
+    private $cache;
+
+    public function __construct()
+    {
+        $cache = new Memcache();
+        $cache->addServer('localhost');
+    }
+
     protected function addImplementation($key, $object, $expires)
     {
         
