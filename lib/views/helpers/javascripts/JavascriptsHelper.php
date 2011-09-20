@@ -28,12 +28,13 @@ class JavascriptsHelper extends MinifiablesHelper
 
     public function ntentan()
     {
-        $url_prefix = Ntentan::$prefix;
+        $urlPrefix = Ntentan::$prefix;
         return "<script type='text/javascript'>
             var ntentan = {
+            prefix : '$urlPrefix',
             url : function(route)
             {
-                return '$url_prefix' + '/' + route;
+                return '$urlPrefix' + '/' + route;
             }
         }
         </script>";
