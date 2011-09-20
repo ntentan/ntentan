@@ -45,6 +45,6 @@ class Volatile extends Cache
     
     protected function removeImplementation($key)
     {
-    	
+        unset($this->data[$key]);
     }
 }
