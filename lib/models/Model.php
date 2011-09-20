@@ -604,6 +604,33 @@ class Model implements ArrayAccess, Iterator
             return json_encode($this->data, true);
         }
     }
+    
+    private function getStdObject($data = null)
+    {
+        $keys = array_keys($data);
+        
+        if($keys[0] == '0')
+        {
+            $returnData = array();
+            foreach($array as $index => $row)
+            {
+                $returnData[$index] = $this->getStdObject($row);
+            }
+        }
+        else
+        {
+            foreach($data as $field => $value)
+            {
+                $returnData->{$field} = $value;
+            }
+        }
+        return $returnData;
+    }
+    
+    public function toStdObject()
+    {
+        return $this->getStdObject($this->toArray());
+    }
 
     public function toArray()
     {
