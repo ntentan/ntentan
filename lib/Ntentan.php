@@ -142,11 +142,11 @@ class Ntentan
      */
     const VERSION = "0.5-rc1";
 
-	/**
-	 * The main entry point of the Ntentan application. This method checks if
-	 * ntentan is properly setup and then it implements the routing engine which
-	 * loads the controllers to handle the request.
-	 */
+    /**
+     * The main entry point of the Ntentan application. This method checks if
+     * ntentan is properly setup and then it implements the routing engine which
+     * loads the controllers responsoble for handling the request
+     */
     public static function boot($config, $caching = null)
     {
         if(Cache::exists('nt_camelisations'))
@@ -157,15 +157,14 @@ class Ntentan
         {
             Ntentan::$camelisations = array();
         }
+        $camelisations = count(Ntentan::$camelisations);
         
         Ntentan::setup($config);
-        // Do not go beyond this point if running in CLI mode
-        /*if(defined('STDIN')===true)
-        {
-            return null;
-        }*/
         Ntentan::route();
-        Cache::add('nt_camelisations', Ntentan::$camelisations);
+        if(count(Ntentan::$camelisations) > $camelisations)
+        {
+            Cache::add('nt_camelisations', Ntentan::$camelisations);
+        }
     }
 
     public static function setup($config)
