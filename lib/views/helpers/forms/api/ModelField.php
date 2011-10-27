@@ -7,8 +7,8 @@ use ntentan\models\Model;
 
 class ModelField extends SelectionList
 {
-	public function __construct($label, $model, $value = null)
-	{
+    public function __construct($label, $model, $value = null)
+    {
         parent::__construct();
         $this->label =$label;
         $modelInstance = Model::load($model);
@@ -19,5 +19,5 @@ class ModelField extends SelectionList
         {
             $this->addOption($value == null ? $data[$i] : $data[$i][$value], $data[$i]["id"]);
         }
-	}
+    }
 }

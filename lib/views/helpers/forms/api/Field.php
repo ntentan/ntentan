@@ -26,58 +26,58 @@ namespace ntentan\views\helpers\forms\api;
  */
 abstract class Field extends Element
 {
-	/**
-	 * A flag for setting the required state of the form. If this value
-	 * is set as true then the form would not be validated if there is
-	 * no value entered into this field.
-	 */
-	public $required = false;
+    /**
+     * A flag for setting the required state of the form. If this value
+     * is set as true then the form would not be validated if there is
+     * no value entered into this field.
+     */
+    public $required = false;
 
-	/**
-	 * The value of the form field.
-	 */
-	protected $value;
+    /**
+     * The value of the form field.
+     */
+    protected $value;
 
-	/**
-	 * The constructor for the field element.
-	 */
-	public function __construct($name="", $value="")
-	{
-		$this->name = $name;
-		$this->value = $value;
-	}
+    /**
+     * The constructor for the field element.
+     */
+    public function __construct($name="", $value="")
+    {
+            $this->name = $name;
+            $this->value = $value;
+    }
 
-	/**
-	 * Sets the value of the field.
-	 *
-	 * @param $value The value of the field.
-	 */
-	public function setValue($value)
-	{
-		$this->value = $value;
-        return $this;
-	}
+    /**
+     * Sets the value of the field.
+     *
+     * @param $value The value of the field.
+     */
+    public function setValue($value)
+    {
+            $this->value = $value;
+    return $this;
+    }
 
-	/**
-	 * Get the value of the field.
-	 *
-	 * @return unknown
-	 */
-	public function getValue()
-	{
-		return $this->value;
-	}
+    /**
+     * Get the value of the field.
+     *
+     * @return unknown
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
 
-	/**
+    /**
      * Sets the required status of the field.
      *
      * @param The required status of the field.
      */
-	public function setRequired($required)
-	{
-		$this->required = $required;
-		return $this;
-	}
+    public function setRequired($required)
+    {
+        $this->required = $required;
+        return $this;
+    }
 
     public function required($required = null)
     {
@@ -92,65 +92,44 @@ abstract class Field extends Element
         }
     }
 
-	/**
+    /**
      * Returns the required status of the field.
      *
      * @return The required status of the field.
      */
-	public function getRequired()
-	{
-		return $this->required;
-	}
+    public function getRequired()
+    {
+        return $this->required;
+    }
 
-	//! Sets the data that is stored in this field.
-	//! \param $data An array of fields. This method just looks through for
-	//!              a field that matches it and then applies its value to
-	//!              itself.
-	public function setData($data)
-	{
-		if(array_search($this->getName(false),array_keys($data))!==false)
-		{
-			$this->setValue($data[$this->getName(false)]);
-		}
-	}
+    //! Sets the data that is stored in this field.
+    //! \param $data An array of fields. This method just looks through for
+    //!              a field that matches it and then applies its value to
+    //!              itself.
+    public function setData($data)
+    {
+        if(array_search($this->getName(false),array_keys($data))!==false)
+        {
+            $this->setValue($data[$this->getName(false)]);
+        }
+    }
 
-	public function validate()
-	{
-		//Perform the required validation. Generate an error if this
-		//field is empty.
-		if($this->getRequired() && $this->getValue() === "" )
-		{
-			$this->error = true;
-			array_push($this->errors,$this->getLabel()." is required.");
-			return false;
-		}
+    public function getType()
+    {
+        return __CLASS__;
+    }
 
-		// Call the custom validation function.
-		$validationFunc = $this->validationFunc;
-		if($validationFunc!="")
-		{
-			$this->error = !$validationFunc($this,$this->errors);
-			return !$this->error;
-		}
-		return true;
-	}
+    public function getCSSClasses()
+    {
+        $classes=parent::getCSSClasses();
+        if($this->error) $classes.="error ";
+        if($this->getRequired()) $classes .="required ";
+        return trim($classes);
+    }
 
-	public function getType()
-	{
-		return __CLASS__;
-	}
-
-	public function getCSSClasses()
-	{
-		$classes=parent::getCSSClasses();
-		if($this->error) $classes.="error ";
-		if($this->getRequired()) $classes .="required ";
-		return trim($classes);
-	}
-
-	public function getOptions()
-	{
-		return array();
-	}
+    public function getOptions()
+    {
+        return array();
+    }
 
 }

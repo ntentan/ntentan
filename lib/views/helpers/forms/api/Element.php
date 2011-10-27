@@ -30,78 +30,104 @@ use \ReflectionClass;
  */
 abstract class Element
 {
-	const SCOPE_ELEMENT = "";
-	const SCOPE_WRAPPER = "_wrapper";
+    const SCOPE_ELEMENT = "";
+    const SCOPE_WRAPPER = "_wrapper";
 
     protected $formId;
 
-	/**
-	 * The id of the form useful for CSS styling and DOM access.
-	 */
-	protected $id;
+    /**
+     * The id of the form useful for CSS styling and DOM access.
+     * 
+     * @var string
+     */
+    protected $id;
 
-	/**
-	 * The label of the form element.
-	 */
-	protected $label;
+    /**
+     * The label of the form element.
+     * 
+     * @var string
+     */
+    protected $label;
 
-	/**
-	 * The description of the form element.
-	 */
-	protected $description;
+    /**
+     * The description of the form element.
+     * 
+     * @var string
+     */
+    protected $description;
 
-	//! An array of all the CSS classes associated with this element.
-	protected $classes = array();
+    /**
+     * An array of all the CSS classes associated with this element.
+     *
+     * @var array 
+     */
+    protected $classes = array();
+    
+    /**
+     * An array of all HTML attributes. These attributes are stored as
+     * objects of the Attribute class. Attributes in this array are applied
+     * directly to the form element.
+     *
+     * @var array 
+     */    
+    protected $attributes = array();
+    
+    /**
+     * An array of all HTML attributes. These attributes are stored as
+     * objects of the Attribute class. Attributes in this array are applied
+     * directly to the wrapper which wraps the form element.
+     *
+     * @var array 
+     */    
+    protected $wrapperAttributes = array();
+    
+    /**
+     * An array of all error messages associated with this element.
+     * Error messages are setup during validation, when any element
+     * fails its validation test.
+     *
+     * @var array
+     */
+    protected $errors = array();
 
-	//! An array of all HTML attributes. These attributes are stored as
-	//! objects of the Attribute class.
-	//! \see Attribute
-	protected $attributes = array();
-	protected $wrapperAttributes = array();
+    //! A boolean value which is set to true whenever there is an error
+    //! assiciated with the class in one way or the other.
+    protected $error;
 
-	//! An array of all error messages associated with this element.
-	//! Error messages are setup during validation, when any element
-	//! fails its validation test.
-	protected $errors = array();
+    /**
+     * A boolean value which is set to true if the form elements are
+     * to be made available for editing. If this property is set to false
+     * the form element shows only the value associated with this field
+     * in cases where the data has been collected from the database.
+     * @var boolean
+     */ 
+    protected $showfield = true;
 
-	//! A boolean value which is set to true whenever there is an error
-	//! assiciated with the class in one way or the other.
-	protected $error;
+    /**
+     * The parent element which contains this element.
+     * @var Element
+     */
+    protected $parent = null;
 
-	/**
-	 * A boolean value which is set to true if the form elements are
-	 * to be made available for editing. If this property is set to false
-	 * the form element shows only the value associated with this field
-	 * in cases where the data has been collected from the database.
-	 * @var boolean
-	 */ 
-	protected $showfield = true;
-
-	/**
-	 * The parent element which contains this element.
-	 * @var Element
-	 */
-	protected $parent = null;
-
-	/**
-	 * The name of the form field. This is what is to be outputed as
-	 * the HTML name attribute of the field. If name encryption is
-	 * enabled the outputed name to HTML is mangled by the encryption
-	 * algorithm. However internally the Field may still be referenced
-	 * bu the unmangled name.
-	 */
-	public $name;
+    /**
+     * The name of the form field. This is what is to be outputed as
+     * the HTML name attribute of the field. If name encryption is
+     * enabled the outputed name to HTML is mangled by the encryption
+     * algorithm. However internally the Field may still be referenced
+     * bu the unmangled name.
+     */
+    public $name;
 
     public $renderLabel = true;
-	
-	private static $count;
 
-	public function __construct($label="", $description="", $id="")
-	{
-		$this->setLabel($label);
-		$this->description($description);
-		$this->id($id);
-	}
+    private static $count;
+
+    public function __construct($label="", $description="", $id="")
+    {
+        $this->setLabel($label);
+        $this->description($description);
+        $this->id($id);
+    }
 
     public function id($id = false)
     {
@@ -117,28 +143,28 @@ abstract class Element
         }
     }
     
-	/**
-	 * Public accessor for setting the name property of the field.
-	 *
-	 * @param  $name The name to assign to the form element.
+    /**
+     * Public accessor for setting the name property of the field.
+     *
+     * @param  $name The name to assign to the form element.
      * @deprecated
-	 */
-	public function setName($name)
-	{
-		$this->name = $name;
-		return $this;
-	}
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
 
-	/**
-	 * Public accessor for getting the name property of the field.
-	 *
-	 * @return The name of the form field.
+    /**
+     * Public accessor for getting the name property of the field.
+     *
+     * @return The name of the form field.
      * @deprecated
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
     public function name($name = false)
     {
@@ -153,18 +179,18 @@ abstract class Element
         }
     }
 
-	//! Sets the label which is attached to this element.
-	public function setLabel($label)
-	{
-		$this->label = $label;
-		return $this;
-	}
+    //! Sets the label which is attached to this element.
+    public function setLabel($label)
+    {
+        $this->label = $label;
+        return $this;
+    }
 
-	//! Gets the label which is attached to this element.
-	public function getLabel()
-	{
-		return $this->label;
-	}
+    //! Gets the label which is attached to this element.
+    public function getLabel()
+    {
+        return $this->label;
+    }
 
     public function label($label = null)
     {
@@ -181,28 +207,28 @@ abstract class Element
 
     /**
      * Gets the description which is attached to this element. The description
-	 * is normally displayed under the element when rendering HTML.
+     * is normally displayed under the element when rendering HTML.
      *
      * @deprecated
      * @return string
      */
-	public function getDescription()
-	{
-		return $this->description;
-	}
+    public function getDescription()
+    {
+        return $this->description;
+    }
 
     /**
      * Sets the description which is attached to this element. The description
-	 * is normally displayed under the element when rendering HTML.
+     * is normally displayed under the element when rendering HTML.
      *
      * @deprecated
      * @return string
      */
     public function setDescription($description)
-	{
-		$this->description = $description;
+    {
+        $this->description = $description;
         return $this;
-	}
+    }
 
     public function description($description = null)
     {
@@ -216,62 +242,57 @@ abstract class Element
             return $this;
         }
     }
+    /**
+     * Returns all the arrays associated with this document.
+     *
+     * @return array 
+     */
+    public function getErrors()
+    {
+        return $this->errors;
+    }
 
-	//! Returns all the arrays associated with this document.
-	public function getErrors()
-	{
-		return $this->errors;
-	}
+    // Returns the error flag for this element.
+    public function hasError()
+    {
+        return $this->error;
+    }
 
-	// Returns the error flag for this element.
-	public function hasError()
-	{
-		return $this->error;
-	}
+    public function getType()
+    {
+        return __CLASS__;
+    }
 
-	public function getType()
-	{
-		return __CLASS__;
-	}
+    /**
+     * Renders the form element by outputing the HTML associated with
+     * the element. This method is abstract and it is implemented by
+     * all the other classes which inherit the Element class.
+     */
+    abstract public function render();
 
-	/**
-	 * Renders the form element by outputing the HTML associated with
-	 * the element. This method is abstract and it is implemented by
-	 * all the other classes which inherit the Element class.
-	 */
-	abstract public function render();
-	
-	public function __toString()
-	{
-	    return FormsHelper::getRendererInstance()->element($this);
-	}
+    public function __toString()
+    {
+        return FormsHelper::getRendererInstance()->element($this);
+    }
 
-	//! Returns an array of all the CSS classes associated with this
-	//! element.
-	public function getCSSClasses()
-	{
-		$ret = "";
-		foreach($this->classes as $class)
-		{
-			$ret .= $class." ";
-		}
-		return $ret;
-	}
+    //! Returns an array of all the CSS classes associated with this
+    //! element.
+    public function getCSSClasses()
+    {
+        $ret = "";
+        foreach($this->classes as $class)
+        {
+            $ret .= $class." ";
+        }
+        return $ret;
+    }
 
-	//! Adds a css class to this element.
-	public function addCSSClass($class)
-	{
-		$this->classes[] = $class;
+    //! Adds a css class to this element.
+    public function addCSSClass($class)
+    {
+        $this->classes[] = $class;
         return $this;
-	}
-
-	//! Adds an attribute object to the internal attribute array of the
-	//! element.
-	//! \see Attribute
-	/*public function addAttributeObject($attribute)
-	{
-		$this->attributes[] = $attribute;
-	}*/
+    }
 
     public function attribute($key, $value = false, $scope = Element::SCOPE_ELEMENT)
     {
@@ -304,82 +325,64 @@ abstract class Element
         }
     }
 
-	//! Adds an attribute to the list of attributes of this element.
-	//! This method internally creates a new Attribute object and appends
-	//! it to the list of attributes.
-	//! \see Attribute
-	public function addAttribute($attribute,$value,$scope = Element::SCOPE_ELEMENT)
-	{
-		// Force the setting of the attribute.
-		if($scope == Element::SCOPE_ELEMENT)
-		{
-			$this->attributes[$attribute] = $value;
-		}
-		else if($scope == Element::SCOPE_WRAPPER)
-		{
-			$this->wrapperAttributes[$attribute] = $value;
-		}
-		return $this;
-	}
-
-	public function removeAttribute($attribute, $scope = Element::SCOPE_ELEMENT)
-	{
-		switch($scope)
+    //! Adds an attribute to the list of attributes of this element.
+    //! This method internally creates a new Attribute object and appends
+    //! it to the list of attributes.
+    //! \see Attribute
+    public function addAttribute($attribute,$value,$scope = Element::SCOPE_ELEMENT)
+    {
+        // Force the setting of the attribute.
+        if($scope == Element::SCOPE_ELEMENT)
         {
-        case Element::SCOPE_ELEMENT:
-            unset($this->attributes[$attribute]);
-            break;
-
-        case Element:SCOPE_WRAPPER:
-            unset($this->wrapperAttributes[$attribute]);
-            break;
+            $this->attributes[$attribute] = $value;
         }
-	}
+        else if($scope == Element::SCOPE_WRAPPER)
+        {
+            $this->wrapperAttributes[$attribute] = $value;
+        }
+        return $this;
+    }
 
-	//! Sets the value for a particular attribute.
-	public function setAttribute($attribute,$value)
-	{
-		$this->attributes[$attribute] = $value;
-		return $this;
-	}
+    public function removeAttribute($attribute, $scope = Element::SCOPE_ELEMENT)
+    {
+        switch($scope)
+        {
+            case Element::SCOPE_ELEMENT:
+                unset($this->attributes[$attribute]);
+                break;
 
-	//! Returns an HTML representation of all the attributes. This method
-	//! is normally called when rendering the HTML for the element.
-	public function getAttributes($scope=Element::SCOPE_ELEMENT)
-	{
-		switch($scope)
-		{
-			case Element::SCOPE_ELEMENT: $attributes = $this->attributes; break;
-			case Element::SCOPE_WRAPPER: $attributes = $this->wrapperAttributes; break;
-		}
-		$ret = "";
-		foreach($attributes as $key => $value)
-		{
-			$ret .= $key . '="' . $value . '" ';
-		}
-		return $ret;
-	}
+            case Element:SCOPE_WRAPPER:
+                unset($this->wrapperAttributes[$attribute]);
+                break;
+        }
+    }
 
-	//! Sets whether the field should be shown or hidden.
-	//! \see $showfield
-	public function setShowFields($showfield)
-	{
-		$this->showfields = $showfield;
-	}
+    //! Sets the value for a particular attribute.
+    public function setAttribute($attribute,$value)
+    {
+        $this->attributes[$attribute] = $value;
+        return $this;
+    }
 
-	//! Gets the value of the $showfield property.
-	public function getShowField()
-	{
-		return $this->showfield;
-	}
-	
-	public function getHasFile()
-	{
-		return $this->hasFile;
-	}
+    //! Returns an HTML representation of all the attributes. This method
+    //! is normally called when rendering the HTML for the element.
+    public function getAttributes($scope=Element::SCOPE_ELEMENT)
+    {
+        switch($scope)
+        {
+            case Element::SCOPE_ELEMENT: $attributes = $this->attributes; break;
+            case Element::SCOPE_WRAPPER: $attributes = $this->wrapperAttributes; break;
+        }
+        $ret = "";
+        foreach($attributes as $key => $value)
+        {
+            $ret .= $key . '="' . $value . '" ';
+        }
+        return $ret;
+    }
 
-	public function addErrors($error)
-	{
+    public function addErrors($error)
+    {
         if(is_array($error))
         {
             $this->errors = array_merge($this->errors, $error);
@@ -390,22 +393,21 @@ abstract class Element
             $this->error = true;
             $this->errors[] = $error;
         }
-	}
-
-	public function clearErrors()
-	{
-		$this->error = false;
-		$this->errors = array();
-	}
-
-    public static function createFromString($class, $label, $name, $value = null)
-    {
-        return Element::create($class)->setLabel($label)->setName($name)->setValue($value);
     }
 
-    public function onRender()
+    public function clearErrors()
     {
-        
+        $this->error = false;
+        $this->errors = array();
+    }
+    
+    public function setShowField($showField)
+    {
+        $this->showfield = $showField;
+    }
+    
+    public function getShowField()
+    {
+        return $this->showField;
     }
 }
-

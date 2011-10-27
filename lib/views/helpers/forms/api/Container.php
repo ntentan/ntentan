@@ -19,9 +19,7 @@
 namespace ntentan\views\helpers\forms\api;
 
 use ntentan\views\helpers\forms\Forms;
-
 use ntentan\Ntentan;
-
 use \Exception;
 
 /**
@@ -32,41 +30,28 @@ use \Exception;
 abstract class Container extends Element
 {
 
-	/**
-	 * The array which holds all the elements contained in this container.
-	 */
-	protected $elements = array();
+    /**
+     * The array which holds all the elements contained in this container.
+     */
+    protected $elements = array();
 
-	/** 
-	 * When set to false the fields are not shown for editing.
-	 * @var boolean
-	 */
-	protected $showfields = true;
+    /** 
+     * When set to false the fields are not shown for editing.
+     * @var boolean
+     */
+    protected $showfields = true;
 
-	/**
-	 * Stores the name of a custom function to call when the form is being
-	 * rendered.
-	 * @var string
-	 */
-	protected $onRenderCallback;
+    public $isContainer = true;
+    
+    public $rendererMode = 'all';
 
-	/**
-	 * The Ntentan Model which holds the form's data.
-	 * @see Model
-	 */
-
-	protected $callback;
-	protected $callbackData;
-	public $isContainer = true;
-	public $rendererMode = 'all';
-
-	/**
-	 * Returns the renderer which is currently being used by the class.
-	 */
-	public function getRenderer()
-	{
-		return $this->renderer;
-	}
+    /**
+     * Returns the renderer which is currently being used by the class.
+     */
+    public function getRenderer()
+    {
+        return $this->renderer;
+    }
 
     private function addElement($element)
     {
@@ -84,12 +69,12 @@ abstract class Container extends Element
         }
     }
 
-	/**
-	 * Method for adding an element to the form container.
-	 * @return Container
-	 */
-	public function add()
-	{
+    /**
+     * Method for adding an element to the form container.
+     * @return Container
+     */
+    public function add()
+    {
         $arguments = func_get_args();
 
         if(is_array($arguments[0]))
@@ -124,15 +109,15 @@ abstract class Container extends Element
             {
                 $this->addElement($element);
             }
-		}
-		return $this;
-	}
+            }
+            return $this;
+    }
 
-	//! This method sets the data for the fields in this container. The parameter
-	//! passed to this method is a structured array which has field names as keys
-	//! and the values as value.
-	public function setData($data)
-	{
+    //! This method sets the data for the fields in this container. The parameter
+    //! passed to this method is a structured array which has field names as keys
+    //! and the values as value.
+    public function setData($data)
+    {
         if(is_array($data))
         {
             foreach($this->elements as $element)
@@ -140,44 +125,37 @@ abstract class Container extends Element
                 $element->setData($data);
             }
         }
-		return $this;
-	}
+        return $this;
+    }
 
-	public function isFormSent()
-	{
-		if($this->getMethod()=="POST") $sent=$_POST["is_form_{$this->formId}_sent"];
-		if($this->getMethod()=="GET") $sent=$_GET["is_form_{$this->formId}_sent"];
-		if($sent=="yes") return true; else return false;
-	}
+    public function getType()
+    {
+        return __CLASS__;
+    }
 
-	public function getType()
-	{
-		return __CLASS__;
-	}
-
-	/**
-	 * Render all the elements currently contained in this container. This method
-	 * would initialize the renderer class and use it to layout the elements
-	 * on the form.
-	 */
-	private function renderElements()
-	{
-	    $renderer = Forms::getRendererInstance();
+    /**
+     * Render all the elements currently contained in this container. This method
+     * would initialize the renderer class and use it to layout the elements
+     * on the form.
+     */
+    private function renderElements()
+    {
+        $renderer = Forms::getRendererInstance();
         $this->onRender();
-		$ret = $renderer->head();
-		foreach($this->elements as $element)
-		{
-			$ret .= $renderer->element($element);
-		}
-		$ret .= $renderer->foot();
-		return $ret;
-	}
-	
-	abstract protected function renderHead();
-	abstract protected function renderFoot();
-	
-	public function render()
-	{
+        $ret = $renderer->head();
+        foreach($this->elements as $element)
+        {
+                $ret .= $renderer->element($element);
+        }
+        $ret .= $renderer->foot();
+        return $ret;
+    }
+
+    abstract protected function renderHead();
+    abstract protected function renderFoot();
+
+    public function render()
+    {
         switch($this->rendererMode)
         {
             case 'head';
@@ -187,100 +165,50 @@ abstract class Container extends Element
             case 'elements':
                 return $this->renderElements();
         }
-	}
-
-	//! Sets whether the fields should be exposed for editing. If this
-	//! field is set as true then the values of the fields as retrieved
-	//! from the database are showed.
-	public function setShowFields($showfield)
-	{
-		Element::setShowFields($showfield);
-		foreach($this->getElements() as $element)
-		{
-			$element->setShowFields($showfield);
-		}
-	}
-
-	//! Returns an array of all the Elements found in this container.
-	public function getElements()
-	{
-		return $this->elements;
-	}
-
-
-	//! Returns all Elements found in this container which are subclasses
-	//! of the Field class.
-	public function getFields()
-	{
-		$elements = $this->getElements();
-		$fields = array();
-		foreach($elements as $element)
-		{
-			if($element->getType()=="Field" || $element->getType()=="Checkbox")
-			{
-				$fields[] = $element;
-			}
-			else if($element->getType()=="Container")
-			{
-				foreach($element->getFields() as $field)
-				{
-					$fields[] = $field;
-				}
-			}
-		}
-		return $fields;
-	}
-
-    public function get($name)
-    {
-        return $this->getElementByName($name);
     }
 
-	//! Returns an element in the container with a particular name.
-	//! \param $name The name of the element to be retrieved.
-	public function getElementByName($name)
-	{
-		foreach($this->getElements() as $element)
-		{
-			if($element->getType()!="Container")
-			{
-				if($element->getName(false)==$name) return $element;
-			}
-			else
-			{
-				try
-				{
-					return $element->getElementByName($name);
-				}
-				catch(Exception $e){}
-			}
-		}
-		throw new Exception("No element with name $name found in array");
-	}
+    //! Sets whether the fields should be exposed for editing. If this
+    //! field is set as true then the values of the fields as retrieved
+    //! from the database are showed.
+    public function setShowFields($showfield)
+    {
+        Element::setShowFields($showfield);
+        foreach($this->getElements() as $element)
+        {
+            $element->setShowFields($showfield);
+        }
+    }
 
-	public function getElementById($id)
-	{
-		foreach($this->getElements() as $element)
-		{
-			if($element->getType()!="Container")
-			{
-				if($element->getId()==$id) return $element;
-			}
-			else
-			{
-				if($element->getId()==$id) return $element;
-				try
-				{
-					return $element->getElementById($id);
-				}
-				catch(Exception $e){}
-			}
-		}
-		throw new Exception("No element with id $id found in Container");
-	}
+    //! Returns an array of all the Elements found in this container.
+    public function getElements()
+    {
+        return $this->elements;
+    }
 
-	public function setErrors($errors)
-	{
+    //! Returns an element in the container with a particular name.
+    //! \param $name The name of the element to be retrieved.
+    public function getElementByName($name)
+    {
+        foreach($this->getElements() as $element)
+        {
+            if($element->getType()!="Container")
+            {
+                if($element->getName(false)==$name) return $element;
+            }
+            else
+            {
+                try
+                {
+                    return $element->getElementByName($name);
+                }
+                catch(Exception $e){}
+            }
+        }
+        throw new Exception("No element with name $name found in array");
+    }
+
+    public function setErrors($errors)
+    {
         if(is_array($errors))
         {
             foreach($errors as $field => $error)
@@ -288,7 +216,7 @@ abstract class Container extends Element
                 $this->getElementByName($field)->addErrors($error);
             }
         }
-	}
+    }
 
     public function __toString()
     {

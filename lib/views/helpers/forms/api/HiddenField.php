@@ -20,18 +20,18 @@ namespace ntentan\views\helpers\forms\api;
 
 class HiddenField extends Field
 {
-	public function __construct($name="", $value="")
-	{
-		parent::__construct($name, $value);
-	}
+    public function __construct($name="", $value="")
+    {
+        parent::__construct($name, $value);
+    }
 
-	public function render()
-	{
-		return "<input type='hidden'  name='".$this->getName()."' value='".$this->getValue()."' {$this->getAttributes()} />";
-	}
+    public function render()
+    {
+        return "<input type='hidden'  name='".$this->getName()."' value='".$this->getValue()."' {$this->getAttributes()} />";
+    }
 
-	public function getType()
-	{
-		return __CLASS__;
-	}
+    public function getType()
+    {
+        return __CLASS__;
+    }
 }
