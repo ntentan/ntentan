@@ -25,17 +25,17 @@ namespace ntentan\views\helpers\forms\api;
  */
 class SelectionList extends Field
 {
-	/**
+    /**
      * An array of options to display with this selection list
      * @var array
      */
-	protected $options = array();
+    protected $options = array();
 
-	/**
+    /**
      * When set true, this selection list would allow multiple selections
      * @var boolean
      */
-	protected $multiple;
+    protected $multiple;
 
     /**
      * Constructs a new selection list. This constructor could be invoked through
@@ -45,38 +45,38 @@ class SelectionList extends Field
      * @param string $name The name of the selection list
      * @param string $description A brief description for the selection list
      */
-	public function __construct($label="", $name="", $description="")
-	{
-		Field::__construct($name);
-		Element::__construct($label, $description);
-		$this->addOption("","");
-	}
+    public function __construct($label="", $name="", $description="")
+    {
+        Field::__construct($name);
+        Element::__construct($label, $description);
+        $this->addOption("","");
+    }
 
-	/**
+    /**
      * Sets whether multiple selections are allowed. This method automatically
      * appends the array symbol '[]' to the name of the selection list object.
      * @param boolean $multiple
      * @return SelectionList
      */
-	public function setMultiple($multiple)
-	{
-		$this->name.="[]";
-		$this->multiple = $multiple;
-		return $this;
-	}
+    public function setMultiple($multiple)
+    {
+        $this->name.="[]";
+        $this->multiple = $multiple;
+        return $this;
+    }
 
-	/**
+    /**
      * Add an option to the selection list.
      * @param string $label
      * @param string $value
      * @return SelectionList
      */
-	public function addOption($label="", $value="")
-	{
-		if($value==="") $value=$label;
-		$this->options[$value] = $label;
-		return $this;
-	}
+    public function addOption($label="", $value="")
+    {
+        if($value==="") $value=$label;
+        $this->options[$value] = $label;
+        return $this;
+    }
 
     /**
      * An alias for SelectionList::addOption
@@ -90,17 +90,17 @@ class SelectionList extends Field
         return $this;
     }
 
-	public function render()
-	{
-		$this->addAttribute("id",$this->id());
-		$ret = "<select {$this->getAttributes()} class='fapi-list ".$this->getCSSClasses()."' name='".$this->getName()."' ".($this->multiple?"multiple='multiple'":"").">";
-		foreach($this->options as $value => $label)
-		{
-			$ret .= "<option value='$value' ".($this->getValue()==$value?"selected='selected'":"").">$label</option>";
-		}
-		$ret .= "</select>";
-		return $ret;
-	}
+    public function render()
+    {
+        $this->addAttribute("id",$this->id());
+        $ret = "<select {$this->getAttributes()} class='fapi-list ".$this->getCSSClasses()."' name='".$this->getName()."' ".($this->multiple?"multiple='multiple'":"").">";
+        foreach($this->options as $value => $label)
+        {
+                $ret .= "<option value='$value' ".($this->getValue()==$value?"selected='selected'":"").">$label</option>";
+        }
+        $ret .= "</select>";
+        return $ret;
+    }
 
     /**
      * Set the options using a key value pair datastructure represented in the form of
@@ -112,21 +112,21 @@ class SelectionList extends Field
      * 
      * @return SelectionList
      */
-	public function setOptions($options, $merge = true)
-	{
-	    if($merge) 
-	    {
-	        foreach($options as $value => $label)
-	        {
-	            $this->addOption($label, $value);
-	        }
-	    }
-	    else
-	    {
-	        $this->options = $options;
-	    }
-	    return $this;
-	}
+    public function setOptions($options, $merge = true)
+    {
+        if($merge) 
+        {
+            foreach($options as $value => $label)
+            {
+                $this->addOption($label, $value);
+            }
+        }
+        else
+        {
+            $this->options = $options;
+        }
+        return $this;
+    }
 
     public function options($options, $merge = true)
     {
@@ -138,9 +138,8 @@ class SelectionList extends Field
      * Return the array of options
      * @return array
      */
-	public function getOptions()
-	{
-		return $options;
-	}
+    public function getOptions()
+    {
+        return $options;
+    }
 }
-

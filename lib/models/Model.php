@@ -33,9 +33,9 @@ use \ReflectionMethod;
  */
 class Model implements ArrayAccess, Iterator
 {
-	const RELATIONSHIP_BELONGS_TO = 'belongs_to';
-	const RELATIONSHIP_HAS_MANY = 'has_many';
-	
+    const RELATIONSHIP_BELONGS_TO = 'belongs_to';
+    const RELATIONSHIP_HAS_MANY = 'has_many';
+
     /**
      * 
      * @var array
@@ -125,17 +125,17 @@ class Model implements ArrayAccess, Iterator
 
     public static function splitName($modelField)
     {
-    	$modelArray = explode('.', $modelField);
-    	$return['field'] = array_pop($modelArray);
-    	$return['model'] = implode('.', $modelArray);
-    	
-    	return $return;
+        $modelArray = explode('.', $modelField);
+        $return['field'] = array_pop($modelArray);
+        $return['model'] = implode('.', $modelArray);
+
+        return $return;
     }
     
     public static function extractModelName($modelField)
     {
-    	$split = self::splitName($modelField);
-    	return $split['model'];
+        $split = self::splitName($modelField);
+        return $split['model'];
     }
 
     /**
@@ -183,14 +183,14 @@ class Model implements ArrayAccess, Iterator
     
     public function getRelationshipWith($modelType)
     {
-    	foreach($this->hasMany as $related)
-    	{
-    		if($related == $modelType) return Model::RELATIONSHIP_HAS_MANY;
-    	}
-    	foreach($this->belongsTo as $related)
-    	{
-    		if($related == $modelType) return Model::RELATIONSHIP_BELONGS_TO;
-    	}
+        foreach($this->hasMany as $related)
+        {
+            if($related == $modelType) return Model::RELATIONSHIP_HAS_MANY;
+        }
+        foreach($this->belongsTo as $related)
+        {
+            if($related == $modelType) return Model::RELATIONSHIP_BELONGS_TO;
+        }
     }
 
     public function setDataStore($dataStore)
@@ -266,10 +266,10 @@ class Model implements ArrayAccess, Iterator
 
     public function save()
     {
+        $this->dataStore->begin();
+        $this->preSaveCallback();
         if($this->validate(true))
         {
-            $this->dataStore->begin();
-            $this->preSaveCallback();
             $this->dataStore->setModel($this);
             $id = $this->dataStore->put();
             $this->id = $id;
@@ -285,9 +285,10 @@ class Model implements ArrayAccess, Iterator
 
     public function update()
     {
+        $this->dataStore->begin();
+        $this->preUpdateCallback();
         if($this->validate())
         {
-            $this->preUpdateCallback();
             $this->dataStore->setModel($this);
             $this->dataStore->update();
             $this->postUpdateCallback();

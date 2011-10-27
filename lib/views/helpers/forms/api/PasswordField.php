@@ -21,16 +21,9 @@ namespace ntentan\views\helpers\forms\api;
 
 class PasswordField extends TextField
 {
-	protected $md5 = false;
-	
-	public function __construct($label="",$name="",$description="")
-	{
-		parent::__construct($label,$name,$description);
-		$this->setAttribute("type","password");
-	}
-	
-	public function setEncrypted($encrypted)
-	{
-		$this->md5 = $encrypted;
-	}	
+    public function __construct($label="",$name="",$description="")
+    {
+        parent::__construct($label,$name,$description);
+        $this->setAttribute("type","password");
+    }
 }
