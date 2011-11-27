@@ -37,7 +37,7 @@ class Inline extends Renderer
         $label = $element->getLabel();
         if($label != '')
         {
-            $ret .= "<label class='label'>".$label;
+            $ret .= "<label class='form-label'>".$label;
             if($element->getRequired() && $label!="" && $element->getShowField())
             {
                 $ret .= "<span class='required'>*</span>";
@@ -61,7 +61,7 @@ class Inline extends Renderer
     		return $element->render();
     	}
     
-        $ret .= "<div class='element-div' ".($element->id()==""?"":"id='".$element->id()."_wrapper'")." ".$element->getAttributes(Element::SCOPE_WRAPPER).">";
+        $ret .= "<div class='form-element-div' ".($element->id()==""?"":"id='".$element->id()."_wrapper'")." ".$element->getAttributes(Element::SCOPE_WRAPPER).">";
 
         if($element->getType() == "checkbox")
         {
@@ -76,7 +76,7 @@ class Inline extends Renderer
     
         if($element->hasError())
         {
-            $ret .= "<div class='error'>";
+            $ret .= "<div class='form-errors'>";
             $ret .= "<ul>";
             foreach($element->getErrors() as $error)
             {
@@ -99,13 +99,11 @@ class Inline extends Renderer
             $ret .= $element->render();
         }
     
-        if($element->getType()!="ntentan\views\helpers\forms\api\Container" && $element->getShowField())
+        if($element->getDescription() != "")
         {
-            if($element->getDescription() != "")
-            {
-                $ret .= "<div ".($element->id()==""?"":"id='".$element->id()."_desc'")." class='description'>".$element->getDescription()."</div>";
-            }
+            $ret .= "<div ".($element->id()==""?"":"id='".$element->id()."_desc'")." class='form-description'>".$element->getDescription()."</div>";
         }
+        
         $ret .= "</div>";
     
         return $ret;

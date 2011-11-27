@@ -61,6 +61,11 @@ class FormsHelper extends Helper
         return $return;
     }
     
+    public function stylesheet()
+    {
+        return Ntentan::getFilePath('lib/views/helpers/forms/css/forms.css');
+    }
+    
     public static function create()
     {
         $args = func_get_args();
