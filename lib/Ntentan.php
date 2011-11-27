@@ -363,6 +363,7 @@ class Ntentan
      * Converts an underscore seperated string into a sentence by replacing the
      * underscores with spaces and capitalizing the first character of all the
      * new words which are formed.
+     * 
      * @param unknown_type $string
      */
     public static function toSentence($string)
@@ -372,6 +373,7 @@ class Ntentan
 
     /**
      * Returns the sigular form of any plural english word which is passed to it.
+     * 
      * @param string $word
      * @see Ntentan::plural
      */
@@ -399,6 +401,7 @@ class Ntentan
 
     /**
      * Returns the plural form of any singular english word which is passed to it.
+     * 
      * @param string $word
      */
     public static function plural($word)
@@ -422,6 +425,7 @@ class Ntentan
     /**
      * Converts a dot separeted string or under-score separated string into
      * a camelcase format.
+     * 
      * @param string $string The string to be converted.
      * @param string $delimiter The delimiter to be used as the trigger for capitalisation
      * @param string $baseDelimiter Another delimiter to be used as a second trigger for capitalisation
@@ -447,7 +451,8 @@ class Ntentan
     }
 
     /**
-     * Converts a camel case string to an underscore separated string
+     * Converts a camel case string to an underscore separated string.
+     * 
      * @param unknown_type $string
      */
     public static function deCamelize($string)
@@ -472,6 +477,7 @@ class Ntentan
 
     /**
      * Adds a route to the routing engine of the system.
+     * 
      * @param string $source
      * @param string $dest
      */
@@ -482,6 +488,7 @@ class Ntentan
 
     /**
      * Returns true if the request is an AJAX request.
+     * 
      * @return boolean
      */
     public static function isAjax()

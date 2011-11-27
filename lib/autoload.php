@@ -57,7 +57,6 @@ function get_class_file($class)
         $classFile = $basePath . '/' . $class . '.php';
         Cache::add($key, $classFile);
     }
-    
     return $classFile;
 }
 

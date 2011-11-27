@@ -43,9 +43,7 @@ class File extends Cache
         }
         else
         {
-            throw new FileNotFoundException(
-                "The file cache directory <b><code>cache</code></b> was not found or is not writable!"
-            );
+            die("The file cache directory <b><code>cache</code></b> was not found or is not writable!");
         }
     }
     

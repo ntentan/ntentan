@@ -19,10 +19,12 @@ input[type='text'],
 input[type='password']
 {
     border:2px solid #e0e0e0;
-    width:100%;
+    width:98%;
+    padding:1%;
     background-color:#ffffff;
-    font-size:larger;
-    color:#404040
+    font-weight:bold;
+    color:#a0a0a0;
+    box-shadow:inset 1px 1px 2px rgba(0,0,0, 0.08);
 }
 
 select
@@ -44,9 +46,13 @@ input.fapi-sidefield
 textarea
 {
     border:2px solid #e0e0e0;
-    width:100%;
+    width:98%;
     font-family:"Helvetica", sans-serif;
     height:150px;
+    box-shadow:inset 1px 1px 2px rgba(0,0,0, 0.1);
+    font-weight:bold;
+    color:#a0a0a0;
+    padding:1%;
 }
 
 textarea:focus
@@ -56,8 +62,9 @@ textarea:focus
 
 input[type='submit']
 {
-	/*font-size:larger;*/
+	font-size:1em;
 	font-weight:bold;
+    padding:5px;
 }
 
 label
@@ -66,21 +73,23 @@ label
     color:#808080;
 }
 
-div.fapi-element-div
+div.form-element-div
 {
     padding-right:4px;
-    margin-bottom:8px;
+    margin-bottom:12px;
 }
 
-div.fapi-description
+div.form-description
 {
 	color:#a0a0a0;
+    font-size: smaller;
 }
 
 div.fapi-submit-area
 {
 	padding-top:10px;
 	border-top:1px solid #f0f0f0;
+    text-align: right;
 }
 
 span.fapi-required
@@ -95,7 +104,7 @@ input[type='text'].fapi-error
     border-color: #ff908b;
 }
 
-div.fapi-error
+div.form-errors
 {
 	background-color:pink;
     border-radius:5px;
@@ -103,14 +112,14 @@ div.fapi-error
     margin-bottom:5px;
 }
 
-div.fapi-error > ul
+div.form-errors > ul
 {
 	list-style:none;
 	padding:5px;
 	margin:0px;
 }
 
-div.fapi-error > ul > li
+div.form-errors > ul > li
 {
 	font-weight:bold;
     font-size:0.8em;
