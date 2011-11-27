@@ -48,24 +48,26 @@ abstract class SqlDatabase extends DataStore
         $this->connect($parameters);
     }
 
-    public function __set($property, $value) {
-    	switch($property) {
-    	case "table":
-    		$this->setTable($value);
-    		break;
+    public function __set($property, $value) 
+    {
+        switch($property) {
+        case "table":
+            $this->setTable($value);
+            break;
         case "schema":
             $this->setSchema($value);
             break;
-    	}
+        }
     }
 
-    public function __get($property) {
-    	switch($property) {
-    	case "table":
-    		return $this->_table;
+    public function __get($property) 
+    {
+        switch($property) {
+        case "table":
+            return $this->_table;
         case 'schema':
             return $this->_schema;
-    	}
+        }
     }
 
     /**
@@ -75,12 +77,14 @@ abstract class SqlDatabase extends DataStore
      *
      * @param unknown_type $table
      */
-    protected function setTable($table) {
-    	$this->_table = $table;
+    protected function setTable($table) 
+    {
+        $this->_table = $table;
         $this->quotedTable = $this->quote($table);
     }
 
-    protected function setSchema($schema) {
+    protected function setSchema($schema) 
+    {
         $this->_schema = $schema;
         $this->quotedSchema = $this->quote($schema);
     }
@@ -160,20 +164,20 @@ abstract class SqlDatabase extends DataStore
      */
     protected function formatRelatedModelName($relatedModelName, $params)
     {
-    	if($params['expand_related_model_names'] === true)
-    	{
-    		return str_replace('.', '_', $relatedModelName);
-    	}
-    	else
-    	{
-    		return end(explode('.', $relatedModelName));
-    	}
+        if($params['expand_related_model_names'] === true)
+        {
+            return str_replace('.', '_', $relatedModelName);
+        }
+        else
+        {
+            return end(explode('.', $relatedModelName));
+        }
     } 
 
     protected function _get($params)
     {
         // Get a list of fields convert it to a count if that is what is needed
-    	if($params["type"] == "count")
+        if($params["type"] == "count")
         {
             $fields = "COUNT(*)";
         }
@@ -197,7 +201,7 @@ abstract class SqlDatabase extends DataStore
                         continue;
                     }
                 }
-            	
+
                 $fields[$index] = $this->resolveName($field, true, $description);
                 if($params["fetch_belongs_to"] && $description["fields"][$field]["foreign_key"] === true && $description["fields"][$field]["alias"] != '')
                 {
@@ -299,9 +303,9 @@ abstract class SqlDatabase extends DataStore
             {
                 if($params["fetch_related"] === true || $params["fetch_belongs_to"] === true)
                 {
-                	$modelName = Model::extractModelName($field);
-            	    if($this->model->getRelationshipWith($modelName) == Model::RELATIONSHIP_HAS_MANY)
-            	    {
+                    $modelName = Model::extractModelName($field);
+                    if($this->model->getRelationshipWith($modelName) == Model::RELATIONSHIP_HAS_MANY)
+                    {
                         $hasManyConditions[$modelName][$field] = $condition;
                         continue;
                     }
@@ -315,7 +319,7 @@ abstract class SqlDatabase extends DataStore
                 }
                 else
                 {
-                    preg_match("/(?<field>[a-zA-Z1-9_.]*)\w*(?<operator>\<\>|\<|\>|)?/", $field, $matches);
+                    preg_match("/(?<field>[a-zA-Z1-9_.]*)\w*(?<operator>\>=|\<=|\<\>|\<|\>)?/", $field, $matches);
                     $databaseField = $this->resolveName($matches["field"]);
                     $conditions[] = "$databaseField ".($matches["operator"]==""?"=":$matches["operator"])." '$condition'";
                 }
@@ -397,13 +401,13 @@ abstract class SqlDatabase extends DataStore
                         $relatedData = $model->get('all',
                             array(
                                 "conditions"=>
-	                                array_merge(
-	                                    array(
-	                                        Ntentan::singular($this->model->getName()) . "_id" => $result["id"]
-	                                    ),
-	                                    is_array($hasManyConditions[$hasMany]) ? $hasManyConditions[$hasMany] : array()
-	                                ),
-	                            "fields" => $hasManyFields[$hasMany]
+                                    array_merge(
+                                        array(
+                                            Ntentan::singular($this->model->getName()) . "_id" => $result["id"]
+                                        ),
+                                        is_array($hasManyConditions[$hasMany]) ? $hasManyConditions[$hasMany] : array()
+                                    ),
+                                "fields" => $hasManyFields[$hasMany]
                             )
                         );
                         $results[$index][$this->formatRelatedModelName($hasMany, $params)] = $relatedData;

@@ -155,7 +155,8 @@ class DatesHelper extends Helper
         $timestamp = $this->selectTimestamp($date);
         $now = $referenceDate == null ? time() : $this->internalParse($referenceDate);
         $elapsed = $now - $timestamp;
-
+        
+        
         if($elapsed < 10)
         {
             $englishDate = 'now';
