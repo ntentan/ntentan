@@ -91,6 +91,11 @@ abstract class Cache
     {
         return Cache::instance()->removeImplementation($key);
     }
+    
+    public static function reInstantiate()
+    {
+        self::$instance = null;
+    }
 
     /**
      * Implementation of the add function by the appropriate caching backend.

@@ -30,17 +30,21 @@ session_start();
  * Include the autoloading function. This function automatically includes the
  * source files for all classes whose source files are not found.
  */
-include "autoload.php";
+require "autoload.php";
 
 /**
  * Include a collection of utility global functions.
  */
-include "globals.php";
+require "globals.php";
+
+require "caching/Cache.php";
+
+require "exceptions/FileNotFoundException.php";
+
 
 date_default_timezone_set("Africa/Accra");
 set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
 
-include "caching/Cache.php";
 use ntentan\caching\Cache;
 
 /**
@@ -147,8 +151,10 @@ class Ntentan
      * ntentan is properly setup and then it implements the routing engine which
      * loads the controllers responsoble for handling the request
      */
-    public static function boot($config, $caching = null)
+    public static function boot($config)
     {
+        Ntentan::setup($config);
+        
         if(Cache::exists('nt_camelisations'))
         {
             Ntentan::$camelisations = Cache::get('nt_camelisations');
@@ -158,9 +164,12 @@ class Ntentan
             Ntentan::$camelisations = array();
         }
         $camelisations = count(Ntentan::$camelisations);
+                
+        if(!defined('STDOUT'))
+        {
+            Ntentan::route();
+        }
         
-        Ntentan::setup($config);
-        Ntentan::route();
         if(count(Ntentan::$camelisations) > $camelisations)
         {
             Cache::add('nt_camelisations', Ntentan::$camelisations);
@@ -243,7 +252,7 @@ class Ntentan
             }
         }
 
-		$module = controllers\Controller::load(Ntentan::$route);
+        $module = controllers\Controller::load(Ntentan::$route);
     }
 
     /**
@@ -380,7 +389,7 @@ class Ntentan
     public static function singular($word)
     {
         $singular = array_search($word, Ntentan::$singulars);
-        if($singular === false)
+        if($singular == false)
         {
             if(substr($word,-3) == "ies")
             {
@@ -553,14 +562,14 @@ class Ntentan
             $logged = false;
         }
         echo Ntentan::message(
-            "Exception <code><b>{$class->getName()}</b></code> thrown in 
-             <code><b>{$exception->getFile()}</b></code> on line 
-             <code><b>{$exception->getLine()}</b></code>. " . 
+            "Exception <code><b>{$class->getName()}</b></code> thrown in " .
+            "<code><b>{$exception->getFile()}</b></code> on line " .
+            "<code><b>{$exception->getLine()}</b></code>. " . 
              $exception->getMessage() .
              ( $logged === false ? 
-                 "<p>Failed to log this exception. Please check and ensure 
-                  that the file [logs/exceptions.log] exists and is 
-                  writable.</p>" : ""
+                 "\n\n<p>Failed to log this exception. Please check and ensure" . 
+                  "that the file [logs/exceptions.log] exists and is" .
+                  "writable.</p>" : ""
              ),
             "Exception <code>" . $class->getName() . "</code> thrown",
             null,
