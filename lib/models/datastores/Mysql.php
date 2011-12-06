@@ -236,7 +236,7 @@ class Mysql extends SqlDatabase
             
             foreach($belongsToTables as $belongsToTable)
             {
-                $singular = Ntentan::singular($belongsToTable["table_name"]);
+                $singular = Ntentan::singular($belongsToTable["referenced_table_name"]);
                 if(array_search($singular . '_id', \array_keys($tableDescription))!==false)
                 {
                     $description["tables"][$table["table_name"]]["belongs_to"][] =
