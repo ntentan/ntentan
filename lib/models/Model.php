@@ -67,6 +67,8 @@ class Model implements ArrayAccess, Iterator
     public $invalidFields = array();
     private $iteratorPosition;
     public $defaultField;
+    protected $uniqueViolationMessages = array();
+    protected $requiredViolationMessages = array();
 
     public function __construct()
     {
@@ -671,17 +673,19 @@ class Model implements ArrayAccess, Iterator
     public function validate($inserting = false)
     {
         $description = $this->describe();
+        $this->invalidFields = array();
 
         foreach($description["fields"] as $field)
         {
+            $fieldName = $field["name"];
             if($field["primary_key"]) continue;
 
             // Validate Required
-            if(($this->data[$field["name"]] === "" || $this->data[$field["name"]] === null) && $field["required"])
+            if(($this->data[$fieldName] === "" || $this->data[$fieldName] === null) && $field["required"])
             {
                 if(!($inserting && isset($field["default"])))
                 {
-                    $this->invalidFields[$field["name"]][] = "This field is required";
+                    $this->invalidFields[$fieldName][] = isset($this->requiredViolationMessages[$fieldName]) ? $this->requiredViolationMessages[$fieldName] : "This field is required";
                 }
             }
 
@@ -691,9 +695,7 @@ class Model implements ArrayAccess, Iterator
                 $value = $this->get('first', array("conditions"=>array($field["name"] => $this->data[$field["name"]])));
                 if(count($value->getData()))
                 {
-                    $this->invalidFields[$field["name"]][] = isset($field["unique_violation_message"]) ?
-                        $field["unique_violation_message"] :
-                        "This field must be unique";
+                    $this->invalidFields[$fieldName][] = isset($this->uniqueViolationMessages[$fieldName]) ? $this->uniqueViolationMessages[$fieldName] : "This field must be unique";
                 }
             }
         }

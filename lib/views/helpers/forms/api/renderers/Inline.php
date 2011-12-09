@@ -31,21 +31,6 @@ class Inline extends Renderer
     {
     
     }
-
-    protected function renderLabel($element)
-    {
-        $label = $element->getLabel();
-        if($label != '')
-        {
-            $ret .= "<label class='form-label'>".$label;
-            if($element->getRequired() && $label!="" && $element->getShowField())
-            {
-                $ret .= "<span class='required'>*</span>";
-            }
-            $ret .= "</label><br/>";
-        }
-        return $ret;
-    }
     
     /**
      * The default renderer body function
@@ -58,10 +43,10 @@ class Inline extends Renderer
     	// Ignore Hidden Fields
     	if($element->getType()=="HiddenField")
     	{
-    		return $element->render();
+            return $element->render();
     	}
     
-        $ret .= "<div class='form-element-div' ".($element->id()==""?"":"id='".$element->id()."_wrapper'")." ".$element->getAttributes(Element::SCOPE_WRAPPER).">";
+        $ret .= "<div class='form-element-div' ". ($element->id()==""?"":"id='".$element->id()."_wrapper'") . " " . $element->getAttributes(Element::SCOPE_WRAPPER).">";
 
         if($element->getType() == "checkbox")
         {

@@ -174,6 +174,18 @@ class FormsHelper extends Helper
     {
         
     }
+    
+    public function renderer($renderer = false)
+    {
+        if($renderer === false)
+        {
+            return self::$renderer; 
+        }
+        else 
+        {
+            self::$renderer = $renderer;
+        }
+    }
 
     public function __call($function, $arguments)
     {
@@ -185,6 +197,7 @@ class FormsHelper extends Helper
             }
             $this->container->rendererMode = 'head';
             $return = $this->container;
+            $return .= self::getRendererInstance()->head();
         }
         else if($function == "get")
         {
@@ -208,7 +221,8 @@ class FormsHelper extends Helper
                 $this->container->showSubmit = false;
             }
             $this->container->rendererMode = 'foot';
-            $return = $this->container;
+            $return = self::getRendererInstance()->foot();
+            $return .= $this->container;
         }
         else if(substr($function, 0, 5) == "open_")
         {
