@@ -26,4 +26,19 @@ abstract class Renderer
     abstract public function element($element);
     abstract public function foot();
     abstract public function type();
+    
+    protected function renderLabel($element)
+    {
+        $label = $element->getLabel();
+        if($label != '')
+        {
+            $ret .= "<label class='form-label'>".$label;
+            if($element->getRequired() && $label!="" && $element->getShowField())
+            {
+                $ret .= "<span class='required'>*</span>";
+            }
+            $ret .= "</label><br/>";
+        }
+        return $ret;
+    }    
 }
