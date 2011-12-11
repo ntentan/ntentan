@@ -175,6 +175,11 @@ class FormsHelper extends Helper
         
     }
     
+    public function addAttribute($key, $value)
+    {
+        $this->container->addAttribute($key, $value);
+    }
+    
     public function renderer($renderer = false)
     {
         if($renderer === false)

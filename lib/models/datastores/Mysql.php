@@ -46,7 +46,7 @@ class Mysql extends SqlDatabase
         }
     }
     
-    public function query($query)
+    protected function _query($query)
     {
         $queryResult = self::$db->query($query);
         
@@ -69,7 +69,7 @@ class Mysql extends SqlDatabase
         return $result;
     }
     
-    public function doesTableExist($table, $schema)
+    protected function _doesTableExist($table, $schema)
     {
         $exists = $this->query("select count(*) as `exists` from information_schema.tables where table_name = '$table' and table_schema = '$schema'");
         return $exists[0]['exists'];

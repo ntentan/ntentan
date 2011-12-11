@@ -12,7 +12,14 @@ class ModelField extends SelectionList
         parent::__construct();
         $this->label =$label;
         $modelInstance = Model::load($model);
-        $data = $modelInstance->get('all');
+        if($value === null)
+        {
+            $data = $modelInstance->get('all');
+        }
+        else
+        {
+            $data = $modelInstance->get('all', array('fields'=>array('id', $value)));
+        }
         $this->setName(Ntentan::singular($model) . "_id");
 
         for($i = 0; $i < $data->count(); $i++)

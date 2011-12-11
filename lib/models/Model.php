@@ -30,6 +30,8 @@ use \ReflectionMethod;
 
 /**
  * The Model class
+ * 
+ * @todo Allow for a new kind of not too strict relationship: may_belong_to
  */
 class Model implements ArrayAccess, Iterator
 {
@@ -125,6 +127,12 @@ class Model implements ArrayAccess, Iterator
         return $fullClassName;
     }
 
+    /**
+     *
+     * @todo Implement caching for this
+     * @param type $modelField
+     * @return type 
+     */
     public static function splitName($modelField)
     {
         $modelArray = explode('.', $modelField);
