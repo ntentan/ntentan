@@ -21,6 +21,8 @@ namespace ntentan\models\datastores;
 use ntentan\Ntentan;
 use ntentan\models\Model;
 use ntentan\models\exceptions\DataStoreException;
+use ntentan\utils\Logger;
+use ntentan\caching\Cache;
 
 /**
  * A class used as the base class datastore classes which store their data in SQL
@@ -42,10 +44,19 @@ abstract class SqlDatabase extends DataStore
     protected $quotedTable;
     protected $_schema;
     protected $quotedSchema;
+    protected $schemaDescription;
+    protected $tables;
+    public static $logQueries;
 
     public function __construct($parameters)
     {
         $this->connect($parameters);
+        if(file_exists('config/schema.php'))
+        {
+            include 'config/schema.php';
+            $this->schemaDescription = $schema;
+            $this->tables = array_keys($schema);
+        }
     }
 
     public function __set($property, $value) 
@@ -223,7 +234,7 @@ abstract class SqlDatabase extends DataStore
                     $firstDatastore = $firstRelatedModel->dataStore;
                     $secondRelatedModel = Model::load($relatedModel["through"]);
                     $secondDatastore = $secondRelatedModel->dataStore;
-                    $joins .= " JOIN {$firstDatastore->table} ON {$firstDatastore->table}.id = {$secondDatastore->table}." . Ntentan::singular($firstDatastore->table) . "_id ";
+                    $joins .= " LEFT JOIN {$firstDatastore->table} ON {$firstDatastore->table}.id = {$secondDatastore->table}." . Ntentan::singular($firstDatastore->table) . "_id ";
                 }
                 else
                 {
@@ -267,7 +278,7 @@ abstract class SqlDatabase extends DataStore
                              . $this->quote($model->getRoute() . ".$field");
                     }
                     $fields = $fields . ", " . implode(", ", $joinedModelFields);
-                    $joins .= " JOIN " . ($datastore->schema == "" ? '' : "{$datastore->schema}.") . $datastore->table . " "
+                    $joins .= " LEFT JOIN " . ($datastore->schema == "" ? '' : "{$datastore->schema}.") . $datastore->table . " "
                            . ($alias != null ? "AS $alias" : "")
                            . " ON " . ($alias != null ? $alias : $datastore->table) . ".id = {$this->table}."
                            . ($alias != null ? $alias : Ntentan::singular($datastore->table) . "_id ");
@@ -275,6 +286,9 @@ abstract class SqlDatabase extends DataStore
             }
         }
 
+        /**
+         * @todo write a test case for this
+         */
         if(isset($params["through"]))
         {
             if(is_array($params["through"]))
@@ -292,7 +306,7 @@ abstract class SqlDatabase extends DataStore
         }
 
         // Generate the base query
-        $query = "SELECT $fields FROM ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->table} $joins ";
+        $query = "SELECT $fields FROM " . ($this->schema != '' ? $this->quotedSchema . "." :'') . $this->quotedTable . " $joins ";
 
         // Generate conditions
         $hasManyConditions = array();
@@ -520,7 +534,7 @@ abstract class SqlDatabase extends DataStore
             if(is_array($value)) continue;
             if(array_search($field, $fields) === false) continue;
 
-            if($value === null)
+            if($value === null || $value === '')
             {
                 $values[] = $this->quote($field) . " = null";
             }
@@ -538,14 +552,38 @@ abstract class SqlDatabase extends DataStore
         $query = "DELETE FROM {$this->table} WHERE id = '{$key}'";
         $this->query($query);
     }
+    
+    public function doesTableExist($table, $schema)
+    {
+        $key = "schema_table_{$schema}_{$table}";
+        if(Cache::exists($key))
+        {
+            return Cache::get($key);
+        }
+        else
+        {
+            $exists = $this->_doesTableExist($table, $schema);
+            Cache::add($key, $exists);
+            return $exists;
+        }
+    }
+    
+    public function query($query)
+    {
+        if(Ntentan::$debug === true)
+        {
+            Logger::log("[query] $query", "logs/queries.log");           
+        }
+        return $this->_query($query);
+    }
 
     protected abstract function connect($parameters);
-    public abstract function query($query);
+    protected abstract function _query($query);
     protected abstract function escape($query);
     protected abstract function quote($field);
     protected abstract function getLastInsertId();
     protected abstract function limit($limitParams);
     public abstract function describeModel();
     public abstract function describeTable($table, $schema);
-    public abstract function doesTableExist($table, $schema);
+    protected abstract function _doesTableExist($table, $schema);
 }

@@ -550,17 +550,7 @@ class Ntentan
     public static function exceptionHandler($exception)
     {
         $class = new \ReflectionObject($exception);
-        if(is_writable("logs/exceptions.log"))
-        {
-            $logFile = fopen("logs/exceptions.log", "a");
-            fputs($logFile, "[" . date("Y-m-d H:i:s") . "] [exception] " . $exception->getMessage() . "\n");
-            fputs($logFile, "[" . date("Y-m-d H:i:s") . "] [exception] " . $exception->getTraceAsString() . "\n");
-            fclose($logFile);
-        }
-        else
-        {
-            $logged = false;
-        }
+        $logged = utils\Logger::log($exception->getMessage() . "\n" . $exception->getTraceAsString(), "log/exceptions.log");
         echo Ntentan::message(
             "Exception <code><b>{$class->getName()}</b></code> thrown in " .
             "<code><b>{$exception->getFile()}</b></code> on line " .

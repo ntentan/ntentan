@@ -48,12 +48,6 @@ class Form extends Container
         $this->action = $action;
         return $this;
     }
-
-    public function addFileUploadSupport($maxFileSize = "")
-    {
-        $this->addAttribute("enctype", "multipart/form-data");
-        $this->add(new HiddenField("MAX_FILE_SIZE", "10485760"));
-    }
     
     public function renderHead()
     {

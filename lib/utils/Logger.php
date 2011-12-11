@@ -1,6 +1,13 @@
 <?php
 namespace ntentan\utils;
 
+/**
+ * A utility to allow for easy logging. Opens log files and keeps their handes
+ * open till the end of the session. This prevents a file being open multiple
+ * times during the runtime of the session.
+ * 
+ * @author Ekow Abaka Ainooson
+ */
 class Logger
 {
     /**
@@ -13,15 +20,31 @@ class Logger
     
     private static function getFile($file = Logger::DEFAULT_LOG_FILE)
     {
-    	if(!isset(self::$logFiles[$file]))
-    	{
-    		self::$logFiles[$file] = fopen($file, 'a');
-    	}
-    	return self::$logFiles[$file];
+        if(!isset(self::$logFiles[$file]))
+        {
+            if(is_writable($file))
+            {
+                self::$logFiles[$file] = fopen($file, 'a');
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return self::$logFiles[$file];
     }
     
-	public static function log($message, $file = Logger::DEFAULT_LOG_FILE)
-	{
-		fputs(self::getFile($file), date("[Y-m-d H:i:s]") . $message);
-	}
+    public static function log($message, $file = Logger::DEFAULT_LOG_FILE)
+    {
+        $fileHandle = self::getFile($file);
+        if($fileHandle !== false)
+        {
+            fputs($fileHandle, date("[Y-m-d H:i:s]") . $message . "\n");
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
