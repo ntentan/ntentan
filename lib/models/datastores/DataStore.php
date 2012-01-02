@@ -47,6 +47,7 @@ abstract class DataStore
         {
             $return = clone $this->model;
             $return->setData($this->_get($queryParameters), true);
+            $return->count = $this->numRows();
         }
         return $return;
     }
@@ -66,7 +67,19 @@ abstract class DataStore
     public function delete()
     {
         $data = $this->model->getData();
-        $this->_delete($data["id"]);
+        if($this->model->hasSingleRecord)
+        {
+            $this->_delete($data["id"]);
+        }
+        else
+        {
+            $toBeDeleted = array();
+            foreach($data as $datum)
+            {
+                $toBeDeleted[] = $datum['id'];
+            }
+            $this->_delete($toBeDeleted);
+        }
     }
     
     public function begin()
@@ -83,5 +96,7 @@ abstract class DataStore
     protected abstract function _put($queryParameters);
     protected abstract function _update($queryParameters);
     protected abstract function _delete($queryParameters);
+    
+    protected abstract function numRows();    
     public abstract function describe();
 }

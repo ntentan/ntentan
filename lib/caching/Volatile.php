@@ -24,8 +24,6 @@ namespace ntentan\caching;
  * testing to ensure that nothing is stored in between test cases. It could
  * also be used for debugging but in that case your application may perform very
  * poorly.
- * 
- * 
  */
 class Volatile extends Cache
 {

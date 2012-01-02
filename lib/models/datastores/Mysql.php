@@ -49,6 +49,7 @@ class Mysql extends SqlDatabase
     protected function _query($query)
     {
         $queryResult = self::$db->query($query);
+        $this->numRows = $queryResult->num_rows;
         
         if($queryResult === false)
         {

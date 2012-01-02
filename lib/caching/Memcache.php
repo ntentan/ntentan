@@ -19,7 +19,7 @@
 namespace ntentan\caching;
 
 /**
- * A memcache caching backend
+ * A memcache caching backend. Stores objects to be cached on memcached servers.
  */
 class Memcache extends Cache
 {
