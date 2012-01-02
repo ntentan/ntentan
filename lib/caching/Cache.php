@@ -87,11 +87,20 @@ abstract class Cache
         return Cache::instance()->existsImplementation($key);
     }
     
+    /**
+     * Removes an item from the cache.
+     * @param string $key
+     */
     public static function remove($key)
     {
-        return Cache::instance()->removeImplementation($key);
+        Cache::instance()->removeImplementation($key);
     }
     
+    /**
+     * Deletes the Cache objects internal singleton so it could be re instantiated upon
+     * the next call Cache object. This method is very necessary when you want to
+     * dynamically switch between caching backends.
+     */
     public static function reInstantiate()
     {
         self::$instance = null;

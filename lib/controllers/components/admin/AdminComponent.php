@@ -140,14 +140,23 @@ class AdminComponent extends Component
     public $notifications = true;
     
     /**
-     * An array which holds all the operations which are executable by the
+     * An array which holds all the operations which can be perfomed on particuar
+     * models. These operations are usually the little links which are found
+     * next to the items listed in the views (such as Delete, Edit, etc).
      * @var array
      */
     private $operations = array();
+    
+    /**
+     * The path to the template file which should be used for the rendering
+     * of the model operations.
+     * @var type 
+     */
     public $operationsTemplate;
+    
+    
     public $rowOperation;
     public $rowTemplate;
-    private $app;
     public $hasEditOperation = true;
     public $hasAddOperation = true;
     public $entity;

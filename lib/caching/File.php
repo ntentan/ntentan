@@ -21,7 +21,9 @@ namespace ntentan\caching;
 use ntentan\exceptions\FileNotFoundException;
 
 /**
- * A file caching backend
+ * A file caching backend. This class stores objects to be cached as files in
+ * the cache directory. It is advisable to use it as the default callback for
+ * other caching methods.
  */
 class File extends Cache
 {

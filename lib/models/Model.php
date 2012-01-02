@@ -71,6 +71,8 @@ class Model implements ArrayAccess, Iterator
     public $defaultField;
     protected $uniqueViolationMessages = array();
     protected $requiredViolationMessages = array();
+    public $count = 0;
+    public $hasSingleRecord = false;
 
     public function __construct()
     {
@@ -146,6 +148,12 @@ class Model implements ArrayAccess, Iterator
     {
         $split = self::splitName($modelField);
         return $split['model'];
+    }
+    
+    public static function extractFieldName($modelField)
+    {
+        $split = self::splitName($modelField);
+        return $split['field'];
     }
 
     /**
@@ -229,7 +237,17 @@ class Model implements ArrayAccess, Iterator
         {
             $params["type"] = $type;
             $result = $this->dataStore->get($params);
-            return $this->postGetCallback($result, $type);
+            $result = $this->postGetCallback($result, $type);
+            
+            if($type == 'first')
+            {
+                $result->hasSingleRecord = true;
+            }
+            else
+            {
+                $result->hasSingleRecord = false;
+            }
+            return $result;
         }
     }
     
@@ -328,6 +346,9 @@ class Model implements ArrayAccess, Iterator
     public function __call($method, $arguments)
     {
         $executed = false;
+        
+        //@todo Convert all these if conditions into one huge regular expression
+        
         if(substr($method, 0, 7) == "getWith")
         {
             $field = Ntentan::deCamelize(substr($method, 7));
@@ -339,9 +360,9 @@ class Model implements ArrayAccess, Iterator
             return $this->get($type, $params);
         }
 
-        if(substr($method, 0, 12) == "getFirstWith")
+        if(preg_match("/(get)(?<just>Just)?(First)(With)(?<field>[a-zA-Z0-9]+)/", $method, $matches))
         {
-            $field = Ntentan::deCamelize(substr($method, 12));
+            $field = Ntentan::deCamelize($matches['field']);
             $type = 'first';
             $conditions = array();
             foreach($arguments as $argument)
@@ -357,7 +378,16 @@ class Model implements ArrayAccess, Iterator
                 }
             }
             $params["conditions"] = is_array($params['conditions']) ? array_merge($conditions, $params['conditions']) : $conditions;
-            if(!isset($params["fetch_related"])) $params["fetch_related"] = true;
+
+            if($matches['just'] == 'Just')
+            {
+                $params["fetch_related"] = false;
+            }
+            else
+            {
+                if(!isset($params["fetch_related"])) $params["fetch_related"] = true;
+            }
+            
             return $this->get($type, $params);
         }
 
@@ -471,7 +501,7 @@ class Model implements ArrayAccess, Iterator
 
     public function count()
     {
-        return count($this->data);
+        return $this->count;
     }
 
     public function rewind()

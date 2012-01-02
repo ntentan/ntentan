@@ -47,6 +47,7 @@ abstract class SqlDatabase extends DataStore
     protected $schemaDescription;
     protected $tables;
     public static $logQueries;
+    protected $numRows;    
 
     public function __construct($parameters)
     {
@@ -206,9 +207,15 @@ abstract class SqlDatabase extends DataStore
                 if($params["fetch_related"] === true || $params["fetch_belongs_to"] === true)
                 {
                     $modelName = Model::extractModelName($field);
-                    if($this->model->getRelationshipWith($modelName) == Model::RELATIONSHIP_HAS_MANY)
+                    $relationShip = $this->model->getRelationshipWith($modelName);
+                    if($relationShip == Model::RELATIONSHIP_HAS_MANY)
                     {
                         $hasManyFields[$modelName][] = $field;
+                        continue;
+                    }
+                    else if($relationShip == Model::RELATIONSHIP_BELONGS_TO)
+                    {
+                        $belongsToFields[$modelName][] = Model::extractFieldName($field);
                         continue;
                     }
                 }
@@ -226,8 +233,13 @@ abstract class SqlDatabase extends DataStore
         $joins = "";
         if($params["fetch_related"] === true || $params["fetch_belongs_to"] === true)
         {
+            $numRequestedBelongsTo = count($belongsToFields);
             foreach($this->model->belongsTo as $relatedModel)
             {
+                if($numRequestedBelongsTo > 0 && !isset($belongsToFields[$relatedModel]))
+                {
+                    continue;
+                }
                 if(is_array($relatedModel) && isset($relatedModel["through"]))
                 {
                     $firstRelatedModel = Model::load(Model::getBelongsTo($relatedModel[0]));
@@ -243,24 +255,33 @@ abstract class SqlDatabase extends DataStore
                     {
                         $alias = $relatedModel["as"];
                         $relatedModel = $relatedModel[0];
-                    }
+                    }                    
 
-                    // If the related belongs to field was not queried then skip
-                    if($alias != null && array_search($alias, $params["fields"]) === false)
+                    // If the related belongs to field was not queried then skip this whole step entirely
+                    
+                    if($numRequestedBelongsTo > 0 & isset($belongsToFields[$relatedModel]))
                     {
-                        continue;
+                        $model = Model::load(Model::getBelongsTo($relatedModel));
+                        $datastore = $model->dataStore;
+                        $joinedModelDescription = $model->describe();
+                        $joinedModelFields = $belongsToFields[$relatedModel];
                     }
-                    else if($alias == null && array_search(Ntentan::singular(end(explode('.', $relatedModel))) . "_id", $params["fields"]) === false)
+                    else
                     {
-                        continue;
+                        if($alias != null && array_search($alias, $params["fields"]) === false)
+                        {
+                            continue;
+                        }
+                        else if($alias == null && array_search(Ntentan::singular(end(explode('.', $relatedModel))) . "_id", $params["fields"]) === false)
+                        {
+                            continue;
+                        }
+                        $model = Model::load(Model::getBelongsTo($relatedModel));
+                        $datastore = $model->dataStore;
+                        $joinedModelDescription = $model->describe();
+                        $joinedModelFields = array_keys($joinedModelDescription["fields"]);
                     }
-
-                    $model = Model::load(Model::getBelongsTo($relatedModel));
-                    $datastore = $model->dataStore;
-                    $joinedModelDescription = $model->describe();
-                    $joinedModelFields = array_keys($joinedModelDescription["fields"]);
-                    $joinedSchema = $model->dataStore->schema;
-
+                    
                     if($alias == null)
                     {
                         $joinedTable = $joinedModelDescription["name"];
@@ -269,7 +290,7 @@ abstract class SqlDatabase extends DataStore
                     {
                         $joinedTable = $alias;
                     }
-
+                    
                     foreach($joinedModelFields as $index => $field)
                     {
                         $joinedModelFields[$index] =
@@ -278,10 +299,12 @@ abstract class SqlDatabase extends DataStore
                              . $this->quote($model->getRoute() . ".$field");
                     }
                     $fields = $fields . ", " . implode(", ", $joinedModelFields);
+                    
+                    
                     $joins .= " LEFT JOIN " . ($datastore->schema == "" ? '' : "{$datastore->schema}.") . $datastore->table . " "
-                           . ($alias != null ? "AS $alias" : "")
-                           . " ON " . ($alias != null ? $alias : $datastore->table) . ".id = {$this->table}."
-                           . ($alias != null ? $alias : Ntentan::singular($datastore->table) . "_id ");
+                           .  ($alias != null ? "AS $alias" : "")
+                           .  " ON " . ($alias != null ? $alias : $datastore->table) . ".id = {$this->table}."
+                           .  ($alias != null ? $alias : Ntentan::singular($datastore->table) . "_id ");
                 }
             }
         }
@@ -353,11 +376,11 @@ abstract class SqlDatabase extends DataStore
         // Add the limiting clauses
         if($params["type"] == 'first')
         {
-        	$query .= $this->limit(array("limit"=>'1')); //" LIMIT 1";
+            $query .= $this->limit(array("limit"=>'1')); //" LIMIT 1";
         }
         else if(is_numeric($params["type"]))
         {
-        	$query .= $this->limit(array("limit"=>$params['type'], "offset"=>$params['offset']));
+            $query .= $this->limit(array("limit"=>$params['type'], "offset"=>$params['offset']));
         }
 
         $results = $this->query($query);
@@ -549,7 +572,14 @@ abstract class SqlDatabase extends DataStore
 
     protected function _delete($key)
     {
-        $query = "DELETE FROM {$this->table} WHERE id = '{$key}'";
+        if(is_array($key))
+        {
+            $query = "DELETE FROM {$this->table} WHERE id in ('" . implode("','", $key) . "')";
+        }
+        else
+        {
+            $query = "DELETE FROM {$this->table} WHERE id = '{$key}'";
+        }
         $this->query($query);
     }
     
@@ -576,6 +606,11 @@ abstract class SqlDatabase extends DataStore
         }
         return $this->_query($query);
     }
+    
+    protected function numRows()
+    {
+        return $this->numRows;
+    }    
 
     protected abstract function connect($parameters);
     protected abstract function _query($query);
