@@ -305,6 +305,7 @@ abstract class SqlDatabase extends DataStore
                            .  ($alias != null ? "AS $alias" : "")
                            .  " ON " . ($alias != null ? $alias : $datastore->table) . ".id = {$this->table}."
                            .  ($alias != null ? $alias : Ntentan::singular($datastore->table) . "_id ");
+
                 }
             }
         }
