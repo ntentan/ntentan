@@ -217,6 +217,8 @@ class Mysql extends SqlDatabase
             $description["tables"][$table["table_name"]] = array();
             $description["tables"][$table["table_name"]]["belongs_to"] = array();
             $description["tables"][$table["table_name"]]["has_many"] = array();
+            $description["tables"][$table["table_name"]]["has_a"] = array();
+            
             $tableDescription = $this->describeTable($table['table_name'], $this->schema);
         
             // Get the schemas which belong to
@@ -250,7 +252,7 @@ class Mysql extends SqlDatabase
                 }
             }
             
-            // Get the schemas which is owns.
+            // Get the schemas which this one owns.
             $hasManyTables = $this->query(
                 sprintf(
                     "select table_constraints.table_name
@@ -266,10 +268,29 @@ class Mysql extends SqlDatabase
                 )
             );
             
+            //@todo Change nomenulature to support has_a both here and in pgsql
+            
             foreach($hasManyTables as $hasManyTable)
             {
-                $description["tables"][$table["table_name"]]["has_many"][] = 
-                    $hasManyTable["table_name"];
+                /*$unique = $this->query("select column_name from
+                     information_schema.table_constraints pk
+                     join information_schema.key_column_usage c on
+                        c.table_name = pk.table_name and
+                        c.constraint_name = pk.constraint_name and
+                        c.table_schema = pk.table_schema
+                     where pk.table_name = '{$table['table_name']}' and pk.table_schema='{$schema}' and column_name = '{$singular}_id'
+                     and constraint_type = 'UNIQUE'"
+                );
+                if(count($unique) > 0)
+                {
+                    $description["tables"][$table["table_name"]]["has_a"][] = 
+                        $hasManyTable["table_name"];
+                }
+                else
+                {*/
+                    $description["tables"][$table["table_name"]]["has_many"][] = 
+                        $hasManyTable["table_name"];
+                //}
             }            
         }
         return $description;

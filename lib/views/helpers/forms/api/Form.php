@@ -19,6 +19,7 @@
 namespace ntentan\views\helpers\forms\api;
 
 use ntentan\Ntentan;
+use ntentan\views\helpers\forms\FormsHelper;
 
 /**
  * The form class. This class represents the overall form class. This
@@ -57,7 +58,7 @@ class Form extends Container
         $this->addAttribute('action', $this->action);
         $this->addAttribute('accept-charset', 'utf-8');
         
-        return '<form '.$this->getAttributes().'>';
+        return '<form '.$this->getAttributes().'>' . FormsHelper::getRendererInstance()->head();
     }
 
     public function renderFoot()
@@ -65,20 +66,20 @@ class Form extends Container
         $ret = "";
         if($this->showSubmit)
         {
-            $ret .= '<div class="fapi-submit-area">';
+            $ret .= '<div class="form-submit-area">';
             $submitValue = $this->submitValue?("value='{$this->submitValue}'"):"";
             if($this->ajaxSubmit)
             {
-                $ret .= sprintf('<input class="fapi-submit" type="button" %s onclick="%s"  />',$submitValue,$onclickFunction);
+                $ret .= sprintf('<input class="form-submit" type="button" %s onclick="%s"  />',$submitValue,$onclickFunction);
             }
             else
             {
-                $ret .= sprintf('<input class="fapi-submit" type="submit" %s />',$submitValue);
+                $ret .= sprintf('<input class="form-submit" type="submit" %s />',$submitValue);
             }
             $ret .= '</div>';
         }
         $ret .= '</form>';
-        return $ret;
+        return FormsHelper::getRendererInstance()->foot() . $ret;
     }
 
     public function setShowFields($show_field)

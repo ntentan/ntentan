@@ -36,10 +36,10 @@ class RadioButton extends Field
      * @param $description
      * @param $id
      */
-    public function __construct($label="", $value="", $description="", $id="")
+    public function __construct($label="", $name = '', $value="", $description="", $id="")
     {
         Element::__construct($label, $description, $id );
-        //Field::__construct("", $value);
+        Field::__construct($name, $value);
         $this->setCheckedValue($value);
     }
 
@@ -65,8 +65,8 @@ class RadioButton extends Field
 
     public function render()
     {
-        $ret = "<input class='fapi-radiobutton ".$this->getCSSClasses()."' ".$this->getAttributes()." type='radio' name='".$this->getName()."' value='".$this->getCheckedValue()."' ".($this->getValue()==$this->getCheckedValue()?"checked='checked'":"")."/>";
-        $ret .= '<label class="fapi-radiobutton-label">'.$this->getLabel()."</label>";
+        $ret = "<label class='fapi-radiobutton-label'><input class='fapi-radiobutton ".$this->getCSSClasses()."' ".$this->getAttributes()." type='radio' name='".$this->getName()."' value='".$this->getCheckedValue()."' ".($this->getValue()==$this->getCheckedValue()?"checked='checked'":"")."/>";
+        $ret .= $this->getLabel()."</label>";
         $ret .= "<div class='fapi-description'>".$this->getDescription()."</div>";
         return $ret;
     }
