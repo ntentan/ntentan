@@ -61,7 +61,17 @@ class Model implements ArrayAccess, Iterator
      * @var string
      */
     public $belongsTo = array();
+    
+    /**
+     * Field for checking the relationship between two different models
+     * @var type 
+     */
     public $hasMany = array();
+    
+    /**
+     * 
+     * @var type 
+     */
     public $mustBeUnique;
     public $belongsToModelInstances = array();
     private $route;
@@ -73,6 +83,8 @@ class Model implements ArrayAccess, Iterator
     protected $requiredViolationMessages = array();
     public $count = 0;
     public $hasSingleRecord = false;
+    protected $behaviourInstances = array();
+    protected $behaviours = array();
 
     public function __construct()
     {
@@ -109,6 +121,27 @@ class Model implements ArrayAccess, Iterator
         {
             throw new exceptions\DataStoreException("Datastore {$dataStoreClass} doesn't exist.");
         }
+        
+        foreach($this->behaviours as $behaviour)
+        {
+            $this->addBehaviour($behaviour);
+        }
+    }
+    
+    public static function getNew()
+    {
+        $class = get_called_class();
+        return new $class();
+
+    }
+    
+    public function addBehaviour()
+    {
+        $arguments = func_get_args();
+        $behaviour = array_shift($arguments);
+        $behaviourClass = "\\ntentan\\models\\behaviours\\$behaviour\\" . Ntentan::camelize($behaviour) . "Behaviour";
+        $this->behaviourInstances[$behaviour] = new $behaviourClass();
+        $this->behaviourInstances[$behaviour]->init($this);
     }
 
     public static function getBelongsTo($belongsTo)
@@ -239,13 +272,16 @@ class Model implements ArrayAccess, Iterator
             $result = $this->dataStore->get($params);
             $result = $this->postGetCallback($result, $type);
             
-            if($type == 'first')
+            if(is_object($result))
             {
-                $result->hasSingleRecord = true;
-            }
-            else
-            {
-                $result->hasSingleRecord = false;
+                if($type == 'first')
+                {
+                    $result->hasSingleRecord = true;
+                }
+                else
+                {
+                    $result->hasSingleRecord = false;
+                }
             }
             return $result;
         }
@@ -295,12 +331,20 @@ class Model implements ArrayAccess, Iterator
     public function save()
     {
         $this->dataStore->begin();
+        foreach($this->behaviourInstances as $behaviour)
+        {
+            $behaviour->preSave($this->data);
+        }
         $this->preSaveCallback();
         if($this->validate(true))
         {
             $this->dataStore->setModel($this);
             $id = $this->dataStore->put();
             $this->id = $id;
+            foreach($this->behaviourInstances as $behaviour)
+            {
+                $behaviour->postSave($this->data);
+            }            
             $this->postSaveCallback($id);
             $this->dataStore->end();
             return $id;
@@ -314,11 +358,19 @@ class Model implements ArrayAccess, Iterator
     public function update()
     {
         $this->dataStore->begin();
+        foreach($this->behaviourInstances as $behaviour)
+        {
+            $behaviour->preUpdate($this->data);
+        }        
         $this->preUpdateCallback();
         if($this->validate())
         {
             $this->dataStore->setModel($this);
             $this->dataStore->update();
+            foreach($this->behaviourInstances as $behaviour)
+            {
+                $behaviour->preUpdate($this->data);
+            }            
             $this->postUpdateCallback();
             return true;
         }

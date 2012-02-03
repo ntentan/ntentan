@@ -102,7 +102,7 @@ abstract class SqlDatabase extends DataStore
     }
 
     /**
-     *
+     * 
      * @param Model $model
      */
     public function setModel($model)
@@ -362,7 +362,10 @@ abstract class SqlDatabase extends DataStore
                     $conditions[] = "$databaseField ".($matches["operator"]==""?"=":$matches["operator"])." '$condition'";
                 }
             }
-            $query .= " WHERE " . implode(" AND ", $conditions);
+            if(is_array($conditions))
+            {
+                $query .= " WHERE " . implode(" AND ", $conditions);
+            }
         }
 
         // Add the sorting queries
@@ -478,7 +481,7 @@ abstract class SqlDatabase extends DataStore
         if($fields[0] == "0")
         {
             $fields = array_keys($data[0]);
-            $query = "INSERT INTO ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->table} (".implode(",", $fields).") VALUES ";
+            $query = "INSERT INTO ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->quotedTable} (`".implode("`,`", $fields)."`) VALUES ";
             $baseQueries = array();
             foreach($data as $row)
             {
@@ -508,7 +511,7 @@ abstract class SqlDatabase extends DataStore
                     $dataFields[] = $field;
                 }
             }
-            $query = "INSERT INTO ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->table} (" . implode(", ", $dataFields) . ") VALUES (" . implode(", ", $values) . ")";
+            $query = "INSERT INTO ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->quotedTable} (`" . implode("`, `", $dataFields) . "`) VALUES (" . implode(", ", $values) . ")";
             $this->query($query);
             if(array_search('id', $dataFields) === false)
             {

@@ -3,8 +3,28 @@ namespace ntentan\views\helpers\images;
 
 use ntentan\views\helpers\Helper;
 
+/**
+ * @todo Completely rewrite this helper to make it more efficient. Expose the
+ * interfaces as they are. Allow for the specification of the output format.
+ */
 class ImagesHelper extends Helper
 {
+    private function loadImage($path)
+    {
+        switch(strtolower(end(explode(".", $path))))
+        {
+            case 'png':
+                $image = imagecreatefrompng($path);
+                break;
+
+            case 'jpeg':
+            case 'jpg':
+                $image = imagecreatefromjpeg($path);
+                break;
+        }
+        return $image;
+    }
+    
     /**
      * Resizes an image
      * @param string $src Path to the image to be resized
@@ -14,7 +34,7 @@ class ImagesHelper extends Helper
      */
     public function resize($src,$dest,$width,$height)
     {
-        $im = imagecreatefromjpeg($src);
+        $im = $this->loadImage($src);
         $o_width = imagesx($im);
         $o_height = imagesy($im);
 
@@ -52,7 +72,7 @@ class ImagesHelper extends Helper
      */
     public function crop($src, $dest, $width, $height,$head=false)
     {
-        $im = imagecreatefromjpeg($src);
+        $im = $this->loadImage($src);
         $o_width = imagesx($im);
         $o_height = imagesy($im);
         if($head==false) $top = ($o_height/2)-($height/2); else $top=0;
@@ -80,7 +100,7 @@ class ImagesHelper extends Helper
 
         if(!is_file($destination) || (filectime($source)>filectime($destination)) || $overwrite === true)
         {
-            $image = imagecreatefromjpeg($source);
+            $image = $this->loadImage($source);
             $imageWidth = imagesx($image);
             $imageHeight = imagesy($image);
             imagedestroy($image);

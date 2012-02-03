@@ -78,7 +78,7 @@ class AuthComponent extends Component
     public $onFailure = AuthComponent::REDIRECT;
     public $failureFunction;
     public $name = __CLASS__;
-    public $authMethod = "http_basic";
+    public $authMethod = "http_request";
     private $_usersModel = "users";
     protected $authMethodInstance;
     public $excludedRoutes;

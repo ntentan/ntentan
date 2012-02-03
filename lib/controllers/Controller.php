@@ -19,9 +19,7 @@
 namespace ntentan\controllers;
 
 use ntentan\caching\Cache;
-
 use ntentan\controllers\exceptions\ComponentNotFoundException;
-
 use \ReflectionClass;
 use \ReflectionObject;
 use ntentan\Ntentan;
@@ -201,6 +199,8 @@ class Controller
     /**
      * Adds a component to the controller.
      * @param string $component Name of the component
+     * @todo cache the location of a component once found to prevent unessearry
+     * checking
      */
     public function addComponent()
     {

@@ -105,9 +105,9 @@ class Component extends Controller
      * (non-PHPdoc)
      * @see controllers/ntentan\controllers.Controller::get()
      */
-    public function getData()
+    public function getData($variable = null)
     {
-        return $this->controller->getData();
+        return $this->controller->getData($variable);
     }
 
     /**

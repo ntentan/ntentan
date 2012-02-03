@@ -16,6 +16,27 @@
  * limitations under the License.
  */
 
-class Behaviour {
-	
+namespace ntentan\models;
+
+class Behaviour 
+{
+    public function preSave(&$data)
+    {
+        return $data;
+    }
+    
+    public function preUpdate(&$data)
+    {
+        return $data;
+    }
+    
+    public function postSave(&$data)
+    {
+        return $data;
+    }
+    
+    public function postUpdate(&$data)
+    {
+        return $data;
+    }
 }

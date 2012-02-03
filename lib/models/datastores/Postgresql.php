@@ -259,6 +259,7 @@ class Postgresql extends SqlDatabase
             $description["tables"][$table["table_name"]] = array();
             $description["tables"][$table["table_name"]]["belongs_to"] = array();
             $description["tables"][$table["table_name"]]["has_many"] = array();
+            $description["tables"][$table["table_name"]]["has_a"] = array();
 
             $tableDescription = $this->describeTable($table['table_name'], $this->schema);
 
@@ -293,7 +294,7 @@ class Postgresql extends SqlDatabase
                 }
             }
 
-            // Get the schemas which is owns.
+            // Get the schemas which this one owns.
             $hasManyTables = $this->query(
                 sprintf(
                     "select table_constraints.table_name

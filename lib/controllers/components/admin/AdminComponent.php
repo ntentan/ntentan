@@ -154,7 +154,11 @@ class AdminComponent extends Component
      */
     public $operationsTemplate;
     
-    
+    /**
+     * The default operation which would be executed when the whole row is clicked.
+     * Currently it invokes the edit operation.
+     * @var type 
+     */
     public $rowOperation;
     public $rowTemplate;
     public $hasEditOperation = true;

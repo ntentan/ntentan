@@ -29,6 +29,7 @@ class ModelField extends SelectionList
                 )
             );
         }
+         
         $this->setName(Ntentan::singular($model) . "_id");
 
         for($i = 0; $i < $data->count(); $i++)
