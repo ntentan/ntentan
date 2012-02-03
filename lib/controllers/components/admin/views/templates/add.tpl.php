@@ -4,6 +4,6 @@ echo $console_menu_block;
 $this->helpers->form->setErrors($errors);
 $this->helpers->form->setData($data);
 $form = t("add_{$entity}_form.tpl.php", array('fields' => $fields));
-echo $this->helpers->form->open();
+echo $this->helpers->form->open("add-$entity-form");
 echo $form;
 echo $this->helpers->form->close('Save');

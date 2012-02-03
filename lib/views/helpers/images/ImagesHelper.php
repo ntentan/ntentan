@@ -4,6 +4,8 @@ namespace ntentan\views\helpers\images;
 use ntentan\views\helpers\Helper;
 
 /**
+ * 
+ * 
  * @todo Completely rewrite this helper to make it more efficient. Expose the
  * interfaces as they are. Allow for the specification of the output format.
  */
@@ -26,7 +28,8 @@ class ImagesHelper extends Helper
     }
     
     /**
-     * Resizes an image
+     * Resizes an image.
+     * 
      * @param string $src Path to the image to be resized
      * @param string $dest Path to sore the resized image
      * @param integer $width New width of the image

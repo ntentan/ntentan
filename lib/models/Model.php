@@ -39,7 +39,7 @@ class Model implements ArrayAccess, Iterator
     const RELATIONSHIP_HAS_MANY = 'has_many';
 
     /**
-     * 
+     * @todo try to prefix this with an underscore to prevent clashes with other assignments
      * @var array
      */
     protected $data = array();

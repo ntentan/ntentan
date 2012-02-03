@@ -8,3 +8,4 @@ tests/reports
 docs
 Doxyfile
 report
+*.komodoproject
