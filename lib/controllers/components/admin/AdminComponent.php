@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
  *
@@ -160,6 +160,10 @@ class AdminComponent extends Component
      * @var type 
      */
     public $rowOperation;
+    
+    /**
+     * 
+     */
     public $rowTemplate;
     public $hasEditOperation = true;
     public $hasAddOperation = true;
@@ -381,7 +385,7 @@ class AdminComponent extends Component
         $arguments = func_get_args();
         if(count($arguments) == 0)
         {
-
+            
         }
         else
         {
@@ -496,6 +500,17 @@ class AdminComponent extends Component
         $this->set("headings", $this->headings);
         $item = $this->getModel()->getFirstWithId($id);
         $data = $item->toArray();
+        
+        if($this->consoleMode)
+        {
+            $editExtensionMethodName = Ntentan::camelize(Ntentan::plural($this->entity),".","", true) . 'AdminEdit';
+            if(method_exists($this->controller, $editExtensionMethodName))
+            {
+                $editExtensionMethod = new ReflectionMethod($this->controller, $editExtensionMethodName);
+                $editExtensionMethod->invoke($this->controller);
+            }
+        }
+        
         foreach($data as $key => $value)
         {
             $data[$key] = Janitor::cleanHtml($value);
@@ -519,18 +534,8 @@ class AdminComponent extends Component
                 $this->set('errors', $item->invalidFields);
             }
         }
-
-        if($this->consoleMode)
-        {
-            $editExtensionMethodName = Ntentan::camelize(Ntentan::plural($this->entity),".","", true) . 'AdminEdit';
-            if(method_exists($this->controller, $editExtensionMethodName))
-            {
-                $editExtensionMethod = new ReflectionMethod($this->controller, $editExtensionMethodName);
-                $editExtensionMethod->invoke($this->controller);
-            }
-        }
     }
-
+    
     public function add()
     {
         $model = $this->getModel();
@@ -550,7 +555,7 @@ class AdminComponent extends Component
                 $addExtensionMethod->invoke($this->controller);
             }
         }        
-
+        
         if(count($_POST) > 0)
         {
             $this->executeCallbackMethod($this->preAddCallback);
@@ -559,7 +564,6 @@ class AdminComponent extends Component
             if($id > 0)
             {
                 $route = $this->consoleModeRoute;
-
                 if(!$this->executeCallbackMethod($this->postAddCallback, $id, $model))
                 {
                     Ntentan::redirect(

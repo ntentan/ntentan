@@ -199,10 +199,16 @@ abstract class SqlDatabase extends DataStore
             $description = $this->model->describe();
             if($params["fields"] == null)
             {
-                $params["fields"] = array_keys($description["fields"]);
+                $requestedFields = array_keys($description["fields"]);
             }
+            else
+            {
+				$requestedFields = is_array($params["fields"]) ? $params["fields"] : explode(",", $params["fields"]);
+			}
+            
             $fields = array();
-            foreach($params["fields"] as $index => $field)
+            
+            foreach($requestedFields as $index => $field)
             {
                 if($params["fetch_related"] === true || $params["fetch_belongs_to"] === true)
                 {
@@ -268,11 +274,11 @@ abstract class SqlDatabase extends DataStore
                     }
                     else
                     {
-                        if($alias != null && array_search($alias, $params["fields"]) === false)
+                        if($alias != null && array_search($alias, $requestedFields) === false)
                         {
                             continue;
                         }
-                        else if($alias == null && array_search(Ntentan::singular(end(explode('.', $relatedModel))) . "_id", $params["fields"]) === false)
+                        else if($alias == null && array_search(Ntentan::singular(end(explode('.', $relatedModel))) . "_id", $requestedFields) === false)
                         {
                             continue;
                         }

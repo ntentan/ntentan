@@ -395,6 +395,10 @@ class Ntentan
             {
                 $singular = substr($word, 0, strlen($word) - 3) . "y";
             }
+            else if(strtolower($word) == 'news')
+            {
+                $singular = $word;
+            }
             else if(substr($word, -1) == "s")
             {
                 $singular = substr($word, 0, strlen($word) - 1);
@@ -426,6 +430,10 @@ class Ntentan
             {
                 $plural = $word . "s";
             }
+            else
+            {
+				$plural = $word;
+			}
             Ntentan::$plurals[$plural] = $word;
         }
         return $plural;
