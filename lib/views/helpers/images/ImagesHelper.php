@@ -11,6 +11,8 @@ use ntentan\views\helpers\Helper;
  */
 class ImagesHelper extends Helper
 {
+    private $quality = 90;
+    
     private function loadImage($path)
     {
         switch(strtolower(end(explode(".", $path))))
@@ -25,6 +27,22 @@ class ImagesHelper extends Helper
                 break;
         }
         return $image;
+    }
+    
+    private function writeImage($image, $path)
+    {
+        switch(strtolower(end(explode(".", $path))))
+        {
+            case 'png':
+                $image = imagepng($image, $path);
+                break;
+
+            case 'jpeg':
+            case 'jpg':
+                $image = imagejpeg($image, $path, $this->quality);
+                break;
+        }
+        return $image;        
     }
     
     /**
@@ -55,7 +73,8 @@ class ImagesHelper extends Helper
         $dest_im = imagecreatetruecolor($width, $height);
         imagecopyresampled($dest_im, $im, 0,0,0,0,$width,$height,$o_width,$o_height);
 
-        @imagejpeg($dest_im, $dest, 90);
+        $this->writeImage($dest_im, $dest);
+        
         imagedestroy($im);
         imagedestroy($dest_im);
 
@@ -83,7 +102,7 @@ class ImagesHelper extends Helper
         $im2 = imagecreatetruecolor ($width, $height);
 
         imagecopyresampled($im2,$im,0,0,$left,$top,$width,$height,$width,$height);
-        imagejpeg($im2, $dest, 90);
+        $this->writeImage($im2, $dest);
         imagedestroy($im);
         imagedestroy($im2);
     }
@@ -107,7 +126,7 @@ class ImagesHelper extends Helper
             $imageWidth = imagesx($image);
             $imageHeight = imagesy($image);
             imagedestroy($image);
-            $tempImage = 'cache/' . uniqid() . ".jpeg";
+            $tempImage = 'cache/' . uniqid() . ".png";
 
             $aspect = $imageWidth / $imageHeight;
 
@@ -124,6 +143,11 @@ class ImagesHelper extends Helper
             unlink($tempImage);
         }
         return $destination;
+    }
+    
+    public function quality($quality)
+    {
+        return $this;
     }
 
     public function help($arguments)

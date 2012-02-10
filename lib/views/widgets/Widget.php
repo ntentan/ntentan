@@ -90,10 +90,12 @@ abstract class Widget extends Presentation
             $this->execute();
             $this->preRender();
             TemplateEngine::appendPath($this->filePath);
+            
             if($this->template == "")
             {
                 $this->template = "{$this->name}_widget.tpl.php";
             }
+            
             try{
                 $output = TemplateEngine::render($this->template, $this->data);
             }
@@ -101,7 +103,7 @@ abstract class Widget extends Presentation
             {
                 die('Template not Found!');
             }
-
+            
             $this->postRender();
             Cache::add($cacheKey, $output, $this->cacheLifetime);
         }

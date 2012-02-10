@@ -70,10 +70,18 @@ class AuthComponent extends Component
     public $redirectRoute = "/";
 
     /**
-     * Function to ca
-     * @var <type>
+     * Function to call when login is successful. Function would only be called
+     * when the AuthComponent::onSuccess property is set to call functions.
+     * 
+     * @var string
      */
     public $successFunction = null;
+    
+    /**
+     * Tells the component what to do when authentication is successful.
+     * 
+     * @var string
+     */
     public $onSuccess = AuthComponent::REDIRECT;
     public $onFailure = AuthComponent::REDIRECT;
     public $failureFunction;
