@@ -1,7 +1,19 @@
 <?php
 /* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Ntentan PHP Framework
+ * Copyright 2012 James Ekow Abaka Ainooson
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace ntentan\views\template_engines;
@@ -10,10 +22,22 @@ use ntentan\Ntentan;
 use ntentan\views\widgets\Widget;
 use \ReflectionClass;
 
+/**
+ * A class for loading widgets in the views. The class is never directly invoked
+ * in the view. The invokation is done automatically by the template engine.
+ * This class loads the plugins in the following order of preference; first it
+ * looks into the applications widget directory, then looks into the directories
+ * of all the loaded plugins then it finally looks into the core framework library.
+ * 
+ * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
+ * @todo cache the location of the widget so it is searched for just once
+ */
 class WidgetsLoader
 {
-    //private $loadedWidgets = array();
-
+    /**
+     * Loads the widget.
+     * @todo this method should store in the cache the location of the widget
+     */
     public function loadWidget($widget)
     {
         $widgetFile = Ntentan::$modulesPath . "/widgets/$widget/" . Ntentan::camelize($widget) . "Widget.php";
@@ -41,6 +65,9 @@ class WidgetsLoader
         return $widgetInstance;
     }
 
+    /**
+     * 
+     */
     public function cached($alias)
     {
         return Widget::cached($alias);

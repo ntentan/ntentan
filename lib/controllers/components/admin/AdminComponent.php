@@ -156,17 +156,32 @@ class AdminComponent extends Component
     
     /**
      * The default operation which would be executed when the whole row is clicked.
-     * Currently it invokes the edit operation.
+     * By default it is configured to invoke the edit operation.
      * @var type 
      */
     public $rowOperation;
     
     /**
-     * 
+     * The template used to render the rows for the views.
      */
     public $rowTemplate;
+    
+    /**
+     * Determines whether the current view should have the edit operation.
+     * @var boolean
+     */
     public $hasEditOperation = true;
+    
+    /**
+     * Determines whether the current view should have the edit operation.
+     * @var boolean
+     */
     public $hasAddOperation = true;
+    
+    /**
+     * The name of the entity currently being operated on by the component.
+     * @var string
+     */
     public $entity;
 
     public function init()
