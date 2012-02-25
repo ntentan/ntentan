@@ -116,6 +116,7 @@ class Mysql extends SqlDatabase
                     break;
 
                 case "int":
+				case "bigint":
                     $type = "integer";
                     break;
 

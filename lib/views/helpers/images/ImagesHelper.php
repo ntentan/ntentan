@@ -53,13 +53,13 @@ class ImagesHelper extends Helper
      * @param integer $width New width of the image
      * @param integer $height New Height of the image
      */
-    public function resize($src,$dest,$width,$height)
+    public function resize($src, $dest, $width = 0, $height = 0)
     {
         $im = $this->loadImage($src);
-        $o_width = imagesx($im);
-        $o_height = imagesy($im);
+        $outputWidth = imagesx($im);
+        $outputHeight = imagesy($im);
 
-        $aspect = $o_width / $o_height;
+        $aspect = $outputWidth / $outputHeight;
 
         if($width<=0)
         {
@@ -70,13 +70,13 @@ class ImagesHelper extends Helper
             $height = $width / $aspect;
         }
 
-        $dest_im = imagecreatetruecolor($width, $height);
-        imagecopyresampled($dest_im, $im, 0,0,0,0,$width,$height,$o_width,$o_height);
+        $destinationImage = imagecreatetruecolor($width, $height);
+        imagecopyresampled($destinationImage, $im, 0, 0, 0, 0, $width, $height, $outputWidth, $outputHeight);
 
-        $this->writeImage($dest_im, $dest);
+        $this->writeImage($destinationImage, $dest);
         
         imagedestroy($im);
-        imagedestroy($dest_im);
+        imagedestroy($destinationImage);
 
         return $dest;
     }

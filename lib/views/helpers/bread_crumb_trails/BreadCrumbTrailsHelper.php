@@ -18,7 +18,7 @@ class BreadCrumbTrailsHelper extends Helper
             {
                 $url = Ntentan::getUrl('/');
                 $trailData = array(array('url' => $url, 'label' => 'Home'));
-                foreach(explode('/', Ntentan::$route) as $route)
+                foreach(explode('/', Ntentan::$requestedRoute) as $route)
                 {
                     $url .= "$route/";
                     $trailData[] = array('url' => $url, 'label' => Ntentan::toSentence($route));
