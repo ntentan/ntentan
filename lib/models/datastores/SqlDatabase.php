@@ -25,7 +25,7 @@ use ntentan\utils\Logger;
 use ntentan\caching\Cache;
 
 /**
- * A class used as the base class datastore classes which store their data in SQL
+ * A class used as the base class for datastore classes which store their data in SQL
  * Databases. This class generates standard SQL queries through which most
  * SQL database systems could be manipulated. For system specific functions (like
  * connecting, interpreting queries, escaping strings etc.) this class exposes

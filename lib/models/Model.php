@@ -489,15 +489,13 @@ class Model implements ArrayAccess, Iterator
                 {
                     $arguments[0] = isset($arguments[0]) ? $arguments[0] : 'all' ;
                     $arguments[1]["conditions"] = array(Ntentan::singular($this->name) . "_id" => $row["id"]);
-
                     $this->data[$key][$model->name] = $modelMethod->invokeArgs($model, $arguments);
                 }
             }
             else
             {
-
+                
             }
-
             return $modelMethod->invokeArgs($model, $arguments);
         }
         throw new MethodNotFoundException($method);
