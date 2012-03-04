@@ -323,15 +323,21 @@ abstract class SqlDatabase extends DataStore
         {
             if(is_array($params["through"]))
             {
-                $previousTable = $this->table;
-                foreach($params["through"] as $relatedModel)
-                {
-                    $modelInstance = Model::load($relatedModel);
-                    $currentTable = $modelInstance->dataStore->table;
-                    $foreignKey = Ntentan::singular($previousTable) . "_id";
-                    $joins .= " JOIN $currentTable ON $previousTable.id = $currentTable.$foreignKey ";
-                    $previousTable = $currentTable;
-                }
+                $through = $params['through'];
+            }
+            else if(is_string($params['through']))
+            {
+                $through = explode(',', $params['through']);
+            }
+            
+            $previousTable = $this->table;
+            foreach($through as $relatedModel)
+            {
+                $modelInstance = Model::load($relatedModel);
+                $currentTable = $modelInstance->dataStore->table;
+                $foreignKey = Ntentan::singular($previousTable) . "_id";
+                $joins .= " JOIN $currentTable ON $previousTable.id = $currentTable.$foreignKey ";
+                $previousTable = $currentTable;
             }
         }
 
