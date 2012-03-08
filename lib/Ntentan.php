@@ -213,7 +213,7 @@ class Ntentan
     {
         // Implement the routing engine
         Ntentan::$requestedRoute = $_GET["q"];
-        Ntentan::$route = $_GET["q"];
+        if(Ntentan::$route =='' ) Ntentan::$route = $_GET["q"];
         unset($_GET["q"]);
         unset($_REQUEST["q"]);
 
