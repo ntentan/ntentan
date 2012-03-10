@@ -274,13 +274,16 @@ abstract class SqlDatabase extends DataStore
                     }
                     else
                     {
-                        if($alias != null && array_search($alias, $requestedFields) === false)
+                        if(is_array($requestedFields))
                         {
-                            continue;
-                        }
-                        else if($alias == null && array_search(Ntentan::singular(end(explode('.', $relatedModel))) . "_id", $requestedFields) === false)
-                        {
-                            continue;
+                            if($alias != null && array_search($alias, $requestedFields) === false)
+                            {
+                                continue;
+                            }
+                            else if($alias == null && array_search(Ntentan::singular(end(explode('.', $relatedModel))) . "_id", $requestedFields) === false)
+                            {
+                                continue;
+                            }
                         }
                         $model = Model::load(Model::getBelongsTo($relatedModel));
                         $datastore = $model->dataStore;
@@ -304,8 +307,11 @@ abstract class SqlDatabase extends DataStore
                              . "." . $this->quote($field) . " AS "
                              . $this->quote($model->getRoute() . ".$field");
                     }
-                    $fields = $fields . ", " . implode(", ", $joinedModelFields);
                     
+                    if($params['type'] != 'count')
+                    {
+                        $fields = $fields . ", " . implode(", ", $joinedModelFields);
+                    }
                     
                     $joins .= " LEFT JOIN " . ($datastore->schema == "" ? '' : "{$datastore->schema}.") . $datastore->table . " "
                            .  ($alias != null ? "AS $alias" : "")

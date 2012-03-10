@@ -409,21 +409,10 @@ class Model implements ArrayAccess, Iterator
         
         //@todo Convert all these if conditions into one huge regular expression
         
-        if(substr($method, 0, 7) == "getWith")
-        {
-            $field = Ntentan::deCamelize(substr($method, 7));
-            $type = 'all';
-            foreach($arguments as $argument)
-            {
-                $params["conditions"][$this->route . "." . $field] = $argument;
-            }
-            return $this->get($type, $params);
-        }
-
-        if(preg_match("/(get)(?<just>Just)?(First)(With)(?<field>[a-zA-Z0-9]+)/", $method, $matches))
+        if(preg_match("/(get)(?<just>Just)?(?<type>First|All|Count|[0-9]+)?((With)(?<field>[a-zA-Z0-9]+))?/", $method, $matches))
         {
             $field = Ntentan::deCamelize($matches['field']);
-            $type = 'first';
+            $type = strtolower($matches['type'] == '' ? 'all' : $matches['type']);
             $conditions = array();
             foreach($arguments as $argument)
             {
@@ -449,6 +438,17 @@ class Model implements ArrayAccess, Iterator
             }
             return $this->get($type, $params);
         }
+        
+        /*if(substr($method, 0, 7) == "getWith")
+        {
+            $field = Ntentan::deCamelize(substr($method, 7));
+            $type = 'all';
+            foreach($arguments as $argument)
+            {
+                $params["conditions"][$this->route . "." . $field] = $argument;
+            }
+            return $this->get($type, $params);
+        }        
 
         if(substr($method, 0, 10) == "getAllWith")
         {
@@ -466,7 +466,7 @@ class Model implements ArrayAccess, Iterator
                     $conditions[$this->route . "." . $field] = $argument;
                 }
             }
-            $params["conditions"] = $conditions;
+            $params["conditions"] = is_array($params['conditions']) ? array_merge($conditions, $params['conditions']) : $conditions;
             if(!isset($params["fetch_related"])) $params["fetch_related"] = true;
             $type = isset($params['limit']) ? $params['limit'] : 'all';
             return $this->get($type, $params);
@@ -504,7 +504,7 @@ class Model implements ArrayAccess, Iterator
                 
             }
             return $modelMethod->invokeArgs($model, $arguments);
-        }
+        }*/
         throw new MethodNotFoundException($method);
     }
 
