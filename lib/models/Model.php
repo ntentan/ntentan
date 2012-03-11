@@ -85,6 +85,14 @@ class Model implements ArrayAccess, Iterator
     public $hasSingleRecord = false;
     protected $behaviourInstances = array();
     protected $behaviours = array();
+    
+    /**
+     * Prevents ntentan from running its validations. Validations may however
+     * be run on the database level if necessary and these could trigger their
+     * own exceptions.
+     * @var boolean
+     */
+    public $skipValidations = false;
 
     public function __construct()
     {
@@ -439,7 +447,6 @@ class Model implements ArrayAccess, Iterator
             {
                 if(!isset($params["fetch_related"])) $params["fetch_related"] = true;
             }
-            
             return $this->get($type, $params);
         }
 
@@ -766,7 +773,7 @@ class Model implements ArrayAccess, Iterator
         foreach($description["fields"] as $field)
         {
             $fieldName = $field["name"];
-            if($field["primary_key"]) continue;
+            if($field["primary_key"] || $this->skipValidations === true) continue;
 
             // Validate Required
             if(($this->data[$fieldName] === "" || $this->data[$fieldName] === null) && $field["required"])

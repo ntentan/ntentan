@@ -15,7 +15,7 @@ abstract class AuthMethod
     {
         $usersModelClass = Model::getClassName($this->usersModel);
         $users = new $usersModelClass();
-        $result = $users->getFirstWithUsername($username);
+        $result = $users->getJustFirstWithUsername($username);
 
         if($result->password == md5($password))
         {

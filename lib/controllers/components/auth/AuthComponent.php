@@ -232,8 +232,15 @@ class AuthComponent extends Component
         return $_SESSION["user_id"];
     }
     
-    public static function getProfile()
+    public function getProfile()
     {
-        return $_SESSION["user"];
+        if($_SESSION['logged_in'])
+        {
+            return $_SESSION["user"];
+        }
+        else
+        {
+            $this->redirectToLogin();
+        }
     }
 }

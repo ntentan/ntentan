@@ -150,7 +150,7 @@ class DatesHelper extends Helper
      * @param string $referenceDate
      * @return string
      */
-    public function sentence($date = null, $options = null, $referenceDate = null)
+    public function sentence($options = null, $referenceDate = null)
     {
         $timestamp = $this->selectTimestamp($date);
         $now = $referenceDate == null ? time() : $this->internalParse($referenceDate);

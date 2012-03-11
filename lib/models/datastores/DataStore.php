@@ -29,6 +29,10 @@ abstract class DataStore
      */
     protected $model;
     
+    /**
+     * Put the datastore in debug mode
+     * @var boolean
+     */
     public $debug = false;
 
     public function setModel($model)
