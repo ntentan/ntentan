@@ -566,7 +566,7 @@ class Ntentan
              $exception->getMessage() .
              ( $logged === false ? 
                  "\n\n<p>Failed to log this exception. Please check and ensure" . 
-                  "that the file [logs/exceptions.log] exists and is" .
+                  "that the file [logs/application.log] exists and is" .
                   "writable.</p>" : ""
              ),
             "Exception <code>" . $class->getName() . "</code> thrown",
