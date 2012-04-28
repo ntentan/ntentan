@@ -37,7 +37,10 @@ class MenuWidget extends Widget
     public function execute()
     {
         $menuItems = array();
-        foreach($this->items as $item)
+        $selected = false;
+        $default = false;
+        
+        foreach($this->items as $index => $item)
         {
             if(is_string($item) || is_numeric($item))
             {
@@ -46,12 +49,22 @@ class MenuWidget extends Widget
                     'url' => Ntentan::getUrl(strtolower(str_replace(' ', '_', $item)))
                 );
             }
+            
             $item['selected'] = (
                 $item['url'] == substr(Ntentan::getUrl(Ntentan::$route), 0, strlen($item['url'])) || 
                 $item['url'] == substr(Ntentan::getUrl(Ntentan::$requestedRoute), 0, strlen($item['url']))
             );
-            $menuItems[] = $item;
+            
+            if($item['selected'] === true) $selected = true;
+            if($item['default'] === true) $default = $index;
+            $menuItems[$index] = $item;
         }
+        
+        if(!$selected && $default !== false)
+        {
+            $menuItems[$default]['selected'] = true;
+        }
+        
         $this->set('items', $menuItems);
     }
     
