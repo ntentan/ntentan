@@ -297,12 +297,12 @@ class Mysql extends SqlDatabase
         return $description;
     }
     
-    protected function quote($field)
+    public function quote($field)
     {
         return "`$field`";
     }
     
-    protected function escape($string)
+    public function escape($string)
     {
         return mysql_escape_string($string);
     }
