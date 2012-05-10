@@ -41,7 +41,6 @@ class FileStore implements Store
     
     public function write($sessionId, $data)
     {
-        Logger::log($this->file);
         $file = fopen($this->file, "w");
         
         if($file !== false)
