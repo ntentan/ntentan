@@ -38,7 +38,7 @@ function get_class_file($class)
         $class = array_pop($fullPath);
 
 
-        if($fullPath[0] == \ntentan\Ntentan::$modulesPath)
+        if($fullPath[0] == \ntentan\Ntentan::$namespace)
         {
             $basePath = implode("/",$fullPath);
         }
@@ -47,6 +47,12 @@ function get_class_file($class)
             array_shift($fullPath);
             array_shift($fullPath);
             $basePath = \ntentan\Ntentan::getPluginPath(implode("/",$fullPath));
+        }
+        else if($fullPath[0] == 'ntentan' && $fullPath[1] == "dev")
+        {
+            array_shift($fullPath);
+            array_shift($fullPath);
+            $basePath = NTENTAN_DEV_HOME . '/' . implode("/",$fullPath);
         }
         else if($fullPath[0] == 'ntentan')
         {

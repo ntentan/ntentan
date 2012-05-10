@@ -176,7 +176,7 @@ class Controller
             return $this->modelInstance;
 
         case "directory":
-            return Ntentan::$modulesPath . $this->route . "/";
+            return Ntentan::$namespace . $this->route . "/";
 
         default:
             if(substr($property, -6) == "Widget")
@@ -210,7 +210,7 @@ class Controller
         {
             if(!$this->loadComponent($component, $arguments, "\\ntentan\\plugins\\components"))
             {
-                if(!$this->loadComponent($component, $arguments, "\\" . Ntentan::$modulesPath . "\\components"))
+                if(!$this->loadComponent($component, $arguments, "\\" . Ntentan::$namespace . "\\components"))
                 {
                     throw new exceptions\ComponentNotFoundException("Component not found <code><b>$component</b></code>");
                 }
@@ -319,7 +319,7 @@ class Controller
         {
             $p = $routeArray[$i];
             $pCamelized = Ntentan::camelize($p);
-            $filePath = Ntentan::$modulesPath . "/modules/$controllerRoute/$p/";
+            $filePath = Ntentan::$namespace . "/modules/$controllerRoute/$p/";
             if(file_exists($filePath . "{$pCamelized}Controller.php"))
             {
                 $controllerName = $pCamelized."Controller";
@@ -334,8 +334,8 @@ class Controller
                 }
                 else
                 {
-                    Ntentan::addIncludePath(Ntentan::$modulesPath . "/$controllerRoute/"); //$controllerName.php";
-                    $controllerNamespace = "\\" . str_replace("/", "\\", Ntentan::$modulesPath . "/modules/$controllerRoute/");
+                    Ntentan::addIncludePath(Ntentan::$namespace . "/$controllerRoute/"); //$controllerName.php";
+                    $controllerNamespace = "\\" . str_replace("/", "\\", Ntentan::$namespace . "/modules/$controllerRoute/");
                     $controllerName = $controllerNamespace . $controllerName;
                     if(class_exists($controllerName))
                     {
