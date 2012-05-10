@@ -22,7 +22,6 @@ class DbStore implements Store
     public function open($sessionPath, $sessionName)
     {
         $this->db = Ntentan::getDefaultDataStore(true);
-        Logger::log('Starting ....');
     }
     
     public function write($sessionId, $data)
@@ -38,11 +37,6 @@ class DbStore implements Store
         }
         else
         {
-            Logger::log(sprintf(
-                    "UPDATE sessions SET data = '%s', expires = %d WHERE id = '%s'",
-                    $this->db->escape($data), time() + Manager::$lifespan, $sessionId
-                )
-            );
             
             $this->db->query(
                 sprintf(
