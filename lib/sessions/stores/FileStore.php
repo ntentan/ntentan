@@ -46,7 +46,6 @@ class FileStore implements Store
         
         if($file !== false)
         {
-            Logger::log("writing $data");
             fwrite($file, $data);
             fclose($file);
             return true;

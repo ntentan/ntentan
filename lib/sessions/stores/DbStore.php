@@ -4,27 +4,72 @@ namespace ntentan\sessions\stores;
 use ntentan\sessions\Manager;
 use ntentan\models\datastores\Mysql;
 use ntentan\Ntentan;
+use ntentan\utils\Logger;
 
 require_once "Store.php";
-
+/**
+ * DBS
+ * 
+ * @author ekow
+ */
 class DbStore implements Store
 {
     private $db;
+    private $new = false;
+    private $lifeSpan = 0;
+    private $id;
     
     public function open($sessionPath, $sessionName)
     {
         $this->db = Ntentan::getDefaultDataStore(true);
+        Logger::log('Starting ....');
     }
     
     public function write($sessionId, $data)
     {
-        $this->db->query("SELECT FROM sessions WHERE id = '%s' AND expires > %d", $sessionId, time())
+        if($this->new)
+        {
+            $this->db->query(
+                sprintf(
+                    "INSERT into sessions(id, data, expires, lifespan) VALUES('%s', '%s', %d, %d)",
+                    $sessionId, $this->db->escape($data), time() + Manager::$lifespan, Manager::$lifespan
+                )
+            );
+        }
+        else
+        {
+            Logger::log(sprintf(
+                    "UPDATE sessions SET data = '%s', expires = %d WHERE id = '%s'",
+                    $this->db->escape($data), time() + Manager::$lifespan, $sessionId
+                )
+            );
+            
+            $this->db->query(
+                sprintf(
+                    "UPDATE sessions SET data = '%s', expires = %d WHERE id = '%s'",
+                    $this->db->escape($data), time() + Manager::$lifespan, $sessionId
+                )
+            );
+        }
         return true;
     }
     
     public function read($sessionId)
     {
-        $this->db->query("SELECT FROM sessions WHERE id = '%s' AND expires > %d", $sessionId, time());
+        $this->id = $sessionId;
+        $result = $this->db->query(
+            sprintf("SELECT data, lifespan FROM sessions WHERE id = '%s' AND expires > %d", $sessionId, time())
+        );
+        if(count($result) == 0)
+        {
+            $this->new = true;
+            return '';
+        }
+        else
+        {
+            $this->lifeSpan = $result[0]['lifespan'];
+            return $result[0]['data'];
+        }
     }
     
     public function close()
@@ -34,11 +79,18 @@ class DbStore implements Store
     
     public function destroy($sessionId)
     {
-        
+        $this->db->query(sprintf("DELETE FROM sessions WHERE id = '%s'", $sessionId));
+        return true;        
     }
     
     public function gc($lifetime)
     {
-        
+        $this->db->query(sprintf("DELETE FROM sessions WHERE expiry < %d", time()));
+        return true;
+    }
+    
+    public function isNew()
+    {
+        return $this->new;
     }
 }

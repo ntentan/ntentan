@@ -639,8 +639,8 @@ abstract class SqlDatabase extends DataStore
 
     protected abstract function connect($parameters);
     protected abstract function _query($query);
-    protected abstract function escape($query);
-    protected abstract function quote($field);
+    public abstract function escape($query);
+    public abstract function quote($field);
     protected abstract function getLastInsertId();
     protected abstract function limit($limitParams);
     public abstract function describeModel();

@@ -9,4 +9,5 @@ interface Store
     public function write($sessionId, $data);
     public function destroy($sessionId);
     public function gc($lifetime);
+    public function isNew();
 }
