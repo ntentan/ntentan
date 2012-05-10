@@ -70,7 +70,7 @@ class Ntentan
      * The directory which holds the modules of the application.
      * @var string
      */
-    public static $modulesPath = "modules/";
+    public static $namespace = "modules/";
 
     /**
      *
@@ -164,7 +164,7 @@ class Ntentan
     public static function setup($config)
     {
         Ntentan::$basePath = $config['application']['ntentan_home'];
-        Ntentan::$modulesPath = $config['application']['modules_path'];
+        Ntentan::$namespace = $config['application']['namespace'];
         Ntentan::$prefix = $config['application']['prefix'];
         define('CONTEXT', $config['application']['context']);
 
@@ -185,9 +185,10 @@ class Ntentan
                 'lib/views/widgets/',
                 'lib/exceptions/',
                 'lib/caching/',
+                'lib/sessions',
                 '/',
                 "./",
-                Ntentan::$modulesPath,
+                Ntentan::$namespace,
                 Ntentan::$layoutsPath,
             ),
             Ntentan::$basePath

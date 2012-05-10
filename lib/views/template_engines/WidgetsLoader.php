@@ -40,12 +40,12 @@ class WidgetsLoader
      */
     public function loadWidget($widget)
     {
-        $widgetFile = Ntentan::$modulesPath . "/widgets/$widget/" . Ntentan::camelize($widget) . "Widget.php";
+        $widgetFile = Ntentan::$namespace . "/widgets/$widget/" . Ntentan::camelize($widget) . "Widget.php";
         if(file_exists($widgetFile))
         {
             require_once $widgetFile;
-            $widgetClass = "\\" . Ntentan::$modulesPath . "\\widgets\\$widget\\" . Ntentan::camelize($widget) . 'Widget';
-            $path = Ntentan::$modulesPath . "/widgets/$widget";
+            $widgetClass = "\\" . Ntentan::$namespace . "\\widgets\\$widget\\" . Ntentan::camelize($widget) . 'Widget';
+            $path = Ntentan::$namespace . "/widgets/$widget";
         }
         else if(file_exists(Ntentan::getFilePath("lib/views/widgets/$widget/" . Ntentan::camelize($widget) . "Widget.php")))
         {
