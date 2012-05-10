@@ -63,17 +63,22 @@ abstract class TemplateEngine
     public static function loadAsset($asset, $copyFrom = null)
     {
         $assetPath = ($copyFrom==null ? "assets/$asset" : $copyFrom);
-        if(file_exists($assetPath) && file_exists(dirname("public/$asset")) && is_writable(dirname("public/$asset")))
+        $publicPath = "public/$asset";
+        $publicDirectory = dirname($publicPath);
+        
+        if(file_exists($publicPath)) return $publicPath;
+        
+        if(file_exists($assetPath) && file_exists($publicDirectory) && is_writable($publicDirectory))
         {
-            copy($assetPath, "public/$asset");
+            copy($assetPath, $publicPath);
         }
-        else if(file_exists(Ntentan::getFilePath("assets/$asset")) && file_exists(dirname("public/$asset")) && is_writable(dirname("public/$asset")))
+        else if(file_exists(Ntentan::getFilePath("assets/$asset")) && file_exists($publicDirectory) && is_writable($publicDirectory))
         {
-            copy(Ntentan::getFilePath("assets/$asset"), "public/$asset");
+            copy(Ntentan::getFilePath("assets/$asset"), $publicPath);
         }
-        else if(file_exists($copyFrom) && is_writable(dirname("public/$asset")))
+        else if(file_exists($copyFrom) && is_writable($publicDirectory))
         {
-            copy($copyFrom, "public/$asset");
+            copy($copyFrom, $publicPath);
         }
         else
         {
@@ -81,13 +86,13 @@ abstract class TemplateEngine
             {
                 Ntentan::error("File not found <b><code>$assetPath</code></b>");
             }
-            else if(!is_writable("public/$asset"))
+            else if(!is_writable($publicPath))
             {
                 Ntentan::error("Destination <b><code>public/$asset</code></b> is not writable");
             }
             die();
         }
-        return "public/$asset";
+        return $publicPath;
     }
 
     public function __get($property)
