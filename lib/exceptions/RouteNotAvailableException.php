@@ -25,7 +25,7 @@ class RouteNotAvailableException extends Exception
 {
     public function __construct($route = null)
     {
-        if($route == null) $route = Ntentan::$route;
+        if($route == '') $route = Ntentan::$route;
         parent::__construct("Route $route is currently not available.");
     }
 }

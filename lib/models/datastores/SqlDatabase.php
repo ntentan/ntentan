@@ -624,7 +624,10 @@ abstract class SqlDatabase extends DataStore
     {
         if(Ntentan::$debug === true)
         {
-            Logger::log("[query] $query", "logs/queries.log");           
+            if(is_writeable('logs/queries.log'))
+            {
+                Logger::log("[query] $query", "logs/queries.log");
+            }           
         }
         return $this->_query($query);
     }

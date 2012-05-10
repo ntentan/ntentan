@@ -23,7 +23,8 @@
  */
 namespace ntentan;
 
-session_start();
+//require "sessions/Manager.php";
+//sessions\Manager::start();
 
 
 /**
@@ -41,8 +42,6 @@ require "caching/Cache.php";
 
 require "exceptions/FileNotFoundException.php";
 
-
-date_default_timezone_set("Africa/Accra");
 set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
 
 use ntentan\caching\Cache;
@@ -155,24 +154,10 @@ class Ntentan
     {
         Ntentan::setup($config);
         
-        if(Cache::exists('nt_camelisations'))
-        {
-            Ntentan::$camelisations = Cache::get('nt_camelisations');
-        }
-        else
-        {
-            Ntentan::$camelisations = array();
-        }
-        $camelisations = count(Ntentan::$camelisations);
                 
         if(!defined('STDOUT'))
         {
             Ntentan::route();
-        }
-        
-        if(count(Ntentan::$camelisations) > $camelisations)
-        {
-            Cache::add('nt_camelisations', Ntentan::$camelisations);
         }
     }
 
@@ -207,6 +192,18 @@ class Ntentan
             ),
             Ntentan::$basePath
         );
+        
+        if(Cache::exists('nt_camelisations'))
+        {
+            Ntentan::$camelisations = Cache::get('nt_camelisations');
+        }
+        else
+        {
+            Ntentan::$camelisations = array();
+        }
+        $camelisations = count(Ntentan::$camelisations);        
+        
+        sessions\Manager::start(Ntentan::$config[CONTEXT]['session_container']);
     }
 
     public static function route()
@@ -253,6 +250,12 @@ class Ntentan
         }
 
         $module = controllers\Controller::load(Ntentan::$route);
+        
+        // Store all camelisations into the cache;
+        if(count(Ntentan::$camelisations) > $camelisations)
+        {
+            Cache::add('nt_camelisations', Ntentan::$camelisations);
+        }        
     }
 
     /**
@@ -513,7 +516,7 @@ class Ntentan
         if($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') return true; else return false;
     }
 
-    public static function error($message, $subTitle = null, $type = null)
+    public static function error($message, $subTitle = null, $type = null, $showTrace = true, $trace = false)
     {
         if(isset(Ntentan::$config[CONTEXT]['error_handler']) && Ntentan::$debug === false)
         {
@@ -558,8 +561,8 @@ class Ntentan
     public static function exceptionHandler($exception)
     {
         $class = new \ReflectionObject($exception);
-        $logged = utils\Logger::log($exception->getMessage() . "\n" . $exception->getTraceAsString(), "log/exceptions.log");
-        echo Ntentan::message(
+        $logged = utils\Logger::log($exception->getMessage() . "\n" . $exception->getTraceAsString(), "logs/application.log");
+        echo Ntentan::error(
             "Exception <code><b>{$class->getName()}</b></code> thrown in " .
             "<code><b>{$exception->getFile()}</b></code> on line " .
             "<code><b>{$exception->getLine()}</b></code>. " . 
