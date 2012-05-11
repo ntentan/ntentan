@@ -52,12 +52,6 @@ abstract class SqlDatabase extends DataStore
     public function __construct($parameters)
     {
         $this->connect($parameters);
-        if(file_exists('config/schema.php'))
-        {
-            include 'config/schema.php';
-            $this->schemaDescription = $schema;
-            $this->tables = array_keys($schema);
-        }
     }
 
     public function __set($property, $value) 

@@ -96,30 +96,15 @@ class Model implements ArrayAccess, Iterator
 
     public function __construct()
     {
-        if($this->belongsTo != null)
-        {
-            if(is_array($this->belongsTo))
-            {
-                foreach($this->belongsTo as $belongsTo)
-                {
-                    $this->belongsToModelInstances[] = Model::load(Model::getBelongsTo($belongsTo));
-                }
-            }
-            else
-            {
-                $this->belongsToModelInstances[] = Model::load(Model::getBelongsTo($this->belongsTo));
-            }
-        }
         $modelInformation = new ReflectionObject($this);
         $modelName = end(explode("\\", $modelInformation->getName()));
         $this->name = strtolower(Ntentan::deCamelize($modelName));
-
-        $this->iteratorPosition = 0;
-        $skip = count(explode("/", Ntentan::$namespace));
         $this->route = implode(".",array_slice(explode("\\", $modelInformation->getName()), count(explode("/", Ntentan::$namespace)) + 1, -1));
 
+        $this->iteratorPosition = 0;
+
         $dataStoreParams = Ntentan::getDefaultDataStore();
-        $dataStoreClass = __NAMESPACE__ . "\\datastores\\" . Ntentan::camelize($dataStoreParams["datastore"]);
+        $dataStoreClass = $dataStoreParams['datastore_class'];
         if(class_exists($dataStoreClass))
         {
             $dataStore = new $dataStoreClass($dataStoreParams);
@@ -159,26 +144,35 @@ class Model implements ArrayAccess, Iterator
 
     public static function getClassName($className)
     {
-        $classNameArray = explode('.', $className);
-        $className = Ntentan::camelize(end($classNameArray));
-        $fullClassName = "\\" . str_replace("/", "\\", Ntentan::$namespace) . "\\modules\\" . implode("\\", $classNameArray) . "\\$className";
-        $modelClassFile = Ntentan::$namespace . '/modules/' . implode('/', $classNameArray) . "/$className.php" ;
-        if(!file_exists($modelClassFile))
+        $key = "model_class_$className";
+        if(Cache::exists($key))
         {
-            throw new ModelNotFoundException("Model class <b><code>$fullClassName</code></b> not found");
+            $return = Cache::get($key);
         }
-        return $fullClassName;
+        else
+        {
+            $classNameArray = explode('.', $className);
+            $className = Ntentan::camelize(end($classNameArray));
+            $return = "\\" . str_replace("/", "\\", Ntentan::$namespace) . "\\modules\\" . implode("\\", $classNameArray) . "\\$className";
+            $modelClassFile = Ntentan::$namespace . '/modules/' . implode('/', $classNameArray) . "/$className.php" ;
+            if(!file_exists($modelClassFile))
+            {
+                throw new ModelNotFoundException("Model class <b><code>$return</code></b> not found");
+            }
+        }
+        return $return;
     }
 
     /**
      *
-     * @todo Implement caching for this
+     * @todo Implement caching for this like how the commalise has been done
      * @param type $modelField
      * @return type 
      */
     public static function splitName($modelField)
     {
         $modelArray = explode('.', $modelField);
+        $return = array();
         $return['field'] = array_pop($modelArray);
         $return['model'] = implode('.', $modelArray);
 
@@ -404,9 +398,7 @@ class Model implements ArrayAccess, Iterator
     }
 
     public function __call($method, $arguments)
-    {
-        $executed = false;
-        
+    {        
         //@todo Convert all these if conditions into one huge regular expression
         
         if(preg_match("/(get)(?<just>Just)?(?<type>First|All|Count|[0-9]+)?((With)(?<field>[a-zA-Z0-9]+))?/", $method, $matches))
@@ -439,72 +431,6 @@ class Model implements ArrayAccess, Iterator
             return $this->get($type, $params);
         }
         
-        /*if(substr($method, 0, 7) == "getWith")
-        {
-            $field = Ntentan::deCamelize(substr($method, 7));
-            $type = 'all';
-            foreach($arguments as $argument)
-            {
-                $params["conditions"][$this->route . "." . $field] = $argument;
-            }
-            return $this->get($type, $params);
-        }        
-
-        if(substr($method, 0, 10) == "getAllWith")
-        {
-            $field = Ntentan::deCamelize(substr($method, 10));
-            $conditions = array();
-            foreach($arguments as $argument)
-            {
-                if(is_array($argument))
-                {
-                    $params = $argument;
-                    break;
-                }
-                else
-                {
-                    $conditions[$this->route . "." . $field] = $argument;
-                }
-            }
-            $params["conditions"] = is_array($params['conditions']) ? array_merge($conditions, $params['conditions']) : $conditions;
-            if(!isset($params["fetch_related"])) $params["fetch_related"] = true;
-            $type = isset($params['limit']) ? $params['limit'] : 'all';
-            return $this->get($type, $params);
-        }
-
-        if($method == 'getFirst')
-        {
-            return $this->get(isset($arguments[0]['limit']) ? $arguments[0]['limit'] : 'first', $arguments[0]);
-        }
-
-        if($method == "getAll")
-        {
-            return $this->get(isset($arguments[0]['limit']) ? $arguments[0]['limit'] : 'all', $arguments[0]);
-        }
-
-        if(substr($method, 0, 3) == "get")
-        {
-            $modelName = strtolower(substr($method,3));
-            $modelMethod = new ReflectionMethod($model, "get");
-            $foreignKey = $this->name . "_id";
-            //$arguments[1]["conditions"] = array($this->name . "_id" => $this->data["id"]);
-
-            $keys = array_keys($this->data);
-            if($keys[0] == "0")
-            {
-                foreach($this->data as $key => $row)
-                {
-                    $arguments[0] = isset($arguments[0]) ? $arguments[0] : 'all' ;
-                    $arguments[1]["conditions"] = array(Ntentan::singular($this->name) . "_id" => $row["id"]);
-                    $this->data[$key][$model->name] = $modelMethod->invokeArgs($model, $arguments);
-                }
-            }
-            else
-            {
-                
-            }
-            return $modelMethod->invokeArgs($model, $arguments);
-        }*/
         throw new MethodNotFoundException($method);
     }
 
@@ -710,7 +636,7 @@ class Model implements ArrayAccess, Iterator
         if($keys[0] == '0')
         {
             $returnData = array();
-            foreach($array as $index => $row)
+            foreach($data as $index => $row)
             {
                 $returnData[$index] = $this->getStdObject($row);
             }
