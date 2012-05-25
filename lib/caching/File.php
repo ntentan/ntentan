@@ -29,7 +29,7 @@ class File extends Cache
 {
     private function hashKey($key)
     {
-        return md5($key);
+        return $key;
     }
     
     protected function addImplementation($key, $object, $expires)
