@@ -352,7 +352,7 @@ class Controller
                         $controller->init();
 
                         // Trap for the cache
-                        if($controller->view->cacheTimeout !== false && Cache::exists("view_" . Ntentan::getRouteKey()) && Ntentan::$debug === false)
+                        if(Cache::exists("view_" . Ntentan::getRouteKey()) && Ntentan::$debug === false)
                         {
                             echo Cache::get('view_' . Ntentan::$route);
                             return;
@@ -485,7 +485,8 @@ class Controller
                 }
             }
         }
-        if($this->view->cacheTimeout !== false && Ntentan::$debug !== false)
+        
+        if($this->view->cacheTimeout !== false && Ntentan::$debug !== true)
         {
             Cache::add('view_' . Ntentan::getRouteKey(), $return, $this->view->cacheTimeout);
         }
