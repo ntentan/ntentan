@@ -83,10 +83,15 @@ class Controller
      */
     private $componentInstances = array();
 
+    /**
+     * The raw name of the method to be called in this controller
+     * @var string
+     */
     public $rawMethod;
 
     /**
-     *
+     * An array detailing all the loaded components.
+     * @var array
      */
     private static $loadedComponents = array();
 
