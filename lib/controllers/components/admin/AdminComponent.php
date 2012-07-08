@@ -108,7 +108,7 @@ class AdminComponent extends Component
      * admin component is in console mode.
      * @var array
      */
-    public $sections = array();
+    protected $sections = array();
     
     /**
      * An instance of the model whose data this component is going to be operating
@@ -367,6 +367,7 @@ class AdminComponent extends Component
             $section = $newSection;
         }
         $this->sections[$section['route']] = $section;
+        return $this;
     }
 
     private function showConsolePage($pageNumber)
