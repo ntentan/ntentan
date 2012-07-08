@@ -401,7 +401,7 @@ class Model implements ArrayAccess, Iterator
     {        
         //@todo Convert all these if conditions into one huge regular expression
         
-        if(preg_match("/(get)(?<just>Just)?(?<type>First|All|Count|[0-9]+)?((With)(?<field>[a-zA-Z0-9]+))?/", $method, $matches))
+        if(preg_match("/(get)((?<just>Just)?(?<type>First|All|Count|[0-9]+)?((With)(?<field>[a-zA-Z0-9]+))?)?/", $method, $matches))
         {
             $field = Ntentan::deCamelize($matches['field']);
             $type = strtolower($matches['type'] == '' ? 'all' : $matches['type']);
