@@ -120,6 +120,7 @@ class AuthComponent extends Component
     {
         // Allow the roles component to activate the authentication if it is
         // available. If not just run the authenticator from this section.
+        
         if($this->controller->hasComponent("roles"))
         {
             return;
@@ -136,6 +137,8 @@ class AuthComponent extends Component
             
             if($_SESSION["logged_in"] === false || !isset($_SESSION["logged_in"]))
             {
+                $this->set('app_name', Ntentan::$config['application']['name']);
+                $this->set('title', Ntentan::$config['application']['name'] . " | Login");
                 $this->login();
             }
         }
@@ -148,15 +151,12 @@ class AuthComponent extends Component
         if(Ntentan::$route != $this->loginRoute)
         {
             Ntentan::redirect(
-                Ntentan::getUrl(
-                    $this->loginRoute .
-                    (
-                        Ntentan::$requestedRoute == ""
-                        ? "" :
-                        (Ntentan::$requestedRoute == $this->logoutRoute ? "" : "?redirect=" . urlencode(Ntentan::$requestedRoute))
-                    )
-                ),
-                true
+                $this->loginRoute .
+                (
+                    Ntentan::$requestedRoute == ""
+                    ? "" :
+                    (Ntentan::$requestedRoute == $this->logoutRoute ? "" : "?redirect=" . urlencode(Ntentan::$requestedRoute))
+                )
             );
         }
     }

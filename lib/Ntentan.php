@@ -303,7 +303,7 @@ class Ntentan
      */
     public static function getUrl($url)
     {
-        return Ntentan::$prefix . ($url[0]!="/" ? "/$url" : $url);
+        return '/' . Ntentan::$prefix . ($url[0]!="/" ? "/$url" : $url);
     }
     
     public static function getRouteKey()
