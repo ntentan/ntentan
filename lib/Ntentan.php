@@ -337,7 +337,6 @@ class Ntentan
         {
             if($instance === true)
             {
-
                 if(!isset(Ntentan::$loadedDatastores[Ntentan::$config[CONTEXT]['datastore']]))
                 {
                     $dataStoreClass = "\\ntentan\\models\\datastores\\" . Ntentan::camelize(Ntentan::$config[CONTEXT]['datastore']);
@@ -354,6 +353,10 @@ class Ntentan
             }
             else
             {
+                if(!isset(Ntentan::$config[CONTEXT]['datastore_class']))
+                {
+                    Ntentan::$config[CONTEXT]['datastore_class'] ="ntentan\\models\\datastores\\" . Ntentan::camelize(Ntentan::$config[CONTEXT]["datastore"]);
+                }
                 return Ntentan::$config[CONTEXT];
             }
         }
