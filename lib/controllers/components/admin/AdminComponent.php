@@ -291,7 +291,6 @@ class AdminComponent extends Component
             array_shift($listFields);
         }
         $listFields[] = "id";
-        
 
         $data = $model->get(
             $itemsPerPage,
@@ -299,25 +298,39 @@ class AdminComponent extends Component
                 "fields"            =>  $listFields,
                 "offset"            =>  ($pageNumber-1) * $itemsPerPage,
                 "sort"              =>  $model->getName() . ".id desc",
-                "fetch_belongs_to"  =>  true
+                "fetch_belongs_to"  =>  true,
+                'use_dots'          =>  true
             )
         );
 
         $count = $model->get('count');
         $data = $data->getData();
-        $this->set("data", $data);
-        if(count($data) > 0)
+        $listData = array();
+        
+        foreach($data as $datum)
         {
-            $headers = array_keys($data[0]);
+            foreach($listFields as $listField)
+            {
+                $fieldSegments = explode('.', $listField);
+                $listDataRow[$listField] = $datum[$listField];
+            }
+            $listDataRow['id'] = $datum['id'];
+            $listData[] = $listDataRow;
+        }
+        
+        if(count($listData) > 0)
+        {
+            $headers = array_keys($listData[0]);
             array_pop($headers);
         }
+        $this->set("data", $listData);
         $this->set("headers", $headers);
         $numPages = ceil($count / $itemsPerPage);
         $pagingLinks = array();
 
         $this->set("operations", $this->operations);
 
-        if(count($this->listFields) == 0)
+        /*if(count($this->listFields) == 0)
         {
             $description = $model->describe();
             foreach($description["fields"] as $field)
@@ -335,7 +348,7 @@ class AdminComponent extends Component
                     $this->listFields[] = $field["name"];
                 }
             }
-        }
+        }*/
 
         $this->set("list_fields", $this->listFields);
         $this->set("notification_type", $_GET["n"]);

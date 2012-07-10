@@ -197,8 +197,8 @@ abstract class SqlDatabase extends DataStore
             }
             else
             {
-				$requestedFields = is_array($params["fields"]) ? $params["fields"] : explode(",", $params["fields"]);
-			}
+                $requestedFields = is_array($params["fields"]) ? $params["fields"] : explode(",", $params["fields"]);
+            }
             
             $fields = array();
             
@@ -236,10 +236,11 @@ abstract class SqlDatabase extends DataStore
             $numRequestedBelongsTo = count($belongsToFields);
             foreach($this->model->belongsTo as $relatedModel)
             {
-                if($numRequestedBelongsTo > 0 && !isset($belongsToFields[$relatedModel]))
+                /*if($numRequestedBelongsTo > 0 && !isset($belongsToFields[$relatedModel]))
                 {
                     continue;
-                }
+                }*/
+                
                 if(is_array($relatedModel) && isset($relatedModel["through"]))
                 {
                     $firstRelatedModel = Model::load(Model::getBelongsTo($relatedModel[0]));
@@ -247,6 +248,22 @@ abstract class SqlDatabase extends DataStore
                     $secondRelatedModel = Model::load($relatedModel["through"]);
                     $secondDatastore = $secondRelatedModel->dataStore;
                     $joins .= " LEFT JOIN {$firstDatastore->table} ON {$firstDatastore->table}.id = {$secondDatastore->table}." . Ntentan::singular($firstDatastore->table) . "_id ";
+                    
+                    $joinedModelDescription = $firstRelatedModel->describe();
+                    $joinedModelFields = array_keys($joinedModelDescription["fields"]);
+                    
+                    foreach($joinedModelFields as $index => $field)
+                    {
+                        $joinedModelFields[$index] =
+                            $this->quote($firstDatastore->table)
+                             . "." . $this->quote($field) . " AS "
+                             . $this->quote($firstRelatedModel->getRoute() . ".$field");
+                    }
+                    
+                    if($params['type'] != 'count')
+                    {
+                        $fields = $fields . ", " . implode(", ", $joinedModelFields);
+                    }                    
                 }
                 else
                 {
@@ -417,7 +434,16 @@ abstract class SqlDatabase extends DataStore
                             $fieldName = array_pop($fieldNameArray);
                             $modelName = Ntentan::singular(implode(".", $fieldNameArray));
                             if(is_string($results[$index][$modelName])) $results[$index][$modelName] = array();
-                            $results[$index][$modelName][$fieldName] = $value;
+                            
+                            if($params['use_dots'])
+                            {
+                                $results[$index]["$modelName.$fieldName"] = $value;
+                            }
+                            else
+                            {
+                                $results[$index][$modelName][$fieldName] = $value;
+                            }
+                            
                             $modelizedFields[] = $modelName;
                             unset($results[$index][$field]);
                         }

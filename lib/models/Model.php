@@ -243,6 +243,7 @@ class Model implements ArrayAccess, Iterator
         foreach($this->belongsTo as $related)
         {
             if($related == $modelType) return Model::RELATIONSHIP_BELONGS_TO;
+            if($related[0] == $modelType) return Model::RELATIONSHIP_BELONGS_TO;
         }
     }
 
