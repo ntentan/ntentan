@@ -273,7 +273,7 @@ class AdminComponent extends Component
 
         $this->set("operations_template", $this->operationsTemplate);
         $this->set("row_template", $this->rowTemplate);
-        $this->set("entity", \ucfirst(Ntentan::plural($this->entity)));
+        $this->set("entity", \ucwords(Ntentan::plural($this->entity)));
         $this->set("notifications", $this->notifications);
         $this->set("heading_level", $this->headingLevel);
         $this->set("headings", $this->headings);
@@ -330,26 +330,6 @@ class AdminComponent extends Component
 
         $this->set("operations", $this->operations);
 
-        /*if(count($this->listFields) == 0)
-        {
-            $description = $model->describe();
-            foreach($description["fields"] as $field)
-            {
-                if($field["primary_key"] === true)
-                {
-                    continue;
-                }
-                else if($field["foreign_key"] === true)
-                {
-                    $this->listFields[] = Ntentan::singular($field["model"]);
-                }
-                else
-                {
-                    $this->listFields[] = $field["name"];
-                }
-            }
-        }*/
-
         $this->set("list_fields", $this->listFields);
         $this->set("notification_type", $_GET["n"]);
         $this->set("notification_item", base64_decode($_GET["i"]));
@@ -373,9 +353,9 @@ class AdminComponent extends Component
         {
             $newSection = array(
                 'route' => $section,
-                'label' => \ucwords(str_replace('/', ' ', $section)),
+                'label' => \ucwords(str_replace(array('/', '_'), array(' ', ' '), $section)),
                 'model' => str_replace('/', '.', $section),
-                'entity' => Ntentan::singular(end(explode('.', str_replace('/', '.', $section))))
+                'entity' => Ntentan::singular(str_replace('_', ' ', end(explode('.', str_replace('/', '.', $section)))))
             );
             $section = $newSection;
         }
@@ -409,6 +389,7 @@ class AdminComponent extends Component
             $item['url'] = Ntentan::getUrl($this->controller->route . "/console/{$section['route']}");
             $menuItems[] = $item;
         }
+        
         $this->set('sections_menu', $menuItems);
 
         $arguments = func_get_args();

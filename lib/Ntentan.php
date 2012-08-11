@@ -42,7 +42,7 @@ require "caching/Cache.php";
 
 require "exceptions/FileNotFoundException.php";
 
-set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
+//set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
 
 use ntentan\caching\Cache;
 

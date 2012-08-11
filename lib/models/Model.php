@@ -262,32 +262,31 @@ class Model implements ArrayAccess, Iterator
     {
         return $this->route;
     }
-
-    public function get($type = 'all', $params = null)
+    
+    public static function begin()
     {
-        if($type == null)
+        $class = get_called_class();
+        return new ModelQuery(new $class());
+    }
+
+    public function get($type = null, $params = null)
+    {
+        $params["type"] = $type;
+        $result = $this->dataStore->get($params);
+        $result = $this->postGetCallback($result, $type);
+
+        if(is_object($result))
         {
-            return new ModelQuery($this);
-        }
-        else
-        {
-            $params["type"] = $type;
-            $result = $this->dataStore->get($params);
-            $result = $this->postGetCallback($result, $type);
-            
-            if(is_object($result))
+            if($type == 'first')
             {
-                if($type == 'first')
-                {
-                    $result->hasSingleRecord = true;
-                }
-                else
-                {
-                    $result->hasSingleRecord = false;
-                }
+                $result->hasSingleRecord = true;
             }
-            return $result;
+            else
+            {
+                $result->hasSingleRecord = false;
+            }
         }
+        return $result;
     }
     
     protected function postGetCallback($results, $type)
@@ -419,7 +418,11 @@ class Model implements ArrayAccess, Iterator
                     $conditions[$this->route . "." . $field] = $argument;
                 }
             }
-            $params["conditions"] = is_array($params['conditions']) ? array_merge($conditions, $params['conditions']) : $conditions;
+            
+            if(count($conditions) > 0)
+            {
+                $params["conditions"] = is_array($params['conditions']) ? array_merge($conditions, $params['conditions']) : $conditions;
+            }
 
             if($matches['just'] == 'Just')
             {
@@ -429,6 +432,7 @@ class Model implements ArrayAccess, Iterator
             {
                 if(!isset($params["fetch_related"])) $params["fetch_related"] = true;
             }
+            
             return $this->get($type, $params);
         }
         

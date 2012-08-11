@@ -398,10 +398,14 @@ abstract class SqlDatabase extends DataStore
         }
 
         // Add the sorting queries
-        if(isset($params['sort'])) {
-            if(is_array($params['sort'])) {
+        if(isset($params['sort'])) 
+        {
+            if(is_array($params['sort'])) 
+            {
                 $query .= " ORDER BY " . implode(", ", $params['sort']);
-            } else {
+            } 
+            else 
+            {
                 $query .= " ORDER BY {$params["sort"]} ";
             }
         }
@@ -486,7 +490,8 @@ abstract class SqlDatabase extends DataStore
                                         ),
                                         is_array($hasManyConditions[$hasMany]) ? $hasManyConditions[$hasMany] : array()
                                     ),
-                                "fields" => $hasManyFields[$hasMany]
+                                "fields" => $hasManyFields[$hasMany],
+                                'sort' => $params["{$hasMany}_sort"]
                             )
                         );
                         $results[$index][$this->formatRelatedModelName($hasMany, $params)] = $relatedData;
