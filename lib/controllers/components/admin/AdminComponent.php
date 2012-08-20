@@ -183,6 +183,12 @@ class AdminComponent extends Component
      * @var string
      */
     public $entity;
+    
+    /**
+     * A codified form of the entity name
+     * @var string
+     */
+     public $entityCode;
 
     public function init()
     {
@@ -265,6 +271,7 @@ class AdminComponent extends Component
         {
             $pageControllerRoute = $this->controller->route;
             $this->entity = Ntentan::singular($this->controller->model->getName());
+            $this->entityCode = str_replace(' ', '_', $this->entity);
         }
         
 
@@ -503,7 +510,7 @@ class AdminComponent extends Component
 
     public function edit($id)
     {
-        $this->view->template = "{$this->entity}_edit.tpl.php";
+        $this->view->template = "admin_component_edit.tpl.php";
         $description = $this->getModel()->describe();
         $this->set("fields", $description["fields"]);
         $this->set("heading_level", $this->headingLevel);
@@ -527,6 +534,7 @@ class AdminComponent extends Component
         }
         $this->set("data", $data);
         $this->set("entity", $this->entity);
+        $this->set("entity_code", str_replace(' ', '_', $this->entity));
 
         if(count($_POST) > 0)
         {
@@ -550,15 +558,18 @@ class AdminComponent extends Component
     {
         $model = $this->getModel();
         $description = $model->describe();
+        $entityCode = str_replace(' ', '_', $this->entity);
         $this->set("heading_level", $this->headingLevel);
         $this->set("headings", $this->headings);
         $this->set("fields", $description["fields"]);
         $this->set("entity", $this->entity);
-        $this->view->template = "{$this->entity}_add.tpl.php";
+        $this->set('entity_code', $entityCode);
+        
+        $this->view->template = "admin_component_add.tpl.php";
         
         if($this->consoleMode)
         {
-            $addExtensionMethodName = Ntentan::camelize(Ntentan::plural($this->entity),".","", true) . 'AdminAdd';
+            $addExtensionMethodName = Ntentan::camelize(Ntentan::plural($entityCode),".","", true) . 'AdminAdd';
             if(method_exists($this->controller, $addExtensionMethodName))
             {
                 $addExtensionMethod = new ReflectionMethod($this->controller, $addExtensionMethodName);
