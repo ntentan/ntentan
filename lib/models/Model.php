@@ -432,7 +432,7 @@ class Model implements ArrayAccess, Iterator
             {
                 if(!isset($params["fetch_related"])) $params["fetch_related"] = true;
             }
-            
+                        
             return $this->get($type, $params);
         }
         

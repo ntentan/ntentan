@@ -17,6 +17,10 @@ class Php extends TemplateEngine
             {
                 $$key = $value;
             }
+            
+            $helpers = $this->helpers;
+            $widgets = $this->widgets;
+            
             ob_start();
             include $this->template;
             return ob_get_clean();

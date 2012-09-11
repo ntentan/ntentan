@@ -34,9 +34,7 @@ use ntentan\caching\Cache;
  * standard SQL queries, the this class would be a great foundation to build
  * upon
  *
- * @author jainooson@gmail.com,
- * @package ntentan.models.datastores
- * @abstract
+ * @author jainooson@gmail.com
  */
 abstract class SqlDatabase extends DataStore
 {

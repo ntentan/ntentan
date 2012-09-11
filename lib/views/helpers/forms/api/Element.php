@@ -90,18 +90,11 @@ abstract class Element
      */
     protected $errors = array();
 
-    //! A boolean value which is set to true whenever there is an error
-    //! assiciated with the class in one way or the other.
-    protected $error;
-
     /**
-     * A boolean value which is set to true if the form elements are
-     * to be made available for editing. If this property is set to false
-     * the form element shows only the value associated with this field
-     * in cases where the data has been collected from the database.
-     * @var boolean
-     */ 
-    protected $showfield = true;
+     * A boolean value which is set to true whenever there is an error 
+     * assiciated with the field element in one way or the other.
+     */
+    protected $error;
 
     /**
      * The parent element which contains this element.
@@ -151,7 +144,7 @@ abstract class Element
      */
     public function setName($name)
     {
-        $this->name = $name;
+        $this->name($name);
         return $this;
     }
 
@@ -175,6 +168,7 @@ abstract class Element
         else
         {
             $this->name = $name;
+            $this->setValue(FormsHelper::getDataField($this->name));
             return $this;
         }
     }
@@ -364,8 +358,10 @@ abstract class Element
         return $this;
     }
 
-    //! Returns an HTML representation of all the attributes. This method
-    //! is normally called when rendering the HTML for the element.
+    /**
+     * Returns an HTML representation of all the attributes. This method is 
+     * normally called when rendering the HTML for the element.
+     */
     public function getAttributes($scope=Element::SCOPE_ELEMENT)
     {
         switch($scope)
@@ -399,11 +395,6 @@ abstract class Element
     {
         $this->error = false;
         $this->errors = array();
-    }
-    
-    public function setShowField($showField)
-    {
-        $this->showfield = $showField;
     }
     
     public function getShowField()

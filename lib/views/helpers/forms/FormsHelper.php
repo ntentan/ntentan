@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
  * 
@@ -35,7 +35,7 @@ class FormsHelper extends Helper
     public $id;
     private static $rendererInstance;
     public static $renderer = "inline";
-    private $data = array();
+    private static $data = array();
     private $errors = array();
     public $echo = false;
     
@@ -50,11 +50,15 @@ class FormsHelper extends Helper
         $this->container = new api\Form();
     }
     
+    /**
+     * Renders the form when the value is used as a string
+     * @return string
+     */
     public function __toString()
     {
         $this->container->submitValue = $this->submitValue;
         $this->container->setId($this->id);
-        $this->container->setData($this->data);
+        $this->container->setData(self::$data);
         $this->container->setErrors($this->errors);
         $return = (string)$this->container;
         $this->container = new api\Form();
@@ -91,9 +95,14 @@ class FormsHelper extends Helper
         $this->errors = $errors;
     }
     
-    public function setData($data)
+    public static function setData($data)
     {
-        $this->data = $data;
+        self::$data = $data;
+    }
+    
+    public static function getDataField($field)
+    {
+        return self::$data[$field];
     }
     
     public function createModelField($field)
@@ -208,7 +217,7 @@ class FormsHelper extends Helper
         {
             $name = $arguments[0]['name'];
             $elementObject = $this->createModelField($arguments[0]);
-            $elementObject->setValue($this->data[$name]);
+            $elementObject->setValue(self::$data[$name]);
             if(isset($this->errors[$name]))
             {
                 $elementObject->addErrors($this->errors[$name]);
@@ -249,7 +258,7 @@ class FormsHelper extends Helper
             $elementClass = new ReflectionClass($element);
             $elementObject = $elementClass->newInstanceArgs($arguments);
             $name = $elementObject->getName();
-            $elementObject->setValue($this->data[$name]);
+            $elementObject->setValue(self::$data[$name]);
             if(isset($this->errors[$name]))
             {
                 $elementObject->addErrors($this->errors[$name]);
