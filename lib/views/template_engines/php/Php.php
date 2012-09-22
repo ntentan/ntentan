@@ -21,6 +21,7 @@ class Php extends TemplateEngine
             $helpers = $this->helpers;
             $widgets = $this->widgets;
             
+            
             ob_start();
             include $this->template;
             return ob_get_clean();
@@ -29,11 +30,6 @@ class Php extends TemplateEngine
         {
             echo Ntentan::message("Template file <b><code>{$this->template}</code></b> not found");
         }
-    }
-
-    public function load_asset($asset, $copyFrom = null)
-    {
-        return $this->loadAsset($asset, $copyFrom);
     }
 
     public function strip_html($text)
@@ -55,3 +51,4 @@ class Php extends TemplateEngine
         return str_replace("\n", '<br/>', $text);
     }
 }
+

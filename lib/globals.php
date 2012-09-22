@@ -37,6 +37,11 @@ function n($path)
     return Ntentan::getFilePath($path);
 }
 
+function p($path)
+{
+    return Ntentan::getPluginPath($path);
+}
+
 /**
  * A shortcut wrapper around the Ntentan::toSentence method
  * @param $string
@@ -56,3 +61,7 @@ function t($template, $data, $view = null)
     return TemplateEngine::render($template, $data, $view);
 }
 
+function load_asset($asset, $copyFrom = null)
+{
+    return TemplateEngine::loadAsset($asset, $copyFrom);
+}
