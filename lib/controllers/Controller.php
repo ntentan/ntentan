@@ -202,7 +202,12 @@ class Controller
     }
 
     /**
-     * Adds a component to the controller.
+     * Adds a component to the controller. Component loading is done with the
+     * following order of priority.
+     *  1. Application components
+     *  2. Plugin components
+     *  3. Core components
+     *  
      * @param string $component Name of the component
      * @todo cache the location of a component once found to prevent unessearry
      * checking
@@ -211,16 +216,32 @@ class Controller
     {
         $arguments = func_get_args();
         $component = array_shift($arguments);
-        if(!$this->loadComponent($component, $arguments, '\\ntentan\\controllers\\components'))
+        
+        // Attempt to load an application component
+        $namespace = "\\" . Ntentan::$namespace . "\\components";
+        $className = $this->loadComponent($component, $arguments, $namespace); 
+        if(is_string($className))
         {
-            if(!$this->loadComponent($component, $arguments, "\\ntentan\\plugins\\components"))
-            {
-                if(!$this->loadComponent($component, $arguments, "\\" . Ntentan::$namespace . "\\components"))
-                {
-                    throw new exceptions\ComponentNotFoundException("Component not found <code><b>$component</b></code>");
-                }
-            }
+            return;
         }
+        
+        // Attempt to load plugin component
+        $componentPaths = explode(".", $component);
+        $namespace = "\\ntentan\\plugins\\{$componentPaths[0]}\\components";
+        $className = $this->loadComponent($componentPaths[1], $arguments, $namespace); 
+        if(is_string($className))
+        {
+            return;
+        }
+        
+        // Attempt to load a core component
+        $className = $this->loadComponent($component, $arguments, '\\ntentan\\controllers\\components');
+        if(is_string($className))
+        {
+            return;
+        }
+        
+        throw new exceptions\ComponentNotFoundException("Component not found <code><b>$component</b></code>");
     }
 
     private function loadComponent($component, $arguments, $path)
@@ -239,7 +260,7 @@ class Controller
             $this->componentInstances[$component]->setController($this);
             $this->componentInstances[$component]->route = $this->route;
             $this->componentInstances[$component]->init();
-            return true;
+            return $componentName;
         }
         else
         {
