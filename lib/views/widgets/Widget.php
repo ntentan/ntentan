@@ -38,6 +38,7 @@ abstract class Widget extends Presentation
     private $cacheLifetime = -1;
     public $cacheContents = false;
     private $alias;
+    public $plugin;
 
     public function init()
     {
@@ -93,7 +94,7 @@ abstract class Widget extends Presentation
             
             if($this->template == "")
             {
-                $this->template = "{$this->name}_widget.tpl.php";
+                $this->template = ($this->plugin == '' ? '' : "{$this->plugin}_" )."{$this->name}_widget.tpl.php";
             }
             
             try{

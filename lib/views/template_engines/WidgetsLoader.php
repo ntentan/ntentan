@@ -34,18 +34,28 @@ use \ReflectionClass;
  */
 class WidgetsLoader
 {
+    private $pluginMode = false;
+    private $plugin;
+    
     /**
      * Loads the widget.
+     * 
      * @todo this method should store in the cache the location of the widget
      */
     public function loadWidget($widget)
     {
         $widgetFile = Ntentan::$namespace . "/widgets/$widget/" . Ntentan::camelize($widget) . "Widget.php";
+        
         if(file_exists($widgetFile))
         {
             require_once $widgetFile;
             $widgetClass = "\\" . Ntentan::$namespace . "\\widgets\\$widget\\" . Ntentan::camelize($widget) . 'Widget';
             $path = Ntentan::$namespace . "/widgets/$widget";
+        }
+        else if($this->pluginMode)
+        {
+            $widgetClass = "\\ntentan\\plugins\\{$this->plugin}\\widgets\\$widget\\" . Ntentan::camelize($widget) . 'Widget';
+            $path = "plugins/{$this->plugin}/widgets/$widget";
         }
         else if(file_exists(Ntentan::getFilePath("lib/views/widgets/$widget/" . Ntentan::camelize($widget) . "Widget.php")))
         {
@@ -55,12 +65,14 @@ class WidgetsLoader
         }
         else
         {
-            Ntentan::error("Widget <code><b>$widget</b></code> not found");
+            return false;
         }
+        
         $widgetClass = new ReflectionClass($widgetClass);
         $widgetInstance = $widgetClass->newInstance();
         $widgetInstance->filePath = $path;
         $widgetInstance->name = $widget;
+        $widgetInstance->plugin = $this->plugin;
         
         return $widgetInstance;
     }
@@ -76,14 +88,33 @@ class WidgetsLoader
     public function __call($widget, $arguments)
     {
         $widgetInstance = $this->loadWidget($widget);
-        $method = new \ReflectionMethod($widgetInstance, 'init');
-        $method->invokeArgs($widgetInstance, $arguments);
-        return $widgetInstance;
+        if($widgetInstance === false)
+        {
+            Ntentan::error("Widget *$widget* not found");
+        }
+        else
+        {
+            $method = new \ReflectionMethod($widgetInstance, 'init');
+            $method->invokeArgs($widgetInstance, $arguments);
+            return $widgetInstance;
+        }
     }
 
     public function __get($widget)
     {
         $widgetInstance = $this->loadWidget($widget);
-        return $widgetInstance;
+        if($widgetInstance === false)
+        {
+            if($this->pluginMode === false)
+            {
+                $this->pluginMode = true;
+                $this->plugin = $widget;
+                return $this;
+            }
+        }
+        else
+        {
+            return $widgetInstance;
+        }
     }
 }
