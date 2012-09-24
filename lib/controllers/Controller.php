@@ -184,12 +184,7 @@ class Controller
             return Ntentan::$namespace . $this->route . "/";
 
         default:
-            if(substr($property, -6) == "Widget")
-            {
-                $widget = Ntentan::deCamelize(substr($property, 0, strlen($property) - 6));
-                return $this->widgets[$widget];
-            }
-            else if(substr($property, -9) == "Component")
+            if(substr($property, -9) == "Component")
             {
                 $component = substr($property, 0, strlen($property) - 9);
                 return $this->getComponentInstance($component);
@@ -228,49 +223,56 @@ class Controller
         // Attempt to load plugin component
         $componentPaths = explode(".", $component);
         $namespace = "\\ntentan\\plugins\\{$componentPaths[0]}\\components";
-        $className = $this->loadComponent($componentPaths[1], $arguments, $namespace); 
+        $className = $this->loadComponent(
+            $componentPaths[1], 
+            $arguments, 
+            $namespace, 
+            $componentPaths[0]
+        );
+         
         if(is_string($className))
         {
             return;
         }
         
         // Attempt to load a core component
-        $className = $this->loadComponent($component, $arguments, '\\ntentan\\controllers\\components');
+        $className = $this->loadComponent(
+            $component, $arguments, '\\ntentan\\controllers\\components'
+        );
         if(is_string($className))
         {
             return;
         }
         
-        throw new exceptions\ComponentNotFoundException("Component not found <code><b>$component</b></code>");
+        throw new exceptions\ComponentNotFoundException(
+            "Component not found <code><b>$component</b></code>"
+        );
     }
 
-    private function loadComponent($component, $arguments, $path)
+    private function loadComponent($component, $arguments, $path, $plugin = null)
     {
         $componentName = "$path\\$component\\" . Ntentan::camelize($component) . 'Component';
         if(file_exists(get_class_file($componentName)))
         {
-            if(!isset(Controller::$loadedComponents[$component]))
+            $key = Ntentan::camelizeAndLowerFirst($plugin) . ($plugin == null ? $component : Ntentan::camelize($component));
+            if(!isset(Controller::$loadedComponents[$key]))
             {
                 $componentClass = new ReflectionClass($componentName);
                 $componentInstance = $componentClass->newInstanceArgs($arguments);
                 $componentInstance->filePath = Ntentan::getFilePath("lib/controllers/components/$component");
-                Controller::$loadedComponents[$component] = $componentInstance;
+                Controller::$loadedComponents[$key] = $componentInstance;
             }
-            $this->componentInstances[$component] = Controller::$loadedComponents[$component];
-            $this->componentInstances[$component]->setController($this);
-            $this->componentInstances[$component]->route = $this->route;
-            $this->componentInstances[$component]->init();
+            $this->componentInstances[$key] = Controller::$loadedComponents[$key];
+            $this->componentInstances[$key]->setController($this);
+            $this->componentInstances[$key]->route = $this->route;
+            $this->componentInstances[$key]->init();
+            
             return $componentName;
         }
         else
         {
             return false;
         }
-    }
-
-    public function hasWidget($widgetName)
-    {
-        return isset($this->widgets[$widgetName]);
     }
 
     /**

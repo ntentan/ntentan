@@ -21,13 +21,13 @@
     <title><?php echo $title ?></title>
     <?php
         echo $this->helpers->stylesheet
-            ->add($this->load_asset('css/auth.css', n("lib/controllers/components/auth/assets/css/auth.css")))
-            ->add($this->load_asset("css/fx.css"))
-            ->add($this->load_asset('css/forms.css', n("lib/views/helpers/forms/css/forms.css")))
+            ->add(load_asset('css/auth.css', n("lib/controllers/components/auth/assets/css/auth.css")))
+            ->add(load_asset("css/fx.css"))
+            ->add(load_asset('css/forms.css', n("lib/views/helpers/forms/css/forms.css")))
             ->context('auth');
 
         echo $this->helpers->javascript
-            ->add($this->load_asset('js/jquery.js'))
+            ->add(load_asset('js/jquery.js'))
             ->context('auth');
     ?>
 </head>

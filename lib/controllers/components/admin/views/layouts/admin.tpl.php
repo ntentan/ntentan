@@ -20,34 +20,34 @@
 <head>
     <title><?php echo $title ?></title>
     <?php
-        echo $this->helpers->stylesheet
-            ->add($this->load_asset('css/admin.css', $stylesheet))
-            ->add($this->load_asset("css/fx.css"))
-            ->add($this->load_asset('css/forms.css', n("lib/views/helpers/forms/css/forms.css")))
-            ->add($this->load_asset("css/grid.css"))
-            ->add($this->load_asset('css/list.css', n('lib/views/helpers/lists/css/default.css')))
-            ->context('admin');
-        echo $this->helpers->stylesheet($extra_stylesheet);
+        echo $helpers->stylesheet
+                ->add(load_asset('css/admin.css', $stylesheet))
+                ->add(load_asset("css/fx.css"))
+                ->add(load_asset('css/forms.css', n("lib/views/helpers/forms/css/forms.css")))
+                ->add(load_asset("css/grid.css"))
+                ->add(load_asset('css/list.css', n('lib/views/helpers/lists/css/default.css')))
+                ->context('admin');
+        echo $helpers->stylesheet($extra_stylesheet);
 
-        echo $this->helpers->javascript
-            ->add($this->load_asset('js/jquery.js'))
-            ->context('admin');
-        echo $this->helpers->javascript($extra_javascript);
+        echo $helpers->javascript
+                ->add(load_asset('js/jquery.js'))
+                ->context('admin');
+        echo $helpers->javascript($extra_javascript);
     ?>
 </head>
 <body>
 <div class="row" id="header">
     <div class="column grid_10_6">
-        <h1><?php echo $app_name ?></h1>
+        <h1><?= $app_name ?></h1>
         <h2>Administrator Console</h2>
     </div>
     <div class="column grid_10_4">
-        <div id='profile'>Logged in as <?php echo $username ?>. <a href="<?php echo $logout_route ?>">Log out</a></div>
+        <div id='profile'>Logged in as <?= $username ?>. <a href="<?= $logout_route ?>">Log out</a></div>
     </div>
 </div>
 <div class="row">
     <div class="column grid_20_3">
-        <?php echo $this->widgets->menu($sections_menu)->alias('sections') ?></div>
+        <?php echo $widgets->menu($sections_menu)->alias('sections') ?></div>
     <div class="column grid_20_17">
         <div id="admin-contents">
             <?php echo $contents ?>

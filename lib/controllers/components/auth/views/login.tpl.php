@@ -8,9 +8,9 @@
     <?php endif; ?>
     
     <?= 
-        $this->helpers->form->open() .
-        $this->helpers->form->get_text_field('Username', 'username') .
-        $this->helpers->form->get_password_field('Password', 'password') .
-        $this->helpers->form->close()
+        $helpers->form->open() .
+        $helpers->form->get_text_field('Username', 'username') .
+        $helpers->form->get_password_field('Password', 'password') .
+        $helpers->form->close()
     ?>
 </div>

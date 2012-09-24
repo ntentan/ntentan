@@ -1,5 +1,9 @@
 <h<?php echo $heading_level ?>>Edit <?php echo $entity ?></h<?php echo $heading_level?>>
 <?php
+foreach($errors as $error)
+{
+    var_dump($error);
+}
 echo $console_menu_block;
 $this->helpers->form->setErrors($errors);
 $this->helpers->form->setData($data);

@@ -473,6 +473,11 @@ class Ntentan
         }
         return $camelized;
     }
+    
+    public static function camelizeAndLowerFirst($string)
+    {
+        return Ntentan::camelize($string, '.', '', true);
+    }
 
     /**
      * Converts a camel case string to an underscore separated string.
