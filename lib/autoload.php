@@ -79,8 +79,9 @@ function __autoload($class)
     {
         require_once $classFile;
     }
-    else
+    /*else
     {
-        throw new \Exception("Class file <code><b>$classFile</b></code> for <code><b>$class</b></code> class not found.");
-    }
+        require_once "exceptions/FileNotFoundException.php";
+        throw new \ntentan\exceptions\FileNotFoundException("Class file *$classFile* for *$class* class not found.");
+    }*/
 }

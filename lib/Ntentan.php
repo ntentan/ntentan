@@ -1,19 +1,26 @@
 <?php
-/*
- * Ntentan PHP Framework
- * Copyright 2010 James Ekow Abaka Ainooson
+/**
+ * Common utilities file for the Ntentan framework. This file contains a 
+ * collection of utility static methods which are used accross the framework.
+ * 
+ * @author James Ainooson <jainooson@gmail.com>
+ * @copyright Copyright 2010 James Ekow Abaka Ainooson
+ * @license MIT License
+ * 
+ *    Ntentan PHP Framework
+ *    Copyright 2010 James Ekow Abaka Ainooson
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *        http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
  */
 
 
@@ -23,10 +30,6 @@
  */
 namespace ntentan;
 
-//require "sessions/Manager.php";
-//sessions\Manager::start();
-
-
 /**
  * Include the autoloading function. This function automatically includes the
  * source files for all classes whose source files are not found.
@@ -34,14 +37,13 @@ namespace ntentan;
 require "autoload.php";
 
 /**
- * Include a collection of utility global functions.
+ * Include a collection of utility global functions, caching and exceptions. 
  */
 require "globals.php";
-
 require "caching/Cache.php";
-
 require "exceptions/FileNotFoundException.php";
 
+//@todo Find a better way of handling exceptions
 //set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
 
 use ntentan\caching\Cache;
@@ -54,8 +56,7 @@ use ntentan\caching\Cache;
  * operation of the entire framework.
  *
  *  @author     James Ainooson <jainooson@gmail.com>
- *  @license    Apache License, Version 2.0
- *  @package    ntentan
+ *  @license    MIT
  */
 class Ntentan
 {
@@ -132,11 +133,37 @@ class Ntentan
      * @var string
      */
     public static $route;
+    
     public static $prefix;
+    
+    /**
+     * A runtime cache for singulars
+     * @var array
+     */
     private static $singulars = array();
+    
+    /**
+     * A runtime cache for plurals
+     * @var array
+     */
     private static $plurals = array();
+    
+    /**
+     * A runtime cache for camelisations
+     * @var array
+     */
     private static $camelisations = array();
+    
+    /**
+     * A runtime cache for de-camelisation
+     * @var array
+     */
     private static $deCamelisations = array();
+    
+    /**
+     * A runtime cache for loaded datastores
+     * @var array
+     */
     private static $loadedDatastores = array();
 
     /**
@@ -145,10 +172,14 @@ class Ntentan
      */
     const VERSION = "0.5-rc1";
 
+
     /**
-     * The main entry point of the Ntentan application. This method checks if
-     * ntentan is properly setup and then it implements the routing engine which
-     * loads the controllers responsoble for handling the request
+     * A utility function which calls both the Ntentan::setup() and Ntentan::route()
+     * methods at once. 
+     * 
+     * @see Ntentan::setup()
+     * @see Ntentan::route()
+     * @param array $config
      */
     public static function boot($config)
     {
@@ -161,8 +192,17 @@ class Ntentan
         }
     }
 
+    /**
+     * The main entry point of the Ntentan application. This method ensures that
+     * ntentan is properly setup for service. It takes the configuration
+     * data as a parameter. The details of the configuration parameter are
+     * extracted from the config file.
+     * 
+     * @param array $config The configuration data.
+     */
     public static function setup($config)
     {
+        // setup paths
         Ntentan::$basePath = $config['application']['ntentan_home'];
         Ntentan::$namespace = $config['application']['namespace'];
         Ntentan::$prefix = $config['application']['prefix'];
@@ -173,6 +213,7 @@ class Ntentan
         Ntentan::$debug = $config[CONTEXT]['debug'];
         Ntentan::$config = $config;
 
+        // setup include paths
         Ntentan::addIncludePath(
             array
             (
@@ -194,6 +235,7 @@ class Ntentan
             Ntentan::$basePath
         );
         
+        // load cached items
         if(Cache::exists('nt_camelisations'))
         {
             Ntentan::$camelisations = Cache::get('nt_camelisations');
@@ -207,6 +249,10 @@ class Ntentan
         sessions\Manager::start(Ntentan::$config[CONTEXT]['session_container']);
     }
 
+    /**
+     * The routing engines entry. This method analyses the URL and implements
+     * the routing engine.
+     */
     public static function route()
     {
         // Implement the routing engine
