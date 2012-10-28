@@ -7,12 +7,15 @@ class Manager
 {
     public static $lifespan = 86400;
     private static $handler;
-    
-    public static function start($store)
+
+    public static function start($store = '')
     {
+        if($store == '')
+        {
+            $store = Ntentan::$config[CONTEXT]['session_container'];
+        }
         if($store != '')
         {
-            
             $handlerClass = "ntentan\\sessions\\stores\\" . Ntentan::camelize($store) . 'Store';
             self::$handler = new $handlerClass;
             $configExpiry = Ntentan::$config[CONTEXT]['session_lifespan'];
@@ -30,7 +33,7 @@ class Manager
         }
         session_start();
     }
-    
+
     public static function isNew()
     {
         return self::$handler->isNew();

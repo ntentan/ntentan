@@ -7,7 +7,7 @@ use ntentan\views\helpers\Helper;
  * 
  * 
  * @todo Completely rewrite this helper to make it more efficient. Expose the
- * interfaces as they are. Allow for the specification of the output format.
+ * interfaces as they are. 
  */
 class ImagesHelper extends Helper
 {
@@ -71,6 +71,8 @@ class ImagesHelper extends Helper
         }
 
         $destinationImage = imagecreatetruecolor($width, $height);
+        imagealphablending($destinationImage, false );
+        imagesavealpha($destinationImage, true );
         imagecopyresampled($destinationImage, $im, 0, 0, 0, 0, $width, $height, $outputWidth, $outputHeight);
 
         $this->writeImage($destinationImage, $dest);
@@ -100,7 +102,8 @@ class ImagesHelper extends Helper
         if($head==false) $top = ($o_height/2)-($height/2); else $top=0;
         $left = ($o_width/2)-($width/2);
         $im2 = imagecreatetruecolor ($width, $height);
-
+        imagealphablending($im2, false );
+        imagesavealpha($im2, true );
         imagecopyresampled($im2,$im,0,0,$left,$top,$width,$height,$width,$height);
         $this->writeImage($im2, $dest);
         imagedestroy($im);

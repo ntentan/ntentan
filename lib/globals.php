@@ -65,3 +65,8 @@ function load_asset($asset, $copyFrom = null)
 {
     return TemplateEngine::loadAsset($asset, $copyFrom);
 }
+
+function u_load_asset($asset, $copyFrom = null)
+{
+    return TemplateEngine::loadAssetWithUrl($asset, $copyFrom);
+}

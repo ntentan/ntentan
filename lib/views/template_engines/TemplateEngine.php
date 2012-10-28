@@ -59,6 +59,11 @@ abstract class TemplateEngine
         TemplateEngine::$loadedInstances[$engine]->template = $template;
         return TemplateEngine::$loadedInstances[$engine];
     }
+    
+    public static function loadAssetWithUrl($asset, $copyFrom = null)
+    {
+        return Ntentan::getUrl(self::loadAsset($asset, $copyFrom));
+    }
 
     public static function loadAsset($asset, $copyFrom = null)
     {

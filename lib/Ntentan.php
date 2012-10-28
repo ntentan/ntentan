@@ -246,7 +246,7 @@ class Ntentan
         }
         $camelisations = count(Ntentan::$camelisations);        
         
-        sessions\Manager::start(Ntentan::$config[CONTEXT]['session_container']);
+        sessions\Manager::start();
     }
 
     /**

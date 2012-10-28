@@ -211,7 +211,6 @@ class FormsHelper extends Helper
             }
             $this->container->rendererMode = 'head';
             $return = $this->container;
-            //$return .= self::getRendererInstance()->head();
         }
         else if($function == "get")
         {
