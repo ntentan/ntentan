@@ -19,6 +19,7 @@
 namespace ntentan\caching;
 
 use ntentan\exceptions\FileNotFoundException;
+use ntentan\Ntentan;
 
 /**
  * A file caching backend. This class stores objects to be cached as files in
@@ -27,6 +28,11 @@ use ntentan\exceptions\FileNotFoundException;
  */
 class File extends Cache
 {
+    private function getCacheFile($file = '')
+    {
+        return Ntentan::$config['application']['app_home'] . "/cache/$file";
+    }
+    
     private function hashKey($key)
     {
         return $key;
@@ -34,27 +40,27 @@ class File extends Cache
     
     protected function addImplementation($key, $object, $expires)
     {
-        if(file_exists("cache") && is_writable("cache"))
+        if(file_exists(self::getCacheFile()) && is_writable(self::getCacheFile()))
         {
             $object = array(
                 'expires' => $expires,
                 'object' => $object
             );
             $key = $this->hashKey($key);
-            file_put_contents("cache/$key", serialize($object));
+            file_put_contents(self::getCacheFile("$key"), serialize($object));
         }
         else
         {
-            die("The file cache directory <b><code>cache</code></b> was not found or is not writable!");
+            trigger_error("The file cache directory *".self::getCacheFile()."* was not found or is not writable!");
         }
     }
     
     protected function existsImplementation($key)
     {
         $key = $this->hashKey($key);
-        if(file_exists("cache/$key"))
+        if(file_exists(self::getCacheFile("$key")))
         {
-            $cacheObject = unserialize(file_get_contents("cache/$key"));
+            $cacheObject = unserialize(file_get_contents(self::getCacheFile("$key")));
             if($cacheObject['expires'] > time() || $cacheObject['expires'] == 0)
             {
                 return true;
@@ -70,7 +76,7 @@ class File extends Cache
     protected function getImplementation($key)
     {
         $key = $this->hashKey($key);
-        $cacheObject = unserialize(file_get_contents("cache/$key"));
+        $cacheObject = unserialize(file_get_contents(self::getCacheFile("$key")));
         if($cacheObject['expires'] > time() || $cacheObject['expires'] == 0)
         {
             return $cacheObject['object'] ;
@@ -88,6 +94,6 @@ class File extends Cache
     protected function removeImplementation($key)
     {
         $key = $this->hashKey($key);
-        unlink("cache/$key");
+        unlink(self::getCacheFile("$key"));
     }
 }

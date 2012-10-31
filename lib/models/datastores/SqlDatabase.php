@@ -361,6 +361,7 @@ abstract class SqlDatabase extends DataStore
 
         // Generate conditions
         $hasManyConditions = array();
+        
         if($params["conditions"] !== null && is_array($params["conditions"]))
         {
             // Go through the array of conditions and generate an SQL condition
@@ -386,7 +387,18 @@ abstract class SqlDatabase extends DataStore
                 {
                     preg_match("/(?<field>[a-zA-Z1-9_.]*)\w*(?<operator>\>=|\<=|\<\>|\<|\>)?/", $field, $matches);
                     $databaseField = $this->resolveName($matches["field"]);
-                    $conditions[] = "$databaseField ".($matches["operator"]==""?"=":$matches["operator"])." '$condition'";
+                    
+                    if(empty($condition))
+                    {
+                        $operator = 'is';
+                    }
+                    else
+                    {
+                        $operator = $matches["operator"]==""?"=":$matches["operator"];
+                    }
+                    
+                    $condition = empty($condition) ? 'NULL' : "'" . $this->escape($condition) . "'";
+                    $conditions[] = "$databaseField $operator $condition";
                 }
             }
             if(is_array($conditions))

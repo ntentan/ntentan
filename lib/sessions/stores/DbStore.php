@@ -4,7 +4,6 @@ namespace ntentan\sessions\stores;
 use ntentan\sessions\Manager;
 use ntentan\models\datastores\Mysql;
 use ntentan\Ntentan;
-use ntentan\utils\Logger;
 
 require_once "Store.php";
 /**
@@ -19,6 +18,8 @@ class DbStore implements Store
     private $lifeSpan = 0;
     private $id;
     
+    public static $saveJson = false;
+    
     public function open($sessionPath, $sessionName)
     {
         $this->db = Ntentan::getDefaultDataStore(true);
@@ -31,7 +32,10 @@ class DbStore implements Store
             $this->db->query(
                 sprintf(
                     "INSERT into sessions(id, data, expires, lifespan) VALUES('%s', '%s', %d, %d)",
-                    $sessionId, $this->db->escape($data), time() + Manager::$lifespan, Manager::$lifespan
+                    $sessionId, 
+                    $this->db->escape($data), 
+                    time() + Manager::$lifespan, 
+                    Manager::$lifespan
                 )
             );
         }

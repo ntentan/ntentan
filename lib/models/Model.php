@@ -18,6 +18,8 @@
 
 namespace ntentan\models;
 
+use ntentan\utils\Logger;
+
 use ntentan\Ntentan;
 use ntentan\models\exceptions\ModelNotFoundException;
 use ntentan\models\exceptions\MethodNotFoundException;
@@ -432,7 +434,7 @@ class Model implements ArrayAccess, Iterator
             {
                 if(!isset($params["fetch_related"])) $params["fetch_related"] = true;
             }
-                        
+            
             return $this->get($type, $params);
         }
         
@@ -704,7 +706,7 @@ class Model implements ArrayAccess, Iterator
         foreach($description["fields"] as $field)
         {
             $fieldName = $field["name"];
-            if($field["primary_key"] || $this->skipValidations === true) continue;
+            if($field["primary_key"]) continue;
 
             // Validate Required
             if(($this->data[$fieldName] === "" || $this->data[$fieldName] === null) && $field["required"])
@@ -725,6 +727,7 @@ class Model implements ArrayAccess, Iterator
                 }
             }
         }
+        
         if(count($this->invalidFields) == 0)
         {
             return true;

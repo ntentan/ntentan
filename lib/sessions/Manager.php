@@ -14,6 +14,7 @@ class Manager
         {
             $store = Ntentan::$config[CONTEXT]['session_container'];
         }
+
         if($store != '')
         {
             $handlerClass = "ntentan\\sessions\\stores\\" . Ntentan::camelize($store) . 'Store';
