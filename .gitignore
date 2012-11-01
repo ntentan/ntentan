@@ -11,3 +11,4 @@ report
 *.komodoproject
 *~
 tests/config/config.php
+tests/tmp/*

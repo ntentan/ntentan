@@ -70,10 +70,12 @@ class File extends Cache
         return $key;
     }
     
-    protected function addImplementation($key, $object, $expires)
+    protected function addImplementation($key, $object, $ttl)
     {
         if(file_exists(self::getCacheFile()) && is_writable(self::getCacheFile()))
         {
+            $expires = $ttl == 0 ? $ttl : $ttl + time();
+            
             $object = array(
                 'expires' => $expires,
                 'object' => $object
@@ -83,23 +85,20 @@ class File extends Cache
         }
         else
         {
-            trigger_error("The file cache directory *".self::getCacheFile()."* was not found or is not writable!");
+            trigger_error("The file cache directory *".self::getCacheFile()."* was not found or is not writable!", E_USER_WARNING);
         }
     }
     
     protected function existsImplementation($key)
     {
         $key = $this->hashKey($key);
-        if(file_exists(self::getCacheFile("$key")))
+        $file = self::getCacheFile("$key");
+        if(file_exists($file))
         {
-            $cacheObject = unserialize(file_get_contents(self::getCacheFile("$key")));
+            $cacheObject = unserialize(file_get_contents($file));
             if($cacheObject['expires'] > time() || $cacheObject['expires'] == 0)
             {
                 return true;
-            }
-            else if($cacheObject['expires'] == -1)
-            {
-                return false;
             }
         }
         return false;
@@ -115,10 +114,6 @@ class File extends Cache
             if($cacheObject['expires'] > time() || $cacheObject['expires'] == 0)
             {
                 return $cacheObject['object'] ;
-            }
-            else if($cacheObject['expires'] == -1)
-            {
-                return false;
             }
             else
             {

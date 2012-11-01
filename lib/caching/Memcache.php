@@ -33,27 +33,48 @@ namespace ntentan\caching;
 class Memcache extends Cache
 {
     private $cache;
+    private $buffer;
 
     public function __construct()
     {
-        $cache = new Memcache();
-        $cache->addServer('localhost');
+        $this->cache = new \Memcached();
+        $this->cache->addServer('localhost', 11211);
     }
 
-    protected function addImplementation($key, $object, $expires)
+    protected function addImplementation($key, $object, $ttl)
     {
-        
+        $this->cache->add($key, $object, $ttl + time());
     }
     
     protected function existsImplementation($key)
     {
+        $value = $this->cache->get($key);
+        
+        if($value === false)
+        {
+            return false;
+        }
+        else
+        {
+            $value = array("$key" => $value);
+            return true;
+        }
     }
     
     protected function getImplementation($key)
     {
+        if(isset($value[$key]))
+        {
+            return $value[$key];
+        }
+        else
+        {
+            return $this->cache->get($key);
+        }
     }
     
     protected function removeImplementation($key)
     {
+        $this->cache->delete($key);
     }
 }

@@ -27,6 +27,7 @@
 
 namespace ntentan\caching;
 
+use ntentan\models\exceptions\MethodNotFoundException;
 use ntentan\Ntentan;
 
 /**
@@ -48,7 +49,7 @@ abstract class Cache
      * 
      * @var int
      */
-    const DEFAULT_TTL = 3600;
+    private static $defaultTimeToLive = 3600;
     
     /**
      * The singleton instance.
@@ -72,7 +73,7 @@ abstract class Cache
         if(Cache::$instance == null)
         {
             $class = Ntentan::camelize(Ntentan::$cacheMethod);
-            require "$class.php";
+            require_once "$class.php";
             $class = "ntentan\\caching\\$class";
             Cache::$instance = new $class();
         }
@@ -89,8 +90,15 @@ abstract class Cache
     public static function __callstatic($method, $arguments)
     {
         $instance = Cache::instance();
-        $method = new \ReflectionMethod($instance, $method);
-        return $method->invokeArgs($instance, $arguments);
+        if(method_exists($instance, $method))
+        {
+            $method = new \ReflectionMethod($instance, $method);
+            return $method->invokeArgs($instance, $arguments);
+        }
+        else
+        {
+            throw new MethodNotFoundException($method);
+        }
     }
 
     /**
@@ -102,14 +110,16 @@ abstract class Cache
      * 
      * @param string $key A unique identifier for the object to be stored.
      * @param mixed $object The object to be stored.
-     * @param integer $ttl The time to live of the object. This figure could be
-     *                     expressed in seconds provided the number of secods
-     *                     doesn't exceed 2592000. If it exceeds, the value is
-     *                     taken as a date expressed in unix timestamps.
+     * @param integer $ttl The time to live of the object. This figure is
+     *                     expressed in seconds.
      */
-    public static function add($key, $object, $ttl = 0)
+    public static function add($key, $object, $ttl = false)
     {
-        $ttl = $ttl > 2592000 || $ttl == 0 ? $ttl : $ttl + time();
+        if($ttl === false)
+        {
+            $ttl = self::$defaultTimeToLive;
+        }
+        
         Cache::instance()->addImplementation($key, $object, $ttl);
     }
 
@@ -165,8 +175,10 @@ abstract class Cache
     /**
      * Implementation of the add function by the appropriate caching backend.
      * @param string $key
+     * @param mixed $object
+     * @param integer $ttl
      */
-    abstract protected function addImplementation($key, $object, $expires);
+    abstract protected function addImplementation($key, $object, $ttl);
 
     /**
      * Implementation of the get function by the appropriate caching backend.
