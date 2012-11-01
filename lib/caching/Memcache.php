@@ -1,5 +1,9 @@
 <?php
-/* 
+/**
+ * Source file for the memcached cache class
+ * 
+ * LICENSE
+ * ======= 
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
  * 
@@ -14,6 +18,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ * @category Caching
+ * @author James Ainooson <jainooson@gmail.com>
+ * @copyright 2010-2012 James Ainooson
+ * @license MIT
  */
 
 namespace ntentan\caching;

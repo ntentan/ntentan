@@ -10,3 +10,4 @@ Doxyfile
 report
 *.komodoproject
 *~
+tests/config/config.php

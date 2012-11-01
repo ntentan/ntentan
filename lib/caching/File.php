@@ -1,5 +1,9 @@
 <?php
-/*
+/**
+ * Source file for the file cache class
+ * 
+ * LICENSE
+ * ======= 
  * Ntentan PHP Framework
  * Copyright 2010 James Ekow Abaka Ainooson
  * 
@@ -14,8 +18,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ * @category Caching
+ * @author James Ainooson <jainooson@gmail.com>
+ * @copyright 2010-2012 James Ainooson
+ * @license MIT
  */
-
 namespace ntentan\caching;
 
 use ntentan\exceptions\FileNotFoundException;
@@ -28,11 +36,35 @@ use ntentan\Ntentan;
  */
 class File extends Cache
 {
-    private function getCacheFile($file = '')
+    private $cachePath;
+    
+    public function __construct()
     {
-        return Ntentan::$config['application']['app_home'] . "/cache/$file";
+        $this->setCachePath(Ntentan::$config['application']['app_home'] . "cache/");
     }
     
+    public function setCachePath($path)
+    {
+        $this->cachePath = $path;
+    }
+    
+    /**
+     * Get the path of the cache file.
+     * 
+     * @param string $file The file being requested
+     * @return string
+     */
+    private function getCacheFile($file = '')
+    {
+        return "{$this->cachePath}{$file}";
+    }
+    
+    /**
+     * Hashes the key into a format appropriate for file names.
+     * 
+     * @param string $key
+     * @return string The hashed key
+     */
     private function hashKey($key)
     {
         return $key;
@@ -75,15 +107,23 @@ class File extends Cache
     
     protected function getImplementation($key)
     {
-        $key = $this->hashKey($key);
-        $cacheObject = unserialize(file_get_contents(self::getCacheFile("$key")));
-        if($cacheObject['expires'] > time() || $cacheObject['expires'] == 0)
+        $cacheFile = self::getCacheFile("$key");
+        if(file_exists($cacheFile))
         {
-            return $cacheObject['object'] ;
-        }
-        else if($cacheObject['expires'] == -1)
-        {
-            return false;
+            $key = $this->hashKey($key);
+            $cacheObject = unserialize(file_get_contents($cacheFile));
+            if($cacheObject['expires'] > time() || $cacheObject['expires'] == 0)
+            {
+                return $cacheObject['object'] ;
+            }
+            else if($cacheObject['expires'] == -1)
+            {
+                return false;
+            }
+            else
+            {
+                return false;
+            }
         }
         else
         {
