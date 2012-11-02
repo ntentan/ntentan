@@ -406,7 +406,7 @@ abstract class SqlDatabase extends DataStore
                     preg_match("/(?<field>[a-zA-Z1-9_.]*)\w*(?<operator>\>=|\<=|\<\>|\<|\>)?/", $field, $matches);
                     $databaseField = $this->resolveName($matches["field"]);
                     
-                    if(empty($condition))
+                    if($condition === null)
                     {
                         $operator = 'is';
                     }
@@ -415,7 +415,7 @@ abstract class SqlDatabase extends DataStore
                         $operator = $matches["operator"]==""?"=":$matches["operator"];
                     }
                     
-                    $condition = empty($condition) ? 'NULL' : "'" . $this->escape($condition) . "'";
+                    $condition = $condition === null ? 'NULL' : "'" . $this->escape($condition) . "'";
                     $conditions[] = "$databaseField $operator $condition";
                 }
             }
@@ -564,7 +564,7 @@ abstract class SqlDatabase extends DataStore
                 $values = array();
                 foreach($row as $value)
                 {
-                    $values[] = empty($value) ? "NULL" : "'".$this->escape($value) . "'";
+                    $values[] = ($value === "" || $value === null ) ? "NULL" : "'".$this->escape($value) . "'";
                 }
                 $baseQueries[] = "( ".implode(", ", $values)." )";
             }
@@ -584,7 +584,7 @@ abstract class SqlDatabase extends DataStore
                 }
                 else
                 {
-                    $values[] = empty($value)  ? "NULL" : "'" . $this->escape($value) . "'";
+                    $values[] = ($value === "" || $value === null ) ? "NULL" : "'".$this->escape($value) . "'";
                     $dataFields[] = $field;
                     $quotedDataFields[] = $this->quote($field);
                 }
