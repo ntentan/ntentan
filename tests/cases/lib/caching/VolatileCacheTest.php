@@ -1,10 +1,10 @@
 <?php
-require_once "tests/lib/CachingBackendTestCase.php";
+require_once "tests/lib/CachingTestCase.php";
 
 use ntentan\Ntentan;
 use ntentan\caching\Cache;
 
-class VolatileCacheTest extends \ntentan\test_cases\CachingBackendTestCase
+class VolatileCacheTest extends \ntentan\test_cases\CachingTestCase
 {
     public function setUp()
     {

@@ -1,20 +1,35 @@
 <?php
-/*
- * Ntentan PHP Framework
- * Copyright 2010 James Ekow Abaka Ainooson
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/**
+ * Source file for the abstract sql database orm driver.
+ * 
+ * Ntentan Framework
+ * Copyright (c) 2010-2012 James Ekow Abaka Ainooson
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+ * 
+ * @category ORM
+ * @author James Ainooson <jainooson@gmail.com>
+ * @copyright 2010-2012 James Ainooson
+ * @license MIT
  */
+
 
 namespace ntentan\models\datastores;
 
@@ -205,16 +220,19 @@ abstract class SqlDatabase extends DataStore
                 if($params["fetch_related"] === true || $params["fetch_belongs_to"] === true)
                 {
                     $modelName = Model::extractModelName($field);
-                    $relationShip = $this->model->getRelationshipWith($modelName);
-                    if($relationShip == Model::RELATIONSHIP_HAS_MANY)
+                    if($modelName != '')
                     {
-                        $hasManyFields[$modelName][] = $field;
-                        continue;
-                    }
-                    else if($relationShip == Model::RELATIONSHIP_BELONGS_TO)
-                    {
-                        $belongsToFields[$modelName][] = Model::extractFieldName($field);
-                        continue;
+                        $relationShip = $this->model->getRelationshipWith($modelName);
+                        if($relationShip == Model::RELATIONSHIP_HAS_MANY)
+                        {
+                            $hasManyFields[$modelName][] = $field;
+                            continue;
+                        }
+                        else if($relationShip == Model::RELATIONSHIP_BELONGS_TO)
+                        {
+                            $belongsToFields[$modelName][] = Model::extractFieldName($field);
+                            continue;
+                        }
                     }
                 }
 
@@ -534,14 +552,19 @@ abstract class SqlDatabase extends DataStore
         if($fields[0] == "0")
         {
             $fields = array_keys($data[0]);
-            $query = "INSERT INTO ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->quotedTable} (`".implode("`,`", $fields)."`) VALUES ";
+            $quotedFields = array();
+            foreach($quotedFields as $field)
+            {
+                $quotedFields[] = $this->quote($field);
+            }
+            $query = "INSERT INTO ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->quotedTable} (".implode(", ", $quotedFields).") VALUES ";
             $baseQueries = array();
             foreach($data as $row)
             {
                 $values = array();
                 foreach($row as $value)
                 {
-                    $values[] = ($value === "" || $value === null ) ? "NULL" : "'".$this->escape($value) . "'";
+                    $values[] = empty($value) ? "NULL" : "'".$this->escape($value) . "'";
                 }
                 $baseQueries[] = "( ".implode(", ", $values)." )";
             }
@@ -552,6 +575,7 @@ abstract class SqlDatabase extends DataStore
         else
         {
             $dataFields = array();
+            $quotedDataFields = array();
             foreach($data as $field => $value)
             {
                 if(is_array($value))
@@ -560,11 +584,12 @@ abstract class SqlDatabase extends DataStore
                 }
                 else
                 {
-                    $values[] = ($value === "" || $value === null)  ? "NULL" : "'" . $this->escape($value) . "'";
+                    $values[] = empty($value)  ? "NULL" : "'" . $this->escape($value) . "'";
                     $dataFields[] = $field;
+                    $quotedDataFields[] = $this->quote($field);
                 }
             }
-            $query = "INSERT INTO ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->quotedTable} (`" . implode("`, `", $dataFields) . "`) VALUES (" . implode(", ", $values) . ")";
+            $query = "INSERT INTO ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->quotedTable} (" . implode(", ", $quotedDataFields) . ") VALUES (" . implode(", ", $values) . ")";
             $this->query($query);
             if(array_search('id', $dataFields) === false)
             {

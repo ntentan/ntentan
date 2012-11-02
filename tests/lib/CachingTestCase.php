@@ -6,7 +6,7 @@ require_once "lib/exceptions/MethodNotFoundException.php";
 
 use ntentan\caching\Cache;
 
-class CachingBackendTestCase extends \PHPUnit_Framework_TestCase
+class CachingTestCase extends \PHPUnit_Framework_TestCase
 {
     public function testErrors()
     {
@@ -18,12 +18,12 @@ class CachingBackendTestCase extends \PHPUnit_Framework_TestCase
     {
         Cache::add('existent', 1);
         $data = Cache::get('existent');
-        $this->assertEquals(true, is_integer($data));
+        $this->assertInternalType('int', $data);
         $this->assertEquals(1, $data);
         
         Cache::add('existent_string', 'Hello World! I am Ntentan');
         $data = Cache::get('existent_string');
-        $this->assertEquals(true, is_string($data));
+        $this->assertInternalType('string', $data);
         $this->assertEquals('Hello World! I am Ntentan', $data);
         
         $this->assertEquals(true, Cache::exists('existent'));

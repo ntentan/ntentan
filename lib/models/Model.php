@@ -36,7 +36,7 @@ use ntentan\utils\Logger;
 
 use ntentan\Ntentan;
 use ntentan\models\exceptions\ModelNotFoundException;
-use ntentan\models\MethodNotFoundException;
+use ntentan\exceptions\MethodNotFoundException;
 use ntentan\models\exceptions\FieldNotFoundException;
 use ntentan\caching\Cache;
 use \ArrayAccess;
@@ -443,10 +443,12 @@ class Model implements ArrayAccess, Iterator
             if($matches['just'] == 'Just')
             {
                 $params["fetch_related"] = false;
+                $params["fetch_belongs_to"] = false;
             }
             else
             {
                 if(!isset($params["fetch_related"])) $params["fetch_related"] = true;
+                if(!isset($params["fetch_belongs_to"])) $params["fetch_belongs_to"] = true;
             }
             
             return $this->get($type, $params);
