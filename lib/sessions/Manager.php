@@ -12,14 +12,14 @@ class Manager
     {
         if($store == '')
         {
-            $store = Ntentan::$config[CONTEXT]['session_container'];
+            $store = Ntentan::$config[Ntentan::$context]['session_container'];
         }
 
         if($store != '')
         {
             $handlerClass = "ntentan\\sessions\\stores\\" . Ntentan::camelize($store) . 'Store';
             self::$handler = new $handlerClass;
-            $configExpiry = Ntentan::$config[CONTEXT]['session_lifespan'];
+            $configExpiry = Ntentan::$config[Ntentan::$context]['session_lifespan'];
             self::$lifespan = $configExpiry > 0 ? $configExpiry : self::$lifespan;
             
             $return = session_set_save_handler(

@@ -3,24 +3,31 @@
  * Common utilities file for the Ntentan framework. This file contains a 
  * collection of utility static methods which are used accross the framework.
  * 
+ * Ntentan Framework
+ * Copyright (c) 2008-2012 James Ekow Abaka Ainooson
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+ * 
  * @author James Ainooson <jainooson@gmail.com>
  * @copyright Copyright 2010 James Ekow Abaka Ainooson
- * @license MIT License
- * 
- *    Ntentan PHP Framework
- *    Copyright 2010 James Ekow Abaka Ainooson
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ * @license MIT
  */
 
 
@@ -68,10 +75,16 @@ class Ntentan
     public static $basePath;
 
     /**
-     * The directory which holds the modules of the application.
+     * The namespace which holds the modules of the application.
      * @var string
      */
-    public static $namespace = "modules/";
+    public static $namespace;
+    
+    /**
+     * The directory in which the code for the modules are stored
+     * @var string
+     */
+    public static $modulesPath;
 
     /**
      *
@@ -165,12 +178,14 @@ class Ntentan
      * @var array
      */
     private static $loadedDatastores = array();
+    
+    public static $context;
 
     /**
      * Current ntentan version
      * @var string
      */
-    const VERSION = "0.5-rc1";
+    //const VERSION = "0.5-rc1";
 
 
     /**
@@ -205,12 +220,16 @@ class Ntentan
         // setup paths
         Ntentan::$basePath = $config['application']['ntentan_home'];
         Ntentan::$namespace = $config['application']['namespace'];
+        Ntentan::$modulesPath = isset($config['application']['modules_path'])?
+            $config['application']['modules_path']:
+            $config['application']['namespace'];
+        
         Ntentan::$prefix = $config['application']['prefix'];
-        define('CONTEXT', $config['application']['context']);
+        Ntentan::$context = $config['application']['context'];
 
-        Ntentan::$cacheMethod = $config[CONTEXT]['caching'] == '' ? Ntentan::$cacheMethod : $config[CONTEXT]['caching'];
-        Ntentan::$pluginsPath = $config[CONTEXT]['plugins'] == '' ? 'plugins/' : $config[CONTEXT]['plugins'];
-        Ntentan::$debug = $config[CONTEXT]['debug'];
+        Ntentan::$cacheMethod = $config[Ntentan::$context]['caching'] == '' ? Ntentan::$cacheMethod : $config[Ntentan::$context]['caching'];
+        Ntentan::$pluginsPath = $config[Ntentan::$context]['plugins'] == '' ? 'plugins/' : $config[Ntentan::$context]['plugins'];
+        Ntentan::$debug = $config[Ntentan::$context]['debug'];
         Ntentan::$config = $config;
 
         // setup include paths
@@ -379,31 +398,31 @@ class Ntentan
      */
     public static function getDefaultDataStore($instance = false)
     {
-        if(isset(Ntentan::$config[CONTEXT]['datastore']))
+        if(isset(Ntentan::$config[Ntentan::$context]['datastore']))
         {
             if($instance === true)
             {
-                if(!isset(Ntentan::$loadedDatastores[Ntentan::$config[CONTEXT]['datastore']]))
+                if(!isset(Ntentan::$loadedDatastores[Ntentan::$config[Ntentan::$context]['datastore']]))
                 {
-                    $dataStoreClass = "\\ntentan\\models\\datastores\\" . Ntentan::camelize(Ntentan::$config[CONTEXT]['datastore']);
+                    $dataStoreClass = "\\ntentan\\models\\datastores\\" . Ntentan::camelize(Ntentan::$config[Ntentan::$context]['datastore']);
                     if(class_exists($dataStoreClass))
                     {
-                        Ntentan::$loadedDatastores[Ntentan::$config[CONTEXT]['datastore']] = new $dataStoreClass(Ntentan::$config[CONTEXT]);
+                        Ntentan::$loadedDatastores[Ntentan::$config[Ntentan::$context]['datastore']] = new $dataStoreClass(Ntentan::$config[Ntentan::$context]);
                     }
                     else
                     {
                         throw new exceptions\DataStoreException("Datastore {$dataStoreClass} doesn't exist.");
                     }
                 }
-                return Ntentan::$loadedDatastores[Ntentan::$config[CONTEXT]['datastore']];
+                return Ntentan::$loadedDatastores[Ntentan::$config[Ntentan::$context]['datastore']];
             }
             else
             {
-                if(!isset(Ntentan::$config[CONTEXT]['datastore_class']))
+                if(!isset(Ntentan::$config[Ntentan::$context]['datastore_class']))
                 {
-                    Ntentan::$config[CONTEXT]['datastore_class'] ="ntentan\\models\\datastores\\" . Ntentan::camelize(Ntentan::$config[CONTEXT]["datastore"]);
+                    Ntentan::$config[Ntentan::$context]['datastore_class'] ="ntentan\\models\\datastores\\" . Ntentan::camelize(Ntentan::$config[Ntentan::$context]["datastore"]);
                 }
-                return Ntentan::$config[CONTEXT];
+                return Ntentan::$config[Ntentan::$context];
             }
         }
         else
@@ -573,9 +592,9 @@ class Ntentan
 
     public static function error($message, $subTitle = null, $type = null, $showTrace = true, $trace = false)
     {
-        if(isset(Ntentan::$config[CONTEXT]['error_handler']) && Ntentan::$debug === false)
+        if(isset(Ntentan::$config[Ntentan::$context]['error_handler']) && Ntentan::$debug === false)
         {
-            $_GET['q'] = Ntentan::$config[CONTEXT]['error_handler'];
+            $_GET['q'] = Ntentan::$config[Ntentan::$context]['error_handler'];
             Ntentan::route();
         }
         else
@@ -602,11 +621,6 @@ class Ntentan
         }
         $message = ob_get_clean();
         return $message;
-    }
-    
-    private static function getLogFile($file = Ntentan::DEFAULT_LOG_FILE)
-    {
-    	fopen($file, 'a');
     }
 
     /**

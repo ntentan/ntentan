@@ -22,7 +22,7 @@ use ntentan\Ntentan;
 use ntentan\controllers\components\Component;
 use ntentan\models\Model;
 use ntentan\utils\Janitor;
-use ntentan\models\exceptions\MethodNotFoundException;
+use ntentan\exceptions\MethodNotFoundException;
 use ntentan\views\template_engines\TemplateEngine;
 
 use \ReflectionMethod;

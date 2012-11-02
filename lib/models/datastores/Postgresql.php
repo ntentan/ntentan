@@ -58,11 +58,13 @@ class Postgresql extends SqlDatabase
         return $result;
     }
 
-    protected function escape($string) {
+    public function escape($string) 
+    {
         return pg_escape_string($this->db, $string);
     }
 
-    protected function quote($field) {
+    public function quote($field) 
+    {
     	return "\"$field\"";
     }
 
@@ -231,9 +233,9 @@ class Postgresql extends SqlDatabase
         return $lastval[0]["last"];
     }
 
-    public function doesTableExist($table, $schema)
+    public function _doesTableExist($table, $schema)
     {
-        $exists = $this->query("select count(*) as `exists` from information_schema.tables where table_name = '$table' and table_schema = '$schema'");
+        $exists = $this->query("select count(*) as exists from information_schema.tables where table_name = '$table' and table_schema = '$schema'");
         return $exists[0]['exists'];
     }
 

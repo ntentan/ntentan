@@ -1,7 +1,8 @@
 <?php
 namespace ntentan\test_cases;
 
-require "lib/Ntentan.php";
+require_once "lib/Ntentan.php";
+require_once "lib/exceptions/MethodNotFoundException.php";
 
 use ntentan\caching\Cache;
 

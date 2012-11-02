@@ -103,7 +103,7 @@ abstract class SqlDatabase extends DataStore
         //Detect a new schema to override the default schema for the application
 
         $path = explode('.', $this->model->getRoute());
-        $base = Ntentan::$namespace . '/modules';
+        $base = Ntentan::$modulesPath . '/modules';
         foreach($path as $directory)
         {
             $configFile = $base . '/' . $directory . '/config.php';

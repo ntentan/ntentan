@@ -44,7 +44,7 @@ class WidgetsLoader
      */
     public function loadWidget($widget)
     {
-        $widgetFile = Ntentan::$namespace . "/widgets/$widget/" . Ntentan::camelize($widget) . "Widget.php";
+        $widgetFile = Ntentan::$modulesPath . "/widgets/$widget/" . Ntentan::camelize($widget) . "Widget.php";
         
         if(file_exists($widgetFile))
         {

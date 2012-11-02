@@ -1,10 +1,12 @@
 <?php
 
+use ntentan\Ntentan;
+
 require_once 'tests/lib/SqlDatabaseTestCase.php';
 require_once 'lib/models/datastores/DataStore.php';
 require_once 'lib/models/datastores/SqlDatabase.php';
 require_once 'lib/models/datastores/Mysql.php';
-
+require_once 'lib/sessions/Manager.php';
 /**
  * 
  */
@@ -12,22 +14,31 @@ class MysqlTest extends \ntentan\test_cases\SqlDatabaseTestCase
 {
     protected function setUp()
     {
-        \ntentan\Ntentan::setup('tests/config/mysql_config.ini');
+        require "tests/config/config.php";
+        $config['application']['context'] = 'mysql_test';
+        \ntentan\Ntentan::setup($config);
+        $this->datastoreName = 'mysql';
         parent::setUp();
     }
 
     protected function getConnection()
     {
-        $pdo = new PDO('mysql:host=localhost;dbname=ntentan_tests', 'root', 'root');
+        require "tests/config/config.php";
+        $pdo = new PDO(
+            "mysql:host={$config['mysql_test']['database_host']};dbname={$config['mysql_test']['database_name']}", 
+            $config['mysql_test']['database_user'], 
+            $config['mysql_test']['database_password']
+        );
         return $this->createDefaultDBConnection($pdo);
     }
 
     protected function getInstance()
     {
-        $parameters['hostname'] = 'localhost';
-        $parameters['username'] = 'root';
-        $parameters['password'] = 'root';
-        $parameters['database'] = 'ntentan_test';
+        require "tests/config/config.php";
+        $parameters['hostname'] = $config['mysql_test']['database_host'];
+        $parameters['username'] = $config['mysql_test']['database_user'];
+        $parameters['password'] = $config['mysql_test']['database_password'];
+        $parameters['database'] = $config['mysql_test']['database_name'];
         return new \ntentan\models\datastores\Mysql($parameters);
     }
 }

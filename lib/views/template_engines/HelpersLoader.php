@@ -38,7 +38,7 @@ class HelpersLoader
         if(!isset($this->loadedHelpers[$helper]))
         {
             $camelizedHelper = Ntentan::camelize($helper) . "Helper";
-            $helperFile = Ntentan::$namespace . "/helpers/$helper/$camelizedHelper.php";
+            $helperFile = Ntentan::$modulesPath . "/helpers/$helper/$camelizedHelper.php";
             if(file_exists($helperFile))
             {
                 require_once $helperFile;

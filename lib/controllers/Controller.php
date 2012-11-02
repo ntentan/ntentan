@@ -181,7 +181,7 @@ class Controller
             return $this->modelInstance;
 
         case "directory":
-            return Ntentan::$namespace . $this->route . "/";
+            return Ntentan::$modulesPath . $this->route . "/";
 
         default:
             if(substr($property, -9) == "Component")
@@ -347,7 +347,7 @@ class Controller
         {
             $p = $routeArray[$i];
             $pCamelized = Ntentan::camelize($p);
-            $filePath = Ntentan::$namespace . "/modules/$controllerRoute/$p/";
+            $filePath = Ntentan::$modulesPath . "/modules/$controllerRoute/$p/";
             if(file_exists($filePath . "{$pCamelized}Controller.php"))
             {
                 $controllerName = $pCamelized."Controller";
@@ -362,7 +362,7 @@ class Controller
                 }
                 else
                 {
-                    Ntentan::addIncludePath(Ntentan::$namespace . "/$controllerRoute/"); //$controllerName.php";
+                    Ntentan::addIncludePath(Ntentan::$modulesPath . "/$controllerRoute/"); //$controllerName.php";
                     $controllerNamespace = "\\" . str_replace("/", "\\", Ntentan::$namespace . "/modules/$controllerRoute/");
                     $controllerName = $controllerNamespace . $controllerName;
                     if(class_exists($controllerName))

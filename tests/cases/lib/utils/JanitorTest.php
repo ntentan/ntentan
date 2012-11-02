@@ -2,9 +2,7 @@
 
 namespace ntentan\utils;
 
-require_once 'PHPUnit/Framework.php';
-
-require_once dirname(__FILE__) . '/../../../lib/utils/Janitor.php';
+require_once 'lib/utils/Janitor.php';
 
 /**
  * Test class for Janitor.

@@ -1,5 +1,5 @@
 <?php
-namespace tests\mocks\modules\departments;
+namespace tests\modules\departments;
 
 class Departments extends \ntentan\models\Model
 {

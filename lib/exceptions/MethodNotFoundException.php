@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-namespace ntentan\models\exceptions;
+namespace ntentan\exceptions;
 
 use \Exception;
 
@@ -24,6 +24,6 @@ class MethodNotFoundException extends Exception
 {
     public function __construct($method)
     {
-        parent::__construct("Method <code>[$method]</code> doesn't exist ");
+        parent::__construct("Method [$method] doesn't exist ");
     }
 }

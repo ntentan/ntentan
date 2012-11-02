@@ -2,9 +2,9 @@
 namespace ntentan\test_cases;
 
 require_once 'lib/models/Model.php';
-require_once 'tests/mocks/modules/users/Users.php';
-require_once 'tests/mocks/modules/roles/Roles.php';
-require_once 'tests/mocks/modules/departments/Departments.php';
+require_once 'tests/app/modules/users/Users.php';
+require_once 'tests/app/modules/roles/Roles.php';
+require_once 'tests/app/modules/departments/Departments.php';
 require_once 'lib/Ntentan.php';
 require_once 'lib/models/exceptions/ModelNotFoundException.php';
 require_once 'lib/models/exceptions/DataStoreException.php';
@@ -22,6 +22,7 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
     protected $users;
     protected $roles;
     protected $departments;
+    protected $datastoreName;
 
     /**
      * Returns an instance of the datastore of the database being tested.
@@ -47,6 +48,7 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
     protected function setUp()
     {
         parent::setUp();
+        \ntentan\caching\Cache::reset();
         $this->users = \ntentan\models\Model::load('users');
         $this->roles = \ntentan\models\Model::load('roles');
         $this->departments = \ntentan\models\Model::load('departments');
@@ -59,6 +61,12 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
     protected function tearDown()
     {
         
+    }
+    
+    public function testGetDefaultDatastore()
+    {
+        $datastore = \ntentan\Ntentan::getDefaultDataStore();
+        $this->assertEquals($this->datastoreName, $datastore['datastore']);
     }
 
     public function testSetModel()
