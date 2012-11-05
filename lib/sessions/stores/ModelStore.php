@@ -57,7 +57,7 @@ class ModelStore implements Store
     
     public function destroy($sessionId)
     {
-        
+        $this->session->delete();
     }
     
     public function gc($lifetime)

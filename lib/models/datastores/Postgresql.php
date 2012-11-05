@@ -59,6 +59,7 @@ class Postgresql extends SqlDatabase
     {
         $query = mb_convert_encoding($query, 'UTF-8', \mb_detect_encoding($query));
         $queryResult = pg_query($this->db, $query);
+        $this->numRows = pg_num_rows($queryResult);
 
         if($queryResult === false)
         {

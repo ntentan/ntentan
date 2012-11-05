@@ -687,7 +687,7 @@ abstract class SqlDatabase extends DataStore
             if(is_writeable('logs/queries.log'))
             {
                 Logger::log("[query] $query", "logs/queries.log");
-            }           
+            }
         }
         return $this->_query($query);
     }

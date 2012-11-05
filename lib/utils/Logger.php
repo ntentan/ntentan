@@ -39,7 +39,7 @@ class Logger
         $fileHandle = self::getFile($file);
         if($fileHandle !== false)
         {
-            fputs($fileHandle, date("[Y-m-d H:i:s]") . $message . "\n");
+            fputs($fileHandle, date("[Y-m-d H:i:s]") . " $message\n");
             return true;
         }
         else

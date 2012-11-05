@@ -468,6 +468,26 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
         $this->assertCount(1, $user['role']);
         $this->assertCount(1, $user['department']);
     }
+    
+    public function testIterator()
+    {
+        $roles = $this->roles->getJustAll(
+            array('sort' => 'id')
+        );
+        
+        $this->assertEquals(4, $roles->count());
+        $expectedRoles = array(
+            array('id' => '1', 'name' => 'System Administrator'),
+            array('id' => '2', 'name' => 'System Auditor'),
+            array('id' => '3', 'name' => 'Content Author'),
+            array('id' => '4', 'name' => 'Site Member'),
+        );
+        
+        foreach($roles as $i => $role)
+        {
+            $this->assertEquals($expectedRoles[$i], $role->toArray());
+        }
+    }
 
     public function testSetData()
     {
