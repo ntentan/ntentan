@@ -113,7 +113,8 @@ class Model implements ArrayAccess, Iterator
     public function __construct()
     {
         $modelInformation = new ReflectionObject($this);
-        $modelName = end(explode("\\", $modelInformation->getName()));
+        $last = explode("\\", $modelInformation->getName());
+        $modelName = end($last);
         $this->name = strtolower(Ntentan::deCamelize($modelName));
         $this->route = implode(".",array_slice(explode("\\", $modelInformation->getName()), count(explode("/", Ntentan::$namespace)) + 1, -1));
 

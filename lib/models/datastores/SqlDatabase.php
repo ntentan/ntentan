@@ -189,7 +189,8 @@ abstract class SqlDatabase extends DataStore
         }
         else
         {
-            return end(explode('.', $relatedModelName));
+        	$array = explode('.', $relatedModelName);
+            return end($array);
         }
     } 
 

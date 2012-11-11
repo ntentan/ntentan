@@ -40,7 +40,8 @@ abstract class TemplateEngine
 
     public static function getEngineInstance($template)
     {
-        $engine = end(explode(".", $template));
+    	$last = explode(".", $template);
+        $engine = end($last);
         if(!isset(TemplateEngine::$loadedInstances[$engine]))
         {
             Ntentan::addIncludePath(

@@ -144,7 +144,7 @@ class Component extends Controller
         }
     }
 
-    public function hasMethod($method)
+    public function hasMethod($method = null)
     {
         $ret = false;
         $path = $method === null ? $this->method : $method;

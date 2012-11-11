@@ -15,7 +15,8 @@ class ImagesHelper extends Helper
     
     private function loadImage($path)
     {
-        switch(strtolower(end(explode(".", $path))))
+    	$array = explode(".", $path);
+        switch(strtolower(end($array)))
         {
             case 'png':
                 $image = imagecreatefrompng($path);
@@ -31,7 +32,8 @@ class ImagesHelper extends Helper
     
     private function writeImage($image, $path)
     {
-        switch(strtolower(end(explode(".", $path))))
+    	$array = explode(".", $path);
+        switch(strtolower(end($array)))
         {
             case 'png':
                 $image = imagepng($image, $path);
