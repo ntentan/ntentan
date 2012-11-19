@@ -43,13 +43,13 @@ class Memcache extends Cache
 
     public function __construct()
     {
-        $this->cache = new \Memcached();
+        $this->cache = new \Memcache();
         $this->cache->addServer('localhost', 11211);
     }
 
     protected function addImplementation($key, $object, $ttl)
     {
-        $this->cache->add($key, $object, $ttl + time());
+        $this->cache->add($key, $object, 0, $ttl + time());
     }
     
     protected function existsImplementation($key)
