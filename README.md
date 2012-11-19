@@ -4,7 +4,7 @@ Ntentan is a framework I wrote as a personal experiment. I have watched this
 framework grow steadily over the past two years into something very useful. 
 
 LICENSE
-=======
+-------
 Copyright (c) 2008-2012 James Ekow Abaka Ainooson
 
 Permission is hereby granted, free of charge, to any person obtaining

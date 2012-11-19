@@ -2,5 +2,6 @@ language: php
 php:
  - "5.4"
  - "5.3"
+before_script: pear install --force phpunit/DbUnit
 script: phpunit --configuration tests/config.xml
  
