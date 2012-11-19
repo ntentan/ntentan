@@ -304,11 +304,12 @@ abstract class SqlDatabase extends DataStore
                     {
                         if(is_array($requestedFields))
                         {
+                            $array = explode('.', $relatedModel);
                             if($alias != null && array_search($alias, $requestedFields) === false)
                             {
                                 continue;
                             }
-                            else if($alias == null && array_search(Ntentan::singular(end(explode('.', $relatedModel))) . "_id", $requestedFields) === false)
+                            else if($alias == null && array_search(Ntentan::singular(end($array)) . "_id", $requestedFields) === false)
                             {
                                 continue;
                             }

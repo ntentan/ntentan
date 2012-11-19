@@ -124,7 +124,6 @@ class ImagesHelper extends Helper
     public function thumbnail($source, $destination, $width, $height, $head=false, $overwrite=false)
     {
         if(!is_file($source)) return;
-
         if(!is_file($destination) || (filemtime($source)>filemtime($destination)) || $overwrite === true)
         {
             $image = $this->loadImage($source);

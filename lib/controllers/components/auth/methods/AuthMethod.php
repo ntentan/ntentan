@@ -5,7 +5,7 @@ use \ntentan\models\Model;
 
 abstract class AuthMethod
 {
-    public $usersModel;
+    public $usersModel = 'users';
     public $redirectPath;
     public $message;
     

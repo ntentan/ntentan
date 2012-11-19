@@ -1,19 +1,33 @@
 <?php
-/* 
- * Ntentan PHP Framework
- * Copyright 2012 James Ekow Abaka Ainooson
+/**
+ * Source file for the view helpers loader class
  * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Ntentan Framework
+ * Copyright (c) 2010-2012 James Ekow Abaka Ainooson
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+ * 
+ * @category Template Engines
+ * @author James Ainooson <jainooson@gmail.com>
+ * @copyright 2010-2012 James Ainooson
+ * @license MIT
  */
 
 namespace ntentan\views\template_engines;
@@ -25,6 +39,8 @@ use ntentan\Ntentan;
  */
 class HelpersLoader
 {
+    private $pluginMode = false;
+    private $plugin;
     private $loadedHelpers = array();
 
     private function getHelper($helper)
@@ -33,9 +49,9 @@ class HelpersLoader
         $helper = $helperPlural == null ? $helper : $helperPlural;
         if($helper === null)
         {
-            throw new \Exception("Unknown helper <b>$helper</b>");
+            return false;
         }
-        if(!isset($this->loadedHelpers[$helper]))
+        if(!isset($this->loadedHelpers[$this->plugin . $helper]))
         {
             $camelizedHelper = Ntentan::camelize($helper) . "Helper";
             $helperFile = Ntentan::$modulesPath . "/helpers/$helper/$camelizedHelper.php";
@@ -44,25 +60,52 @@ class HelpersLoader
                 require_once $helperFile;
                 $helperClass = "\\" . Ntentan::$namespace . "\\helpers\\$helper\\$camelizedHelper";
             }
-            else
+            else if($this->pluginMode)
             {
-                Ntentan::addIncludePath(Ntentan::getFilePath("lib/views/helpers/$helper"));
+                $path = Ntentan::getPluginPath("{$this->plugin}/helpers/$helper");
+                Ntentan::addIncludePath("{$this->plugin}");
+                $helperClass = "\\ntentan\\plugins\\{$this->plugin}\\helpers\\$helper\\$camelizedHelper";
+            }
+            else if(file_exists(Ntentan::getFilePath("lib/views/helpers/$helper")))
+            {
+                $path = Ntentan::getFilePath("lib/views/helpers/$helper");
                 $helperClass = "\\ntentan\\views\\helpers\\$helper\\$camelizedHelper";                
             }
-            $this->loadedHelpers[$helper] = new $helperClass();
+            else
+            {
+                return false;
+            }
+                        
+            Ntentan::addIncludePath($path);
+            $this->loadedHelpers[$this->plugin . $helper] = new $helperClass();
         }
-        return $this->loadedHelpers[$helper];
+        return $this->loadedHelpers[$this->plugin . $helper];
     }
 
     public function __get($helper)
     {
-        return $this->getHelper($helper);
+        $helperInstance = $this->getHelper($helper);
+        if($helperInstance === false)
+        {
+            if($this->pluginMode === false)
+            {
+                $this->pluginMode = true;
+                $this->plugin = $helper;
+                return $this;
+            }
+        }
+        else
+        {
+            return $helperInstance;
+        }
     }
 
     public function __call($helper, $arguments)
     {
         $helper = $this->getHelper($helper);
         $method = new \ReflectionMethod($helper, 'help');
+        $this->plugin = null;
+        $this->pluginMode = false;
         return $method->invokeArgs($helper, $arguments);
     }
 }

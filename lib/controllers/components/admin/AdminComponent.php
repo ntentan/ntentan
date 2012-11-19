@@ -1,20 +1,35 @@
 <?php
-/*
- * Ntentan PHP Framework
- * Copyright 2010 James Ekow Abaka Ainooson
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/**
+ * Source file for the admin component
+ * 
+ * Ntentan Framework
+ * Copyright (c) 2010-2012 James Ekow Abaka Ainooson
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+ * 
+ * @category Components
+ * @author James Ainooson <jainooson@gmail.com>
+ * @copyright 2010-2012 James Ainooson
+ * @license MIT
  */
+
 
 namespace ntentan\controllers\components\admin;
 
@@ -51,36 +66,6 @@ class AdminComponent extends Component
      * @var array
      */
     public $extraOperations = array();
-
-    /**
-     * The callback function to be called before adding data to the model. This
-     * callback works only when the user adds data to the model through the admin
-     * component. If you want a callback which works with all other additions made
-     * to the model (without necessarily going through the admin component),
-     * then you might want to consider going through the Model::preAddHook
-     * function.
-     * @var string
-     * @see Model::preAddHook()
-     */
-    public $preAddCallback;
-
-    /**
-     * The callback function to be called after adding data to the model.
-     * @var string
-     */
-    public $postAddCallback;
-
-    /**
-     * The callback function to be called before editing the data in the model
-     * @var string
-     */
-    public $preEditCallback;
-
-    /**
-     * The callback function to be called after editing data in the model
-     * @var string
-     */
-    public $postEditCallback;
 
     /**
      * A custom prefix to automatically append to the beginning of all URLS
@@ -286,10 +271,12 @@ class AdminComponent extends Component
         $this->set("headings", $this->headings);
         $this->set("item_operation_url", Ntentan::getUrl($this->consoleModeRoute. '/edit'));
         $this->set('route', $pageControllerRoute);
+        $entityCode = str_replace(' ', '_', $this->entity);
+        
         $itemsPerPage = 10;
         $model = $this->getModel();
         
-        $this->view->template = "page.tpl.php";
+        $this->view->template = "{$entityCode}_page.tpl.php";
         $listFields = $this->listFields;
         $description = $model->describe();
         if(count($listFields) == null)
@@ -332,7 +319,7 @@ class AdminComponent extends Component
         }
         $this->set("data", $listData);
         $this->set("headers", $headers);
-        $numPages = ceil($count / $itemsPerPage);
+        $numPages = intval(ceil($count / $itemsPerPage));
         $pagingLinks = array();
 
         $this->set("operations", $this->operations);
@@ -358,11 +345,12 @@ class AdminComponent extends Component
     {
         if(is_string($section))
         {
+            $array = explode('.', str_replace('/', '.', $section));
             $newSection = array(
                 'route' => $section,
                 'label' => \ucwords(str_replace(array('/', '_'), array(' ', ' '), $section)),
                 'model' => str_replace('/', '.', $section),
-                'entity' => Ntentan::singular(str_replace('_', ' ', end(explode('.', str_replace('/', '.', $section)))))
+                'entity' => Ntentan::singular(str_replace('_', ' ', end($array)))
             );
             $section = $newSection;
         }
@@ -534,7 +522,8 @@ class AdminComponent extends Component
         }
         $this->set("data", $data);
         $this->set("entity", $this->entity);
-        $this->set("entity_code", str_replace(' ', '_', $this->entity));
+        $entityCode = str_replace(' ', '_', $this->entity);
+        $this->set("entity_code", $entityCode);
 
         if(count($_POST) > 0)
         {
@@ -579,18 +568,14 @@ class AdminComponent extends Component
         
         if(count($_POST) > 0)
         {
-            $this->executeCallbackMethod($this->preAddCallback);
             $model->setData($_POST);
             $id = $model->save();
             if($id > 0)
             {
-                $route = $this->consoleModeRoute;
-                if(!$this->executeCallbackMethod($this->postAddCallback, $id, $model))
-                {
-                    Ntentan::redirect(
-                        "$route?n=1&i=" . base64_encode($model)
-                    );
-                }
+            $route = $this->consoleModeRoute;
+                Ntentan::redirect(
+                    "$route?n=1&i=" . base64_encode($model)
+                );
             }
             else
             {
