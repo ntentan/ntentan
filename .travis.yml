@@ -4,11 +4,13 @@ php:
  - "5.3"
 before_script: 
  - pyrus install pear.phpunit.de/DbUnit
- - pecl install memcache
+ - wget http://pecl.php.net/get/memcache-2.2.6.tgz
+ - tar -xzf memcache-2.2.6.tgz
+ - sh -c "cd memcache-2.2.6 && phpize && ./configure --enable-memcache && make && sudo make install"
  - echo "extension=memcache.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
  
 services:
-  memcached
+ - memcached
 
 script: phpunit --configuration tests/config.xml
  
