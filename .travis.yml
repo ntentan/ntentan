@@ -7,5 +7,8 @@ before_script:
  - pecl install memcache
  - echo "extension=memcache.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
  
+services:
+  memcached
+
 script: phpunit --configuration tests/config.xml
  
