@@ -8,4 +8,9 @@
             <directory>cases/lib/caching</directory>
         </testsuite>
     </testsuites>
+    <testsuites>
+        <testsuite name="Models testsuite">
+            <directory>cases/lib/models</directory>
+        </testsuite>
+    </testsuites>    
 </phpunit>
