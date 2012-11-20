@@ -14,6 +14,9 @@ class Manager
         {
             $store = Ntentan::$config[Ntentan::$context]['session_container'];
         }
+        
+        // Exit on the special none store means sessions are not needed
+        if($store == 'none') return;
 
         if($store != '')
         {
@@ -22,7 +25,7 @@ class Manager
             $configExpiry = Ntentan::$config[Ntentan::$context]['session_lifespan'];
             self::$lifespan = $configExpiry > 0 ? $configExpiry : self::$lifespan;
             
-            $return = session_set_save_handler(
+            session_set_save_handler(
                 array(self::$handler, 'open'), 
                 array(self::$handler, 'close'), 
                 array(self::$handler, 'read'), 

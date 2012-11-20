@@ -14,7 +14,8 @@ $config = array(
         'database_user' => 'root',
         'database_password' => '',
         'database_name' => 'ntentan_tests',
-        'database_host' => 'localhost'
+        'database_host' => 'localhost',
+        'session_container' => 'none'
     ),
     'postgresql_test' => array(
         'caching' => 'volatile',
@@ -23,6 +24,7 @@ $config = array(
         'database_user' => 'postgres',
         'database_password' => '',
         'database_name' => 'ntentan_tests',
-        'database_host' => 'localhost'
+        'database_host' => 'localhost',
+        'session_container' => 'none'
     ),    
 );
