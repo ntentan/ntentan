@@ -1,5 +1,3 @@
-CREATE DATABASE `ntentan_tests`;
-
 CREATE TABLE IF NOT EXISTS `departments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
