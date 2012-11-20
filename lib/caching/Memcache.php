@@ -49,7 +49,7 @@ class Memcache extends Cache
 
     protected function addImplementation($key, $object, $ttl)
     {
-        $this->cache->add($key, $object, 0, $ttl + time());
+        $this->cache->add($key, $object, 0, $ttl);
     }
     
     protected function existsImplementation($key)
@@ -62,7 +62,6 @@ class Memcache extends Cache
         }
         else
         {
-            $this->buffer = array("$key" => $value);
             return true;
         }
     }
