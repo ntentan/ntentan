@@ -3,6 +3,8 @@ Ntentan PHP Framework
 Ntentan is a framework I wrote as a personal experiment. I have watched this 
 framework grow steadily over the past two years into something very useful. 
 
+[![Build Status](https://travis-ci.org/ekowabaka/ntentan.png)](https://travis-ci.org/ekowabaka/ntentan)
+
 LICENSE
 -------
 Copyright (c) 2008-2012 James Ekow Abaka Ainooson
