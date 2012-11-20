@@ -4,8 +4,8 @@
         <var name="config" value="tests/config/travis.config.php" />
     </php>
     <testsuites>
-        <testsuite name="Doctrine ORM Test Suite">
-            <directory>cases</directory>
+        <testsuite name="Caching testsuite">
+            <directory>cases/lib/caching</directory>
         </testsuite>
     </testsuites>
 </phpunit>

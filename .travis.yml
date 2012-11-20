@@ -11,6 +11,7 @@ before_script:
  - psql -f tests/databases/postgresql.sql -U postgres
  - mysql -e 'create database ntentan_tests;'
  - mysql ntentan_tests < tests/databases/mysql.sql
+ - mkdir tests/tmp
  
 services:
  - memcached
