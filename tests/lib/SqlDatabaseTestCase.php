@@ -25,6 +25,18 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
      * Returns an instance of the datastore of the database being tested.
      */
     abstract protected function getInstance();
+    
+    protected function getConfigFile()
+    {
+        if(isset($GLOBALS['config']))
+        {
+            return $GLOBALS['config'];
+        }
+        else
+        {
+            return "tests/config/config.php";
+        }
+    }
 
     protected function getDataSet()
     {

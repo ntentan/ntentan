@@ -14,7 +14,7 @@ class MysqlTest extends \ntentan\test_cases\SqlDatabaseTestCase
 {
     protected function setUp()
     {
-        require "tests/config/config.php";
+        require $this->getConfigFile();
         $config['application']['context'] = 'mysql_test';
         \ntentan\Ntentan::setup($config);
         $this->datastoreName = 'mysql';
@@ -23,7 +23,7 @@ class MysqlTest extends \ntentan\test_cases\SqlDatabaseTestCase
 
     protected function getConnection()
     {
-        require "tests/config/config.php";
+        require $this->getConfigFile();
         $pdo = new PDO(
             "mysql:host={$config['mysql_test']['database_host']};dbname={$config['mysql_test']['database_name']}", 
             $config['mysql_test']['database_user'], 
@@ -34,7 +34,7 @@ class MysqlTest extends \ntentan\test_cases\SqlDatabaseTestCase
 
     protected function getInstance()
     {
-        require "tests/config/config.php";
+        require $this->getConfigFile();
         $parameters['hostname'] = $config['mysql_test']['database_host'];
         $parameters['username'] = $config['mysql_test']['database_user'];
         $parameters['password'] = $config['mysql_test']['database_password'];

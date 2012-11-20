@@ -9,7 +9,7 @@ class PostgreSqlTest extends \ntentan\test_cases\SqlDatabaseTestCase
 {
     protected function setUp()
     {
-        require "tests/config/config.php";
+        require $this->getConfigFile();
         $config['application']['context'] = 'postgresql_test';
         \ntentan\Ntentan::setup($config);
         $this->datastoreName = 'postgresql';
@@ -18,7 +18,7 @@ class PostgreSqlTest extends \ntentan\test_cases\SqlDatabaseTestCase
 
     protected function getConnection()
     {
-        require "tests/config/config.php";
+        require $this->getConfigFile();
         $pdo = new PDO(
             "pgsql:host={$config['postgresql_test']['database_host']};dbname={$config['postgresql_test']['database_name']}",
             $config['postgresql_test']['database_user'],
@@ -29,7 +29,7 @@ class PostgreSqlTest extends \ntentan\test_cases\SqlDatabaseTestCase
     
     protected function getInstance()
     {
-        require "tests/config/config.php";
+        require $this->getConfigFile();
         $parameters['hostname'] = $config['postgresql_test']['database_host'];
         $parameters['username'] = $config['postgresql_test']['database_user'];
         $parameters['password'] = $config['postgresql_test']['database_password'];
