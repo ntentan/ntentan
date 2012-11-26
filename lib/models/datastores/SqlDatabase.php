@@ -147,7 +147,7 @@ abstract class SqlDatabase extends DataStore
         
         if($this->table == null)
         {
-            throw new DataStoreException("Suitable database table not found for model <b><code>{$this->model->getName()}</code></b>");
+            throw new DataStoreException("Suitable database table not found for model *{$this->model->getName()}*");
         }
     }
 

@@ -7,7 +7,13 @@ if(count($errors) > 0)
 }
 $this->helpers->form->setErrors($errors);
 $this->helpers->form->setData($data);
-$form = t("add_{$entity_code}_form.tpl.php", array('fields' => $fields));
+$form = t(
+    "add_{$entity_code}_form.tpl.php", 
+    array(
+        'fields' => $fields,
+        'variables' => $form_variables
+    )
+);
 echo $this->helpers->form->open("add-$entity_code-form");
 echo $form;
 echo $this->helpers->form->close('Save');
