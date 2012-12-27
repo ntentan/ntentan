@@ -72,4 +72,9 @@ class FileStore implements Store
         }        
         return true;
     }
+    
+    public function isNew() 
+    {
+        return true;
+    }
 }

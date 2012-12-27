@@ -2,7 +2,6 @@
 namespace ntentan\sessions\stores;
 
 use ntentan\sessions\Manager;
-use ntentan\Ntentan;
 use ntentan\models\Model;
 
 require_once "Store.php";

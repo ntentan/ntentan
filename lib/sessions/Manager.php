@@ -10,6 +10,13 @@ class Manager
 
     public static function start($store = '')
     {
+        // exclude the special store
+        if($store == 'none')
+        {
+            return;
+        }
+        
+        // setup the default store
         if($store == '')
         {
             $store = Ntentan::$config[Ntentan::$context]['session_container'];

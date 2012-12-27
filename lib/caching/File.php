@@ -30,8 +30,6 @@
  * @license MIT
  */
 namespace ntentan\caching;
-
-use ntentan\exceptions\FileNotFoundException;
 use ntentan\Ntentan;
 
 /**
@@ -45,7 +43,7 @@ class File extends Cache
     
     public function __construct()
     {
-        $this->setCachePath(Ntentan::$config['application']['app_home'] . "cache/");
+        $this->setCachePath(Ntentan::$config['application']['app_home'] . "/cache/");
     }
     
     public function setCachePath($path)
