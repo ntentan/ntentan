@@ -222,5 +222,3 @@ class NtentanTest extends \PHPUnit_Framework_TestCase {
     }
 
 }
-
-?>

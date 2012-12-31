@@ -427,7 +427,7 @@ class Ntentan
         }
         else
         {
-            echo Ntentan::message("Invalid datastore specified. Please specify a default datastore");
+            echo Ntentan::message("Invalid datastore specified. Please specify a default datastore by providing a valid database configuration.");
             die();
         }
     }

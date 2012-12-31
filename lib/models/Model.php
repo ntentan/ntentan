@@ -32,8 +32,6 @@
 
 namespace ntentan\models;
 
-use ntentan\utils\Logger;
-
 use ntentan\Ntentan;
 use ntentan\models\exceptions\ModelNotFoundException;
 use ntentan\exceptions\MethodNotFoundException;
