@@ -362,11 +362,36 @@ class AdminComponent extends Component
     {
         $this->page($pageNumber);
     }
+    
+    public function setupConsoleView()
+    {
+        $this->view->layout = 'admin.tpl.php';
+        $this->set("app_name", Ntentan::$config['application']['name']);
+        $this->set("stylesheet", Ntentan::getFilePath("lib/controllers/components/admin/assets/css/admin.css"));
+        
+        $profile = $this->authComponent->getProfile();
+        $this->set('username', $profile['username']);
+        
+        $this->headingLevel = '3';
+
+        //Setup the menus to be used in this administrator section
+        $menuItems = array();
+        foreach($this->sections as $section)
+        {
+            $item['label'] = $section['label'];
+            $item['url'] = Ntentan::getUrl($this->controller->route . "/console/{$section['route']}");
+            $menuItems[] = $item;
+        }
+        
+        $this->set('sections_menu', $menuItems);        
+    }
 
     public function console()
     {
+        $this->setupConsoleView();
+        $this->view->template = 'console.tpl.php';
         // Setup layouts, templates and stuff
-        $this->view->layout = 'admin.tpl.php';
+        /*$this->view->layout = 'admin.tpl.php';
         $this->view->template = 'console.tpl.php';
         $this->set("app_name", Ntentan::$config['application']['name']);
         $this->set("stylesheet", Ntentan::getFilePath("lib/controllers/components/admin/assets/css/admin.css"));
@@ -385,7 +410,7 @@ class AdminComponent extends Component
             $menuItems[] = $item;
         }
         
-        $this->set('sections_menu', $menuItems);
+        $this->set('sections_menu', $menuItems);*/
 
         $arguments = func_get_args();
         if(count($arguments) == 0)

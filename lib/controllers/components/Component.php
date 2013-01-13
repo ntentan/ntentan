@@ -19,7 +19,6 @@
 namespace ntentan\controllers\components;
 
 use ntentan\controllers\Controller;
-use ntentan\Ntentan;
 use \ReflectionMethod;
 
 /**
@@ -56,6 +55,11 @@ class Component extends Controller
     public function __construct()
     {
 
+    }
+    
+    public function __get($property)
+    {
+        return $this->controller->__get($property);
     }
     
     protected function getRawMethod()

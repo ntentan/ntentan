@@ -43,8 +43,8 @@ abstract class Field extends Element
      */
     public function __construct($name="", $value="")
     {
-            $this->name = $name;
-            $this->value = $value;
+        $this->name = $name;
+        $this->value = $value;
     }
 
     /**
@@ -54,8 +54,8 @@ abstract class Field extends Element
      */
     public function setValue($value)
     {
-            $this->value = $value;
-    return $this;
+        $this->value = $value;
+        return $this;
     }
 
     /**

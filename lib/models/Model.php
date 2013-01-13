@@ -35,12 +35,10 @@ namespace ntentan\models;
 use ntentan\Ntentan;
 use ntentan\models\exceptions\ModelNotFoundException;
 use ntentan\exceptions\MethodNotFoundException;
-use ntentan\models\exceptions\FieldNotFoundException;
 use ntentan\caching\Cache;
 use \ArrayAccess;
 use \Iterator;
 use \ReflectionObject;
-use \ReflectionMethod;
 
 /**
  * The Model class
@@ -735,8 +733,16 @@ class Model implements ArrayAccess, Iterator
             // Validate unique
             if($field["unique"] === true && ($this->data[$field["name"]] != $this->previousData[$field["name"]]))
             {
-                $value = $this->get('first', array("conditions"=>array($field["name"] => $this->data[$field["name"]])));
-                if(count($value->getData()))
+                $value = $this->get(
+                    'first', 
+                    array(
+                        "conditions"=> array(
+                            $field["name"] => $this->data[$field["name"]]
+                        )
+                    )
+                )->toArray();
+                
+                if(count($value))
                 {
                     $this->invalidFields[$fieldName][] = isset($this->uniqueViolationMessages[$fieldName]) ? $this->uniqueViolationMessages[$fieldName] : "This field must be unique";
                 }

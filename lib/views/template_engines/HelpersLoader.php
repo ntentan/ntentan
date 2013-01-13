@@ -42,6 +42,7 @@ class HelpersLoader
     private $pluginMode = false;
     private $plugin;
     private $loadedHelpers = array();
+    private $viewData = array();
 
     private function getHelper($helper)
     {
@@ -77,7 +78,8 @@ class HelpersLoader
             }
                         
             Ntentan::addIncludePath($path);
-            $this->loadedHelpers[$this->plugin . $helper] = new $helperClass();
+            $helperInstance = new $helperClass();
+            $this->loadedHelpers[$this->plugin . $helper] = $helperInstance;
         }
         return $this->loadedHelpers[$this->plugin . $helper];
     }

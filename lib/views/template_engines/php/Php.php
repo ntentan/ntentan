@@ -19,8 +19,7 @@ class Php extends TemplateEngine
             }
             
             $helpers = $this->helpers;
-            $widgets = $this->widgets;
-            
+            $widgets = $this->widgets;       
             
             ob_start();
             include $this->template;
@@ -28,7 +27,7 @@ class Php extends TemplateEngine
         }
         else
         {
-            echo Ntentan::message("Template file <b><code>{$this->template}</code></b> not found");
+            echo Ntentan::message("Template file *{$this->template}* not found");
         }
     }
 
