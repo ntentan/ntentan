@@ -506,6 +506,11 @@ class Model implements ArrayAccess, Iterator
     {
         return $this->count;
     }
+    
+    public function countAllItems()
+    {
+        return $this->dataStore->countAllItems();
+    }
 
     public function rewind()
     {

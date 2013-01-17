@@ -528,6 +528,12 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
             )
         );
     }
+    
+    public function testCount()
+    {
+        $this->assertEquals($this->roles->countAllItems(), 4);
+        $this->assertEquals($this->departments->countAllItems(), 5);
+    }
 
     public function testSave()
     {

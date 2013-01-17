@@ -103,4 +103,5 @@ abstract class DataStore
     
     protected abstract function numRows();    
     public abstract function describe();
+    public abstract function countAllItems();
 }

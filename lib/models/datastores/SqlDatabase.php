@@ -694,6 +694,12 @@ abstract class SqlDatabase extends DataStore
         return $this->_query($query);
     }
     
+    public function countAllItems()
+    {
+        $result = $this->query("SELECT COUNT(id) as count FROM {$this->table}");
+        return $result[0]['count'];
+    }
+    
     protected function numRows()
     {
         return $this->numRows;
