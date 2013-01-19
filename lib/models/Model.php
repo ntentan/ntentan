@@ -521,6 +521,7 @@ class Model implements ArrayAccess, Iterator
     {
         $newModel = clone $this;
         $newModel->setData($this->data[$this->iteratorPosition], true);
+        $newModel->hasSingleRecord = true;
         return $newModel;
     }
 
