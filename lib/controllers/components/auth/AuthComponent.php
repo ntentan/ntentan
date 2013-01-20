@@ -112,8 +112,10 @@ class AuthComponent extends Component
         $this->loginRoute = isset($parameters['login_route']) ? $parameters['login_route'] : $this->loginRoute;
         $this->logoutRoute = isset($parameters['logout_route']) ? $parameters['logout_route'] : $this->logoutRoute;
         $this->onFailure = isset($parameters['on_failure']) ? $parameters['on_failure'] : $this->onFailure;
+        $this->onSuccess = isset($parameters['on_success']) ? $parameters['on_success'] : $this->onFailure;
         $this->redirectRoute = isset($parameters['redirect_route']) ? $parameters['redirect_route'] : $this->redirectRoute;
         $this->failureFunction = isset($parameters['failure_function']) ? $parameters['failure_function'] : $this->failureFunction;
+        $this->successFunction = isset($parameters['success_function']) ? $parameters['success_function'] : $this->successFunction;
         $this->excludedRoutes = is_array($parameters['excluded_routes']) ? $parameters['excluded_routes'] : array();
         $this->usersModel = isset($parameters['users_model']) ? $parameters['users_model'] : $this->_usersModel;
         $this->authenticated = $_SESSION['logged_in'];

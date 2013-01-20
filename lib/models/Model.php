@@ -737,6 +737,7 @@ class Model implements ArrayAccess, Iterator
             }
 
             // Validate unique
+            //@todo find a better way to validate composite unique keys
             if($field["unique"] === true && ($this->data[$field["name"]] != $this->previousData[$field["name"]]))
             {
                 $value = $this->get(

@@ -434,7 +434,7 @@ class Controller
         }
         else
         {
-            $message = "Controller not found for route <code><b>" . Ntentan::$route . "</b></code>";
+            $message = "Controller not found for route *$route*";
         }
         Ntentan::error($message);
     }
