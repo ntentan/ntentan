@@ -350,7 +350,7 @@ class Controller
      * @param $path 		The path for the model to be loaded.
      * @return Controller
      */
-    public static function load($route)
+    public static function load($route, $returnInstanceOnly = false)
     {
         $controllerRoute = '';
         $routeArray = explode('/', $route);
@@ -391,7 +391,9 @@ class Controller
                         $controller->modelRoute = $modelRoute;
                         $controller->filePath = $filePath;
                         $controller->init();
-
+                        
+                        if($returnInstanceOnly) return $controller;
+                        
                         // Trap for the cache
                         if(Cache::exists("view_" . Ntentan::getRouteKey()) && Ntentan::$debug === false)
                         {
