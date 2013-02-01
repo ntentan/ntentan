@@ -67,7 +67,17 @@ abstract class MinifiablesHelper extends Helper
 
     public function add($script)
     {
-        if($script != '') $this->minifiableScripts[] = $script;
+        if($script != '' && is_string($script))
+        { 
+            $this->minifiableScripts[] = $script;
+        }
+        else if(is_array($script))
+        {
+            foreach($script as $scriptFile)
+            {
+                $this->minifiableScripts[] = $scriptFile;
+            }
+        }
         return $this;
     }
     
