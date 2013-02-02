@@ -39,6 +39,7 @@ class View extends Presentation
     {
         $this->setContentType("text/html");
         $this->layout = "main.tpl.php";
+        TemplateEngine::appendPath("views");
         TemplateEngine::appendPath("views/default");
     }
 
