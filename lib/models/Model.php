@@ -351,7 +351,7 @@ class Model implements ArrayAccess, Iterator
             $behaviour->preSave($this->data);
         }
         $this->preSaveCallback();
-        if($this->validate(true))
+        if($this->validate())
         {
             $this->dataStore->setModel($this);
             $id = $this->dataStore->put();
@@ -717,8 +717,10 @@ class Model implements ArrayAccess, Iterator
         return $returnData;
     }
 
-    public function validate($inserting = false)
+    public function validate()
     {
+        //call the client validator
+        
         $description = $this->describe();
         $this->invalidFields = array();
 
@@ -730,10 +732,7 @@ class Model implements ArrayAccess, Iterator
             // Validate Required
             if(($this->data[$fieldName] === "" || $this->data[$fieldName] === null) && $field["required"])
             {
-                if(!($inserting && isset($field["default"])))
-                {
-                    $this->invalidFields[$fieldName][] = isset($this->requiredViolationMessages[$fieldName]) ? $this->requiredViolationMessages[$fieldName] : "This field is required";
-                }
+                $this->invalidFields[$fieldName][] = isset($this->requiredViolationMessages[$fieldName]) ? $this->requiredViolationMessages[$fieldName] : "This field is required";
             }
 
             // Validate unique
