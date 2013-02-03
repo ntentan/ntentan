@@ -130,6 +130,7 @@ abstract class SqlDatabase extends DataStore
             $base .= '/' . $directory;
         }
 
+        //@todo cache the result of this loop so it runs just once
         do
         {
             $table = implode("_", $path);
@@ -398,9 +399,10 @@ abstract class SqlDatabase extends DataStore
                 }
                 if(is_array($condition))
                 {
+                    $databaseField = $this->resolveName($field);
                     foreach($condition as $clause)
                     {
-                        $conditions[] = "$field = '$clause'";
+                        $orConditions[] = "$databaseField = '$clause'";
                     }
                 }
                 else
@@ -424,6 +426,10 @@ abstract class SqlDatabase extends DataStore
             if(is_array($conditions))
             {
                 $query .= " WHERE " . implode(" AND ", $conditions);
+            }
+            if(is_array($orConditions))
+            {
+                 $query .= (is_array($conditions) ? ' AND ' : ' WHERE ') . "(" . implode(" OR ", $orConditions) . ")";
             }
         }
 
