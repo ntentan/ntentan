@@ -463,13 +463,17 @@ class Ntentan
         $singular = array_search($word, Ntentan::$singulars);
         if($singular == false)
         {
-            if(substr($word,-3) == "ies")
+            if(substr($word, -3) == "ies")
             {
                 $singular = substr($word, 0, strlen($word) - 3) . "y";
             }
-            else if(strtolower($word) == 'news')
+            else if(substr(strtolower($word), -4) == 'news')
             {
                 $singular = $word;
+            }
+            else if(substr(strtolower($word), -8) == 'branches')
+            {
+                $singular = 'branch';
             }
             else if(substr($word, -1) == "s")
             {
