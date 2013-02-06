@@ -268,14 +268,12 @@ class Controller
         if(file_exists(get_class_file($componentName)))
         {
             $key = Ntentan::camelizeAndLowerFirst($plugin) . ($plugin == null ? $component : Ntentan::camelize($component));
-            if(!isset(Controller::$loadedComponents[$key]))
-            {
-                $componentClass = new ReflectionClass($componentName);
-                $componentInstance = $componentClass->newInstanceArgs($arguments);
-                $componentInstance->filePath = Ntentan::getFilePath("lib/controllers/components/$component");
-                Controller::$loadedComponents[$key] = $componentInstance;
-            }
-            $this->componentInstances[$key] = Controller::$loadedComponents[$key];
+
+            $componentClass = new ReflectionClass($componentName);
+            $componentInstance = $componentClass->newInstanceArgs($arguments);
+            $componentInstance->filePath = Ntentan::getFilePath("lib/controllers/components/$component");
+            
+            $this->componentInstances[$key] = $componentInstance;
             $this->componentInstances[$key]->setController($this);
             $this->componentInstances[$key]->route = $this->route;
             $this->componentInstances[$key]->init();
@@ -347,7 +345,8 @@ class Controller
      * location, it is asumed to be a package and a package controller is
      * loaded.
      *
-     * @param $path 		The path for the model to be loaded.
+     * @param $path                 The path for the model to be loaded.
+     * @param $returnInstanceOnly   Fources the method to return only the instance of the controller object.
      * @return Controller
      */
     public static function load($route, $returnInstanceOnly = false)
@@ -415,10 +414,10 @@ class Controller
                     }
                     else
                     {
-                        Ntentan::error("Controller class <b><code>$controllerName</code></b> not found.");
+                        Ntentan::error("Controller class *$controllerName* not found.");
                     }
 
-                    $controller->runMethod(array_slice($routeArray,$i+2));
+                    $controller->runMethod(array_slice($routeArray, $i + 2));
                     return;
                 }
             }
@@ -430,7 +429,7 @@ class Controller
         }
         if(is_object($controller))
         {
-            $message = "Controller method <code><b> {$routeArray[$i - 1]}()</b></code> not found for the <code><b>{$controllerName}</b></code> controller.";
+            $message = "Controller method *{$routeArray[$i - 1]}()* not found for the *{$controllerName}* controller.";
         }
         else
         {
@@ -521,6 +520,7 @@ class Controller
         {
             foreach($this->componentInstances as $component)
             {
+                //@todo Look at how to prevent this from running several times
                 if($component->hasMethod($path))
                 {
                     $component->variables = $this->variables;
