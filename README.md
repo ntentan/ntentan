@@ -7,7 +7,7 @@ framework grow steadily over the past two years into something very useful.
 
 LICENSE
 -------
-Copyright (c) 2008-2012 James Ekow Abaka Ainooson
+Copyright (c) 2008-2013 James Ekow Abaka Ainooson
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
