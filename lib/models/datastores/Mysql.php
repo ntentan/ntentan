@@ -329,12 +329,12 @@ class Mysql extends SqlDatabase
     
     public function begin()
     {
-        //self::$db->autocommit(false);
+        $this->query("START TRANSACTION");
     }
     
     public function end()
     {
-        //self::$db->commit();
+        $this->query("COMMIT");
     }
 
     protected function limit($limitParams)
