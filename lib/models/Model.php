@@ -387,6 +387,7 @@ class Model implements ArrayAccess, Iterator
                 $behaviour->preUpdate($this->data);
             }            
             $this->postUpdateCallback();
+            $this->dataStore->end();
             return true;
         }
         else

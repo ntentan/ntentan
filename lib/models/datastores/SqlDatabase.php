@@ -249,16 +249,13 @@ abstract class SqlDatabase extends DataStore
 
         // Generate joins
         $joins = "";
+        
+        // Related joins from the model description
         if($params["fetch_related"] === true || $params["fetch_belongs_to"] === true)
         {
             $numRequestedBelongsTo = count($belongsToFields);
             foreach($this->model->belongsTo as $relatedModel)
-            {
-                /*if($numRequestedBelongsTo > 0 && !isset($belongsToFields[$relatedModel]))
-                {
-                    continue;
-                }*/
-                
+            {   
                 if(is_array($relatedModel) && isset($relatedModel["through"]))
                 {
                     $firstRelatedModel = Model::load(Model::getBelongsTo($relatedModel[0]));
