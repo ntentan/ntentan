@@ -473,7 +473,7 @@ class Ntentan
             }
             else if(substr(strtolower($word), -8) == 'branches')
             {
-                $singular = 'branch';
+                $singular = substr($word, 0, strlen($word) - 2);
             }
             else if(substr($word, -1) == "s")
             {

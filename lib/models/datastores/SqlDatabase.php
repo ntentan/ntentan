@@ -653,7 +653,7 @@ abstract class SqlDatabase extends DataStore
                 $values[] = $this->quote($field) . " = '". $this->escape($value) . "'";
             }
         }
-        $query = "UPDATE ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->table} SET " . implode(", ", $values) . " WHERE id = '{$data["id"]}'";
+        $query = "UPDATE ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->quotedTable} SET " . implode(", ", $values) . " WHERE id = '{$data["id"]}'";
         $this->query($query);
     }
 
