@@ -467,6 +467,10 @@ class Ntentan
             {
                 $singular = substr($word, 0, strlen($word) - 3) . "y";
             }
+            elseif(strtolower($word) == "indices")
+            {
+                $singular = "index";
+            }
             else if(substr(strtolower($word), -4) == 'news')
             {
                 $singular = $word;

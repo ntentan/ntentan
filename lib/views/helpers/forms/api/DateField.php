@@ -32,6 +32,7 @@ class DateField extends TextField
     	$this->addAttribute( "id" , $this->id());
     	$this->addAttribute( "name" , $this->getName());
     	$this->addAttribute( "value" , $this->getValue()!==""?date("Y-m-d",(int)$this->getValue()) : "" );
+    	$this->setAttribute('type', 'date');
     	$id = $this->id();
         return "<input ".$this->getAttributes()." />";
     }

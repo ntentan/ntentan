@@ -17,6 +17,7 @@
 
 input[type='text'],
 input[type='password']
+input[type='date']
 {
     border:2px solid #e0e0e0;
     width:98%;
