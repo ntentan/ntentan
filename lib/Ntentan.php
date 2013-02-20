@@ -506,6 +506,10 @@ class Ntentan
             {
                 $plural = substr($word, 0, strlen($word) - 1) . "ies";
             }
+            elseif(strtolower($word) == "index")
+            {
+                $plural = "indices";
+            }            
             elseif(substr($word, -1) != "s")
             {
                 $plural = $word . "s";

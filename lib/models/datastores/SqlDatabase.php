@@ -659,13 +659,14 @@ abstract class SqlDatabase extends DataStore
 
     protected function _delete($key)
     {
+        $relation = ($this->schema != '' ? $this->quotedSchema . "." : '') . $this->quotedTable;
         if(is_array($key))
         {
-            $query = "DELETE FROM {$this->table} WHERE id in ('" . implode("','", $key) . "')";
+            $query = "DELETE FROM $relation WHERE id in ('" . implode("','", $key) . "')";
         }
         else
         {
-            $query = "DELETE FROM {$this->table} WHERE id = '{$key}'";
+            $query = "DELETE FROM $relation WHERE id = '{$key}'";
         }
         $this->query($query);
     }
