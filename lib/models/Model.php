@@ -132,7 +132,7 @@ class Model implements ArrayAccess, Iterator
         {
             $this->addBehaviour($behaviour);
         }
-    }
+    } 
     
     public static function getNew()
     {

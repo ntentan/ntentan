@@ -88,13 +88,18 @@ abstract class SqlDatabase extends DataStore
             return $this->_schema;
         }
     }
+    
+    public function getTable()
+    {
+        return $this->quotedTable;
+    }
 
     /**
      * A protected function used internally to set the table names. This function
      * exists so that datastores which need to modify the table names could do
      * so by overriding it and providing their own implementation.
      *
-     * @param unknown_type $table
+     * @param string $table
      */
     protected function setTable($table) 
     {
