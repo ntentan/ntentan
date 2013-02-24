@@ -91,7 +91,7 @@ abstract class SqlDatabase extends DataStore
     
     public function getTable()
     {
-        return $this->quotedTable;
+        return $this->table;
     }
 
     /**
