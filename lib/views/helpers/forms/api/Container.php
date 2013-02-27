@@ -45,14 +45,6 @@ abstract class Container extends Element
     
     public $rendererMode = 'all';
 
-    /**
-     * Returns the renderer which is currently being used by the class.
-     */
-    public function getRenderer()
-    {
-        return $this->renderer;
-    }
-
     private function addElement($element)
     {
         //Check if the element has a parent. If it doesnt then add it

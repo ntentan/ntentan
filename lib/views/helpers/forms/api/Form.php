@@ -46,8 +46,7 @@ class Form extends Container
     
     private static $numForms;
 
-    //! Constructor for initialising the forms. This constructor accepts
-    //! the method of the form.
+
     public function __construct($id="", $method="POST")
     {
         $this->setId($id);
