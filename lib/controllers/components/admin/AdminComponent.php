@@ -502,7 +502,14 @@ class AdminComponent extends Component
         $this->view = false;
         $item = $this->getModel()->getFirstWithId($id);
         $item->delete();
-        $route = $this->consoleModeRoute;
+        if($this->consoleMode)
+        {
+            $route = $this->consoleModeRoute;
+        }
+        else
+        {
+            $route = $this->route;
+        }
         Ntentan::redirect(
             "$route?n=3&i=" . base64_encode($item)
         );
@@ -543,7 +550,14 @@ class AdminComponent extends Component
             $item->id = $id;
             if($item->update())
             {
-                $route = $this->consoleModeRoute;
+                if($this->consoleMode)
+                {
+                    $route = $this->consoleModeRoute;
+                }
+                else
+                {
+                    $route = $this->route;
+                }
                 Ntentan::redirect(
                     "$route?n=2&i=" . base64_encode($item)
                 );
@@ -584,7 +598,7 @@ class AdminComponent extends Component
             $id = $model->save();
             if($id > 0)
             {
-            $route = $this->consoleModeRoute;
+                $route = $this->consoleMode ? $this->consoleModeRoute : $this->route;
                 Ntentan::redirect(
                     "$route?n=1&i=" . base64_encode($model)
                 );
