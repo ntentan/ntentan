@@ -46,7 +46,7 @@ class BoxContainer extends Container
 	public function render()
 	{
 		$ret = "";
-		$this->addAttribute("class","fapi-box {$this->getCSSClasses()}");
+		$this->addAttribute("class","form-box {$this->getCSSClasses()}");
 		$ret .= "<div {$this->getAttributes()}>";
 		$ret .= $this->renderElements();
 		$ret .= "</div>";

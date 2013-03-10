@@ -83,7 +83,7 @@ class Checkbox extends Field
 	public function render()
 	{
 		$ret = "";
-		$ret .= '<input class="fapi-checkbox" type="checkbox" name="'.$this->getName().'" value="'.$this->getCheckedValue().'" '.
+		$ret .= '<input class="form-checkbox" type="checkbox" name="'.$this->getName().'" value="'.$this->getCheckedValue().'" '.
 		      (($this->getValue()==$this->getCheckedValue())?"checked='checked'":"").' '.$this->getAttributes().' />';
 		return $ret;
 	}
