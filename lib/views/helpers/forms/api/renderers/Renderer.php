@@ -50,7 +50,7 @@ abstract class Renderer
             {
                 $ret .= "<span class='required'>*</span>";
             }
-            $ret .= "</label><br/>";
+            $ret .= "</label>";
         }
         return $ret;
     }    
