@@ -1,9 +1,9 @@
 <?php
 /**
- * Source file for the method not found exception class.
+ * A class for exceptions thrown when classes are not found
  * 
  * Ntentan Framework
- * Copyright (c) 2010-2012 James Ekow Abaka Ainooson
+ * Copyright (c) 2008-2012 James Ekow Abaka Ainooson
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -24,17 +24,14 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
  * 
- * @category Exceptions
  * @author James Ainooson <jainooson@gmail.com>
- * @copyright 2010-2012 James Ainooson
+ * @copyright Copyright 2010 - 2013 James Ekow Abaka Ainooson
  * @license MIT
  */
+
 namespace ntentan\exceptions;
 
-class MethodNotFoundException extends NtentanException
+class UnknownPluralException extends NtentanException
 {
-    public function __construct($method)
-    {
-        parent::__construct("Method [$method] doesn't exist ");
-    }
+
 }

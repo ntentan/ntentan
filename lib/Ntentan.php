@@ -48,6 +48,7 @@ require "autoload.php";
  */
 require "globals.php";
 require "caching/Cache.php";
+require "exceptions/NtentanException.php";
 require "exceptions/FileNotFoundException.php";
 
 //@todo Find a better way of handling exceptions
@@ -463,7 +464,7 @@ class Ntentan
         $singular = array_search($word, Ntentan::$singulars);
         if($singular == false)
         {
-            if(substr($word, -2) == "es")
+            if(substr($word, -3) == "ses")
             {
                 $singular = substr($word, 0, strlen($word) - 2);
             }
@@ -514,17 +515,21 @@ class Ntentan
             {
                 $plural = "indices";
             }            
-            elseif(strtolower($word) == "bonus")
+            elseif(substr($word, -2) == "us")
             {
-                $plural = "bonuses";
-            }            
+                $plural = $word . "es";
+            } 
+            elseif(substr($word, -2) == "ss")
+            {
+                $plural = $word . "es";
+            }
             elseif(substr($word, -1) != "s")
             {
                 $plural = $word . "s";
             }
             else
             {
-				$plural = $word;
+				throw new exceptions\UnknownPluralException("Could not determine the plural for $word");
 			}
             Ntentan::$plurals[$plural] = $word;
         }
