@@ -463,7 +463,11 @@ class Ntentan
         $singular = array_search($word, Ntentan::$singulars);
         if($singular == false)
         {
-            if(substr($word, -3) == "ies")
+            if(substr($word, -2) == "es")
+            {
+                $singular = substr($word, 0, strlen($word) - 2);
+            }
+            elseif(substr($word, -3) == "ies")
             {
                 $singular = substr($word, 0, strlen($word) - 3) . "y";
             }
@@ -509,6 +513,10 @@ class Ntentan
             elseif(strtolower($word) == "index")
             {
                 $plural = "indices";
+            }            
+            elseif(strtolower($word) == "bonus")
+            {
+                $plural = "bonuses";
             }            
             elseif(substr($word, -1) != "s")
             {
