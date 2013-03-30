@@ -56,7 +56,7 @@ function s($string)
  * @param string $template
  * @param array $data
  */
-function t($template, $data, $view = null)
+function t($template, $data = array(), $view = null)
 {
     return TemplateEngine::render($template, $data, $view);
 }

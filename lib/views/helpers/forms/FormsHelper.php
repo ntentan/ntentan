@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * Forms helper
  * 
  * Ntentan Framework
