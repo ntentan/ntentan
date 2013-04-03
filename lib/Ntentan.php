@@ -38,12 +38,6 @@
 namespace ntentan;
 
 /**
- * Include the autoloading function. This function automatically includes the
- * source files for all classes whose source files are not found.
- */
-require "autoload.php";
-
-/**
  * Include a collection of utility global functions, caching and exceptions. 
  */
 require "globals.php";
