@@ -187,8 +187,61 @@ class Ntentan
      * @var string
      */
     //const VERSION = "0.5-rc1";
+    
+    public static function getClassFile($class)
+    {
+        $key = "file_$class";
+        if(Cache::exists($key))
+        {
+            $classFile = Cache::get($key);
+        }
+        else
+        {
+            $fullPath = explode("\\", $class);
+
+            //Get rid of any initial empty class name
+            if($fullPath[0] == "") array_shift ($fullPath);
+            $class = array_pop($fullPath);
 
 
+            if($fullPath[0] == \ntentan\Ntentan::$namespace)
+            {
+                $basePath = implode("/",$fullPath);
+            }
+            else if($fullPath[0] == 'ntentan' && $fullPath[1] == "plugins")
+            {
+                array_shift($fullPath);
+                array_shift($fullPath);
+                $basePath = \ntentan\Ntentan::getPluginPath(implode("/",$fullPath));
+            }
+            else if($fullPath[0] == 'ntentan' && $fullPath[1] == "dev")
+            {
+                array_shift($fullPath);
+                array_shift($fullPath);
+                $basePath = NTENTAN_DEV_HOME . '/' . implode("/",$fullPath);
+            }
+            else if($fullPath[0] == 'ntentan')
+            {
+                array_shift($fullPath);
+                $basePath = \ntentan\Ntentan::getFilePath('lib/' . implode("/",$fullPath));
+            }
+
+            $classFile = $basePath . '/' . $class . '.php';
+            Cache::add($key, $classFile);
+        }
+        return $classFile;
+    }
+    
+    public static function autoload($class)
+    {
+        $classFile = self::getClassFile($class);
+        if(file_exists($classFile))
+        {
+            require_once $classFile;
+        }        
+    }
+
+    
     /**
      * A utility function which calls both the Ntentan::setup() and Ntentan::route()
      * methods at once. 
@@ -218,6 +271,9 @@ class Ntentan
      */
     public static function setup($config)
     {
+        // setup autoloader
+        spl_autoload_register("ntentan\Ntentan::autoload");
+        
         // setup paths
         Ntentan::$basePath = $config['application']['ntentan_home'];
         Ntentan::$namespace = $config['application']['namespace'];

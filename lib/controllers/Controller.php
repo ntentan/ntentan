@@ -265,7 +265,7 @@ class Controller
     private function loadComponent($component, $arguments, $path, $plugin = null)
     {
         $componentName = "$path\\$component\\" . Ntentan::camelize($component) . 'Component';
-        if(file_exists(get_class_file($componentName)))
+        if(file_exists(Ntentan::getClassFile($componentName)))
         {
             $key = Ntentan::camelizeAndLowerFirst($plugin) . ($plugin == null ? $component : Ntentan::camelize($component));
 
