@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL ^ E_NOTICE);
+
 $config = array(
     'application' => array(
         'name' => 'Ntentan Test Suite',
