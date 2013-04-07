@@ -81,11 +81,17 @@ class Model implements ArrayAccess, Iterator
     public $hasMany = array();
     
     /**
-     * 
-     * @var type 
+     * An array that specifies which fields must be unique.
+     * @var array 
      */
     public $mustBeUnique;
+    
+    /**
+     * An array of all instances of the belongs to models
+     * @var array
+     */
     public $belongsToModelInstances = array();
+    
     private $route;
     private $name;
     public $invalidFields = array();

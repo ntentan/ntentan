@@ -479,6 +479,36 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
         $user = $user->toArray();
         $this->assertCount(1, $user['role']);
         $this->assertCount(1, $user['department']);
+        
+        $users = $this->users->getWithIsAdmin(null,array(
+            'fields' => array('username')
+        ));
+        
+        $filteredUsersData = array(
+            array('username' => 'edonkor'),
+            array('username' => 'rcommey'),
+            array('username' => 'gaddo'),
+            array('username' => 'fforson'),
+            array('username' => 'eabaka')
+        );        
+        
+        $this->assertEquals($filteredUsersData, $users->toArray());
+        
+        $roles = $this->roles->getJustAll(
+            array(
+                'conditions' => array(
+                    'id' => array('1', '2')
+                )
+            )
+        );
+        
+        $this->assertEquals(
+            array(
+                array('id' => '1', 'name' => 'System Administrator'),
+                array('id' => '2', 'name' => 'System Auditor')
+            ),
+            $roles->toArray()
+        );
     }
     
     public function testIterator()
