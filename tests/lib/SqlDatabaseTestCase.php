@@ -481,7 +481,8 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
         $this->assertCount(1, $user['department']);
         
         $users = $this->users->getWithIsAdmin(null,array(
-            'fields' => array('username')
+            'fields' => array('username'),
+            'sort' => array('id')
         ));
         
         $filteredUsersData = array(
@@ -502,6 +503,64 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
             )
         );
         
+        $this->assertEquals(
+            array(
+                array('id' => '1', 'name' => 'System Administrator'),
+                array('id' => '2', 'name' => 'System Auditor')
+            ),
+            $roles->toArray()
+        );
+        
+        $roles = $this->roles->getAll(
+            array(
+                'fields' => array(
+                    'id', 'name', 'users.username'
+                ),
+                'conditions' => array(
+                    'users.username' => 'eabaka'
+                ),
+                'sort' => array('id')
+            )
+        );
+        
+        $this->assertEquals(
+            array(
+                array(
+                    'id' => '1',
+                    'name' => 'System Administrator',
+                    'users' => array(
+                        array('username' => 'eabaka')
+                    )
+                ),
+                array(
+                    'id' => '2',
+                    'name' => 'System Auditor',
+                    'users' => array()
+                ),
+                array(
+                    'id' => '3',
+                    'name' => 'Content Author',
+                    'users' => array()
+                ),
+                array(
+                    'id' => '4',
+                    'name' => 'Site Member',
+                    'users' => array()
+                )                
+            ),
+            $roles->toArray()
+        );
+        
+        $roles = $this->roles->getJustAll(
+            array(
+                'conditions' => array(
+                    'OR' => array(
+                        'name' => 'System Administrator',
+                        'id' => '2'
+                    )
+                )
+            )
+        );
         $this->assertEquals(
             array(
                 array('id' => '1', 'name' => 'System Administrator'),

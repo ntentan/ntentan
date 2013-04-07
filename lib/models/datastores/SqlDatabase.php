@@ -199,6 +199,84 @@ abstract class SqlDatabase extends DataStore
             return end($array);
         }
     } 
+    
+    private function parseConditions($conditionsParameter, $params, $parserVars = array("depth"=>0))
+    {
+        $parserVars['depth']++;
+        $query = '';
+        if($conditionsParameter !== null && is_array($conditionsParameter))
+        {
+            // Go through the array of conditions and generate an SQL condition
+            foreach($conditionsParameter as $field => $condition)
+            {
+                if($params["fetch_related"] === true || $params["fetch_belongs_to"] === true)
+                {
+                    $modelName = Model::extractModelName($field);
+                    if($this->model->getRelationshipWith($modelName) == Model::RELATIONSHIP_HAS_MANY)
+                    {
+                        $parserVars["has_many_conditions"][$modelName][$field] = $condition;
+                        continue;
+                    }
+                }
+                
+                if(($field == "OR" || $field == "__OR__") && is_array($condition))
+                {
+                    $parserVars['glue'] = 'OR';
+                    $parserResults = $this->parseConditions($condition, $params, $parserVars);
+                    $conditions[] = $parserResults['query'];
+                    continue;
+                }
+                
+                if(is_array($condition))
+                {
+                    $databaseField = $this->resolveName($field);
+                    foreach($condition as $clause)
+                    {
+                        $orConditions[] = "$databaseField = '$clause'";
+                    }
+                }
+                else
+                {
+                    preg_match("/(?<field>[a-zA-Z1-9_.]*)\w*(?<operator>\>=|\<=|\<\>|\<|\>)?/", $field, $matches);
+                    $databaseField = $this->resolveName($matches["field"]);
+                    
+                    if($condition === null)
+                    {
+                        $operator = 'is';
+                    }
+                    else
+                    {
+                        $operator = $matches["operator"]==""?"=":$matches["operator"];
+                    }
+                    
+                    $condition = $condition === null ? 'NULL' : "'" . $this->escape($condition) . "'";
+                    $conditions[] = "$databaseField $operator $condition";
+                }
+            }
+            
+            if($parserVars['depth'] == 1)
+            {
+                if(is_array($conditions))
+                {
+                    $query .= " WHERE " . implode(" AND ", $conditions);
+                }
+
+                if(is_array($orConditions))
+                {
+                    $query .= (is_array($conditions) ? ' AND ' : ' WHERE ') . "(" . implode(" OR ", $orConditions) . ")";
+                }
+                $parserVars['query'] = $query;
+            }
+            elseif(isset($parserVars['glue']))
+            {
+                $query = "(" . implode($parserVars['glue'], $conditions) . ")";
+                $parserVars['query'] = $query;
+                unset($parserVars['glue']);
+            }
+            
+            return $parserVars;
+        }        
+    }
 
     protected function _get($params)
     {
@@ -383,57 +461,10 @@ abstract class SqlDatabase extends DataStore
         $query = "SELECT $fields FROM " . ($this->schema != '' ? $this->quotedSchema . "." :'') . $this->quotedTable . " $joins ";
 
         // Generate conditions
-        $hasManyConditions = array();
         
-        if($params["conditions"] !== null && is_array($params["conditions"]))
-        {
-            // Go through the array of conditions and generate an SQL condition
-            foreach($params["conditions"] as $field => $condition)
-            {
-                if($params["fetch_related"] === true || $params["fetch_belongs_to"] === true)
-                {
-                    $modelName = Model::extractModelName($field);
-                    if($this->model->getRelationshipWith($modelName) == Model::RELATIONSHIP_HAS_MANY)
-                    {
-                        $hasManyConditions[$modelName][$field] = $condition;
-                        continue;
-                    }
-                }
-                if(is_array($condition))
-                {
-                    $databaseField = $this->resolveName($field);
-                    foreach($condition as $clause)
-                    {
-                        $orConditions[] = "$databaseField = '$clause'";
-                    }
-                }
-                else
-                {
-                    preg_match("/(?<field>[a-zA-Z1-9_.]*)\w*(?<operator>\>=|\<=|\<\>|\<|\>)?/", $field, $matches);
-                    $databaseField = $this->resolveName($matches["field"]);
-                    
-                    if($condition === null)
-                    {
-                        $operator = 'is';
-                    }
-                    else
-                    {
-                        $operator = $matches["operator"]==""?"=":$matches["operator"];
-                    }
-                    
-                    $condition = $condition === null ? 'NULL' : "'" . $this->escape($condition) . "'";
-                    $conditions[] = "$databaseField $operator $condition";
-                }
-            }
-            if(is_array($conditions))
-            {
-                $query .= " WHERE " . implode(" AND ", $conditions);
-            }
-            if(is_array($orConditions))
-            {
-                 $query .= (is_array($conditions) ? ' AND ' : ' WHERE ') . "(" . implode(" OR ", $orConditions) . ")";
-            }
-        }
+        $parserResults = $this->parseConditions($params['conditions'], $params);
+        $hasManyConditions = $parserResults['has_many_conditions'];
+        $query .= $parserResults['query'];
 
         // Add the sorting queries
         if(isset($params['sort'])) 
