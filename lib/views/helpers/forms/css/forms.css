@@ -82,6 +82,7 @@ label
 {
     font-weight:bold;
     color:#808080;
+    display: block;
 }
 
 div.form-element-div

@@ -175,12 +175,10 @@ class Ntentan
     private static $loadedDatastores = array();
     
     public static $context;
-
-    /**
-     * Current ntentan version
-     * @var string
-     */
-    //const VERSION = "0.5-rc1";
+    
+    private static $errorDepth;
+    
+    const MAX_ERROR_DEPTH = 30;
     
     public static function getClassFile($class)
     {
@@ -667,10 +665,12 @@ class Ntentan
 
     public static function error($message, $subTitle = null, $type = null, $showTrace = true, $trace = false)
     {
-        if(isset(Ntentan::$config[Ntentan::$context]['error_handler']) && Ntentan::$debug === false)
+        Ntentan::$errorDepth++;
+        if(isset(Ntentan::$config[Ntentan::$context]['error_handler']) && Ntentan::$debug === false && Ntentan::$errorDepth < Ntentan::MAX_ERROR_DEPTH)
         {
             $_GET['q'] = Ntentan::$config[Ntentan::$context]['error_handler'];
             Ntentan::route();
+            Ntentan::$errorDepth--;
         }
         else
         {
