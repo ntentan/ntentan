@@ -240,9 +240,13 @@ abstract class SqlDatabase extends DataStore
                     preg_match("/(?<field>[a-zA-Z1-9_.]*)\w*(?<operator>\>=|\<=|\<\>|\<|\>)?/", $field, $matches);
                     $databaseField = $this->resolveName($matches["field"]);
                     
-                    if($condition === null)
+                    if($condition === null && $matches['operator'] == '<>')
                     {
-                        $operator = 'is';
+                        $operator = 'IS NOT';
+                    }
+                    else if($condition === null)
+                    {
+                        $operator = 'IS';
                     }
                     else
                     {
