@@ -52,7 +52,7 @@ class Table extends Renderer
         return $return;
     }
     
-    public function element($element, $showFields = true)
+    public function element($element)
     {
         if($element->getType() == 'HiddenField')
         {

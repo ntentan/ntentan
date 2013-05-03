@@ -52,7 +52,7 @@ class Inline extends Renderer
      *
      * @param $element The element to be rendererd.
      */
-    public function element($element, $showfields=true)
+    public function element($element)
     {
     	$ret = "";
     	// Ignore Hidden Fields
