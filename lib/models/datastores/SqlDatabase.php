@@ -304,6 +304,9 @@ abstract class SqlDatabase extends DataStore
             
             $fields = array();
             
+            $hasManyFields = array();
+            $belongsToFields = array();
+            
             foreach($requestedFields as $index => $field)
             {
                 if($params["fetch_related"] === true || $params["fetch_belongs_to"] === true)
@@ -326,7 +329,7 @@ abstract class SqlDatabase extends DataStore
                 }
 
                 $fields[$index] = $this->resolveName($field, true, $description);
-                if($params["fetch_belongs_to"] && $description["fields"][$field]["foreign_key"] === true && $description["fields"][$field]["alias"] != '')
+                if($params["fetch_belongs_to"] && $description["fields"][$field]["foreign_key"] && $description["fields"][$field]["alias"] != '')
                 {
                     $fields[$index] .= " AS {$description["fields"][$field]["alias"]}";
                 }
@@ -336,7 +339,7 @@ abstract class SqlDatabase extends DataStore
 
         // Generate joins
         $joins = "";
-        
+                
         // Related joins from the model description
         if($params["fetch_related"] === true || $params["fetch_belongs_to"] === true)
         {
@@ -374,13 +377,13 @@ abstract class SqlDatabase extends DataStore
                     {
                         $alias = $relatedModel["as"];
                         $relatedModel = $relatedModel[0];
-                    }                    
+                    }
+                    $relatedModel = Ntentan::plural($relatedModel);
 
                     // If the related belongs to field was not queried then skip this whole step entirely
-                    
                     if($numRequestedBelongsTo > 0 & isset($belongsToFields[$relatedModel]))
                     {
-                        $model = Model::load(Model::getBelongsTo($relatedModel));
+                        $model = Model::load($relatedModel);
                         $datastore = $model->dataStore;
                         $joinedModelDescription = $model->describe();
                         $joinedModelFields = $belongsToFields[$relatedModel];
@@ -411,7 +414,7 @@ abstract class SqlDatabase extends DataStore
                     }
                     else
                     {
-                        $joinedTable = $alias;
+                        $joinedTable = $datastore->table;
                     }
                     
                     foreach($joinedModelFields as $index => $field)
@@ -428,8 +431,7 @@ abstract class SqlDatabase extends DataStore
                     }
                     
                     $joins .= " LEFT JOIN " . ($datastore->schema == "" ? '' : "{$datastore->schema}.") . $datastore->table . " "
-                           .  ($alias != null ? "AS $alias" : "")
-                           .  " ON " . ($alias != null ? $alias : $datastore->table) . ".id = {$this->table}."
+                           .  " ON {$datastore->table}.id = {$this->table}."
                            .  ($alias != null ? $alias : Ntentan::singular($datastore->table) . "_id ");
 
                 }
@@ -525,7 +527,9 @@ abstract class SqlDatabase extends DataStore
                             unset($results[$index][$field]);
                         }
                     }
+                    
                     $modelizedFields = array_unique($modelizedFields);
+                    
                     foreach($modelizedFields as $modelizedField)
                     {
                         if($description["fields"][$modelizedField]["alias"])
