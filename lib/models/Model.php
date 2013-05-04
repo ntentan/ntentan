@@ -260,8 +260,6 @@ class Model implements ArrayAccess, Iterator
             if($related == $modelType) return Model::RELATIONSHIP_HAS_MANY;
         }
         
-        $modelType = Ntentan::singular($modelType);
-        
         foreach($this->belongsTo as $related)
         {
             if($related == $modelType) return Model::RELATIONSHIP_BELONGS_TO;

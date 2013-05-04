@@ -61,6 +61,7 @@ abstract class SqlDatabase extends DataStore
     protected $tables;
     public static $logQueries;
     protected $numRows;    
+    public $lastQuery;
 
     public function __construct($parameters)
     {
@@ -157,7 +158,7 @@ abstract class SqlDatabase extends DataStore
         }
     }
 
-    protected function resolveName($fieldPath, $reformat=false, $description = null)
+    protected function resolveName($fieldPath)
     {
         if(strpos($fieldPath, ".") === false)
         {
@@ -238,7 +239,7 @@ abstract class SqlDatabase extends DataStore
                 else
                 {
                     preg_match("/(?<field>[a-zA-Z1-9_.]*)\w*(?<operator>\>=|\<=|\<\>|\<|\>)?/", $field, $matches);
-                    $databaseField = $this->resolveName($matches["field"]);
+                    $databaseField = $this->resolveName($matches["field"]);                    
                     
                     if($condition === null && $matches['operator'] == '<>')
                     {
@@ -339,7 +340,7 @@ abstract class SqlDatabase extends DataStore
 
         // Generate joins
         $joins = "";
-                
+        
         // Related joins from the model description
         if($params["fetch_related"] === true || $params["fetch_belongs_to"] === true)
         {
@@ -378,12 +379,11 @@ abstract class SqlDatabase extends DataStore
                         $alias = $relatedModel["as"];
                         $relatedModel = $relatedModel[0];
                     }
-                    $relatedModel = Ntentan::plural($relatedModel);
 
                     // If the related belongs to field was not queried then skip this whole step entirely
                     if($numRequestedBelongsTo > 0 & isset($belongsToFields[$relatedModel]))
                     {
-                        $model = Model::load($relatedModel);
+                        $model = Model::load(Model::getBelongsTo($relatedModel));
                         $datastore = $model->dataStore;
                         $joinedModelDescription = $model->describe();
                         $joinedModelFields = $belongsToFields[$relatedModel];
@@ -429,11 +429,11 @@ abstract class SqlDatabase extends DataStore
                     {
                         $fields = $fields . ", " . implode(", ", $joinedModelFields);
                     }
-                    
+                                        
                     $joins .= " LEFT JOIN " . ($datastore->schema == "" ? '' : "{$datastore->schema}.") . $datastore->table . " "
                            .  " ON {$datastore->table}.id = {$this->table}."
                            .  ($alias != null ? $alias : Ntentan::singular($datastore->table) . "_id ");
-
+                           
                 }
             }
         }
@@ -673,11 +673,6 @@ abstract class SqlDatabase extends DataStore
         return $id;
     }
 
-    public function getDataStoreInfo()
-    {
-
-    }
-
     protected function _update($data)
     {
         $description = $this->model->describe();
@@ -732,6 +727,7 @@ abstract class SqlDatabase extends DataStore
     
     public function query($query)
     {
+        $this->lastQuery = $query;
         if(Ntentan::$debug === true)
         {
             if(is_writeable('logs/queries.log'))
