@@ -49,6 +49,8 @@ class SelectionList extends Field
      * @var boolean
      */
     protected $multiple;
+    
+    protected $default;
 
     /**
      * Constructs a new selection list. This constructor could be invoked through
@@ -62,7 +64,6 @@ class SelectionList extends Field
     {
         Field::__construct($name);
         Element::__construct($label, $description);
-        $this->addOption("","");
     }
 
     /**
@@ -102,14 +103,25 @@ class SelectionList extends Field
         $this->addOption($label, $value);
         return $this;
     }
+    
+    public function initial($default)
+    {
+        $this->default = $default;
+        return $this;
+    }
 
     public function render()
     {
+        $keys = array_keys($this->options);
+        array_unshift($keys, '');
+        array_unshift($this->options, $this->default);
+        $this->options = array_combine($keys, $this->options);
+        
         $this->addAttribute("id",$this->id());
         $ret = "<select {$this->getAttributes()} class='fapi-list ".$this->getCSSClasses()."' name='".$this->getName()."' ".($this->multiple?"multiple='multiple'":"").">";
         foreach($this->options as $value => $label)
         {
-                $ret .= "<option value='$value' ".($this->getValue()==$value?"selected='selected'":"").">$label</option>";
+                $ret .= "<option value='$value' ".($this->getValue()===$value?"selected='selected'":"").">$label</option>";
         }
         $ret .= "</select>";
         return $ret;
