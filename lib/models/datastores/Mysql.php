@@ -42,6 +42,7 @@ use ntentan\models\exceptions\DataStoreException;
 class Mysql extends SqlDatabase
 {
     private static $db = false;
+    private static $transactionsDepth = 0;
 	
     protected function connect($parameters)
     {
@@ -329,12 +330,14 @@ class Mysql extends SqlDatabase
     
     public function begin()
     {
-        $this->query("START TRANSACTION");
+        if(self::$transactionsDepth == 0) $this->query("START TRANSACTION");
+        self::$transactionsDepth++;
     }
     
     public function end()
     {
-        $this->query("COMMIT");
+        self::$transactionsDepth--;
+        if(self::$transactionsDepth == 0) $this->query("COMMIT");
     }
 
     protected function limit($limitParams)
