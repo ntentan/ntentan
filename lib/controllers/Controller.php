@@ -264,10 +264,11 @@ class Controller
 
     private function loadComponent($component, $arguments, $path, $plugin = null)
     {
-        $componentName = "$path\\$component\\" . Ntentan::camelize($component) . 'Component';
+        $camelizedComponent = Ntentan::camelize($component);
+        $componentName = "$path\\$component\\{$camelizedComponent}Component";
         if(file_exists(Ntentan::getClassFile($componentName)))
         {
-            $key = Ntentan::camelizeAndLowerFirst($plugin) . ($plugin == null ? $component : Ntentan::camelize($component));
+            $key = Ntentan::camelizeAndLowerFirst($plugin . ($plugin == null ? $camelizedComponent : $camelizedComponent));
 
             $componentClass = new ReflectionClass($componentName);
             $componentInstance = $componentClass->newInstanceArgs($arguments);
@@ -525,6 +526,7 @@ class Controller
                 {
                     $component->variables = $this->variables;
                     $component->runMethod($params, $path);
+                    break;
                 }
             }
         }
