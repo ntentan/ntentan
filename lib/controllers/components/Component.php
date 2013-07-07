@@ -104,6 +104,11 @@ class Component extends Controller
     {
         $this->controller->set($params1, $params2);
     }
+    
+    public function setIfNotSet($params1, $params2 = null)
+    {
+        $this->controller->setIfNotSet($params1, $params2);
+    }
 
     /**
      * (non-PHPdoc)

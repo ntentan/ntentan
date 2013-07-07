@@ -311,6 +311,14 @@ class Controller
             $this->variables[$params1] = $params2;
         }
     }
+    
+    public function setIfNotSet($params1, $params2)
+    {
+        if(!isset($this->variables[$params1]))
+        {
+            $this->variables[$params1] = $params2;
+        }
+    }
 
     protected function getVariable($variable)
     {
