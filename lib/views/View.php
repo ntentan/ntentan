@@ -51,8 +51,8 @@ class View extends Presentation
     {
         $this->setContentType("text/html");
         $this->layout = "main.tpl.php";
-        TemplateEngine::appendPath("views");
-        TemplateEngine::appendPath("views/default");
+        TemplateEngine::prependPath("views");
+        TemplateEngine::prependPath("views/default");
     }
 
     public function setContentType($contentType, $encoding="UTF-8")

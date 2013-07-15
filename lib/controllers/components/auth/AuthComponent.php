@@ -48,20 +48,26 @@ use \ntentan\controllers\components\Component;
 class AuthComponent extends Component
 {
     /**
-     *
+     * 
      */
     const REDIRECT      = 'redirect';
     
     /**
-     *
+     * 
      */
     const CALL_FUNCTION = 'call_function';
+    
+    /**
+     * 
+     * @var string
+     */
     const DO_NOTHING    = 'do_nothing';
 
     /**
      * The route through which the login method of the auth component should be
      * invoked. This path should point to a controller which exists and implements 
      * the required method.
+     * 
      * @var string
      */
     public $loginRoute;
@@ -70,6 +76,7 @@ class AuthComponent extends Component
      * The route through wich the logout method of the auth component should be
      * invoked. This path should point to a controller which exists and
      * implements the required method. 
+     * 
      * @var string
      */
     public $logoutRoute;
@@ -157,7 +164,7 @@ class AuthComponent extends Component
             if($_SESSION["logged_in"] === false || !isset($_SESSION["logged_in"]))
             {
                 $this->set('app_name', Ntentan::$config['application']['name']);
-                $this->set('title', Ntentan::$config['application']['name'] . " | Login");
+                $this->set('title', "Login");
                 $this->login();
             }
         }
