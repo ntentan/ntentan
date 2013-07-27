@@ -112,9 +112,16 @@ class Ntentan
 
     /**
      * The default route to use when no route is specified in the URL.
-     * @var unknown_type
+     * @var string
      */
     public static $defaultRoute = "home";
+    
+    /**
+     * If some routing logic is used to rewrite the route then this default route
+     * should apply.
+     * @var string
+     */
+    public static $postRoutingDefaultRoute = "";
 
     /**
      * The route which was requested through the URL. In cases where the route
@@ -353,16 +360,19 @@ class Ntentan
                     {
                         foreach($route["globals"] as $key => $value)
                         {
-                            define(
-                                $key,
-                                str_replace(array_keys($parts), $parts, $value)
-                            );
+                            $GLOBALS["ROUTE_$key"] =str_replace(array_keys($parts), $parts, $value);
                         }
                     }
                     break;
                 }
             }
         }
+        
+        if(Ntentan::$route == "") 
+        {
+            Ntentan::$route = isset($route['default']) ? 
+                $route['default'] : Ntentan::$postRoutingDefaultRoute;
+        }        
 
         $module = controllers\Controller::load(Ntentan::$route);
         

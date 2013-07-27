@@ -174,7 +174,7 @@ class AuthComponent extends Component
     {
         $this->set("login_message", $this->authMethodInstance->message);
         $this->set("login_status", false);
-        if(Ntentan::$route != $this->loginRoute)
+        if(Ntentan::$route != $this->loginRoute && Ntentan::$requestedRoute != $this->loginRoute)
         {
             Ntentan::redirect(
                 $this->loginRoute .
@@ -256,6 +256,11 @@ class AuthComponent extends Component
     public static function userId()
     {
         return $_SESSION["user_id"];
+    }
+    
+    public static function loggedIn()
+    {
+        return isset($_SESSION['user']);
     }
     
     public function getProfile()
