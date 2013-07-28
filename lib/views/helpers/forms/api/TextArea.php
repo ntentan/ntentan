@@ -33,7 +33,7 @@ class TextArea extends Field
         $this->addAttribute('cols', 80);
         $this->addAttribute('class', 'fapi-textarea');
         $this->addAttribute('name', $this->getName());
-        return "<textarea ".$this->getAttributes().$this->getCSSClasses()."'>".
+        return "<textarea ".$this->getAttributes().$this->getCSSClasses().">".
                $this->getValue()."</textarea>";
     }
 }
