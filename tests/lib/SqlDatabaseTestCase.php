@@ -456,7 +456,6 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
         $user = $this->users->getFirstWithId(1);
         $this->assertInstanceOf('tests\modules\users\Users', $user);
         $this->assertEquals('odadzie', $user->username);
-        
         $this->assertInstanceOf('tests\modules\roles\Roles', $user->role);
         $user = $user->toArray();
         $this->assertContains(array('name' => 'System Administrator', 'id' => '1'), $user);
@@ -474,11 +473,11 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
         );
         
         $this->assertInstanceOf('tests\modules\roles\Roles', $user->role);
-        $this->assertInstanceOf('tests\modules\departments\Departments', $user->department);
+        $this->assertInstanceOf('tests\modules\departments\Departments', $user->office);
         
         $user = $user->toArray();
         $this->assertCount(1, $user['role']);
-        $this->assertCount(1, $user['department']);
+        $this->assertCount(1, $user['office']);
         
         $users = $this->users->getWithIsAdmin(null,array(
             'fields' => array('username'),

@@ -414,24 +414,26 @@ abstract class SqlDatabase extends DataStore
                     }
                     else
                     {
-                        $joinedTable = $datastore->table;
+                        $joinedTable = "{$datastore->table}_as_$alias";
                     }
                     
                     foreach($joinedModelFields as $index => $field)
                     {
-                        $joinedModelFields[$index] =
-                            $this->quote($joinedTable)
-                             . "." . $this->quote($field) . " AS "
-                             . $this->quote($model->getRoute() . ".$field");
+                        $joinedModelFields[$index] = $this->quote($joinedTable)
+                            . "." . $this->quote($field) . " AS "
+                            . $this->quote($alias =='' ? "{$model->getRoute()}.$field" : "$alias.$field");
                     }
                     
                     if($params['type'] != 'count')
                     {
                         $fields = $fields . ", " . implode(", ", $joinedModelFields);
                     }
+                    
+                    $table = ($alias == '' ? $datastore->table : "{$datastore->table}_as_$alias");
                                         
                     $joins .= " LEFT JOIN " . ($datastore->schema == "" ? '' : "{$datastore->schema}.") . $datastore->table . " "
-                           .  " ON {$datastore->table}.id = {$this->table}."
+                           .  ($alias == '' ? '' : "$table ")
+                           .  " ON $table.id = {$this->table}."
                            .  ($alias != null ? $alias : Ntentan::singular($datastore->table) . "_id ");
                            
                 }
