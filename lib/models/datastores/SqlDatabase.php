@@ -570,7 +570,9 @@ abstract class SqlDatabase extends DataStore
                                         is_array($hasManyConditions[$hasMany]) ? $hasManyConditions[$hasMany] : array()
                                     ),
                                 "fields" => $hasManyFields[$hasMany],
-                                'sort' => $params["{$hasMany}_sort"]
+                                'sort' => $params["{$hasMany}_sort"],
+                                'fetch_related' => $params['fetch_related'],
+                                'fetch_has_many' => $params['fetch_has_many']
                             )
                         );
                         $results[$index][$this->formatRelatedModelName($hasMany, $params)] = $relatedData;
