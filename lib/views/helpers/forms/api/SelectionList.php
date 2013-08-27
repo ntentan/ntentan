@@ -1,6 +1,6 @@
 <?php
 /**
- * Checkboxes for forms
+ * Selection Lists for forms
  * 
  * Ntentan Framework
  * Copyright (c) 2008-2012 James Ekow Abaka Ainooson

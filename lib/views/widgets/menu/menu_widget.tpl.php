@@ -26,7 +26,7 @@
         if($key == 'url' || $key == 'label' || $key == 'selected') continue;
         $params .= "$key = '$value' ";
     }
-$id = str_replace(" ","_",strtolower($item["label"])) . '-menu-item';
+$id = 'menu-item' . str_replace("/","-",strtolower($item["url"]));
 ?>
 <li <?php echo $params ?> id="<?php echo $id ?>" class='menu-item <?php echo $item['selected'] ? "menu-selected " : ""; echo $id; ?>'>
 <?php if($has_links == true):?>
