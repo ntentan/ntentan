@@ -241,7 +241,10 @@ class FormsHelper extends Helper
         {
             if($arguments[0] != "")
             {
-                $this->container->submitValue = $arguments[0];
+                foreach($arguments as $argument)
+                {
+                    $this->container->submitValues[] = $argument;
+                }
             }
             elseif($arguments[0] === false)
             {

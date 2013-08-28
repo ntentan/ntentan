@@ -385,22 +385,33 @@ class Model implements ArrayAccess, Iterator
             $behaviour->preUpdate($this->data);
         }        
         $this->preUpdateCallback();
-        if($this->validate())
+        if(!$this->validate())
         {
-            $this->dataStore->setModel($this);
-            $this->dataStore->update();
-            foreach($this->behaviourInstances as $behaviour)
+            $errorsFound = false;
+            foreach($this->invalidFields as $field => $errors)
             {
-                $behaviour->preUpdate($this->data);
-            }            
-            $this->postUpdateCallback();
-            $this->dataStore->end();
-            return true;
+                if(isset($this->data[$field]))
+                {
+                    $errorsFound = true;
+                }
+                else
+                {
+                    unset($this->invalidFields[$field]);
+                }
+            }
+            if($errorsFound) return false;
         }
-        else
+        
+        $this->dataStore->setModel($this);
+        $this->dataStore->update();
+        foreach($this->behaviourInstances as $behaviour)
         {
-            return false;
-        }
+            $behaviour->preUpdate($this->data);
+        }            
+        $this->postUpdateCallback();
+        $this->dataStore->end();
+        return true;
+        
     }
 
     public function delete()

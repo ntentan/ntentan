@@ -38,9 +38,8 @@ use ntentan\views\helpers\forms\FormsHelper;
  */
 class Form extends Container
 {
-    public $submitValue;
+    public $submitValues = array();
     public $showSubmit = true;
-    public $successUrl;
     protected $method = "POST";
     private $action;
     
@@ -77,13 +76,16 @@ class Form extends Container
         if($this->showSubmit)
         {
             $ret .= '<div class="form-submit-area">';
-            $submitValue = $this->submitValue?("value='{$this->submitValue}'"):"";
-            if($this->ajaxSubmit)
+            foreach($this->submitValues as $submitValue)
             {
-                $ret .= sprintf('<input class="form-submit" type="button" %s onclick="%s"  />',$submitValue,$onclickFunction);
-            }
-            else
-            {
+                if(is_array($submitValue))
+                {
+                    $submitValue = $submitValue?("value='{$submitValue['value']}' name='{$submitValue['name']}' id='{$submitValue['id']}'"):"";
+                }
+                else
+                {
+                    $submitValue = $submitValue?("value='$submitValue'"):"";
+                }
                 $ret .= sprintf('<input class="form-submit" type="submit" %s />',$submitValue);
             }
             $ret .= '</div>';
