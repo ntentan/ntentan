@@ -43,7 +43,6 @@ use \Exception;
 class FormsHelper extends Helper
 {
     private $container;
-    public $submitValue;
     public $id;
     private static $rendererInstance;
     public static $renderer = "inline";
@@ -62,7 +61,6 @@ class FormsHelper extends Helper
         \ntentan\views\template_engines\TemplateEngine::appendPath(
             Ntentan::getFilePath("lib/views/helpers/forms/views")
         );
-        $this->container = new api\Form();
     }
     
     /**
@@ -71,7 +69,6 @@ class FormsHelper extends Helper
      */
     public function __toString()
     {
-        $this->container->submitValue = $this->submitValue;
         $this->container->setId($this->id);
         $this->container->setData(self::$data);
         $this->container->setErrors($this->errors);
@@ -219,6 +216,7 @@ class FormsHelper extends Helper
     {
         if($function == "open")
         {
+            $this->container = new api\Form();
             if($arguments[0] != '')
             {
                 $this->container->setId($arguments[0]);

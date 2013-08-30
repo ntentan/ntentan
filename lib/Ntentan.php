@@ -598,8 +598,9 @@ class Ntentan
      * Converts a dot separeted string or under-score separated string into
      * a camelcase format.
      * 
-     * @param string $string The string to be converted.
-     * @param string $delimiter The delimiter to be used as the trigger for capitalisation
+     * @param string $string    The string to be converted.
+     * @param string $delimiter The delimiter to be used as the trigger for 
+     *                          capitalisation
      * @param string $baseDelimiter Another delimiter to be used as a second trigger for capitalisation
      * @param string $firstPartLowercase When set to true, the first letter of the camelcase returned is a lowecase character
      */
