@@ -670,7 +670,7 @@ class Model implements ArrayAccess, Iterator
         }
         else if(is_array($this->data))
         {
-            return json_encode($this->data, true);
+            return json_encode($this->toArray(), true);
         }
     }
     

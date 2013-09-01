@@ -117,7 +117,6 @@ class SelectionList extends Field
         array_unshift($this->options, $this->default);
         $this->options = array_combine($keys, $this->options);
         
-        //$this->addAttribute("id",$this->id());
         $ret = "<select {$this->getAttributes()} class='fapi-list ".$this->getCSSClasses()."' name='".$this->getName()."' ".($this->multiple?"multiple='multiple'":"").">";
         foreach($this->options as $value => $label)
         {
