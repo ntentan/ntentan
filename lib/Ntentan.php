@@ -185,7 +185,7 @@ class Ntentan
     
     private static $errorDepth;
     
-    const MAX_ERROR_DEPTH = 30;
+    const MAX_ERROR_DEPTH = 10;
     
     public static function getClassFile($class)
     {
@@ -332,7 +332,7 @@ class Ntentan
     {
         // Implement the routing engine
         Ntentan::$requestedRoute = $_GET["q"];
-        if(Ntentan::$route =='' ) Ntentan::$route = $_GET["q"];
+        if(Ntentan::$route =='' ) Ntentan::$route = Ntentan::$requestedRoute;
         unset($_GET["q"]);
         unset($_REQUEST["q"]);
 
@@ -374,7 +374,7 @@ class Ntentan
                 $route['default'] : Ntentan::$postRoutingDefaultRoute;
         }        
 
-        $module = controllers\Controller::load(Ntentan::$route);
+        controllers\Controller::load(Ntentan::$route);
         
         // Store all camelisations into the cache;
         if(count(Ntentan::$camelisations) > $camelisations)
@@ -679,16 +679,14 @@ class Ntentan
         Ntentan::$errorDepth++;
         if(isset(Ntentan::$config[Ntentan::$context]['error_handler']) && Ntentan::$debug === false && Ntentan::$errorDepth < Ntentan::MAX_ERROR_DEPTH)
         {
-            $_GET['q'] = Ntentan::$config[Ntentan::$context]['error_handler'];
-            Ntentan::route();
-            Ntentan::$errorDepth--;
+            controllers\Controller::load(Ntentan::$config[Ntentan::$context]['error_handler']);
         }
         else
         {
             echo Ntentan::message($message, $subTitle);
             die();
         }
-    }
+    }  
 
     public static function message($message, $subTitle = null, $type = null, $showTrace = true, $trace = false)
     {

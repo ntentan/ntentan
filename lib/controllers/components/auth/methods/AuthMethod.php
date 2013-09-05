@@ -17,7 +17,7 @@ abstract class AuthMethod
         $users = new $usersModelClass();
         $result = $users->getJustFirstWithUsername($username);
 
-        if($result->password == md5($password))
+        if($result->password == md5($password) && $result->blocked != '1')
         {
             $_SESSION["logged_in"] = true;
             $_SESSION["username"] = $username;
