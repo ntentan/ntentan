@@ -54,7 +54,12 @@ class Mysql extends SqlDatabase
                 $parameters["database_user"],
                 $parameters["database_password"]
             );
-            //self::$db->set_charset('utf8');
+            
+            if(self::$db->connect_error)
+            {
+                throw new DataStoreException("Could not connect to MySQL server");
+            }
+            
             if(!self::$db->select_db($parameters["database_name"]))
             {
                 throw new DataStoreException("Could not select database *{$parameters['database_name']}*");

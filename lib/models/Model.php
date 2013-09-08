@@ -92,6 +92,10 @@ class Model implements ArrayAccess, Iterator
      */
     public $belongsToModelInstances = array();
     
+    /**
+     * The route or name of this model
+     * @var string
+     */
     private $route;
     private $name;
     public $invalidFields = array();
