@@ -144,5 +144,4 @@ abstract class Field extends Element
     {
         return array();
     }
-
 }

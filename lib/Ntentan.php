@@ -46,7 +46,7 @@ require "exceptions/NtentanException.php";
 require "exceptions/FileNotFoundException.php";
 
 //@todo Find a better way of handling exceptions
-//set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
+set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
 
 use ntentan\caching\Cache;
 

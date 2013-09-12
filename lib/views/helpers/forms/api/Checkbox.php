@@ -31,8 +31,6 @@
 
 namespace ntentan\views\helpers\forms\api;
 
-include_once "Field.php";
-
 /**
  * A regular checkbox with a label.
  */
