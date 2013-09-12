@@ -407,7 +407,7 @@ class Ntentan
      */
     public static function getFilePath($path)
     {
-        return Ntentan::$basePath . $path;
+        return Ntentan::$basePath . '/' . $path;
     }
 
     /**

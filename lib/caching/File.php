@@ -43,7 +43,14 @@ class File extends Cache
     
     public function __construct()
     {
-        $this->setCachePath(Ntentan::$config['application']['app_home'] . "/cache/");
+        if(isset(Ntentan::$config['application']['app_home']))
+        {
+            $this->setCachePath(Ntentan::$config['application']['app_home'] . "/cache/");
+        }
+        else
+        {
+            $this->setCachePath("cache/");
+        }
     }
     
     public function setCachePath($path)
