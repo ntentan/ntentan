@@ -1,39 +1,37 @@
 <?php
 
-require_once 'tests/lib/SqlDatabaseTestCase.php';
-require_once 'lib/models/datastores/DataStore.php';
-require_once 'lib/models/datastores/SqlDatabase.php';
-require_once 'lib/models/datastores/Postgresql.php';
+require_once TEST_HOME . '/lib/SqlDatabaseTestCase.php';
+require_once CODE_HOME . '/lib/models/datastores/DataStore.php';
+require_once CODE_HOME . '/lib/models/datastores/SqlDatabase.php';
+require_once CODE_HOME . '/lib/models/datastores/Postgresql.php';
 
 class PostgreSqlTest extends \ntentan\test_cases\SqlDatabaseTestCase
 {
+    
     protected function setUp()
     {
-        require $this->getConfigFile();
-        $config['application']['context'] = 'postgresql_test';
-        \ntentan\Ntentan::setup($config);
-        $this->datastoreName = 'postgresql';
+        $this->setupDatabase('postgresql');
         parent::setUp();
     }
 
     protected function getConnection()
     {
-        require $this->getConfigFile();
+        $config = $this->getDbConfig();
         $pdo = new PDO(
-            "pgsql:host={$config['postgresql_test']['database_host']};dbname={$config['postgresql_test']['database_name']}",
-            $config['postgresql_test']['database_user'],
-            $config['postgresql_test']['database_password']
+            "pgsql:host={$config['host']};dbname={$config['name']}",
+            $config['user'],
+            $config['password']
         );
         return $this->createDefaultDBConnection($pdo);
     }
     
     protected function getInstance()
     {
-        require $this->getConfigFile();
-        $parameters['hostname'] = $config['postgresql_test']['database_host'];
-        $parameters['username'] = $config['postgresql_test']['database_user'];
-        $parameters['password'] = $config['postgresql_test']['database_password'];
-        $parameters['database'] = $config['postgresql_test']['database_name'];
+        require $this->getDbConfig();
+        $parameters['hostname'] = $config['host'];
+        $parameters['username'] = $config['user'];
+        $parameters['password'] = $config['password'];
+        $parameters['database'] = $config['name'];
         return new \ntentan\models\datastores\Postgresql($parameters);
     }
 }

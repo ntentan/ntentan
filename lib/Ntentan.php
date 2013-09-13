@@ -95,11 +95,12 @@ class Ntentan
     public static $cachePath = "cache/";
 
     /**
-     *
+     * The cache method to be used
      */
     public static $cacheMethod = "file";
 
     public static $config;
+    public static $configPath = 'config/';
 
     public static $debug = false;
 
@@ -271,13 +272,12 @@ class Ntentan
      * data as a parameter. The details of the configuration parameter are
      * extracted from the config file.
      * 
-     * @param array $config The configuration data.
+     * @param array $ntentan The configuration data for ntentan
+     * @param array $app The configuration data for the application
      */
-    public static function setup($ntentan)
+    public static function setup($ntentan, $app = false)
     {
-        $config['application'] = $ntentan;
-        $app = parse_ini_file('config/app.ini', true);        
-        $config['application']['app_home'] = $app['home'];
+        $app = $app === false ? parse_ini_file(Ntentan::$configPath . 'app.ini', true) : $app;        
         
         // setup autoloader
         spl_autoload_register("ntentan\Ntentan::autoload");
@@ -285,9 +285,9 @@ class Ntentan
         // setup paths
         Ntentan::$basePath = $ntentan['home'];
         Ntentan::$namespace = $ntentan['namespace'];
-        Ntentan::$modulesPath = isset($config['application']['modules_path'])?
-            $config['application']['modules_path']:
-            $config['application']['namespace'];
+        Ntentan::$modulesPath = isset($ntentan['modules_path'])?
+            $ntentan['modules_path']:
+            $ntentan['namespace'];
         
         Ntentan::$prefix = $app['prefix'];
         Ntentan::$context = $app['context'];
@@ -295,7 +295,13 @@ class Ntentan
         Ntentan::$cacheMethod = $app[Ntentan::$context]['caching'] == '' ? Ntentan::$cacheMethod : $app[Ntentan::$context]['caching'];
         Ntentan::$pluginsPath = $app['plugins'] == '' ? 'plugins/' : $app['plugins'];
         Ntentan::$debug = $app[Ntentan::$context]['debug'] == 'true' ? true : false;
-        Ntentan::$config = $config;
+        
+        unset($app['home']);
+        unset($app['plugins']);
+        unset($app['prefix']);
+        unset($app['context']);
+        
+        Ntentan::$config = $app;
 
         // setup include paths
         Ntentan::addIncludePath(
@@ -464,9 +470,10 @@ class Ntentan
     {
         if(!isset(Ntentan::$config['db']))
         {
-            if(file_exists('config/db.ini'))
+            if(file_exists(Ntentan::$configPath . 'db.ini'))
             {
-                Ntentan::$config['db'] = parse_ini_file('config/db.ini');
+                $db = parse_ini_file(Ntentan::$configPath . 'db.ini', true);
+                Ntentan::$config['db'] = $db[Ntentan::$context];
                 return true;
             }
             else

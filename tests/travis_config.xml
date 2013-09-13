@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <phpunit>
     <php>
-        <var name="config" value="tests/config/travis.config.php" />
+        <var name="config" value="travis" />
     </php>
     <testsuites>
         <testsuite name="Caching testsuite">

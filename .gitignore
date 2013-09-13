@@ -10,5 +10,5 @@ Doxyfile
 report
 *.komodoproject
 *~
-tests/config/config.php
+tests/config/local
 tests/tmp/*

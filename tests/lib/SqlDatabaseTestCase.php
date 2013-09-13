@@ -1,15 +1,15 @@
 <?php
 namespace ntentan\test_cases;
 
-require_once 'lib/models/Model.php';
-require_once 'tests/app/modules/users/Users.php';
-require_once 'tests/app/modules/roles/Roles.php';
-require_once 'tests/app/modules/departments/Departments.php';
-require_once 'lib/Ntentan.php';
-require_once 'lib/models/exceptions/ModelNotFoundException.php';
-require_once 'lib/models/exceptions/DataStoreException.php';
-require_once 'lib/caching/Cache.php';
-require_once "lib/exceptions/MethodNotFoundException.php";
+require_once CODE_HOME . '/lib/models/Model.php';
+require_once TEST_HOME . '/app/modules/users/Users.php';
+require_once TEST_HOME . '/app/modules/roles/Roles.php';
+require_once TEST_HOME . '/app/modules/departments/Departments.php';
+require_once CODE_HOME . '/lib/Ntentan.php';
+require_once CODE_HOME . '/lib/models/exceptions/ModelNotFoundException.php';
+require_once CODE_HOME . '/lib/models/exceptions/DataStoreException.php';
+require_once CODE_HOME . '/lib/caching/Cache.php';
+require_once CODE_HOME . '/lib/exceptions/MethodNotFoundException.php';
 
 abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
 {
@@ -26,16 +26,29 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
      */
     abstract protected function getInstance();
     
-    protected function getConfigFile()
+    protected  function setupDatabase($name)
     {
-        if(isset($GLOBALS['config']))
-        {
-            return $GLOBALS['config'];
-        }
-        else
-        {
-            return "tests/config/config.php";
-        }
+        $config = $this->getConfig();
+        $config['app']['context'] = "{$name}_test";
+        \ntentan\Ntentan::setup($config['ntentan'], $config['app']);
+        \ntentan\Ntentan::$modulesPath = TEST_HOME . "/app";
+        $this->datastoreName = $name;
+    }
+
+
+    protected function getConfig()
+    {
+        \ntentan\Ntentan::$configPath = TEST_HOME . "/config/{$GLOBALS['config']}/";
+        return array(
+            'ntentan' => parse_ini_file(TEST_HOME . "/config/{$GLOBALS['config']}/ntentan.ini", true),
+            'app' => parse_ini_file(TEST_HOME . "/config/{$GLOBALS['config']}/app.ini", true)
+        );
+    }
+    
+    protected function getDBConfig()
+    {
+        $config = parse_ini_file(TEST_HOME . "/config/{$GLOBALS['config']}/db.ini", true);
+        return $config["{$this->datastoreName}_test"];
     }
 
     protected function getDataSet()
