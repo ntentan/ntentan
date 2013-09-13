@@ -187,6 +187,11 @@ class Ntentan
     
     const MAX_ERROR_DEPTH = 10;
     
+    public static function init()
+    {
+        
+    }
+    
     public static function getClassFile($class)
     {
         $key = "file_$class";
@@ -268,24 +273,28 @@ class Ntentan
      * 
      * @param array $config The configuration data.
      */
-    public static function setup($config)
+    public static function setup($ntentan)
     {
+        $config['application'] = $ntentan;
+        $app = parse_ini_file('config/app.ini', true);        
+        $config['application']['app_home'] = $app['home'];
+        
         // setup autoloader
         spl_autoload_register("ntentan\Ntentan::autoload");
         
         // setup paths
-        Ntentan::$basePath = $config['application']['ntentan_home'];
-        Ntentan::$namespace = $config['application']['namespace'];
+        Ntentan::$basePath = $ntentan['home'];
+        Ntentan::$namespace = $ntentan['namespace'];
         Ntentan::$modulesPath = isset($config['application']['modules_path'])?
             $config['application']['modules_path']:
             $config['application']['namespace'];
         
-        Ntentan::$prefix = $config['application']['prefix'];
-        Ntentan::$context = $config['application']['context'];
+        Ntentan::$prefix = $app['prefix'];
+        Ntentan::$context = $app['context'];
 
-        Ntentan::$cacheMethod = $config[Ntentan::$context]['caching'] == '' ? Ntentan::$cacheMethod : $config[Ntentan::$context]['caching'];
-        Ntentan::$pluginsPath = $config[Ntentan::$context]['plugins'] == '' ? 'plugins/' : $config[Ntentan::$context]['plugins'];
-        Ntentan::$debug = $config[Ntentan::$context]['debug'];
+        Ntentan::$cacheMethod = $app[Ntentan::$context]['caching'] == '' ? Ntentan::$cacheMethod : $app[Ntentan::$context]['caching'];
+        Ntentan::$pluginsPath = $app['plugins'] == '' ? 'plugins/' : $app['plugins'];
+        Ntentan::$debug = $app[Ntentan::$context]['debug'] == 'true' ? true : false;
         Ntentan::$config = $config;
 
         // setup include paths
@@ -450,6 +459,26 @@ class Ntentan
         $url = $absolute === true ? $url : Ntentan::getUrl($url);
         header("Location: $url ");
     }
+    
+    private static function getDatastoreConfig()
+    {
+        if(!isset(Ntentan::$config['db']))
+        {
+            if(file_exists('config/db.ini'))
+            {
+                Ntentan::$config['db'] = parse_ini_file('config/db.ini');
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        elseif(isset(Ntentan::$config['db']))
+        {
+            return true;
+        }
+    }
 
     /**
      * Returns the default datastore as defined in the config/db.php
@@ -457,31 +486,31 @@ class Ntentan
      */
     public static function getDefaultDataStore($instance = false)
     {
-        if(isset(Ntentan::$config[Ntentan::$context]['datastore']))
+        if(self::getDatastoreConfig())
         {
             if($instance === true)
             {
-                if(!isset(Ntentan::$loadedDatastores[Ntentan::$config[Ntentan::$context]['datastore']]))
+                if(!isset(Ntentan::$loadedDatastores[Ntentan::$config['db']['datastore']]))
                 {
-                    $dataStoreClass = "\\ntentan\\models\\datastores\\" . Ntentan::camelize(Ntentan::$config[Ntentan::$context]['datastore']);
+                    $dataStoreClass = "\\ntentan\\models\\datastores\\" . Ntentan::camelize(Ntentan::$config['db']['datastore']);
                     if(class_exists($dataStoreClass))
                     {
-                        Ntentan::$loadedDatastores[Ntentan::$config[Ntentan::$context]['datastore']] = new $dataStoreClass(Ntentan::$config[Ntentan::$context]);
+                        Ntentan::$loadedDatastores[Ntentan::$config['db']['datastore']] = new $dataStoreClass(Ntentan::$config['db']);
                     }
                     else
                     {
                         throw new exceptions\DataStoreException("Datastore {$dataStoreClass} doesn't exist.");
                     }
                 }
-                return Ntentan::$loadedDatastores[Ntentan::$config[Ntentan::$context]['datastore']];
+                return Ntentan::$loadedDatastores[Ntentan::$config['db']['datastore']];
             }
             else
             {
-                if(!isset(Ntentan::$config[Ntentan::$context]['datastore_class']))
+                if(!isset(Ntentan::$config['db']['datastore_class']))
                 {
-                    Ntentan::$config[Ntentan::$context]['datastore_class'] ="ntentan\\models\\datastores\\" . Ntentan::camelize(Ntentan::$config[Ntentan::$context]["datastore"]);
+                    Ntentan::$config['db']['datastore_class'] ="ntentan\\models\\datastores\\" . Ntentan::camelize(Ntentan::$config['db']["datastore"]);
                 }
-                return Ntentan::$config[Ntentan::$context];
+                return Ntentan::$config['db'];
             }
         }
         else
@@ -683,7 +712,7 @@ class Ntentan
         }
         else
         {
-            echo Ntentan::message($message, $subTitle);
+            echo Ntentan::message($message, $subTitle, $type, $showTrace, $trace);
             die();
         }
     }  
@@ -715,14 +744,15 @@ class Ntentan
     {
         $class = new \ReflectionObject($exception);
         $logged = utils\Logger::log($exception->getMessage() . "\n" . $exception->getTraceAsString(), "logs/application.log");
+        
         echo Ntentan::error(
             "Exception <code><b>{$class->getName()}</b></code> thrown in " .
             "<code><b>{$exception->getFile()}</b></code> on line " .
             "<code><b>{$exception->getLine()}</b></code>. " . 
              $exception->getMessage() .
              ( $logged === false ? 
-                 "\n\n<p>Failed to log this exception. Please check and ensure" . 
-                  "that the file [logs/application.log] exists and is" .
+                 "\n\n<p>Failed to log this exception. Please check and ensure " . 
+                  "that the file [logs/application.log] exists and is " .
                   "writable.</p>" : ""
              ),
             "Exception <code>" . $class->getName() . "</code> thrown",

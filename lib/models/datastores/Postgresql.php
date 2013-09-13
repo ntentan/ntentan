@@ -42,17 +42,17 @@ class Postgresql extends SqlDatabase
 
     public function connect($parameters)
     {
-        if(isset($parameters["database_schema"]))
+        if(isset($parameters["schema"]))
         {
-            $this->schema = $parameters["database_schema"];
+            $this->schema = $parameters["schema"];
         }
         else
         {
             $this->schema = "public";
         }
         $this->db = pg_connect(
-            "host={$parameters["database_host"]} dbname={$parameters["database_name"]} user={$parameters["database_user"]} password={$parameters["database_password"]}"
-        );
+            "host={$parameters["host"]} dbname={$parameters["name"]} user={$parameters["user"]} password={$parameters["password"]}"
+        );            
     }
 
     protected function _query($query)

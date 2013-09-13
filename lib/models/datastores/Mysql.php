@@ -46,23 +46,22 @@ class Mysql extends SqlDatabase
 	
     protected function connect($parameters)
     {
-        $this->schema = $parameters["database_name"];
+        $this->schema = $parameters["name"];
         if(self::$db === false)
         {
             self::$db = new mysqli(
-                $parameters["database_host"],
-                $parameters["database_user"],
-                $parameters["database_password"]
+                $parameters["host"],
+                $parameters["user"],
+                $parameters["password"]
             );
             
             if(self::$db->connect_error)
             {
                 throw new DataStoreException("Could not connect to MySQL server");
             }
-            
-            if(!self::$db->select_db($parameters["database_name"]))
+            if(!self::$db->select_db($parameters["name"]))
             {
-                throw new DataStoreException("Could not select database *{$parameters['database_name']}*");
+                throw new DataStoreException("Could not select database *{$parameters['name']}*");
             }
         }
     }
