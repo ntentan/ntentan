@@ -45,9 +45,6 @@ require "caching/Cache.php";
 require "exceptions/NtentanException.php";
 require "exceptions/FileNotFoundException.php";
 
-//@todo Find a better way of handling exceptions
-set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
-
 use ntentan\caching\Cache;
 
 /**
@@ -277,11 +274,23 @@ class Ntentan
      */
     public static function setup($ntentan, $app = false)
     {
-        $app = $app === false ? parse_ini_file(Ntentan::$configPath . 'app.ini', true) : $app;        
-        
         // setup autoloader
         spl_autoload_register("ntentan\Ntentan::autoload");
         
+        $configFile = Ntentan::$configPath . 'app.ini';
+        
+        if($app === false && !file_exists($configFile))
+        {
+            throw new exceptions\FileNotFoundException("Config file *app.ini* not found");
+        }
+        else
+        {
+            $app = $app === false ? parse_ini_file($configFile, true) : $app;        
+        }
+        
+        // hook in the custom exception handler
+        set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
+                
         // setup paths
         Ntentan::$basePath = $ntentan['home'];
         Ntentan::$namespace = $ntentan['namespace'];
