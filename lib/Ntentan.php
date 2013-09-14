@@ -39,14 +39,13 @@ namespace ntentan;
 
 /**
  * Include a collection of utility global functions, caching and exceptions. 
+ * Classes loaded here are likely to be called before the autoloader kicks in.
  */
 require "globals.php";
 require "caching/Cache.php";
 require "exceptions/NtentanException.php";
 require "exceptions/FileNotFoundException.php";
-
-//@todo Find a better way of handling exceptions
-set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
+require "exceptions/ApiIniFileNotFoundException.php";
 
 use ntentan\caching\Cache;
 
@@ -277,11 +276,24 @@ class Ntentan
      */
     public static function setup($ntentan, $app = false)
     {
-        $app = $app === false ? parse_ini_file(Ntentan::$configPath . 'app.ini', true) : $app;        
-        
         // setup autoloader
         spl_autoload_register("ntentan\Ntentan::autoload");
         
+        $configFile = Ntentan::$configPath . 'app.ini';
+        
+        if($app === false && !file_exists($configFile))
+        {
+            throw new exceptions\ApiIniFileNotFoundException("Config file *app.ini* not found");
+        }
+        else
+        {
+            $app = $app === false ? parse_ini_file($configFile, true) : $app;        
+        }
+        
+        
+        // hook in the custom exception handler
+        set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
+                
         // setup paths
         Ntentan::$basePath = $ntentan['home'];
         Ntentan::$namespace = $ntentan['namespace'];
@@ -292,9 +304,16 @@ class Ntentan
         Ntentan::$prefix = $app['prefix'];
         Ntentan::$context = $app['context'];
 
-        Ntentan::$cacheMethod = $app[Ntentan::$context]['caching'] == '' ? Ntentan::$cacheMethod : $app[Ntentan::$context]['caching'];
-        Ntentan::$pluginsPath = $app['plugins'] == '' ? 'plugins/' : $app['plugins'];
-        Ntentan::$debug = $app[Ntentan::$context]['debug'] == 'true' ? true : false;
+        Ntentan::$cacheMethod = $app[Ntentan::$context]['caching'] == '' ? 
+            Ntentan::$cacheMethod : 
+            $app[Ntentan::$context]['caching'];
+            
+        Ntentan::$pluginsPath = $app['plugins'] == '' ? 
+            'plugins/' : 
+            $app['plugins'];
+            
+        Ntentan::$debug = $app[Ntentan::$context]['debug'] == 'true' ? 
+            true : false;
         
         unset($app['home']);
         unset($app['plugins']);
@@ -351,7 +370,8 @@ class Ntentan
         unset($_GET["q"]);
         unset($_REQUEST["q"]);
 
-        if(Ntentan::$route == "") {
+        if(Ntentan::$route == "") 
+        {
             Ntentan::$route = Ntentan::$defaultRoute;
         }
         else
@@ -769,3 +789,4 @@ class Ntentan
         );
     }
 }
+
