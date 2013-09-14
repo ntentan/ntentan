@@ -290,7 +290,6 @@ class Ntentan
             $app = $app === false ? parse_ini_file($configFile, true) : $app;        
         }
         
-        
         // hook in the custom exception handler
         set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
                 
