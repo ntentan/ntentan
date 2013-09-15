@@ -311,7 +311,9 @@ class Ntentan
             'plugins/' : 
             $app['plugins'];
             
-        Ntentan::$debug = $app[Ntentan::$context]['debug'] == 'true' ? 
+        Ntentan::$debug = 
+            $app[Ntentan::$context]['debug'] == 'true' || 
+            $app[Ntentan::$context]['debug'] == 1 ? 
             true : false;
         
         unset($app['home']);

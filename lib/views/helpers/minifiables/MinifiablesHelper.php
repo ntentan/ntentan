@@ -18,11 +18,11 @@ abstract class MinifiablesHelper extends Helper
     public function __toString()
     {
         $filename = "public/".$this->getExtension()."/bundle_{$this->context}." . $this->getExtension();
-        if(!file_exists($filename) || Ntentan::$debug == true)
+        if(!file_exists($filename) || Ntentan::$debug === true)
         {
             foreach($this->minifiableScripts as $script)
             {
-                if(Ntentan::$debug == true)
+                if(Ntentan::$debug === true)
                 {
                     $tags .= $this->getTag(Ntentan::getUrl(TemplateEngine::loadAsset($this->getExtension() . "/" . basename($script), $script)));
                 }
@@ -31,12 +31,12 @@ abstract class MinifiablesHelper extends Helper
                     $minifiedScript .= file_get_contents($script);
                 }
             }
-            if(Ntentan::$debug == false)
+            if(Ntentan::$debug === false)
             {
                 file_put_contents($filename, Minifier::minify($minifiedScript, $this->getMinifier()));
             }
         }
-        if(Ntentan::$debug == false)
+        if(Ntentan::$debug === false)
         {
             $tags = $this->getTag(Ntentan::getUrl($filename));
         }
