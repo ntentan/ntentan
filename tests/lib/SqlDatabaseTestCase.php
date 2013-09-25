@@ -54,7 +54,7 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
     protected function getDataSet()
     {
         return new \PHPUnit_Extensions_Database_DataSet_XmlDataSet(
-            'tests/fixtures/sqldatabase.xml'
+            TEST_HOME . '/fixtures/sqldatabase.xml'
         );
     }
 

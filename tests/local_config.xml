@@ -4,9 +4,9 @@
         <var name="config" value="local" />
     </php>    
     <testsuites>
-        <!--<testsuite name="Caching testsuite">
+        <testsuite name="Caching testsuite">
             <directory>cases/lib/caching</directory>
-        </testsuite>-->
+        </testsuite>
         <testsuite name="Models testsuite">
             <directory>cases/lib/models</directory>
         </testsuite>

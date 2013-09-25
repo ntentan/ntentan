@@ -10,7 +10,7 @@ class FileCacheTest extends \ntentan\test_cases\CachingTestCase
     {
         Cache::reInstantiate();
         Ntentan::$cacheMethod = 'file';
-        Cache::setCachePath('tests/tmp/');
+        Cache::setCachePath(TEST_HOME . '/tmp/');
     }
     
     

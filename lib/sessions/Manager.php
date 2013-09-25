@@ -19,7 +19,7 @@ class Manager
         // setup the default store
         if($store == '')
         {
-            $store = Ntentan::$config[Ntentan::$context]['session_container'];
+            $store = Ntentan::$config[Ntentan::$context]['sessions.container'];
         }
         
         // Exit on the special none store means sessions are not needed
@@ -29,7 +29,7 @@ class Manager
         {
             $handlerClass = "ntentan\\sessions\\stores\\" . Ntentan::camelize($store) . 'Store';
             self::$handler = new $handlerClass;
-            $configExpiry = Ntentan::$config[Ntentan::$context]['session_lifespan'];
+            $configExpiry = Ntentan::$config[Ntentan::$context]['sessions.lifespan'];
             self::$lifespan = $configExpiry > 0 ? $configExpiry : self::$lifespan;
             
             session_set_save_handler(
