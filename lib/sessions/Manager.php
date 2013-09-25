@@ -9,21 +9,15 @@ class Manager
     private static $handler;
 
     public static function start($store = '')
-    {
-        // exclude the special store
-        if($store == 'none')
-        {
-            return;
-        }
-        
+    {        
         // setup the default store
         if($store == '')
         {
             $store = Ntentan::$config[Ntentan::$context]['sessions.container'];
         }
-        
+                
         // Exit on the special none store means sessions are not needed
-        if($store == 'none') return;
+        if($store == 'none' || $store == '') return;
 
         if($store != '')
         {
