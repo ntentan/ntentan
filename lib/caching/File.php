@@ -43,13 +43,13 @@ class File extends Cache
     
     public function __construct()
     {
-        if(isset(Ntentan::$config['application']['app_home']))
+        if(Ntentan::$appHome != '')
         {
-            $this->setCachePath(Ntentan::$config['application']['app_home'] . "/cache/");
+            $this->setCachePath(Ntentan::$appHome . "/cache/");
         }
         else
         {
-            $this->setCachePath("cache/");
+            $this->setCachePath(getcwd() . "/cache/");
         }
     }
     

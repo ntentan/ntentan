@@ -66,7 +66,12 @@ class Ntentan
      * the ntentan framework resides.
      * @var string
      */
-    public static $basePath;
+    public static $home;
+    
+    /**
+     * The home of the application
+     */
+    public static $appHome;
 
     /**
      * The namespace which holds the modules of the application.
@@ -294,11 +299,17 @@ class Ntentan
         set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
                 
         // setup paths
-        Ntentan::$basePath = $ntentan['home'];
+        Ntentan::$home = $ntentan['home'];
         Ntentan::$namespace = $ntentan['namespace'];
         Ntentan::$modulesPath = isset($ntentan['modules_path'])?
             $ntentan['modules_path']:
             $ntentan['namespace'];
+        Ntentan::$pluginsPath = $app['plugins'] == '' ? 
+            'plugins/' : 
+            $app['plugins'];        
+        Ntentan::$appHome = $app['home'] == '' ? 
+            '' : 
+            $app['home'];        
         
         Ntentan::$prefix = $app['prefix'];
         Ntentan::$context = $app['context'];
@@ -306,10 +317,6 @@ class Ntentan
         Ntentan::$cacheMethod = $app[Ntentan::$context]['caching'] == '' ? 
             Ntentan::$cacheMethod : 
             $app[Ntentan::$context]['caching'];
-            
-        Ntentan::$pluginsPath = $app['plugins'] == '' ? 
-            'plugins/' : 
-            $app['plugins'];
             
         Ntentan::$debug = 
             $app[Ntentan::$context]['debug'] == 'true' || 
@@ -342,7 +349,7 @@ class Ntentan
                 Ntentan::$namespace,
                 Ntentan::$layoutsPath,
             ),
-            Ntentan::$basePath
+            Ntentan::$home
         );
         
         // load cached items
@@ -443,7 +450,7 @@ class Ntentan
      */
     public static function getFilePath($path)
     {
-        return Ntentan::$basePath . '/' . $path;
+        return Ntentan::$home . '/' . $path;
     }
 
     /**
