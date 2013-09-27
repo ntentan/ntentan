@@ -17,7 +17,7 @@ class Manager
         }
                 
         // Exit on the special none store means sessions are not needed
-        if($store == 'none' || $store == '') return;
+        if($store == 'none') return;
 
         if($store != '')
         {

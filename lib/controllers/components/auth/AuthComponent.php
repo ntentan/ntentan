@@ -161,7 +161,7 @@ class AuthComponent extends Component
                 }
             }
             
-            if($_SESSION["logged_in"] === false || !isset($_SESSION["logged_in"]))
+            if($_SESSION["logged_in"] !== true)
             {
                 $this->set('app_name', Ntentan::$config['application']['name']);
                 $this->set('title', "Login");
@@ -198,7 +198,7 @@ class AuthComponent extends Component
         }
         else
         {
-            print Ntentan::message("Authenticator class <code>$authenticatorClass</code> not found.");
+            print Ntentan::message("Authenticator class *$authenticatorClass* not found.");
         }
         
         if($this->authMethodInstance->login())

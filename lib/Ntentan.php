@@ -190,6 +190,8 @@ class Ntentan
     
     private static $errorDepth;
     
+    public static $appName;
+    
     const MAX_ERROR_DEPTH = 10;
     
     public static function init()
@@ -301,19 +303,20 @@ class Ntentan
         // setup paths
         Ntentan::$home = $ntentan['home'];
         Ntentan::$namespace = $ntentan['namespace'];
+        
         Ntentan::$modulesPath = isset($ntentan['modules_path'])?
             $ntentan['modules_path']:
             $ntentan['namespace'];
+        
         Ntentan::$pluginsPath = $app['plugins'] == '' ? 
             'plugins/' : 
             $app['plugins'];        
-        Ntentan::$appHome = $app['home'] == '' ? 
-            '' : 
-            $app['home'];        
         
+        Ntentan::$appHome = $app['home'];    
+        Ntentan::$appName = $ntentan['app'];
         Ntentan::$prefix = $app['prefix'];
         Ntentan::$context = $app['context'];
-
+        
         Ntentan::$cacheMethod = $app[Ntentan::$context]['caching'] == '' ? 
             Ntentan::$cacheMethod : 
             $app[Ntentan::$context]['caching'];
