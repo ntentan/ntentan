@@ -258,7 +258,7 @@ class Controller
         }
         
         throw new exceptions\ComponentNotFoundException(
-            "Component not found <code><b>$component</b></code>"
+            "Component not found *$component*"
         );
     }
 

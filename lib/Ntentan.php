@@ -351,6 +351,7 @@ class Ntentan
                 "./",
                 Ntentan::$namespace,
                 Ntentan::$layoutsPath,
+                Ntentan::$pluginsPath
             ),
             Ntentan::$home
         );
@@ -437,11 +438,11 @@ class Ntentan
     {
         if(is_array($paths))
         {
-            set_include_path(get_include_path() . PATH_SEPARATOR . $prefix . implode(PATH_SEPARATOR . $prefix, $paths));
+            set_include_path(get_include_path() . PATH_SEPARATOR . $prefix . '/' . implode(PATH_SEPARATOR . $prefix . '/', $paths));
         }
         else
         {
-            set_include_path(get_include_path() . PATH_SEPARATOR . $paths);
+            set_include_path(get_include_path() . PATH_SEPARATOR . $prefix . PATH_SEPARATOR .$paths);
         }
     }
 
