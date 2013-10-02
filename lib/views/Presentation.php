@@ -36,8 +36,7 @@
  */
 namespace ntentan\views;
 
-use ntentan\Ntentan;
-
 class Presentation
 {
+    
 }
