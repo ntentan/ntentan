@@ -15,7 +15,7 @@ class Php extends TemplateEngine
         {
             foreach($templateData as $key => $value)
             {
-                $$key = $value;
+                $$key = Variable::initialize($value);
             }
             
             $helpers = $this->helpers;

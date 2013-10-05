@@ -751,6 +751,7 @@ class Ntentan
         }
         else
         {
+            ob_clean();
             echo Ntentan::message($message, $subTitle, $type, $showTrace, $trace);
             die();
         }

@@ -38,7 +38,6 @@ use \ReflectionObject;
 use ntentan\Ntentan;
 use ntentan\views\View;
 use ntentan\models\Model;
-use ntentan\utils\Janitor;
 
 /**
  * The Controller class represents the base class for all controllers that are
@@ -297,25 +296,17 @@ class Controller
     {
         if(is_object($params1) && \method_exists($params1, "toArray"))
         {
-            $this->variables = array_merge($this->variables, Janitor::sanitizeArray($params1->toArray()));
+            $this->variables = array_merge($this->variables, $params1->toArray());
         }
         else if(is_array($params1))
         {
-            $this->variables = array_merge($this->variables, Janitor::sanitizeArray($params1));
+            $this->variables = array_merge($this->variables, $params1);
         }
         else
         {
             if(\is_object($params2) && method_exists($params2, "toArray"))
             {
-                $params2 = Janitor::sanitizeArray($params2->toArray());
-            }
-            elseif(is_array($params2))
-            {
-                $params2 = Janitor::sanitizeArray($params2);
-            }
-            elseif(is_string($params2))
-            {
-                $params2 = Janitor::cleanHtml($params2);
+                $params2 = $params2->toArray();
             }
             $this->variables[$params1] = $params2;
         }

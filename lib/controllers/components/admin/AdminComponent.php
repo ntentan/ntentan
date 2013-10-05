@@ -36,7 +36,6 @@ namespace ntentan\controllers\components\admin;
 use ntentan\Ntentan;
 use ntentan\controllers\components\Component;
 use ntentan\models\Model;
-use ntentan\utils\Janitor;
 use ntentan\exceptions\MethodNotFoundException;
 use ntentan\views\template_engines\TemplateEngine;
 
@@ -535,10 +534,6 @@ class AdminComponent extends Component
             }
         }
         
-        foreach($data as $key => $value)
-        {
-            $data[$key] = Janitor::cleanHtml($value);
-        }
         $this->set("data", $data);
         $this->set("entity", $this->entity);
         $entityCode = str_replace(' ', '_', $this->entity);
