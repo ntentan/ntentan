@@ -19,18 +19,9 @@ class Variable implements \ArrayAccess, \Iterator
                 return new Variable($data, array_keys($data));
                 
             case 'object':
-                if(is_a($data, "\\ntentan\\views\\template_engines\\php\\Variable"))
-                {
-                    return $data;
-                }
-                else
-                {
-                    $reflection = new \ReflectionObject($data);
-                    \ntentan\Ntentan::error("Cannot handle the {$reflection->getName()} type in templates");
-                }
-                
             case 'boolean':
             case 'integer':
+            case 'double':
             case 'NULL':
                 return $data;
                 

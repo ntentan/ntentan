@@ -764,7 +764,7 @@ class Ntentan
             $trace = is_array($trace) ? $trace : debug_backtrace();
         }
         ob_start();
-        if(defined('STDIN'))
+        if(defined('STDERR') || ini_get('html_errors') == 'off' || ini_get('html_errors') == '0')
         {
             include Ntentan::getFilePath("templates/message-cli.tpl.php");
         }

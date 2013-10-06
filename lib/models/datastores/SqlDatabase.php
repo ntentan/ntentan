@@ -373,10 +373,11 @@ abstract class SqlDatabase extends DataStore
                 }
                 else
                 {
-                    $alias = null;
+                    $alias = null; $as = null;
                     if(is_array($relatedModel))
                     {
-                        $alias = $relatedModel["as"];
+                        $alias = isset($relatedModel['alias']) ? $relatedModel['alias'] : $relatedModel["as"];
+                        $as = $relatedModel['as'];
                         $relatedModel = $relatedModel[0];
                     }
 
@@ -414,7 +415,7 @@ abstract class SqlDatabase extends DataStore
                     }
                     else
                     {
-                        $joinedTable = "{$datastore->table}_as_$alias";
+                        $joinedTable = "{$datastore->table}_as_" . str_replace('.', '_', $alias);
                     }
                     
                     foreach($joinedModelFields as $index => $field)
@@ -429,12 +430,12 @@ abstract class SqlDatabase extends DataStore
                         $fields = $fields . ", " . implode(", ", $joinedModelFields);
                     }
                     
-                    $table = ($alias == '' ? $datastore->table : "{$datastore->table}_as_$alias");
+                    $table = $alias == '' ? $datastore->table : $joinedTable;//"{$datastore->table}_as_" $alias);
                                         
                     $joins .= " LEFT JOIN " . ($datastore->schema == "" ? '' : "{$datastore->schema}.") . $datastore->table . " "
                            .  ($alias == '' ? '' : "$table ")
                            .  " ON $table.id = {$this->table}."
-                           .  ($alias != null ? $alias : Ntentan::singular($datastore->table) . "_id ");
+                           .  ($alias != null ? $as : Ntentan::singular($datastore->table) . "_id ");
                            
                 }
             }
