@@ -54,6 +54,10 @@ class MenuWidget extends Widget
         $menuItems = array();
         $selected = false;
         $default = false;
+        $fullyMatched = false;
+        
+        $route = Ntentan::getUrl(Ntentan::$route);
+        $requestedRoute = Ntentan::getUrl(Ntentan::$requestedRoute);
         
         foreach($this->items as $index => $item)
         {
@@ -65,19 +69,25 @@ class MenuWidget extends Widget
                 );
             }
             
+            
             $item['selected'] = (
-                $item['url'] == substr(Ntentan::getUrl(Ntentan::$route), 0, strlen($item['url'])) || 
-                $item['url'] == substr(Ntentan::getUrl(Ntentan::$requestedRoute), 0, strlen($item['url']))
+                $item['url'] == substr($route, 0, strlen($item['url'])) || 
+                $item['url'] == substr($requestedRoute, 0, strlen($item['url']))
             );
             
+            $item['fully_matched'] = $item['url'] == $requestedRoute || $item['url'] == $route;
+            
             if($item['selected'] === true) $selected = true;
+            if($item['fully_matched'] === true) $fullyMatched = true;
             if($item['default'] === true) $default = $index;
+            
             $menuItems[$index] = $item;
         }
         
-        if(!$selected && $default !== false)
+        if(!$selected && $default !== false && !$fullyMatched !== false)
         {
             $menuItems[$default]['selected'] = true;
+            $menuItems[$default]['fully_matched'] = true;
         }
         
         $this->set('items', $menuItems);
