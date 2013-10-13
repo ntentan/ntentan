@@ -88,7 +88,7 @@ class Ntentan
     /**
      *
      */
-    public static $pluginsPath = "plugins/";
+    public static $pluginsHome = "plugins/";
 
     /**
      * The directory uses for storing data which needs to be cached in the file
@@ -308,9 +308,9 @@ class Ntentan
             $ntentan['modules_path']:
             $ntentan['namespace'];
         
-        Ntentan::$pluginsPath = $app['plugins'] == '' ? 
+        Ntentan::$pluginsHome = $ntentan['plugins'] == '' ? 
             'plugins/' : 
-            $app['plugins'];        
+            $ntentan['plugins'];        
         
         Ntentan::$appHome = $app['home'];    
         Ntentan::$appName = $ntentan['app'];
@@ -351,7 +351,7 @@ class Ntentan
                 "./",
                 Ntentan::$namespace,
                 Ntentan::$layoutsPath,
-                Ntentan::$pluginsPath
+                Ntentan::$pluginsHome
             ),
             Ntentan::$home
         );
@@ -465,7 +465,7 @@ class Ntentan
      */
     public static function getPluginPath($path)
     {
-        return Ntentan::$pluginsPath . $path;
+        return Ntentan::$pluginsHome . '/' . $path;
     }
 
     /**
