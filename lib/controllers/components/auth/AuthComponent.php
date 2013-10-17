@@ -163,7 +163,7 @@ class AuthComponent extends Component
             
             if($_SESSION["logged_in"] !== true)
             {
-                $this->set('app_name', Ntentan::$config['application']['name']);
+                $this->set('app_name', Ntentan::$appName);
                 $this->set('title', "Login");
                 $this->login();
             }
