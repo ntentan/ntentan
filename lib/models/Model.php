@@ -221,6 +221,7 @@ class Model implements ArrayAccess, Iterator
      */
     public static function load($modelRoute)
     {
+        if($modelRoute == '') throw new ModelNotFoundException('Model route is empty');
         $className = Model::getClassName($modelRoute);
         return new $className();
     }
