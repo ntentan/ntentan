@@ -31,7 +31,7 @@
  */
 ?>
 <?php if(count($items) > 0):?>
-<ul class='menu <?php echo $alias ?>' id="<?echo $alias ?>-menu">
+<ul class='menu <?= $alias ?>' id="<?= $alias ?>-menu">
 <?php foreach($items as $item): ?>
     <?php
     $params = '';
@@ -42,7 +42,7 @@
     }
 $id = isset($item['id']) ? $item['id'] : 'menu-item' . str_replace("/","-",strtolower($item["url"]));
 ?>
-<li <?php echo $params ?> id="<?php echo $id ?>" class='menu-item <?php echo $item['selected'] ? "menu-selected " : ""; echo $id; echo $item['fully_matched'] ? ' menu-fully-matched ' : ''?>'>
+<li <?php echo $params ?> id="<?= $id ?>" class='menu-item <?php echo $item['selected'] ? "menu-selected " : ""; echo $id; echo $item['fully_matched'] ? ' menu-fully-matched ' : ''?>'>
 <?php if($has_links == true):?>
 <a <?php if($item['url'] !== false): ?>href='<?php echo isset($item["url"]) ? $item["url"] : str_replace(" ", "_", strtolower($item["label"]))?>'<?php endif; ?>><?php echo $item["label"]?></a>
 <?php endif?>
