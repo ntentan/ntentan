@@ -324,7 +324,7 @@ class Mysql extends SqlDatabase
     
     public function escape($string)
     {
-        return mysql_real_escape_string($string);
+        return self::$db->real_escape_string($string);
     }
     
     protected function getLastInsertId()
