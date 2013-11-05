@@ -350,20 +350,6 @@ abstract class Element
         return $this;
     }
 
-    public function removeAttribute($attribute, $scope = Element::SCOPE_ELEMENT)
-    {
-        switch($scope)
-        {
-            case Element::SCOPE_ELEMENT:
-                unset($this->attributes[$attribute]);
-                break;
-
-            case Element:SCOPE_WRAPPER:
-                unset($this->wrapperAttributes[$attribute]);
-                break;
-        }
-    }
-
     //! Sets the value for a particular attribute.
     public function setAttribute($attribute,$value)
     {
@@ -388,6 +374,12 @@ abstract class Element
             $ret .= $key . '="' . $value . '" ';
         }
         return $ret;
+    }
+    
+    public function setErrors($errors)
+    {
+        $this->errors = $errors;
+        $this->error = true;
     }
 
     public function addErrors($error)

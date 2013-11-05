@@ -231,7 +231,7 @@ class FormsHelper extends Helper
             $elementObject->setValue(self::$data[$name]);
             if(isset($this->errors[$name]))
             {
-                $elementObject->addErrors($this->errors[$name]);
+                $elementObject->setErrors($this->errors[$name]);
             }
             $return = $elementObject;
         }
@@ -275,7 +275,7 @@ class FormsHelper extends Helper
             $elementObject->setValue(self::$data[$name]);
             if(isset($this->errors[$name]))
             {
-                $elementObject->addErrors($this->errors[$name]);
+                $elementObject->setErrors($this->errors[$name]);
             }
             $return = $elementObject;
         }
