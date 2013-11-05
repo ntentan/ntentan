@@ -52,7 +52,12 @@ class Postgresql extends SqlDatabase
         }
         $this->db = pg_connect(
             "host={$parameters["host"]} dbname={$parameters["name"]} user={$parameters["user"]} password={$parameters["password"]}"
-        );            
+        );  
+            
+        if($this->db === false)
+        {
+            throw new DataStoreException("Could connect to database.");
+        }
     }
 
     protected function _query($query)
