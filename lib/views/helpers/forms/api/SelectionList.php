@@ -118,9 +118,14 @@ class SelectionList extends Field
         $this->options = array_combine($keys, $this->options);
         
         $ret = "<select {$this->getAttributes()} class='fapi-list ".$this->getCSSClasses()."' name='".$this->getName()."' ".($this->multiple?"multiple='multiple'":"").">";
+        
+        // get the element and force it to be a string
+        $elementValue = $this->getValue();
+        if(is_object($elementValue)) $elementValue = (string)($elementValue);
+        
         foreach($this->options as $value => $label)
         {
-                $ret .= "<option value='$value' ".($this->getValue()===$value?"selected='selected'":"").">$label</option>";
+            $ret .= "<option value='$value' ".($elementValue == $value?"selected='selected'":"").">$label</option>";
         }
         $ret .= "</select>";
         return $ret;
