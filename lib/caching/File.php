@@ -95,8 +95,9 @@ class File extends Cache
         }
         else
         {
+            // Throwing exceptions here sometimes breaks the template engine
             Ntentan::error("The file cache directory *".self::getCacheFile()."* was not found or is not writable!", 'Caching error!');
-            die();
+            trigger_error("The file cache directory *".self::getCacheFile()."* was not found or is not writable!");
         }
     }
     
