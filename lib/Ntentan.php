@@ -753,12 +753,14 @@ class Ntentan
         {
             ob_clean();
             echo Ntentan::message($message, $subTitle, $type, $showTrace, $trace);
-            die();
         }
     }  
 
     public static function message($message, $subTitle = null, $type = null, $showTrace = true, $trace = false)
     {
+        // Be silent in production systems at all cost
+        if(Ntentan::$debug == false) return;
+        
         if($showTrace === true)
         {
             $trace = is_array($trace) ? $trace : debug_backtrace();
