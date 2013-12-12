@@ -745,7 +745,7 @@ abstract class SqlDatabase extends DataStore
     
     public function countAllItems()
     {
-        $result = $this->query("SELECT COUNT(id) as count FROM {$this->table}");
+        $result = $this->query("SELECT COUNT(id) as count FROM {$this->schema}.{$this->table}");
         return $result[0]['count'];
     }
     
