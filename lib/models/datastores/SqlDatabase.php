@@ -706,13 +706,17 @@ abstract class SqlDatabase extends DataStore
         $relation = ($this->schema != '' ? $this->quotedSchema . "." : '') . $this->quotedTable;
         if(is_array($key))
         {
-            $query = "DELETE FROM $relation WHERE id in ('" . implode("','", $key) . "')";
+            if(count($key) > 0)
+            {
+                $query = "DELETE FROM $relation WHERE id in ('" . implode("','", $key) . "')";
+                $this->query($key);
+            }
         }
         else
         {
             $query = "DELETE FROM $relation WHERE id = '{$key}'";
+            $this->query($query);
         }
-        $this->query($query);
     }
     
     public function doesTableExist($table, $schema)
