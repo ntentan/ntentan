@@ -90,10 +90,10 @@ abstract class SqlDatabase extends DataStore
         }
     }
     
-    public function getTable()
+    /*public function getTable()
     {
         return $this->table;
-    }
+    }*/
 
     /**
      * A protected function used internally to set the table names. This function
@@ -709,7 +709,7 @@ abstract class SqlDatabase extends DataStore
             if(count($key) > 0)
             {
                 $query = "DELETE FROM $relation WHERE id in ('" . implode("','", $key) . "')";
-                $this->query($key);
+                $this->query($query);
             }
         }
         else
