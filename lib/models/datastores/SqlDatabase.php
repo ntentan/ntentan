@@ -121,8 +121,8 @@ abstract class SqlDatabase extends DataStore
     public function setModel($model)
     {
         parent::setModel($model);
+                
         //Detect a new schema to override the default schema for the application
-
         $path = explode('.', $this->model->getRoute());
         $base = Ntentan::$modulesPath . '/modules';
         foreach($path as $directory)
