@@ -90,10 +90,10 @@ abstract class SqlDatabase extends DataStore
         }
     }
     
-    public function getTable()
+    /*public function getTable()
     {
         return $this->table;
-    }
+    }*/
 
     /**
      * A protected function used internally to set the table names. This function
@@ -121,8 +121,8 @@ abstract class SqlDatabase extends DataStore
     public function setModel($model)
     {
         parent::setModel($model);
+                
         //Detect a new schema to override the default schema for the application
-
         $path = explode('.', $this->model->getRoute());
         $base = Ntentan::$modulesPath . '/modules';
         foreach($path as $directory)
@@ -706,13 +706,17 @@ abstract class SqlDatabase extends DataStore
         $relation = ($this->schema != '' ? $this->quotedSchema . "." : '') . $this->quotedTable;
         if(is_array($key))
         {
-            $query = "DELETE FROM $relation WHERE id in ('" . implode("','", $key) . "')";
+            if(count($key) > 0)
+            {
+                $query = "DELETE FROM $relation WHERE id in ('" . implode("','", $key) . "')";
+                $this->query($query);
+            }
         }
         else
         {
             $query = "DELETE FROM $relation WHERE id = '{$key}'";
+            $this->query($query);
         }
-        $this->query($query);
     }
     
     public function doesTableExist($table, $schema)
@@ -745,7 +749,7 @@ abstract class SqlDatabase extends DataStore
     
     public function countAllItems()
     {
-        $result = $this->query("SELECT COUNT(id) as count FROM {$this->table}");
+        $result = $this->query("SELECT COUNT(id) as count FROM {$this->schema}.{$this->table}");
         return $result[0]['count'];
     }
     

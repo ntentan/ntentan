@@ -128,10 +128,14 @@ class Model implements ArrayAccess, Iterator
 
         $dataStoreParams = Ntentan::getDefaultDataStore();
         $dataStoreClass = $dataStoreParams['datastore_class'];
+        
+        
         if(class_exists($dataStoreClass))
         {
             $dataStore = new $dataStoreClass($dataStoreParams);
-            $this->setDataStore($dataStore);
+            $this->dataStore = $dataStore;
+            $this->init();
+            $this->dataStore->setModel($this);
         }
         else
         {
@@ -143,6 +147,11 @@ class Model implements ArrayAccess, Iterator
             $this->addBehaviour($behaviour);
         }
     } 
+    
+    protected function init()
+    {
+        
+    }
     
     public static function getNew()
     {
@@ -270,12 +279,6 @@ class Model implements ArrayAccess, Iterator
             if($related == $modelType) return Model::RELATIONSHIP_BELONGS_TO;
             if($related[0] == $modelType) return Model::RELATIONSHIP_BELONGS_TO;
         }
-    }
-
-    public function setDataStore($dataStore)
-    {
-        $this->dataStore = $dataStore;
-        $this->dataStore->setModel($this);
     }
 
     public function getName()

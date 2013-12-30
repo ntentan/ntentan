@@ -174,6 +174,7 @@ class Postgresql extends SqlDatabase
             {
                 case "boolean":
                 case "integer":
+                case "bigint":
                     $type = $pgField["data_type"];
                     break;
 

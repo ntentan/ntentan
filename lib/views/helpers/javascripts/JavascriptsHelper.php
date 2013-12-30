@@ -34,7 +34,7 @@ class JavascriptsHelper extends MinifiablesHelper
             prefix : '$urlPrefix',
             url : function(route)
             {
-                return '$urlPrefix' + '/' + route;
+                return ('$urlPrefix' == '' ? '' : '/$urlPrefix') + '/' + route;
             }
         }
         </script>";

@@ -187,6 +187,28 @@ class AuthComponent extends Component
         }
     }
     
+    private function performSuccessOperation()
+    {
+        $this->authenticated = true;
+        switch($this->onSuccess)
+        {
+            case AuthComponent::REDIRECT:
+                Ntentan::redirect($this->redirectRoute);
+                break;
+
+            case AuthComponent::CALL_FUNCTION:
+                $decomposed = explode("::", $this->successFunction);
+                $className = $decomposed[0];
+                $methodName = $decomposed[1];
+                $method = new \ReflectionMethod($className, $methodName);
+                $method->invoke(null, $this->controller);
+                break;
+
+            default:
+                $this->set('login_status', true);
+        }        
+    }
+    
     public function login()
     {
         Ntentan::addIncludePath(Ntentan::getFilePath('lib/controllers/components/auth/methods'));
@@ -201,26 +223,13 @@ class AuthComponent extends Component
             print Ntentan::message("Authenticator class *$authenticatorClass* not found.");
         }
         
-        if($this->authMethodInstance->login())
+        if($this->loggedIn())
         {
-            $this->authenticated = true;
-            switch($this->onSuccess)
-            {
-                case AuthComponent::REDIRECT:
-                    Ntentan::redirect($this->redirectRoute);
-                    break;
-
-                case AuthComponent::CALL_FUNCTION:
-                    $decomposed = explode("::", $this->successFunction);
-                    $className = $decomposed[0];
-                    $methodName = $decomposed[1];
-                    $method = new \ReflectionMethod($className, $methodName);
-                    $method->invoke(null, $this->controller);
-                    break;
-                
-                default:
-                    $this->set('login_status', true);
-            }
+            $this->performSuccessOperation();
+        }
+        else if($this->authMethodInstance->login())
+        {
+            $this->performSuccessOperation();
         }
         else
         {
