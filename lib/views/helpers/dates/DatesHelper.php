@@ -115,11 +115,11 @@ class DatesHelper extends Helper
      * @param string $time
      * @return DatesHelper
      */
-	public function help($time)
-	{
-		$this->timestamp =$this->internalParse($time);
+    public function help($time)
+    {
+        $this->timestamp =$this->internalParse($time);
         return $this;
-	}
+    }
 
     /**
      * A wrapper arround the PHP date() method. This method however takes the
@@ -129,10 +129,10 @@ class DatesHelper extends Helper
      * @param string $date
      * @return string
      */
-	public function format($format = 'jS F, Y', $date = null)
-	{
-		return date($format, $this->selectTimestamp($date));
-	}
+    public function format($format = 'jS F, Y', $date = null)
+    {
+        return date($format, $this->selectTimestamp($date));
+    }
 
     /**
      * Returns date in the format 12:00 am
@@ -140,10 +140,10 @@ class DatesHelper extends Helper
      * @param string $date
      * @return string
      */
-	public function time($date = null)
-	{
-	    return date("g:i a", $this->selectTimestamp($date));
-	}
+    public function time($date = null)
+    {
+        return date("g:i a", $this->selectTimestamp($date));
+    }
 
     /**
      * Provides a nice sentence to represents the date in age terms eg. Three Years,
@@ -170,6 +170,8 @@ class DatesHelper extends Helper
         $now = $referenceDate == null ? time() : $this->internalParse($referenceDate);
         $elapsed = $now - $timestamp;
         
+        if($elapsed < 0) $future = true; else $future = false;
+        $elapsed = abs($elapsed);
         
         if($elapsed < 10)
         {
@@ -191,7 +193,14 @@ class DatesHelper extends Helper
         }
         elseif($elapsed >= 86400 && $elapsed < 172800)
         {
-            $englishDate = "yesterday";
+            if($future)
+            {
+                $englishDate = "tomorrow";
+            }
+            else
+            {
+                $englishDate = "yesterday";
+            }
         }
         elseif($elapsed >= 172800 && $elapsed < 604800)
         {
@@ -217,9 +226,9 @@ class DatesHelper extends Helper
         switch($options['elaborate_with'])
         {
             case 'ago':
-                if($englishDate != 'now' && $englishDate != 'yesterday')
+                if($englishDate != 'now' && $englishDate != 'yesterday' && $englishDate != 'today')
                 {
-                    $englishDate .= ' ago';
+                    if($future) $englishDate = 'in '. $englishDate; else $englishDate .= ' ago';
                 }
                 break;
         }
