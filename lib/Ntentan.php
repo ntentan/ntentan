@@ -655,8 +655,8 @@ class Ntentan
             }
             else
             {
-				throw new exceptions\UnknownPluralException("Could not determine the plural for $word");
-			}
+                throw new exceptions\UnknownPluralException("Could not determine the plural for $word");
+            }
             Ntentan::$plurals[$plural] = $word;
         }
         return $plural;

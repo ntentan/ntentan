@@ -42,7 +42,6 @@ class HelpersLoader
     private $pluginMode = false;
     private $plugin;
     private $loadedHelpers = array();
-    private $viewData = array();
 
     private function getHelper($helper)
     {
@@ -102,12 +101,19 @@ class HelpersLoader
         }
     }
 
-    public function __call($helper, $arguments)
+    public function __call($helperName, $arguments)
     {
-        $helper = $this->getHelper($helper);
-        $method = new \ReflectionMethod($helper, 'help');
-        $this->plugin = null;
-        $this->pluginMode = false;
+        $helper = $this->getHelper($helperName);
+        if($helper === false)
+        {
+            throw new \Exception("Cannot load helper with [$helperName]");
+        }
+        else
+        {
+            $method = new \ReflectionMethod($helper, 'help');
+            $this->plugin = null;
+            $this->pluginMode = false;
+        }
         return $method->invokeArgs($helper, $arguments);
     }
 }
