@@ -43,10 +43,17 @@ class MenuWidget extends Widget
 {
     public $hasLinks = true;
     public $items = array();
+    public $cssClasses = array();
 
     public function init($items = null)
     {
         $this->items = $items;
+    }
+    
+    public function addCssClass($class)
+    {
+        $this->cssClasses[] = $class;
+        return $this;
     }
     
     public function execute()
@@ -91,6 +98,7 @@ class MenuWidget extends Widget
         }
         
         $this->set('items', $menuItems);
+        $this->set('css_classes', $this->cssClasses);
     }
     
     public function preRender()
