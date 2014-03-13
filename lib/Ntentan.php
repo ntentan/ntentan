@@ -105,7 +105,7 @@ class Ntentan
      * @var string
      * @see Layout
      */
-    public static $layoutsPath = "layouts/";
+    public static $viewsPath = "views/";
 
     /**
      * The default route to use when no route is specified in the URL.
@@ -342,7 +342,7 @@ class Ntentan
                 '/',
                 "./",
                 Ntentan::$namespace,
-                Ntentan::$layoutsPath,
+                Ntentan::$viewsPath,
                 Ntentan::$pluginsHome
             ),
             Ntentan::$home

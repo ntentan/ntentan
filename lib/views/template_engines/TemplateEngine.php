@@ -140,7 +140,7 @@ abstract class TemplateEngine
                 $testTemplate = implode("_", array_slice($breakDown, $i, count($breakDown) - $i)) . ".$extension";
                 foreach(TemplateEngine::getPath() as $path)
                 {
-                	$newTemplateFile = "$path/$testTemplate";
+                    $newTemplateFile = "$path/$testTemplate";
                     if(file_exists($newTemplateFile))
                     {
                         Cache::add($cacheKey, $newTemplateFile);
