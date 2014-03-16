@@ -301,7 +301,7 @@ class Ntentan
             $ntentan['namespace'];
         
         Ntentan::$pluginsHome = $ntentan['plugins'] == '' ? 
-            'plugins/' : 
+            Ntentan::$pluginsHome : 
             $ntentan['plugins'];        
         
         Ntentan::$appHome = $app['home'] == '' ? '.' : $app['home'];    
