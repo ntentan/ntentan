@@ -475,6 +475,11 @@ class Model implements ArrayAccess, Iterator
                 if(!isset($params["fetch_belongs_to"])) $params["fetch_belongs_to"] = true;
             }
             
+            if(isset($params['limit']))
+            {
+                $type = $params['limit'];
+            }
+            
             return $this->get($type, $params);
         }
         
