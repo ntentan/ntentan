@@ -41,30 +41,48 @@ class PaginationWidget extends Widget
     private $baseRoute;
     private $numberOfLinks;
     private $halfNumberOfLinks;
+    private $query;
 
-    public function init($pageNumber = null, $numberOfPages = null, $baseRoute = null, $numberOfLinks = 21)
+    public function init($params = null)
     {
-        $this->pageNumber = $pageNumber == null ? null : $pageNumber->unescape();
-        $this->numberOfPages = $numberOfPages;
-        $this->baseRoute = $baseRoute;
-        $this->numberOfLinks = $numberOfLinks;
-        $this->halfNumberOfLinks = ceil($numberOfLinks / 2);
+        $this->pageNumber = is_object($params['page_number']) ? $params['page_number']->unescape() : $params['page_number'];
+        $this->numberOfPages = $params['number_of_pages'];
+        $this->baseRoute = $params['base_route'];
+        $this->numberOfLinks = isset($params['number_of_links']) ? $params['number_of_links'] : 21;
+        $this->halfNumberOfLinks = ceil($params['number_of_links'] / 2);
+        $this->query = $params['query'];
+        if($this->query != '')
+        {
+            $this->pageNumber = $_GET[$this->query] == '' ? 1 : $_GET[$this->query];
+        }
     }
     
-    private function getLink($baseRoute, $index)
+    
+    private function getLink($index)
     {
-        $link = Ntentan::getUrl($baseRoute . $index);
+        if($this->query == '')
+        {
+            $link = Ntentan::getUrl($this->baseRoute . $index);
+        }
+        else
+        {
+            $link = Ntentan::getUrl($this->baseRoute) . '?';
+            foreach($_GET as $key => $value)
+            {
+                if($key == $this->query) continue;
+                $link .= "$key=" . urlencode($value) . '&';
+            }
+            $link .= "{$this->query}=$index";
+        }
         return $link;
     }
 
     public function execute()
     {
-        $baseRoute = $this->baseRoute;
-
         if($this->pageNumber > 1)
         {
             $pagingLinks[] = array(
-                "link" => $this->getLink($baseRoute, $this->pageNumber - 1),
+                "link" => $this->getLink($this->pageNumber - 1),
                 "label" => "< Prev"
             );
         }
@@ -75,7 +93,7 @@ class PaginationWidget extends Widget
             {
                 
                 $pagingLinks[] = array(
-                    "link" => $this->getLink($baseRoute, $i),
+                    "link" => $this->getLink($i),
                     "label" => "$i",
                     "selected" => $this->pageNumber == $i
                 );
@@ -96,7 +114,7 @@ class PaginationWidget extends Widget
             for($i = $startOffset ; $i <= $endOffset; $i++)
             {
                 $pagingLinks[] = array(
-                    "link" => $this->getLink($baseRoute, $i),
+                    "link" => $this->getLink($i),
                     "label" => "$i",
                     "selected" => $this->pageNumber == $i
                 );
@@ -106,7 +124,7 @@ class PaginationWidget extends Widget
         if($this->pageNumber < $this->numberOfPages)
         {
             $pagingLinks[] = array(
-                "link" => $this->getLink($baseRoute, $this->pageNumber + 1),
+                "link" => $this->getLink($this->pageNumber + 1),
                 "label" => "Next >"
             );
         }
