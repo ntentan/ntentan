@@ -42,7 +42,7 @@ class TimestampableBehaviour extends Behaviour
     
     public function preSave(&$data)
     {
-        if($this->hasCreated)
+        if($this->hasCreated && $data[$this->createdField] == '')
         {
             $data[$this->createdField] = date("Y-m-d H:i:s");
         }

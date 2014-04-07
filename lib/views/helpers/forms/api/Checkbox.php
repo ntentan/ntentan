@@ -36,6 +36,8 @@ namespace ntentan\views\helpers\forms\api;
  */
 class Checkbox extends Field
 {
+        public $renderLabel = false;
+    
 	/**
 	 * The value that this field should contain if this checkbox is checked.
 	 */
@@ -83,7 +85,7 @@ class Checkbox extends Field
 		$ret = "";
 		$ret .= '<input class="form-checkbox" type="checkbox" name="'.$this->getName().'" value="'.$this->getCheckedValue().'" '.
 		      (($this->getValue()==$this->getCheckedValue())?"checked='checked'":"").' '.$this->getAttributes().' />';
-		return $ret;
+		return $ret . "<label> {$this->getLabel()}</label>";
 	}
 }
 

@@ -91,14 +91,6 @@ class Ntentan
     public static $pluginsHome = "plugins/";
 
     /**
-     * The directory uses for storing data which needs to be cached in the file
-     * cache. This path is only necessary when the file caching method is
-     * used.
-     * @var string
-     */
-    public static $cachePath = "cache/";
-
-    /**
      * The cache method to be used
      */
     public static $cacheMethod = "file";
@@ -113,7 +105,7 @@ class Ntentan
      * @var string
      * @see Layout
      */
-    public static $layoutsPath = "layouts/";
+    public static $viewsPath = "views/";
 
     /**
      * The default route to use when no route is specified in the URL.
@@ -217,7 +209,7 @@ class Ntentan
 
             if($fullPath[0] == \ntentan\Ntentan::$namespace)
             {
-                $basePath = implode("/",$fullPath);
+                $basePath = Ntentan::$appHome . '/' . implode("/",$fullPath);
             }
             else if($fullPath[0] == 'ntentan' && $fullPath[1] == "plugins")
             {
@@ -309,10 +301,10 @@ class Ntentan
             $ntentan['namespace'];
         
         Ntentan::$pluginsHome = $ntentan['plugins'] == '' ? 
-            'plugins/' : 
+            Ntentan::$pluginsHome : 
             $ntentan['plugins'];        
         
-        Ntentan::$appHome = $app['home'];    
+        Ntentan::$appHome = $app['home'] == '' ? '.' : $app['home'];    
         Ntentan::$appName = $ntentan['app'];
         Ntentan::$prefix = $app['prefix'];
         Ntentan::$context = $app['context'];
@@ -350,7 +342,7 @@ class Ntentan
                 '/',
                 "./",
                 Ntentan::$namespace,
-                Ntentan::$layoutsPath,
+                Ntentan::$viewsPath,
                 Ntentan::$pluginsHome
             ),
             Ntentan::$home

@@ -1,0 +1,75 @@
+before_commands:
+ - pyrus install pear.phpunit.de/DbUnit
+ - wget http://pecl.php.net/get/memcache-2.2.7.tgz
+ - tar -xzf memcache-2.2.7.tgz
+ - sh -c "cd memcache-2.2.7 && phpize && ./configure --enable-memcache && make && sudo make install"
+ - echo "extension=memcache.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+ - psql -c 'create database ntentan_tests;' -U postgres
+ - psql -f tests/databases/postgresql.sql -U postgres -d ntentan_tests
+ - mysql -e 'create database ntentan_tests;'
+ - mysql ntentan_tests < tests/databases/mysql.sql
+ - mkdir tests/tmp
+
+tools:
+    # Code Coverage
+    external_code_coverage:
+        enabled: true
+        timeout: 300
+
+
+    php_code_coverage:
+        enabled:              false
+        test_command:         phpunit
+
+
+    # Code Sniffer
+    php_code_sniffer:
+        enabled:              true
+        command:              phpcs
+        config:
+            standard:         PSR2
+
+
+    # Copy/Paste Detector
+    php_cpd:
+        enabled:              true
+        command:              phpcpd
+
+
+    # PHP CS Fixer (http://http://cs.sensiolabs.org/).
+    php_cs_fixer:
+        enabled:              true
+        command:              php-cs-fixer
+        config:
+            level:            psr2
+
+
+    # Analyzes the size and structure of a PHP project.
+    php_loc:
+        enabled:              true
+        command:              phploc
+
+
+    # PHP Mess Detector (http://phpmd.org).
+    php_mess_detector:
+        enabled:              true
+        command:              phpmd
+        config:
+            rulesets:
+                - codesize
+                - unusedcode
+                - naming
+                - design
+
+
+    # Analyzes the size and structure of a PHP project.
+    php_pdepend:
+        enabled:              true
+        command:              pdepend
+
+    # Runs Scrutinizer's PHP Analyzer Tool
+    php_analyzer:
+        enabled:              true
+
+    # Security Advisory Checker
+    sensiolabs_security_checker: true

@@ -31,7 +31,7 @@
  */
 ?>
 <?php if(count($items) > 0):?>
-<ul class='menu <?= $alias ?>' id="<?= $alias ?>-menu">
+<ul class='menu <?= $alias ?> <?= implode(' ', $css_classes->unescape()) ?>' id="<?= $alias ?>-menu">
 <?php foreach($items as $item): ?>
     <?php
     $params = '';

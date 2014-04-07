@@ -186,11 +186,11 @@ class Model implements ArrayAccess, Iterator
             $classNameArray = explode('.', $className);
             $className = Ntentan::camelize(end($classNameArray));
             $return = "\\" . str_replace("/", "\\", Ntentan::$namespace) . "\\modules\\" . implode("\\", $classNameArray) . "\\$className";
-            $modelClassFile = Ntentan::$modulesPath . '/modules/' . implode('/', $classNameArray) . "/$className.php" ;
+            /*$modelClassFile = Ntentan::$modulesPath . '/modules/' . implode('/', $classNameArray) . "/$className.php" ;
             if(!file_exists($modelClassFile))
             {
                 throw new ModelNotFoundException("Model class *$return* not found");
-            }
+            }*/
         }
         return $return;
     }
@@ -473,6 +473,11 @@ class Model implements ArrayAccess, Iterator
             {
                 if(!isset($params["fetch_related"])) $params["fetch_related"] = true;
                 if(!isset($params["fetch_belongs_to"])) $params["fetch_belongs_to"] = true;
+            }
+            
+            if(isset($params['limit']))
+            {
+                $type = $params['limit'];
             }
             
             return $this->get($type, $params);
