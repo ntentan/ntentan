@@ -41,11 +41,11 @@ namespace ntentan;
  * Include a collection of utility global functions, caching and exceptions. 
  * Classes loaded here are likely to be called before the autoloader kicks in.
  */
-require "globals.php";
-require "caching/Cache.php";
-require "exceptions/NtentanException.php";
-require "exceptions/FileNotFoundException.php";
-require "exceptions/ApiIniFileNotFoundException.php";
+require_once "globals.php";
+require_once "caching/Cache.php";
+require_once "exceptions/NtentanException.php";
+require_once "exceptions/FileNotFoundException.php";
+require_once "exceptions/ApiIniFileNotFoundException.php";
 
 use ntentan\caching\Cache;
 
@@ -248,7 +248,7 @@ class Ntentan
         $classFile = self::getClassFile($class);
         if(file_exists($classFile))
         {
-            require_once $classFile;
+            @include_once $classFile;
         }        
     }
 
@@ -367,7 +367,10 @@ class Ntentan
         }
         $camelisations = count(Ntentan::$camelisations);        
         
-        sessions\Manager::start();
+        if(!defined('STDOUT'))
+        {
+            sessions\Manager::start();
+        }
     }
 
     /**
@@ -804,4 +807,3 @@ class Ntentan
         );
     }
 }
-
