@@ -124,7 +124,7 @@ abstract class SqlDatabase extends DataStore
                 
         //Detect a new schema to override the default schema for the application
         $path = explode('.', $this->model->getRoute());
-        $base = Ntentan::$modulesPath . '/modules';
+        /*$base = Ntentan::$modulesPath . '/modules';
         foreach($path as $directory)
         {
             $configFile = $base . '/' . $directory . '/config.php';
@@ -134,7 +134,7 @@ abstract class SqlDatabase extends DataStore
                 $this->setSchema($schema);
             }
             $base .= '/' . $directory;
-        }
+        }*/
 
         //@todo cache the result of this loop so it runs just once
         do

@@ -803,5 +803,10 @@ class Model implements ArrayAccess, Iterator
             return false;
         }
     }
+    
+    public function __destruct() 
+    {
+        $this->dataStore = null;
+    }
 }
 

@@ -515,7 +515,7 @@ class Ntentan
     }
 
     /**
-     * Returns the default datastore as defined in the config/db.php
+     * Returns the default datastore as defined in the config/db.ini
      * configuration file.
      */
     public static function getDefaultDataStore($instance = false)
@@ -549,8 +549,7 @@ class Ntentan
         }
         else
         {
-            echo Ntentan::message("Invalid datastore specified. Please specify a default datastore by providing a valid database configuration.");
-            die();
+            throw new exceptions\DataStoreException("Could not find a suitable datastore");
         }
     }
 

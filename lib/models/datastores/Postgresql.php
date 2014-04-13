@@ -38,10 +38,29 @@ use ntentan\models\Model;
 
 class Postgresql extends SqlDatabase
 {
-    public $db = false;
+    private static $connections = array();
+    private $db = false;
+    private $connectionKey;
 
     public function connect($parameters)
     {
+        $this->connectionKey = "{$parameters['host']}{$parameters['port']}{$parameters['name']}";
+        
+        if(!isset(self::$connections[$this->connectionKey]))
+        {
+            print "Opening database connection ...\n";
+            $connection = pg_connect(
+                "host={$parameters["host"]} dbname={$parameters["name"]} user={$parameters["user"]} password={$parameters["password"]}"
+            );  
+            self::$connections[$this->connectionKey]['connection'] = $connection;
+            self::$connections[$this->connectionKey]['references'] = 0;
+
+            if($connection === false)
+            {
+                throw new DataStoreException("Could connect to database.");
+            }
+        }
+        
         if(isset($parameters["schema"]))
         {
             $this->schema = $parameters["schema"];
@@ -50,14 +69,8 @@ class Postgresql extends SqlDatabase
         {
             $this->schema = "public";
         }
-        $this->db = pg_connect(
-            "host={$parameters["host"]} dbname={$parameters["name"]} user={$parameters["user"]} password={$parameters["password"]}"
-        );  
-            
-        if($this->db === false)
-        {
-            throw new DataStoreException("Could connect to database.");
-        }
+        $this->db = self::$connections[$this->connectionKey]['connection'];
+        self::$connections[$this->connectionKey]['references']++;
     }
 
     protected function _query($query)
@@ -356,5 +369,16 @@ class Postgresql extends SqlDatabase
     public function __toString()
     {
         return 'postgresql';
+    }
+    
+    public function __destruct() 
+    {
+        self::$connections[$this->connectionKey]['references']--;    
+        print "Refcount " . self::$connections[$this->connectionKey]['references'] . "\n";
+        if(self::$connections[$this->connectionKey]['references'] == 0) 
+        {
+            print "Closing database connection ...\n";
+            pg_close($this->db);
+        }
     }
 }
