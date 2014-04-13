@@ -48,7 +48,6 @@ class Postgresql extends SqlDatabase
         
         if(!isset(self::$connections[$this->connectionKey]))
         {
-            print "Opening database connection ...\n";
             $connection = pg_connect(
                 "host={$parameters["host"]} dbname={$parameters["name"]} user={$parameters["user"]} password={$parameters["password"]}"
             );  
@@ -374,10 +373,8 @@ class Postgresql extends SqlDatabase
     public function __destruct() 
     {
         self::$connections[$this->connectionKey]['references']--;    
-        print "Refcount " . self::$connections[$this->connectionKey]['references'] . "\n";
         if(self::$connections[$this->connectionKey]['references'] == 0) 
         {
-            print "Closing database connection ...\n";
             pg_close($this->db);
         }
     }
