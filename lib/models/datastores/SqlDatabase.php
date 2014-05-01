@@ -420,8 +420,7 @@ abstract class SqlDatabase extends DataStore
                     
                     foreach($joinedModelFields as $index => $field)
                     {
-                        $joinedModelFields[$index] = $this->quote($joinedTable)
-                            . "." . $this->quote($field) . " AS "
+                        $joinedModelFields[$index] = $datastore->resolveName($field, true, $joinedModelDescription, false). " AS "
                             . $this->quote($alias =='' ? "{$model->getRoute()}.$field" : "$alias.$field");
                     }
                     

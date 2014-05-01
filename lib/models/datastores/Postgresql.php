@@ -107,7 +107,7 @@ class Postgresql extends SqlDatabase
                (isset($limitParams['offset']) ? " OFFSET {$limitParams['offset']}":'');
     }
 
-    protected function resolveName($fieldPath, $reformat=false, $description = null)
+    protected function resolveName($fieldPath, $reformat=false, $description = null, $alias = true)
     {
         if($reformat === true)
         {
@@ -116,7 +116,7 @@ class Postgresql extends SqlDatabase
                 if($description['fields'][$fieldPath]['type'] == 'boolean')
                 {
                     $field = $this->quotedTable . "." . $this->quote($fieldPath);
-                    return " CASE WHEN $field = true THEN 1 WHEN $field = false THEN 0 END AS $fieldPath";
+                    return " CASE WHEN $field = true THEN 1 WHEN $field = false THEN 0 END " . ($alias ? "AS $fieldPath" : '');
                 }
                 else
                 {
