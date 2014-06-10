@@ -13,3 +13,4 @@ report
 tests/config/local
 tests/tmp/*
 .netrc
+vendor
