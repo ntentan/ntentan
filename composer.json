@@ -1,0 +1,17 @@
+{
+    "name" : "ntentan/ntentan",
+    "type" : "library",
+    "description": "Another PHP application framework.",
+    "license" : "MIT",
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name" : "James Ekow Abaka Ainooson",
+            "email" : "jainooson@gmail.com",
+            "homepage": "http://ekowabaka.me"
+        }
+    ]
+}
