@@ -206,30 +206,7 @@ class Ntentan
             if($fullPath[0] == "") array_shift ($fullPath);
             $class = array_pop($fullPath);
 
-
-            if($fullPath[0] == \ntentan\Ntentan::$namespace)
-            {
-                $basePath = Ntentan::$appHome . '/' . implode("/",$fullPath);
-            }
-            else if($fullPath[0] == 'ntentan' && $fullPath[1] == "plugins")
-            {
-                array_shift($fullPath);
-                array_shift($fullPath);
-                $basePath = \ntentan\Ntentan::getPluginPath(implode("/",$fullPath));
-            }
-            else if($fullPath[0] == 'ntentan' && $fullPath[1] == "dev")
-            {
-                array_shift($fullPath);
-                array_shift($fullPath);
-                $basePath = NTENTAN_DEV_HOME . '/' . implode("/",$fullPath);
-            }
-            else if($fullPath[0] == 'ntentan')
-            {
-                array_shift($fullPath);
-                $basePath = \ntentan\Ntentan::getFilePath('lib/' . implode("/",$fullPath));
-            }
-
-            $classFile = $basePath . '/' . $class . '.php';
+            $classFile = Ntentan::$appHome . '/' . implode("/",$fullPath) . '/' . $class . '.php';
             Cache::add($key, $classFile);
         }
         return $classFile;
@@ -240,28 +217,8 @@ class Ntentan
         $classFile = self::getClassFile($class);
         if(file_exists($classFile))
         {
-            @include_once $classFile;
+            require_once $classFile;
         }        
-    }
-
-    
-    /**
-     * A utility function which calls both the Ntentan::setup() and Ntentan::route()
-     * methods at once. 
-     * 
-     * @see Ntentan::setup()
-     * @see Ntentan::route()
-     * @param array $config
-     */
-    public static function boot($config)
-    {
-        Ntentan::setup($config);
-        
-                
-        if(!defined('STDOUT'))
-        {
-            Ntentan::route();
-        }
     }
 
     /**
@@ -449,7 +406,7 @@ class Ntentan
      */
     public static function getFilePath($path)
     {
-        return Ntentan::$home . '/' . $path;
+        return __DIR__ . "/../$path";
     }
 
     /**
@@ -549,7 +506,7 @@ class Ntentan
         }
         else
         {
-            throw new exceptions\DataStoreException("Could not find a suitable datastore");
+            throw new models\exceptions\DataStoreException("Could not find a suitable datastore");
         }
     }
 

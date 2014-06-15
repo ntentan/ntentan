@@ -200,6 +200,7 @@ class Postgresql extends SqlDatabase
 
                 case "timestamp":
                 case "timestamp without time zone":
+                case "timestamp with time zone":
                     $type = "datetime";
                     break;
 
