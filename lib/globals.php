@@ -52,11 +52,6 @@ function n($path)
     return Ntentan::getFilePath($path);
 }
 
-function p($path)
-{
-    return Ntentan::getPluginPath($path);
-}
-
 /**
  * A shortcut wrapper around the Ntentan::toSentence method
  * @param $string

@@ -409,15 +409,9 @@ class Ntentan
         return __DIR__ . "/../$path";
     }
 
-    /**
-     * Returns the path of a while which is supposed to be located within the
-     * plugins directory. This method is mostle used internally within the
-     * ntentan framework.
-     * @param string $path
-     */
-    public static function getPluginPath($path)
+    public static function getExtensionHome($extension)
     {
-        return Ntentan::$pluginsHome . '/' . $path;
+        
     }
 
     /**

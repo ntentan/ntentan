@@ -235,7 +235,7 @@ class Controller
         
         // Attempt to load plugin component
         $componentPaths = explode(".", $component);
-        $namespace = "\\ntentan\\plugins\\{$componentPaths[0]}\\components";
+        $namespace = "\\ntentan\\extensions\\{$componentPaths[0]}\\components";
         $className = $this->loadComponent(
             $componentPaths[1], 
             $arguments, 
@@ -256,7 +256,6 @@ class Controller
         {
             return;
         }
-        
         throw new exceptions\ComponentNotFoundException(
             "Component not found *$component*"
         );
@@ -266,7 +265,7 @@ class Controller
     {
         $camelizedComponent = Ntentan::camelize($component);
         $componentName = "$path\\$component\\{$camelizedComponent}Component";
-        if(file_exists(Ntentan::getClassFile($componentName)))
+        if(class_exists($componentName))
         {
             $key = Ntentan::camelizeAndLowerFirst($plugin . ($plugin == null ? $camelizedComponent : $camelizedComponent));
 

@@ -68,7 +68,7 @@ class WidgetsLoader
         }
         else if($this->pluginMode)
         {
-            $widgetClass = "\\ntentan\\plugins\\{$this->plugin}\\widgets\\$widget\\" . Ntentan::camelize($widget) . 'Widget';
+            $widgetClass = "\\ntentan\\extensions\\{$this->plugin}\\widgets\\$widget\\" . Ntentan::camelize($widget) . 'Widget';
             $path = "plugins/{$this->plugin}/widgets/$widget";
         }
         else if(file_exists(Ntentan::getFilePath("lib/views/widgets/$widget/" . Ntentan::camelize($widget) . "Widget.php")))
