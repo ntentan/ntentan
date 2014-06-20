@@ -82,10 +82,8 @@ class Checkbox extends Field
 
 	public function render()
 	{
-		$ret = "";
-		$ret .= '<input class="form-checkbox" type="checkbox" name="'.$this->getName().'" value="'.$this->getCheckedValue().'" '.
-		      (($this->getValue()==$this->getCheckedValue())?"checked='checked'":"").' '.$this->getAttributes().' />';
-		return $ret . "<label> {$this->getLabel()}</label>";
+            return "<label class='nostretch'><input class='form-checkbox' type='checkbox' name='{$this->getName()}' value='{$this->getCheckedValue()}'" .
+                  (($this->getValue()==$this->getCheckedValue())? "checked='checked'":"").' '.$this->getAttributes().' /> ' . $this->getLabel() . '</label>';
 	}
 }
 
