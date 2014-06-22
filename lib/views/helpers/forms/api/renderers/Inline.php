@@ -97,14 +97,18 @@ class Inline extends Renderer
         
         if($element->hasError())
         {
-            $ret .= "<div class='form-errors'>";
-            $ret .= "<ul>";
-            foreach($element->getErrors() as $error)
+            $errors = $element->getErrors();
+            if(is_object($errors))
             {
-                $ret .= "<li>$error</li>";
+                $ret .= "<div class='form-errors'>";
+                $ret .= "<ul>";
+                foreach($errors as $error)
+                {
+                    $ret .= "<li>$error</li>";
+                }
+                $ret .= "</ul>";
+                $ret .= "</div>";
             }
-            $ret .= "</ul>";
-            $ret .= "</div>";
         }
         
         if(!$this->noWrap)
