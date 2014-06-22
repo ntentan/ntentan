@@ -272,7 +272,10 @@ class FormsHelper extends Helper
             $elementClass = new ReflectionClass($element);
             $elementObject = $elementClass->newInstanceArgs($arguments);
             $name = $elementObject->getName();
-            $elementObject->setValue(self::$data[$name]);
+            if(isset(self::$data[$name])) 
+            {
+                $elementObject->setValue(self::$data[$name]);
+            }
             if(isset($this->errors[$name]))
             {
                 $elementObject->setErrors($this->errors[$name]);

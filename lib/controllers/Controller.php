@@ -424,7 +424,6 @@ class Controller
                     {
                         Ntentan::error("Controller class *$controllerName* not found.");
                     }
-
                     $controller->runMethod(array_slice($routeArray, $i + 2));
                     return;
                 }

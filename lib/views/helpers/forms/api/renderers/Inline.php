@@ -76,19 +76,7 @@ class Inline extends Renderer
             $label = $element->getLabel();
             $ret .= $this->renderLabel($element);
         }
-    
-        if($element->hasError())
-        {
-            $ret .= "<div class='form-errors'>";
-            $ret .= "<ul>";
-            foreach($element->getErrors() as $error)
-            {
-                $ret .= "<li>$error</li>";
-            }
-            $ret .= "</ul>";
-            $ret .= "</div>";
-        }
-        
+            
         if($element->getType()=="ntentan\views\helpers\forms\api\Field")
         {
             $ret .= "<div>" . $element->render() . "</div>";
@@ -105,6 +93,18 @@ class Inline extends Renderer
         if($element->getDescription() != "")
         {
             $ret .= "<div ".($element->id()==""?"":"id='".$element->id()."_desc'")." class='form-description'>".$element->getDescription()."</div>";
+        }
+        
+        if($element->hasError())
+        {
+            $ret .= "<div class='form-errors'>";
+            $ret .= "<ul>";
+            foreach($element->getErrors() as $error)
+            {
+                $ret .= "<li>$error</li>";
+            }
+            $ret .= "</ul>";
+            $ret .= "</div>";
         }
         
         if(!$this->noWrap)
