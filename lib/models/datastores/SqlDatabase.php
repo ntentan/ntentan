@@ -382,7 +382,7 @@ abstract class SqlDatabase extends DataStore
                     }
 
                     // If the related belongs to field was not queried then skip this whole step entirely
-                    if($numRequestedBelongsTo > 0 & isset($belongsToFields[$relatedModel]))
+                    if($numRequestedBelongsTo > 0 && isset($belongsToFields[$relatedModel]))
                     {
                         $model = Model::load(Model::getBelongsTo($relatedModel));
                         $datastore = $model->dataStore;
@@ -420,8 +420,10 @@ abstract class SqlDatabase extends DataStore
                     
                     foreach($joinedModelFields as $index => $field)
                     {
-                        $joinedModelFields[$index] = $datastore->resolveName($field, true, $joinedModelDescription, false). " AS "
+                        $joinedModelFields[$index] = "{$joinedTable}.{$field} AS "
                             . $this->quote($alias =='' ? "{$model->getRoute()}.$field" : "$alias.$field");
+                        /*$datastore->resolveName($field, true, $joinedModelDescription, false). " AS "
+                        . $this->quote($alias =='' ? "{$model->getRoute()}.$field" : "$alias.$field");*/
                     }
                     
                     if($params['type'] != 'count')
