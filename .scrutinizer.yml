@@ -1,22 +1,4 @@
-before_commands:
- - pyrus install pear.phpunit.de/DbUnit
- - wget http://pecl.php.net/get/memcache-2.2.7.tgz
- - tar -xzf memcache-2.2.7.tgz
- - sh -c "cd memcache-2.2.7 && phpize && ./configure --enable-memcache && make && sudo make install"
- - echo "extension=memcache.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
- - psql -c 'create database ntentan_tests;' -U postgres
- - psql -f tests/databases/postgresql.sql -U postgres -d ntentan_tests
- - mysql -e 'create database ntentan_tests;'
- - mysql ntentan_tests < tests/databases/mysql.sql
- - mkdir tests/tmp
-
 tools:
-    # Code Coverage
-    external_code_coverage:
-        enabled: true
-        timeout: 300
-
-
     php_code_coverage:
         enabled:              false
         test_command:         phpunit
