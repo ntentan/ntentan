@@ -63,125 +63,59 @@ class AuthComponent extends Component
      */
     const DO_NOTHING    = 'do_nothing';
 
-    /**
-     * The route through which the login method of the auth component should be
-     * invoked. This path should point to a controller which exists and implements 
-     * the required method.
-     * 
-     * @var string
-     */
-    public $loginRoute;
-    
-    /**
-     * The route through wich the logout method of the auth component should be
-     * invoked. This path should point to a controller which exists and
-     * implements the required method. 
-     * 
-     * @var string
-     */
-    public $logoutRoute;
-
-    /**
-     * Route for redirection when login is successful. Redirection is only
-     * performed when the AuthComponent::onSuccess property is set for
-     * redirection.
-     * 
-     * @var string
-     */
-    public $redirectRoute = "/";
-
-    /**
-     * Function to call when login is successful. Function would only be called
-     * when the AuthComponent::onSuccess property is set to call functions.
-     * 
-     * @var string
-     */
-    public $successFunction = null;
-    
-    /**
-     * Tells the component what to do when authentication is successful.
-     * 
-     * @var string
-     */
-    public $onSuccess = AuthComponent::REDIRECT;
-    public $onFailure = AuthComponent::REDIRECT;
-    public $failureFunction;
-    public $name = __CLASS__;
-    public $authMethod = "http_request";
-    private $_usersModel = "users";
-    protected $authMethodInstance;
-    public $excludedRoutes;
-    public $authenticated;
+    protected $parameters;
+    private $authMethodInstance;
 
     public function __construct($parameters = array())
     {
-        $this->authMethod = isset($parameters['method']) ? $parameters['method'] : $this->authMethod;
-        $this->loginRoute = isset($parameters['login_route']) ? $parameters['login_route'] : $this->loginRoute;
-        $this->logoutRoute = isset($parameters['logout_route']) ? $parameters['logout_route'] : $this->logoutRoute;
-        $this->onFailure = isset($parameters['on_failure']) ? $parameters['on_failure'] : $this->onFailure;
-        $this->onSuccess = isset($parameters['on_success']) ? $parameters['on_success'] : $this->onFailure;
-        $this->redirectRoute = isset($parameters['redirect_route']) ? $parameters['redirect_route'] : $this->redirectRoute;
-        $this->failureFunction = isset($parameters['failure_function']) ? $parameters['failure_function'] : $this->failureFunction;
-        $this->successFunction = isset($parameters['success_function']) ? $parameters['success_function'] : $this->successFunction;
-        $this->excludedRoutes = is_array($parameters['excluded_routes']) ? $parameters['excluded_routes'] : array();
-        $this->usersModel = isset($parameters['users_model']) ? $parameters['users_model'] : $this->_usersModel;
+        parent::__construct();
+        $this->parameters = $parameters;
         $this->authenticated = $_SESSION['logged_in'];
     }
-
-    public function __set($variable, $value)
+    
+    private function getParameter($parameter, $default = null)
     {
-        switch($variable)
+        if(isset($this->parameters[$parameter]))
         {
-            case "usersModel":
-                $this->_usersModel = $value;
-                if(is_object($this->authMethodInstance))
-                {
-                    $this->authMethodInstance->usersModel = $value;
-                }
-                break;
+            return $this->parameters[$parameter];
+        }
+        else
+        {
+            return $default;
         }
     }
 
     public function init()
     {
-        // Allow the roles component to activate the authentication if it is
-        // available. If not just run the authenticator from this section.
-        
-        if($this->controller->hasComponent("roles"))
+        foreach($this->getParameter('excluded_routes', array()) as $excludedRoute)
         {
-            return;
+            if(preg_match("/$excludedRoute/i", Ntentan::$route) > 0)
+            {
+                return;
+            }
         }
-        else
+
+        if($_SESSION["logged_in"] !== true)
         {
-            foreach($this->excludedRoutes as $excludedRoute)
-            {
-                if(preg_match("/$excludedRoute/i", Ntentan::$route) > 0)
-                {
-                    return;
-                }
-            }
-            
-            if($_SESSION["logged_in"] !== true)
-            {
-                $this->set('app_name', Ntentan::$appName);
-                $this->set('title', "Login");
-                $this->login();
-            }
+            $this->set('app_name', Ntentan::$appName);
+            $this->set('title', "Login");
+            $this->login();
         }
     }
 
     public function redirectToLogin()
     {
-        $this->set("login_message", $this->authMethodInstance->message);
+        $this->set("login_message", $this->authMethodInstance->getMessage());
         $this->set("login_status", false);
-        if(Ntentan::$route != $this->loginRoute && Ntentan::$requestedRoute != $this->loginRoute)
+        $loginRoute = $this->getParameter('login_route', $this->controller->route . "/login");
+        if(Ntentan::$route != $loginRoute && Ntentan::$requestedRoute != $loginRoute)
         {
             Ntentan::redirect(
-                $this->loginRoute .
+                $loginRoute .
                 (
                     Ntentan::$requestedRoute == ""
                     ? "" :
-                    (Ntentan::$requestedRoute == $this->logoutRoute ? "" : "?redirect=" . urlencode(Ntentan::$requestedRoute))
+                    (Ntentan::$requestedRoute == $logoutRoute ? "" : "?redirect=" . urlencode(Ntentan::$requestedRoute))
                 )
             );
         }
@@ -190,14 +124,14 @@ class AuthComponent extends Component
     private function performSuccessOperation()
     {
         $this->authenticated = true;
-        switch($this->onSuccess)
+        switch($this->getParameter('on_success', self::REDIRECT))
         {
-            case AuthComponent::REDIRECT:
-                Ntentan::redirect($this->redirectRoute);
+            case self::REDIRECT:
+                Ntentan::redirect($this->getParameter('redirect_route', '/'));
                 break;
 
-            case AuthComponent::CALL_FUNCTION:
-                $decomposed = explode("::", $this->successFunction);
+            case self::CALL_FUNCTION:
+                $decomposed = explode("::", $this->getParameter('success_function'));
                 $className = $decomposed[0];
                 $methodName = $decomposed[1];
                 $method = new \ReflectionMethod($className, $methodName);
@@ -209,19 +143,43 @@ class AuthComponent extends Component
         }        
     }
     
+    private function performFailureOperation()
+    {
+        switch($this->getParameter('on_failure', self::REDIRECT))
+        {
+            case self::CALL_FUNCTION:
+                $decomposed = explode("::", $this->getParameter('failure_function'));
+                $className = $decomposed[0];
+                $methodName = $decomposed[1];
+                $method = new \ReflectionMethod($className, $methodName);
+                $method->invoke(null, $this->controller);
+                break;
+
+            case self::REDIRECT:
+                $this->redirectToLogin();
+                break;
+
+            default:
+                $this->set('login_status', false);
+                break;
+        }        
+    }
+    
     public function login()
     {
         Ntentan::addIncludePath(Ntentan::getFilePath('lib/controllers/components/auth/methods'));
-        $authenticatorClass = __NAMESPACE__ . '\\methods\\' . Ntentan::camelize($this->authMethod);
-        if(class_exists($authenticatorClass))
-        {
-            $this->authMethodInstance = new $authenticatorClass();
-            $this->authMethodInstance->usersModel = $this->_usersModel;
-        }
-        else
-        {
-            print Ntentan::message("Authenticator class *$authenticatorClass* not found.");
-        }
+        $authenticatorClass = __NAMESPACE__ . '\\methods\\' . Ntentan::camelize($this->getParameter('auth_method', 'http_request'));
+        $this->authMethodInstance = new $authenticatorClass();
+        $this->authMethodInstance->setPasswordCryptFunction(
+            $this->getParameter(
+                'password_crypt', 
+                function($password, $storedPassword){ 
+                    return md5($password) == $storedPassword; 
+                }
+            )
+        );
+        $this->authMethodInstance->setUsersModel($this->parameters['users_model']);
+        $this->authMethodInstance->setUsersModelFields($this->parameters['users_model_fields']);
         
         if($this->loggedIn())
         {
@@ -233,33 +191,14 @@ class AuthComponent extends Component
         }
         else
         {
-            switch($this->onFailure)
-            {
-                case AuthComponent::CALL_FUNCTION:
-                    $decomposed = explode("::", $this->failureFunction);
-                    $className = $decomposed[0];
-                    $methodName = $decomposed[1];
-                    $method = new \ReflectionMethod($className, $methodName);
-                    $method->invoke(null, $this->controller);
-                    break;
-
-                case AuthComponent::REDIRECT:
-                    $this->loginRoute = $this->loginRoute == null ? $this->controller->route . "/login" : $this->loginRoute;
-                    $this->logoutRoute = $this->logoutRoute == null ? $this->controller->route . "/logout" : $this->logoutRoute;
-                    $this->redirectToLogin();
-                    break;
-
-                default:
-                    $this->set('login_status', false);
-                    break;
-            }
+            $this->performFailureOperation();
         }
     }
 
     public function logout()
     {
         $_SESSION = array();
-        Ntentan::redirect($this->loginRoute);
+        Ntentan::redirect($this->getParameter('login_route', $this->controller->route . "/login"));
     }
 
     public static function userId()

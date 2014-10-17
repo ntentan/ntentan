@@ -5,9 +5,13 @@ use \ntentan\models\Model;
 
 abstract class AuthMethod
 {
-    public $usersModel = 'users';
-    public $redirectPath;
-    public $message;
+    private $usersModel = 'users';
+    protected $usersFields = array(
+        'username' => 'username',
+        'password' => 'password'
+    );
+    private $message;
+    private $passwordCrypt;
     
     abstract public function login();
     
@@ -15,9 +19,15 @@ abstract class AuthMethod
     {
         $usersModelClass = Model::getClassName($this->usersModel);
         $users = new $usersModelClass();
-        $result = $users->getJustFirstWithUsername($username);
-
-        if($result->password == md5($password) && $result->blocked != '1')
+        $result = $users->getJustFirst(
+            array(
+                'conditions' => array(
+                    $this->usersFields['username'] => $username
+                )
+            )
+        );
+        $passwordCrypt = $this->passwordCrypt;
+        if($passwordCrypt($password, $result->password) && $result->blocked != '1')
         {
             $_SESSION["logged_in"] = true;
             $_SESSION["username"] = $username;
@@ -30,5 +40,31 @@ abstract class AuthMethod
             $this->message = "Invalid username or password!";
             return false;
         }
+    }
+    
+    public function setUsersModel($usersModel)
+    {
+        if(!$usersModel == null)
+        {
+            $this->usersModel = $usersModel;
+        }
+    }
+    
+    public function setUsersModelFields($fields)
+    {
+        if(!$fields == null)
+        {
+            $this->usersFields = $fields;
+        }
+    }
+    
+    public function setPasswordCryptFunction($passwordCrypt)
+    {
+        $this->passwordCrypt = $passwordCrypt;
+    }
+    
+    public function getMessage()
+    {
+        return $this->message;
     }
 }
