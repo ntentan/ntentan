@@ -50,7 +50,7 @@ class AuthComponent extends Component
     /**
      * 
      */
-    const REDIRECT      = 'redirect';
+    const REDIRECT = 'redirect';
     
     /**
      * 
@@ -61,7 +61,7 @@ class AuthComponent extends Component
      * 
      * @var string
      */
-    const DO_NOTHING    = 'do_nothing';
+    const DO_NOTHING = 'do_nothing';
 
     protected $parameters;
     private $authMethodInstance;
@@ -131,11 +131,8 @@ class AuthComponent extends Component
                 break;
 
             case self::CALL_FUNCTION:
-                $decomposed = explode("::", $this->getParameter('success_function'));
-                $className = $decomposed[0];
-                $methodName = $decomposed[1];
-                $method = new \ReflectionMethod($className, $methodName);
-                $method->invoke(null, $this->controller);
+                $function = $this->getParameter('success_function');
+                $function();
                 break;
 
             default:
@@ -148,11 +145,8 @@ class AuthComponent extends Component
         switch($this->getParameter('on_failure', self::REDIRECT))
         {
             case self::CALL_FUNCTION:
-                $decomposed = explode("::", $this->getParameter('failure_function'));
-                $className = $decomposed[0];
-                $methodName = $decomposed[1];
-                $method = new \ReflectionMethod($className, $methodName);
-                $method->invoke(null, $this->controller);
+                $function = $this->getParameter('failure_function');
+                $function();
                 break;
 
             case self::REDIRECT:
