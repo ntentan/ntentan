@@ -59,6 +59,8 @@ class AdminComponent extends Component
      * @var array
      */
     public $listFields = array();
+    
+    public $listConditions = array();
 
     /**
      * A list of extra operations
@@ -234,12 +236,6 @@ class AdminComponent extends Component
 
     public function page($pageNumber)
     {
-    	// Check for wrong page numbers
-        if($pageNumber < 1)
-        {
-            throw new \Exception("Illegal page number in admin component. Page numbers cannot be less than 1");
-        }
-        
         //execute the page enxtension method
         if($this->consoleMode)
         {
@@ -277,7 +273,6 @@ class AdminComponent extends Component
         
         $this->view->template = "{$entityCode}_page.tpl.php";
         $listFields = $this->listFields;
-        $description = $model->describe();
         if(count($listFields) == null)
         {
             $listFields = $model->getFields();
@@ -292,12 +287,12 @@ class AdminComponent extends Component
                 "offset"            =>  ($pageNumber-1) * $itemsPerPage,
                 "sort"              =>  $model->getName() . ".id desc",
                 "fetch_belongs_to"  =>  true,
-                'use_dots'          =>  true
+                'conditions'        =>  $this->listConditions
             )
         );
 
         $count = $model->get('count');
-        $data = $data->getData();
+        //$data = $data->toArray();      
         $listData = array();
         
         foreach($data as $datum)
@@ -322,7 +317,6 @@ class AdminComponent extends Component
         $pagingLinks = array();
 
         $this->set("operations", $this->operations);
-
         $this->set("list_fields", $this->listFields);
         $this->set("notification_type", $_GET["n"]);
         $this->set("notification_item", base64_decode($_GET["i"]));
@@ -355,11 +349,6 @@ class AdminComponent extends Component
         }
         $this->sections[$section['route']] = $section;
         return $this;
-    }
-
-    private function showConsolePage($pageNumber)
-    {
-        $this->page($pageNumber);
     }
     
     public function setupConsoleView()
@@ -401,64 +390,29 @@ class AdminComponent extends Component
         $arguments = func_get_args();
         if(count($arguments) == 0)
         {
-            // Do nothing
+            // Run a default here
         }
-        else
+        else if(end($arguments) == "add")
         {
-            if(end($arguments) == "add")
+            array_pop($arguments);
+            $sectionkey = implode(".", $arguments);
+            $this->model = Model::load($this->sections[$sectionkey]['model']);
+            $this->entity = $this->sections[$sectionkey]['entity'];
+            $this->consoleModeRoute = "{$this->prefix}{$this->controller->route}/console/{$this->sections[$sectionkey]['route']}";
+            $this->add();
+        }
+        else if(is_numeric(end($arguments)))
+        {
+            $index = array_pop($arguments);
+            $action = array_pop($arguments);
+            if(end($arguments) == "confirm")
             {
                 array_pop($arguments);
                 $sectionkey = implode(".", $arguments);
                 $this->model = Model::load($this->sections[$sectionkey]['model']);
                 $this->entity = $this->sections[$sectionkey]['entity'];
                 $this->consoleModeRoute = "{$this->prefix}{$this->controller->route}/console/{$this->sections[$sectionkey]['route']}";
-                $this->add();
-            }
-            else if(is_numeric(end($arguments)))
-            {
-                $index = array_pop($arguments);
-                $action = array_pop($arguments);
-                if(end($arguments) == "confirm")
-                {
-                    array_pop($arguments);
-                    $sectionkey = implode(".", $arguments);
-                    $this->model = Model::load($this->sections[$sectionkey]['model']);
-                    $this->entity = $this->sections[$sectionkey]['entity'];
-                    $this->consoleModeRoute = "{$this->prefix}{$this->controller->route}/console/{$this->sections[$sectionkey]['route']}";
-                    $this->confirm($action, $index);
-                }
-                else
-                {
-                    $sectionkey = implode(".", $arguments);
-                    $this->model = Model::load($this->sections[$sectionkey]['model']);
-                    $this->entity = $this->sections[$sectionkey]['entity'];
-                    $this->consoleModeRoute = "{$this->prefix}{$this->controller->route}/console/{$this->sections[$sectionkey]['route']}";
-                    switch($action)
-                    {
-                        case "edit":
-                            $this->edit($index);
-                            break;
-                        case "delete":
-                            $this->delete($index);
-                            break;
-                        case 'page':
-                            $this->showConsolePage($index);
-                            break;
-                        default:
-                            $extensionMethodName = Ntentan::camelize(Ntentan::plural($this->entity),".","", true) . 'Admin' . Ntentan::camelize($action);
-                            if(method_exists($this->controller, $extensionMethodName))
-                            {
-                                $this->view->template = "{$this->entity}_{$action}.tpl.php";
-                                $extensionMethod = new ReflectionMethod($this->controller, $extensionMethodName);
-                                $extensionMethod->invoke($this->controller, $index);
-                            }
-                            else
-                            {
-                                throw new MethodNotFoundException("Could not find $extensionMethodName method in the admin controller");
-                            }
-                            break;
-                    }
-                }
+                $this->confirm($action, $index);
             }
             else
             {
@@ -466,8 +420,40 @@ class AdminComponent extends Component
                 $this->model = Model::load($this->sections[$sectionkey]['model']);
                 $this->entity = $this->sections[$sectionkey]['entity'];
                 $this->consoleModeRoute = "{$this->prefix}{$this->controller->route}/console/{$this->sections[$sectionkey]['route']}";
-                $this->showConsolePage(1);
+                switch($action)
+                {
+                    case "edit":
+                        $this->edit($index);
+                        break;
+                    case "delete":
+                        $this->delete($index);
+                        break;
+                    case 'page':
+                        $this->page($index);
+                        break;
+                    default:
+                        $extensionMethodName = Ntentan::camelize(Ntentan::plural($this->entity),".","", true) . 'Admin' . Ntentan::camelize($action);
+                        if(method_exists($this->controller, $extensionMethodName))
+                        {
+                            $this->view->template = "{$this->entity}_{$action}.tpl.php";
+                            $extensionMethod = new ReflectionMethod($this->controller, $extensionMethodName);
+                            $extensionMethod->invoke($this->controller, $index);
+                        }
+                        else
+                        {
+                            throw new MethodNotFoundException("Could not find $extensionMethodName method in the admin controller");
+                        }
+                        break;
+                }
             }
+        }
+        else
+        {
+            $sectionkey = implode(".", $arguments);
+            $this->model = Model::load($this->sections[$sectionkey]['model']);
+            $this->entity = $this->sections[$sectionkey]['entity'];
+            $this->consoleModeRoute = "{$this->prefix}{$this->controller->route}/console/{$this->sections[$sectionkey]['route']}";
+            $this->page(1);
         }
     }
 
