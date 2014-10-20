@@ -1,11 +1,6 @@
 <?php $modelSingular = strtolower(\ntentan\Ntentan::singular($entity));?>
-<?php if($headings):?>
-    <?php if($entity != ''): ?>
-        <h<?php echo $heading_level?>><?php echo $entity ?></h<?php echo $heading_level?>>
-    <?php endif; ?>
-<?php endif ?>
-        
-<div id="item-actions-menu">
+<?php if($headings && $entity != ''):?><h<?php echo $heading_level?> class="admin-heading"><?php echo $entity ?></h<?php echo $heading_level?>><?php 
+    endif; ?><div id="item-actions-menu">
     <?php echo $this->widgets->menu(array(array('label'=>"Add new $modelSingular", 'url'=>u("$route/add"))))->alias('actions'); ?>
 </div>
 <?php if($notifications & is_numeric($notification_type)):?>

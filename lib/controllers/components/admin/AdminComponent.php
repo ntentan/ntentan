@@ -311,6 +311,7 @@ class AdminComponent extends Component
             $headers = array_keys($listData[0]);
             array_pop($headers);
         }
+        $headers[] = '';
         $this->set("data", $listData);
         $this->set("headers", $headers);
         $numPages = intval(ceil($count / $itemsPerPage));

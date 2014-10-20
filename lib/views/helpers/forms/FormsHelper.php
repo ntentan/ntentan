@@ -209,6 +209,7 @@ class FormsHelper extends Helper
         else 
         {
             self::$renderer = $renderer;
+            return $this;
         }
     }
 

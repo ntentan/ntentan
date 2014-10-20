@@ -56,6 +56,6 @@ class None extends Renderer
     
     public function type()
     {
-        return "inline";
+        return "none";
     }
 }

@@ -793,7 +793,11 @@ class Model implements ArrayAccess, Iterator
                 }
             }
         }
-        
+        return $this->isValid();
+    }
+    
+    protected function isValid()
+    {
         if(count($this->invalidFields) == 0)
         {
             return true;
@@ -801,7 +805,7 @@ class Model implements ArrayAccess, Iterator
         else
         {
             return false;
-        }
+        }        
     }
     
     public function __destruct() 

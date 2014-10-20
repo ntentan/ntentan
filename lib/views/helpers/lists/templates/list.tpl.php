@@ -4,7 +4,7 @@
     <thead>
         <tr>
             <?php foreach($headers as $header):?>
-            <td><?php echo s($header) ?></td>
+            <th><?php echo s($header) ?></th>
             <?php endforeach;?>
         </tr>
     </thead>
