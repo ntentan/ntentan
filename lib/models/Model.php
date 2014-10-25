@@ -49,6 +49,8 @@ class Model implements ArrayAccess, Iterator
 {
     const RELATIONSHIP_BELONGS_TO = 'belongs_to';
     const RELATIONSHIP_HAS_MANY = 'has_many';
+    const ON_COMMIT_SAVE = 'save';
+    const ON_COMMIT_UPDATE = 'update';
 
     /**
      * @todo try to prefix this with an underscore to prevent clashes with other assignments
@@ -357,6 +359,11 @@ class Model implements ArrayAccess, Iterator
     {
 
     }
+    
+    public function onCommitCallback($mode)
+    {
+        
+    }
 
     public function save()
     {
@@ -377,6 +384,7 @@ class Model implements ArrayAccess, Iterator
             }            
             $this->postSaveCallback($id);
             $this->dataStore->end();
+            $this->onCommitCallback(self::ON_COMMIT_SAVE);
             return $id;
         }
         else
@@ -418,6 +426,7 @@ class Model implements ArrayAccess, Iterator
         }            
         $this->postUpdateCallback();
         $this->dataStore->end();
+        $this->onCommitCallback(self::ON_COMMIT_UPDATE);
         return true;
         
     }
