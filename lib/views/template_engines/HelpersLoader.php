@@ -62,9 +62,7 @@ class HelpersLoader
             }
             else if($this->pluginMode)
             {
-                $path = Ntentan::getPluginPath("{$this->plugin}/helpers/$helper");
-                Ntentan::addIncludePath("{$this->plugin}");
-                $helperClass = "\\ntentan\\plugins\\{$this->plugin}\\helpers\\$helper\\$camelizedHelper";
+                $helperClass = "\\ntentan\\extensions\\{$this->plugin}\\helpers\\$helper\\$camelizedHelper";
             }
             else if(file_exists(Ntentan::getFilePath("lib/views/helpers/$helper")))
             {
@@ -76,7 +74,6 @@ class HelpersLoader
                 return false;
             }
                         
-            Ntentan::addIncludePath($path);
             $helperInstance = new $helperClass();
             $this->loadedHelpers[$this->plugin . $helper] = $helperInstance;
         }
