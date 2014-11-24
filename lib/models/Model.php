@@ -673,16 +673,6 @@ class Model implements ArrayAccess, Iterator
                         'belongs_to_model' => $belongsToModel
                     )
                 );
-                /*foreach($description["fields"] as $i => $field)
-                {
-                    if($field["name"] == $fieldName)
-                    {
-                        $description["fields"][$i]["model"] = Ntentan::plural($belongsToModel);
-                        $description["fields"][$i]["foreign_key"] = true;
-                        $description["fields"][$i]["field_name"] = $fieldName;
-                        if($alias != '') $description["fields"][$i]["alias"] = $alias;
-                    }
-                }*/
             }
         }
         else if($this->belongsTo != null)
@@ -696,15 +686,7 @@ class Model implements ArrayAccess, Iterator
                     'alias' => null,
                     'belongs_to_model' => $this->belongsTo
                 )
-            );            
-            /*foreach($description["fields"] as $i => $field)
-            {
-                if($field["name"] == $fieldName)
-                {
-                    $description["fields"][$i]["model"] = $this->belongsTo;
-                    $description["fields"][$i]["foreign_key"] = true;
-                }
-            }*/
+            );
         }        
     }
 
