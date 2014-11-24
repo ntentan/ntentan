@@ -89,11 +89,6 @@ abstract class SqlDatabase extends DataStore
             return $this->_schema;
         }
     }
-    
-    /*public function getTable()
-    {
-        return $this->table;
-    }*/
 
     /**
      * A protected function used internally to set the table names. This function
@@ -139,10 +134,9 @@ abstract class SqlDatabase extends DataStore
         //@todo cache the result of this loop so it runs just once
         do
         {
-            $table = implode("_", $path);
-            if($this->doesTableExist($table, $this->schema))
+            $this->table = implode("_", $path);
+            if($this->describe() !== false)
             {
-                $this->table = $table;
                 break;
             }
             else
@@ -516,7 +510,11 @@ abstract class SqlDatabase extends DataStore
                             $fieldNameArray = explode(".", $field);
                             $fieldName = array_pop($fieldNameArray);
                             $modelName = Ntentan::singular(implode(".", $fieldNameArray));
-                            if(is_string($results[$index][$modelName])) $results[$index][$modelName] = array();
+                            
+                            if(!is_array($results[$index][$modelName])) 
+                            {
+                                $results[$index][$modelName] = array();
+                            }
                             
                             if($params['use_dots'])
                             {
@@ -765,7 +763,4 @@ abstract class SqlDatabase extends DataStore
     public abstract function quote($field);
     protected abstract function getLastInsertId();
     protected abstract function limit($limitParams);
-    public abstract function describeModel();
-    public abstract function describeTable($table, $schema);
-    protected abstract function _doesTableExist($table, $schema);
 }

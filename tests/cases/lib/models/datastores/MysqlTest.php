@@ -1,15 +1,4 @@
 <?php
-
-use ntentan\Ntentan;
-
-require_once TEST_HOME . '/lib/SqlDatabaseTestCase.php';
-require_once CODE_HOME . '/lib/models/datastores/DataStore.php';
-require_once CODE_HOME . '/lib/models/datastores/SqlDatabase.php';
-require_once CODE_HOME . '/lib/models/datastores/Mysql.php';
-require_once CODE_HOME . '/lib/sessions/Manager.php';
-/**
- * 
- */
 class MysqlTest extends \ntentan\test_cases\SqlDatabaseTestCase
 {
     protected function setUp()

@@ -1,5 +1,5 @@
 <?php
-namespace tests\modules\roles;
+namespace ntentan_test_app\modules\roles;
 
 class Roles extends \ntentan\models\Model
 {

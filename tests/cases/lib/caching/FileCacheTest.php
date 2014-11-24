@@ -1,5 +1,4 @@
 <?php
-require_once TEST_HOME . "/lib/CachingTestCase.php";
 
 use ntentan\Ntentan;
 use ntentan\caching\Cache;

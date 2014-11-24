@@ -587,105 +587,107 @@ class Model implements ArrayAccess, Iterator
     {
         return isset($this->data[$this->iteratorPosition]);
     }
+    
+    private function addUniqueConstraint(&$description, $constraint)
+    {
+        foreach($constraint['fields'] as $newColumn)
+        {
+            foreach($description['unique'] as $id => $unique)
+            {
+                if(array_search($newColumn, $unique['fields']) !== false)
+                {
+                    $description['unique'][$id] = $constraint;
+                    return;
+                }
+            }
+        }
+        $description['unique'][] = $constraint;
+    }
+    
+    private function markForcedUniqueFields(&$description)
+    {
+        if(!is_array($this->mustBeUnique)) return;
+        
+        foreach($this->mustBeUnique as $unique)
+        {
+            if(is_string($unique))
+            {
+                $this->addUniqueConstraint($description, array(
+                        'fields' => array($unique)
+                    )
+                );
+            }
+            else if(is_array($unique))
+            {
+                $this->addUniqueConstraint($description,array(
+                        'fields' => isset($unique['field']) ? array($unique['field']) : $unique['fields'], 
+                        'message' => $unique['message']
+                    )
+                );
+            }
+        }
+    }
+    
+    private function addBelongsToFields(&$description)
+    {
+        if(is_array($this->belongsTo))
+        {
+            foreach($this->belongsTo as $belongsTo)
+            {
+                $belongsToModel = is_array($belongsTo) ? $belongsTo[0] : $belongsTo;
+                $description["belongs_to"][] = $belongsToModel;
+                $alias = null;
+                if(is_array($belongsTo))
+                {
+                    $fieldName = $belongsTo["as"];
+                    $alias = $belongsTo["as"];
+                }
+                else
+                {
+                    $alias = strtolower(
+                        Ntentan::singular(
+                            $this->getBelongsTo($belongsTo)
+                        )
+                    );
+                    $fieldName = $alias . "_id";
+                }
+                foreach($description["fields"] as $i => $field)
+                {
+                    if($field["name"] == $fieldName)
+                    {
+                        $description["fields"][$i]["model"] = Ntentan::plural($belongsToModel);
+                        $description["fields"][$i]["foreign_key"] = true;
+                        $description["fields"][$i]["field_name"] = $fieldName;
+                        if($alias != '') $description["fields"][$i]["alias"] = $alias;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if($this->belongsTo != null)
+            {
+                $description["belongs_to"][] = $this->belongsTo;
+                $fieldName = strtolower(Ntentan::singular($this->belongsTo)) . "_id";
+                foreach($description["fields"] as $i => $field)
+                {
+                    if($field["name"] == $fieldName)
+                    {
+                        $description["fields"][$i]["model"] = $this->belongsTo;
+                        $description["fields"][$i]["foreign_key"] = true;
+                    }
+                }
+            }
+        }        
+    }
 
     public function describe()
     {
         if(!Cache::exists("model_" . $this->route))
         {
             $description = $this->dataStore->describe();
-            if(is_array($this->mustBeUnique))
-            {
-                foreach($description["fields"] as $i => $field)
-                {
-                    $uniqueField = false;
-
-                    foreach($this->mustBeUnique as $unique)
-                    {
-                        if(is_array($unique))
-                        {
-                            if(isset($unique['field']))
-                            {
-                                if($field["name"] == $unique["field"])
-                                {
-                                    $uniqueField = true;
-                                    $uniqueMessage = $unique["message"];
-                                }
-                            }
-                            else
-                            {
-                                throw new exceptions\DescriptionException("A mustBeUnique constraint specified as an array must always contain a field property");
-                            }
-                        }
-                        else
-                        {
-                            if($field["name"] == $unique)
-                            {
-                                $uniqueField = true;
-                                $uniqueMessage = null;
-                            }
-                        }
-                    }
-
-                    if($uniqueField)
-                    {
-                        $description["fields"][$i]["unique"] = true;
-                        if($uniqueMessage != null)
-                        {
-                            $description["fields"][$i]["unique_violation_message"] = $uniqueMessage;
-                        }
-                    }
-                }
-            }
-
-            if(is_array($this->belongsTo))
-            {
-                foreach($this->belongsTo as $belongsTo)
-                {
-                    $belongsToModel = is_array($belongsTo) ? $belongsTo[0] : $belongsTo;
-                    $description["belongs_to"][] = $belongsToModel;
-                    $alias = null;
-                    if(is_array($belongsTo))
-                    {
-                        $fieldName = $belongsTo["as"];
-                        $alias = $belongsTo["as"];
-                    }
-                    else
-                    {
-                        $alias = strtolower(
-                            Ntentan::singular(
-                                $this->getBelongsTo($belongsTo)
-                            )
-                        );
-                        $fieldName = $alias . "_id";
-                    }
-                    foreach($description["fields"] as $i => $field)
-                    {
-                        if($field["name"] == $fieldName)
-                        {
-                            $description["fields"][$i]["model"] = Ntentan::plural($belongsToModel);
-                            $description["fields"][$i]["foreign_key"] = true;
-                            $description["fields"][$i]["field_name"] = $fieldName;
-                            if($alias != '') $description["fields"][$i]["alias"] = $alias;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if($this->belongsTo != null)
-                {
-                    $description["belongs_to"][] = $this->belongsTo;
-                    $fieldName = strtolower(Ntentan::singular($this->belongsTo)) . "_id";
-                    foreach($description["fields"] as $i => $field)
-                    {
-                        if($field["name"] == $fieldName)
-                        {
-                            $description["fields"][$i]["model"] = $this->belongsTo;
-                            $description["fields"][$i]["foreign_key"] = true;
-                        }
-                    }
-                }
-            }
+            $this->markForcedUniqueFields($description);
+            $this->addBelongsToFields($description);
             Cache::add("model_" . $this->route, $description);
         }
         return Cache::get("model_" . $this->route);

@@ -1,16 +1,6 @@
 <?php
 namespace ntentan\test_cases;
 
-require_once CODE_HOME . '/lib/models/Model.php';
-require_once TEST_HOME . '/app/modules/users/Users.php';
-require_once TEST_HOME . '/app/modules/roles/Roles.php';
-require_once TEST_HOME . '/app/modules/departments/Departments.php';
-require_once CODE_HOME . '/lib/Ntentan.php';
-require_once CODE_HOME . '/lib/models/exceptions/ModelNotFoundException.php';
-require_once CODE_HOME . '/lib/models/exceptions/DataStoreException.php';
-require_once CODE_HOME . '/lib/caching/Cache.php';
-require_once CODE_HOME . '/lib/exceptions/MethodNotFoundException.php';
-
 abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
 {
     /**
@@ -71,6 +61,7 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
     {
         parent::setUp();
         \ntentan\caching\Cache::reset();
+        \ntentan\models\datastores\Atiaa::reset();
         $this->users = \ntentan\models\Model::load('users');
         $this->roles = \ntentan\models\Model::load('roles');
         $this->departments = \ntentan\models\Model::load('departments');
@@ -108,18 +99,22 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
                     'type' => 'integer',
                     'required' => true,
                     'length' => null,
-                    'comment' => '',
-                    'primary_key' => true
+                    
                 ),
                 'name' => array(
                     'name' => 'name',
                     'type' => 'string',
                     'required' => true,
-                    'length' => 255,
-                    'comment' => '',
-                    'unique' => true,
-                    'unique_violation_message' => 'Two roles cannot have the same name'
+                    'length' => '255',
+                    
                 ),
+            ),
+            'primary_key' => array('id'),
+            'unique' => array(
+                array(
+                    'fields' =>array('name'),
+                    'message' => 'Two roles cannot have the same name'
+                )
             )
         );
 
@@ -131,17 +126,18 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
                     'type' => 'integer',
                     'required' => true,
                     'length' => null,
-                    'comment' => '',
-                    'primary_key' => true
+                    
                 ),
                 'name' => array(
                     'name' => 'name',
                     'type' => 'string',
                     'required' => true,
-                    'length' => 255,
-                    'comment' => ''
+                    'length' => '255',
+                    
                 ),
-            )
+            ),
+            'primary_key' => array('id'),
+            'unique' => array()
         );
 
         $usersDescription = array(
@@ -152,145 +148,116 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
                     'type' => 'integer',
                     'required' => true,
                     'length' => null,
-                    'comment' => '',
-                    'primary_key' => true
+                    
                 ),
                 'username' => array(
                     'name' => 'username',
                     'type' => 'string',
                     'required' => true,
-                    'length' => 255,
-                    'comment' => '',
-                    'unique' => true
+                    'length' => '255',
+                    
                 ),
                 'password' => array(
                     'name' => 'password',
                     'type' => 'string',
                     'required' => true,
-                    'length' => 255,
-                    'comment' => ''
+                    'length' => '255',
+                    
                 ),
                 'role_id' => array(
                     'name' => 'role_id',
                     'type' => 'integer',
                     'required' => true,
                     'length' => null,
-                    'comment' => '',
                     'model' => 'roles',
                     'foreign_key' => true,
                     'field_name' => 'role_id',
-                    'alias' => 'role'
+                    'alias' => 'role',
+                    
                 ),
                 'firstname' => array(
                     'name' => 'firstname',
                     'type' => 'string',
                     'required' => true,
-                    'length' => 255,
-                    'comment' => ''
+                    'length' => '255',
+                    
                 ),
                 'lastname' => array(
                     'name' => 'lastname',
                     'type' => 'string',
                     'required' => true,
-                    'length' => 255,
-                    'comment' => ''
+                    'length' => '255',
+                    
                 ),
                 'othernames' => array(
                     'name' => 'othernames',
                     'type' => 'string',
                     'required' => false,
-                    'length' => 255,
-                    'comment' => ''
+                    'length' => '255',
+                    
                 ),
                 'status' => array(
                     'name' => 'status',
                     'type' => 'integer',
                     'required' => true,
                     'length' => null,
-                    'comment' => ''
+                    
                 ),
                 'email' => array(
                     'name' => 'email',
                     'type' => 'string',
                     'required' => true,
-                    'length' => 255,
-                    'comment' => ''
+                    'length' => '255',
+                    
                 ),
                 'phone' => array(
                     'name' => 'phone',
                     'type' => 'string',
                     'required' => false,
-                    'length' => 64,
-                    'comment' => ''
+                    'length' => '64',
+                    
                 ),
                 'office' => array(
                     'name' => 'office',
                     'type' => 'integer',
                     'required' => false,
                     'length' => null,
-                    'comment' => '',
                     'model' => 'departments',
                     'foreign_key' => true,
                     'field_name' => 'office',
-                    'alias' => 'office'
+                    'alias' => 'office',
+                    
                 ),
                 'last_login_time' => array(
                     'name' => 'last_login_time',
                     'type' => 'datetime',
                     'required' => false,
                     'length' => null,
-                    'comment' => ''
+                    
                 ),
                 'is_admin' => array(
                     'name' => 'is_admin',
                     'type' => 'boolean',
                     'required' => false,
                     'length' => null,
-                    'comment' => ''
+                    
                 ),
             ),
             'belongs_to' => array (
                 'role',
                 'department'
-            )
+            ),
+            'primary_key' => array('id'),
+            'unique' => array(
+                array(
+                    'fields' =>array('username')
+                )
+            )            
         );
         
-        $this->assertEquals($this->roles->describe(), $rolesDescription);
-        $this->assertEquals($this->departments->describe(), $departmentsDescription);
-    }
-
-    public function testDescribeModel()
-    {
-        $description = array(
-            'tables' => array(
-                'departments' => array(
-                    'belongs_to' => array(),
-                    'has_many' => array(
-                        'users'
-                    )
-                ),
-                'roles' => array(
-                    'belongs_to' => array(),
-                    'has_many' => array(
-                        'users'
-                    )
-                ),
-                'users' => array(
-                    'belongs_to' => array(
-                        'role',
-                        array('department', 'as' => 'office')
-                    ),
-                    'has_many' => array()
-                )
-            )
-        );
-
-        $rolesDescription = $this->roles->dataStore->describeModel();
-        $this->assertEquals($rolesDescription['roles'], $description['roles']);
-        $usersDescription = $this->users->dataStore->describeModel();
-        $this->assertEquals($usersDescription['users'], $description['users']);
-        $departmentsDescription = $this->departments->dataStore->describeModel();
-        $this->assertEquals($departmentsDescription['departments'], $description['departments']);
+        $this->assertEquals($rolesDescription, $this->roles->describe());
+        $this->assertEquals($departmentsDescription, $this->departments->describe());
+        $this->assertEquals($usersDescription, $this->users->describe());
     }
 
     public function testGetName()
@@ -302,12 +269,12 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
     
     public function testMethodCalls()
     {
-        $this->assertInstanceOf('tests\modules\roles\Roles', \tests\modules\roles\Roles::getAll());
-        $this->assertInstanceOf('tests\modules\roles\Roles', $this->roles->getAll());
+        $this->assertInstanceOf('ntentan_test_app\modules\roles\Roles', \ntentan_test_app\modules\roles\Roles::getAll());
+        $this->assertInstanceOf('ntentan_test_app\modules\roles\Roles', $this->roles->getAll());
         $this->setExpectedException(
             'ntentan\exceptions\MethodNotFoundException'
         );
-        \tests\modules\roles\Roles::someMethodBi();
+        \ntentan_test_app\modules\roles\Roles::someMethodBi();
         $this->setExpectedException(
             'ntentan\exceptions\MethodNotFoundException'
         );
@@ -467,9 +434,9 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
         $this->assertContains(array('id' => '1', 'name' => 'System Administrator'), $roles);
         
         $user = $this->users->getFirstWithId(1);
-        $this->assertInstanceOf('tests\modules\users\Users', $user);
+        $this->assertInstanceOf('ntentan_test_app\modules\users\Users', $user);
         $this->assertEquals('odadzie', $user->username);
-        $this->assertInstanceOf('tests\modules\roles\Roles', $user->role);
+        $this->assertInstanceOf('ntentan_test_app\modules\roles\Roles', $user->role);
         $user = $user->toArray();
         $this->assertContains(array('name' => 'System Administrator', 'id' => '1'), $user);
         $this->assertContains(array('name' => 'Software Developers', 'id' => '1'), $user);
@@ -485,8 +452,8 @@ abstract class SqlDatabaseTestCase extends \PHPUnit_Extensions_Database_TestCase
             )
         );
         
-        $this->assertInstanceOf('tests\modules\roles\Roles', $user->role);
-        $this->assertInstanceOf('tests\modules\departments\Departments', $user->office);
+        $this->assertInstanceOf('ntentan_test_app\modules\roles\Roles', $user->role);
+        $this->assertInstanceOf('ntentan_test_app\modules\departments\Departments', $user->office);
         
         $user = $user->toArray();
         $this->assertCount(1, $user['role']);

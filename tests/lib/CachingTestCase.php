@@ -1,9 +1,6 @@
 <?php
 namespace ntentan\test_cases;
 
-require_once CODE_HOME . "/lib/Ntentan.php";
-require_once CODE_HOME . "/lib/exceptions/MethodNotFoundException.php";
-
 use ntentan\caching\Cache;
 
 class CachingTestCase extends \PHPUnit_Framework_TestCase

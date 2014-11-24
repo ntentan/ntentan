@@ -1,5 +1,5 @@
 <?php
-namespace tests\modules\departments;
+namespace ntentan_test_app\modules\departments;
 
 class Departments extends \ntentan\models\Model
 {

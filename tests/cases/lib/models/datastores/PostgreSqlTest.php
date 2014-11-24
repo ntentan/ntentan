@@ -1,10 +1,4 @@
 <?php
-
-require_once TEST_HOME . '/lib/SqlDatabaseTestCase.php';
-require_once CODE_HOME . '/lib/models/datastores/DataStore.php';
-require_once CODE_HOME . '/lib/models/datastores/SqlDatabase.php';
-require_once CODE_HOME . '/lib/models/datastores/Postgresql.php';
-
 class PostgreSqlTest extends \ntentan\test_cases\SqlDatabaseTestCase
 {
     
