@@ -628,6 +628,21 @@ class Model implements ArrayAccess, Iterator
         }
     }
     
+    private function markBelongsToField(&$description, $params)
+    {
+        $i = $params['field_name'];
+        if(isset($description['fields'][$params['field_name']]))
+        {
+            $description["fields"][$i]["model"] = Ntentan::plural($params['belongs_to_model']);
+            $description["fields"][$i]["foreign_key"] = true;
+            $description["fields"][$i]["field_name"] = $params['field_name'];
+            if($params['alias'] != '') 
+            {
+                $description["fields"][$i]["alias"] = $params['alias'];
+            }
+        }       
+    }
+    
     private function addBelongsToFields(&$description)
     {
         if(is_array($this->belongsTo))
@@ -636,7 +651,6 @@ class Model implements ArrayAccess, Iterator
             {
                 $belongsToModel = is_array($belongsTo) ? $belongsTo[0] : $belongsTo;
                 $description["belongs_to"][] = $belongsToModel;
-                $alias = null;
                 if(is_array($belongsTo))
                 {
                     $fieldName = $belongsTo["as"];
@@ -651,7 +665,15 @@ class Model implements ArrayAccess, Iterator
                     );
                     $fieldName = $alias . "_id";
                 }
-                foreach($description["fields"] as $i => $field)
+                $this->markBelongsToField(
+                    $description,
+                    array(
+                        'field_name' => $fieldName,
+                        'alias' => $alias,
+                        'belongs_to_model' => $belongsToModel
+                    )
+                );
+                /*foreach($description["fields"] as $i => $field)
                 {
                     if($field["name"] == $fieldName)
                     {
@@ -660,24 +682,29 @@ class Model implements ArrayAccess, Iterator
                         $description["fields"][$i]["field_name"] = $fieldName;
                         if($alias != '') $description["fields"][$i]["alias"] = $alias;
                     }
-                }
+                }*/
             }
         }
-        else
-        {
-            if($this->belongsTo != null)
+        else if($this->belongsTo != null)
+        { 
+            $description["belongs_to"][] = $this->belongsTo;
+            $fieldName = strtolower(Ntentan::singular($this->belongsTo)) . "_id";
+            $this->markBelongsToField(
+                $description,
+                array(
+                    'field_name' => $fieldName,
+                    'alias' => null,
+                    'belongs_to_model' => $this->belongsTo
+                )
+            );            
+            /*foreach($description["fields"] as $i => $field)
             {
-                $description["belongs_to"][] = $this->belongsTo;
-                $fieldName = strtolower(Ntentan::singular($this->belongsTo)) . "_id";
-                foreach($description["fields"] as $i => $field)
+                if($field["name"] == $fieldName)
                 {
-                    if($field["name"] == $fieldName)
-                    {
-                        $description["fields"][$i]["model"] = $this->belongsTo;
-                        $description["fields"][$i]["foreign_key"] = true;
-                    }
+                    $description["fields"][$i]["model"] = $this->belongsTo;
+                    $description["fields"][$i]["foreign_key"] = true;
                 }
-            }
+            }*/
         }        
     }
 
