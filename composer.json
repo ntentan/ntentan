@@ -9,10 +9,6 @@
         "tedivm/jshrink":"1.*",
         "ntentan/atiaa" : "dev-master"
     },
-    "require-dev": {
-        "phpunit/phpunit":"4.1.*",
-        "phpunit/dbunit":"1.3.*"
-    },
     "license": "MIT",
     "authors": [
         {
