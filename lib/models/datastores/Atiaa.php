@@ -21,6 +21,10 @@ abstract class Atiaa extends SqlDatabase
                 'dbname' => $parameters['name'],
                 'driver' => $parameters['datastore']
             ));
+            if($parameters['schema'] != '')
+            {
+                self::$db->setDefaultSchema($parameters['schema']);
+            }
         }
         $this->setSchema(self::$db->getDefaultSchema());
     }
