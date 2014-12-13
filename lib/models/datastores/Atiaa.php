@@ -80,7 +80,7 @@ abstract class Atiaa extends SqlDatabase
                 'primary_key' => array(),
                 'unique' => array()
             );
-            $description = self::$db->describeTable($this->table);
+            $description = self::$db->describeTable("{$this->schema}.{$this->table}");
             $description = $description[$this->table];
             
             $this->appendConstraints($this->description, $description['primary_key'], 'primary_key', true);
@@ -89,7 +89,7 @@ abstract class Atiaa extends SqlDatabase
             foreach($description['columns'] as $field)
             {
                 $field['required'] = !$field['nulls'];
-                $field['type'] = $this->fixType($field['type']);                
+                $field['type'] = $this->fixType($field['type']);
                 unset($field['nulls']);
                 unset($field['default']);
                 $this->description['fields'][$field['name']] = $field;
