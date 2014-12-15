@@ -128,6 +128,7 @@ class PaginationWidget extends Widget
                 "label" => "Next >"
             );
         }
+        
         $this->set("pages", $pagingLinks);
     }
 }

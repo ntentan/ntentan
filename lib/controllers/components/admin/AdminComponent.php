@@ -275,8 +275,13 @@ class AdminComponent extends Component
         $listFields = $this->listFields;
         if(count($listFields) == null)
         {
-            $listFields = $model->getFields();
-            array_shift($listFields);
+            $listFields = array();
+            $description = $model->describe();
+            foreach($description['fields'] as $field)
+            {
+                if(array_search($field['name'], $description['primary_key']) !== false) continue;
+                $listFields[] = $field['name'];
+            }
         }
         $listFields[] = "id";
 
@@ -311,6 +316,7 @@ class AdminComponent extends Component
             $headers = array_keys($listData[0]);
             array_pop($headers);
         }
+        
         $headers[] = '';
         $this->set("data", $listData);
         $this->set("headers", $headers);
@@ -555,10 +561,12 @@ class AdminComponent extends Component
     {
         $model = $this->getModel();
         $description = $model->describe();
+        
         $entityCode = str_replace(' ', '_', $this->entity);
         $this->set("heading_level", $this->headingLevel);
         $this->set("headings", $this->headings);
         $this->set("fields", $description["fields"]);
+        $this->set('primary_key', $description['primary_key']);
         $this->set("entity", $this->entity);
         $this->set('entity_code', $entityCode);
         

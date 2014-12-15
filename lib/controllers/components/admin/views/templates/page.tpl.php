@@ -46,6 +46,13 @@ if(is_array($variables))
     }
 }
 echo $this->helpers->list;
-if($pagination) echo $this->widgets->pagination($page_number, $number_of_pages, $base_route);
+if($pagination) {
+    echo $this->widgets->pagination(array(
+        'page_number' => $page_number, 
+        'number_of_pages' => $number_of_pages, 
+        'base_route' => $base_route->unescape()
+        )
+    );
+}
 ?>
 </div>
