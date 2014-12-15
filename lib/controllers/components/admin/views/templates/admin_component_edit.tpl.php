@@ -3,6 +3,7 @@
 echo $console_menu_block;
 $this->helpers->form->setErrors($errors);
 $this->helpers->form->setData($data);
+echo $this->helpers->form->open("add-$entity-form");
 $form = t(
     "edit_{$entity_code}_form.tpl.php", 
     array(
@@ -11,6 +12,5 @@ $form = t(
         'variables' => $form_variables
     )
 );
-echo $this->helpers->form->open("add-$entity-form");
 echo $form;
 echo $this->helpers->form->close('Update');
