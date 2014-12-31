@@ -21,11 +21,13 @@ class ModelField extends SelectionList
         }
         else
         {
+            $description = $modelInstance->describe();
             $data = $modelInstance->get(
                 'all', 
                 array(
-                    'fields'=>array('id', $value), 
-                    'conditions' => count($extraConditions) > 0 ? $extraConditions : null
+                    'fields'=>array($description['primary_key'][0], $value), 
+                    'conditions' => count($extraConditions) > 0 ? $extraConditions : null,
+                    'sort' => $value
                 )
             );
         }
@@ -34,7 +36,7 @@ class ModelField extends SelectionList
 
         for($i = 0; $i < $data->count(); $i++)
         {
-            $this->addOption($value == null ? $data[$i] : $data[$i][$value], $data[$i]["id"]);
+            $this->addOption($value === null ? $data[$i] : $data[$i][$value], $data[$i][$description['primary_key'][0]]);
         }
     }
 }
