@@ -12,31 +12,26 @@ class ModelField extends SelectionList
         parent::__construct();
         $this->label =$label;
         $modelInstance = Model::load($model);
-        if($value === null)
-        {
-            $data = $modelInstance->get(
-                'all', 
-                count($extraConditions) > 0 ? array('conditions'=>$extraConditions) : null
-            );
-        }
-        else
-        {
-            $description = $modelInstance->describe();
-            $data = $modelInstance->get(
-                'all', 
-                array(
-                    'fields'=>array($description['primary_key'][0], $value), 
-                    'conditions' => count($extraConditions) > 0 ? $extraConditions : null,
-                    'sort' => $value
-                )
-            );
-        }
+        
+        $data = $modelInstance->get(
+            'all', 
+            array( 
+                'conditions' => count($extraConditions) > 0 ? $extraConditions : null,
+                'sort' => $value
+            )
+        );
          
         $this->setName(Ntentan::singular($model) . "_id");
+        
+        if($value === null)
+        {
+            $description = $modelInstance->describe();
+            $value = $description['primary_key'][0];
+        }
 
         for($i = 0; $i < $data->count(); $i++)
         {
-            $this->addOption($value === null ? $data[$i] : $data[$i][$value], $data[$i][$description['primary_key'][0]]);
+            $this->addOption($data[$i], $data[$i][$value]);
         }
     }
 }
