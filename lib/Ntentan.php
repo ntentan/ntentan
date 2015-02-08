@@ -282,28 +282,7 @@ class Ntentan
         
         Ntentan::$config = $app;
 
-        // setup include paths
-        Ntentan::addIncludePath(
-            array
-            (
-                'lib/controllers/',
-                'lib/models/',
-                'lib/models/datastores/',
-                'lib/models/exceptions/',
-                'lib/views/',
-                'lib/views/template_engines/',
-                'lib/views/widgets/',
-                'lib/exceptions/',
-                'lib/caching/',
-                'lib/sessions',
-                '/',
-                "./",
-                Ntentan::$namespace,
-                Ntentan::$viewsPath,
-                Ntentan::$pluginsHome
-            ),
-            Ntentan::$home
-        );
+        logger\Logger::init("logs/application.log");
         
         // load cached items
         if(Cache::exists('nt_camelisations'))

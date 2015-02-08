@@ -792,8 +792,8 @@ class Model implements ArrayAccess, Iterator
         foreach ($description["fields"] as $field)
         {
             $fieldName = $field["name"];
-            if ($field["primary_key"])
-                continue;
+            
+            if(array_search($fieldName, $description['primary_key']) !== false) continue;
 
             // Validate Required
             if (($this->data[$fieldName] === "" || $this->data[$fieldName] === null) && $field["required"])
@@ -806,12 +806,12 @@ class Model implements ArrayAccess, Iterator
             if ($field["unique"] === true && ($this->data[$field["name"]] != $this->previousData[$field["name"]]))
             {
                 $value = $this->get(
-                                'first', array(
-                            "conditions" => array(
-                                $field["name"] => $this->data[$field["name"]]
-                            )
-                                )
-                        )->toArray();
+                        'first', array(
+                        "conditions" => array(
+                            $field["name"] => $this->data[$field["name"]]
+                        )
+                    )
+                )->toArray();
 
                 if (count($value))
                 {
