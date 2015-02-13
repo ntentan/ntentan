@@ -709,7 +709,7 @@ class Ntentan
     public static function exceptionHandler($exception)
     {
         $class = new \ReflectionObject($exception);
-        $logged = utils\Logger::log($exception->getMessage() . "\n" . $exception->getTraceAsString(), "logs/application.log");
+        $logged = logger\Logger::log(logger\Logger::INFO, $exception->getMessage() . "\n" . $exception->getTraceAsString());
         
         echo Ntentan::error(
             "Exception <code><b>{$class->getName()}</b></code> thrown in " .

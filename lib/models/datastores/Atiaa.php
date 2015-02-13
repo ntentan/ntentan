@@ -14,7 +14,7 @@ abstract class Atiaa extends SqlDatabase
     {
         if(!is_object(self::$db))
         {
-            self::$db = \ntentan\atiaa\Atiaa::getConnection(array(
+            self::$db = \ntentan\atiaa\Driver::getConnection(array(
                 'user' => $parameters['user'],
                 'password' => $parameters['password'],
                 'host' => $parameters['host'],
