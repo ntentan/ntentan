@@ -116,6 +116,8 @@ abstract class SqlDatabase extends DataStore
     public function setModel($model)
     {
         parent::setModel($model);
+        
+        if($this->_table != '') return;
                 
         //Detect a new schema to override the default schema for the application
         $path = explode('.', $this->model->getRoute());
@@ -141,7 +143,7 @@ abstract class SqlDatabase extends DataStore
                 $this->describe();
                 break;
             }
-            catch(\ntentan\atiaa\DescriptionException $e)
+            catch(\ntentan\atiaa\TableNotFoundException $e)
             {
                 $this->description = false;
                 array_shift($path);
@@ -699,7 +701,7 @@ abstract class SqlDatabase extends DataStore
                 $values[] = $this->quote($field) . " = '". $this->escape($value) . "'";
             }
         }
-        $query = "UPDATE ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->quotedTable} SET " . implode(", ", $values) . " WHERE id = '{$data["id"]}'";
+        $query = "UPDATE ".($this->schema != '' ? $this->quotedSchema . "." :'')."{$this->quotedTable} SET " . implode(", ", $values) . " WHERE {$description['primary_key'][0]} = '{$data[$description['primary_key'][0]]}'";
         $this->query($query);
     }
 
