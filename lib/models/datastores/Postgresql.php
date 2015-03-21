@@ -57,4 +57,10 @@ class Postgresql extends Atiaa
                 return $type;
         }
     }
+    
+    protected function getLastInsertId() 
+    {
+        $lastval = $this->query("SELECT LASTVAL() as last");
+        return $lastval[0]["last"];        
+    }
 }
