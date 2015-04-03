@@ -476,7 +476,7 @@ abstract class SqlDatabase extends DataStore
         $query .= $parserResults['query'];
 
         // Add the sorting queries
-        if(isset($params['sort'])) 
+        if(isset($params['sort']) && $params['type'] != 'count') 
         {
             if(is_array($params['sort'])) 
             {
