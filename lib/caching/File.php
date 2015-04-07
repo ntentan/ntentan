@@ -77,7 +77,7 @@ class File extends Cache
      */
     private function hashKey($key)
     {
-        return $key;
+        return md5($key);
     }
     
     protected function addImplementation($key, $object, $ttl)
@@ -104,7 +104,7 @@ class File extends Cache
     protected function existsImplementation($key)
     {
         $key = $this->hashKey($key);
-        $file = self::getCacheFile("$key");
+        $file = self::getCacheFile($key);
         if(file_exists($file))
         {
             $cacheObject = unserialize(file_get_contents($file));
@@ -118,10 +118,10 @@ class File extends Cache
     
     protected function getImplementation($key)
     {
-        $cacheFile = self::getCacheFile("$key");
+        $key = $this->hashKey($key);
+        $cacheFile = self::getCacheFile($key);
         if(file_exists($cacheFile))
         {
-            $key = $this->hashKey($key);
             $cacheObject = unserialize(file_get_contents($cacheFile));
             if($cacheObject['expires'] > time() || $cacheObject['expires'] == 0)
             {
