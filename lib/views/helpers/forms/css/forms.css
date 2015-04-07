@@ -29,13 +29,15 @@ input[type='text'],
 input[type='password'],
 input[type='date']
 {
-    border:2px solid #e0e0e0;
+    border:1px solid #e0e0e0;
     width:98%;
     padding:1%;
+    padding-top:7px;
+    padding-bottom: 7px;
     background-color:#ffffff;
     font-weight:bold;
-    color:#a0a0a0;
-    box-shadow:inset 1px 1px 2px rgba(0,0,0, 0.08);
+    color:#808080;
+    box-shadow:inset 1px 1px 3px rgba(128,128,128, 0.08);
 }
 
 select
@@ -46,7 +48,7 @@ select
 input[type='text']:focus,
 input[type='password']:focus
 {
-    border:2px solid orange;
+    outline:0;
 }
 
 input.fapi-sidefield
