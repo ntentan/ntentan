@@ -32,7 +32,7 @@
  */
 
 use ntentan\Ntentan;
-use ntentan\views\template_engines\TemplateEngine;
+use ntentan\honam\template_engines\TemplateEngine;
 
 /**
  * A shortcut wrapper function around the Ntentan::getUrl method

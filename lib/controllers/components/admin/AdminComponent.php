@@ -37,7 +37,7 @@ use ntentan\Ntentan;
 use ntentan\controllers\components\Component;
 use ntentan\models\Model;
 use ntentan\exceptions\MethodNotFoundException;
-use ntentan\views\template_engines\TemplateEngine;
+use ntentan\honam\template_engines\TemplateEngine;
 
 use \ReflectionMethod;
 
