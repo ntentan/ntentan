@@ -71,11 +71,6 @@ function t($template, $data = array(), $view = null)
     return TemplateEngine::render($template, $data, $view);
 }
 
-function load_asset($asset, $copyFrom = null)
-{
-    return TemplateEngine::loadAsset($asset, $copyFrom);
-}
-
 function u_load_asset($asset, $copyFrom = null)
 {
     return TemplateEngine::loadAssetWithUrl($asset, $copyFrom);

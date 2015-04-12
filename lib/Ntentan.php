@@ -86,11 +86,6 @@ class Ntentan
     public static $modulesPath;
 
     /**
-     *
-     */
-    public static $pluginsHome = "plugins/";
-
-    /**
      * The cache method to be used
      */
     public static $cacheMethod = "file";
@@ -257,9 +252,9 @@ class Ntentan
             $ntentan['modules_path']:
             $ntentan['namespace'];
         
-        Ntentan::$pluginsHome = $ntentan['plugins'] == '' ? 
+        /*Ntentan::$pluginsHome = $ntentan['plugins'] == '' ? 
             Ntentan::$pluginsHome : 
-            $ntentan['plugins'];        
+            $ntentan['plugins'];        */
         
         Ntentan::$appHome = $app['home'] == '' ? '.' : $app['home'];    
         Ntentan::$appName = $ntentan['app'];
@@ -279,6 +274,9 @@ class Ntentan
         unset($app['plugins']);
         unset($app['prefix']);
         unset($app['context']);
+        
+        honam\template_engines\TemplateEngine::appendPath('views');
+        honam\template_engines\TemplateEngine::appendPath('views/default');
         
         Ntentan::$config = $app;
 

@@ -178,6 +178,7 @@ class Controller
             if($viewInstance == null)
             {
                 $viewInstance = new View();
+                $viewInstance->setLayout('main.tpl.php');
                 $this->setViewInstance($viewInstance);
                 $viewInstance->defaultTemplatePath = $this->filePath;
             }
@@ -511,12 +512,12 @@ class Controller
         {
             $controllerClass = new ReflectionClass($this->getName());
             $method = $controllerClass->GetMethod($path);
-            if($this->view->template == null)
+            if($this->view->getTemplate() == null)
             {
-                $this->view->template = 
+                $this->view->setTemplate(
                     str_replace("/", "_", $this->route) 
                     . '_' . $this->getRawMethod() 
-                    . '.tpl.php';
+                    . '.tpl.php');
             }
             $method->invokeArgs($this, $params);
             $this->preRender();
