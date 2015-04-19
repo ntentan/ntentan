@@ -5,7 +5,7 @@
     "license" : "MIT",
     "require": {
         "php": ">=5.3.0",
-        "ntentan/honam" : "dev-master",
+        "ntentan/views" : "dev-master",
         "ntentan/atiaa" : "0.*",
         "ntentan/logger" : "0.*"
     },
@@ -23,5 +23,6 @@
             "ntentan\\test_cases\\": "tests/lib/",
             "ntentan_test_app\\": "tests/app/"
         }
-    }
+    },
+    "minimum-stability" : "dev"
 }
