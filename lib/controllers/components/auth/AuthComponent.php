@@ -161,7 +161,6 @@ class AuthComponent extends Component
     
     public function login()
     {
-        Ntentan::addIncludePath(Ntentan::getFilePath('lib/controllers/components/auth/methods'));
         $authenticatorClass = __NAMESPACE__ . '\\methods\\' . Ntentan::camelize($this->getParameter('auth_method', 'http_request'));
         $this->authMethodInstance = new $authenticatorClass();
         $this->authMethodInstance->setPasswordCryptFunction(
