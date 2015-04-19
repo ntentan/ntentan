@@ -271,9 +271,9 @@ class Ntentan
         unset($app['prefix']);
         unset($app['context']);
         
-        honam\template_engines\TemplateEngine::appendPath('views');
-        honam\template_engines\TemplateEngine::appendPath('views/default');
-        honam\helpers\Helper::setBaseUrl(Ntentan::getUrl(''));
+        views\template_engines\TemplateEngine::appendPath('views');
+        views\template_engines\TemplateEngine::appendPath('views/default');
+        views\helpers\Helper::setBaseUrl(Ntentan::getUrl(''));
         
         Ntentan::$config = $app;
 

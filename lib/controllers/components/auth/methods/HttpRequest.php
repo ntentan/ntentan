@@ -2,7 +2,7 @@
 namespace ntentan\controllers\components\auth\methods;
 
 use \ntentan\Ntentan;
-use ntentan\honam\template_engines\TemplateEngine;
+use ntentan\views\template_engines\TemplateEngine;
 
 class HttpRequest extends AuthMethod
 {

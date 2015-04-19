@@ -36,7 +36,7 @@ use ntentan\controllers\exceptions\ComponentNotFoundException;
 use \ReflectionClass;
 use \ReflectionObject;
 use ntentan\Ntentan;
-use ntentan\honam\View;
+use ntentan\views\View;
 use ntentan\models\Model;
 use ntentan\utils\Text;
 
