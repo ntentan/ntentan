@@ -34,6 +34,7 @@ namespace ntentan\caching;
 
 use ntentan\exceptions\MethodNotFoundException;
 use ntentan\Ntentan;
+use ntentan\utils\Text;
 
 /**
  * Abstract caching class which also acts as a caching singleton. 
@@ -77,7 +78,7 @@ abstract class Cache
     {
         if(Cache::$instance == null)
         {
-            $class = Ntentan::camelize(Ntentan::$cacheMethod);
+            $class = Text::ucamelize(Ntentan::$cacheMethod);
             require_once "$class.php";
             $class = "ntentan\\caching\\$class";
             Cache::$instance = new $class();

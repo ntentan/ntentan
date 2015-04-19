@@ -32,7 +32,6 @@
  */
 
 use ntentan\Ntentan;
-use ntentan\honam\template_engines\TemplateEngine;
 
 /**
  * A shortcut wrapper function around the Ntentan::getUrl method
@@ -59,19 +58,4 @@ function n($path)
 function s($string)
 {
     return Ntentan::toSentence($string);
-}
-
-/**
- * A shortcut wrapper around the
- * @param string $template
- * @param array $data
- */
-function t($template, $data = array(), $view = null)
-{
-    return TemplateEngine::render($template, $data, $view);
-}
-
-function u_load_asset($asset, $copyFrom = null)
-{
-    return TemplateEngine::loadAssetWithUrl($asset, $copyFrom);
 }

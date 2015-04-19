@@ -38,6 +38,7 @@ use \ReflectionObject;
 use ntentan\Ntentan;
 use ntentan\honam\View;
 use ntentan\models\Model;
+use ntentan\utils\Text;
 
 /**
  * The Controller class represents the base class for all controllers that are
@@ -264,11 +265,11 @@ class Controller
 
     private function loadComponent($component, $arguments, $path, $plugin = null)
     {
-        $camelizedComponent = Ntentan::camelize($component);
+        $camelizedComponent = Text::ucamelize($component);
         $componentName = "$path\\$component\\{$camelizedComponent}Component";
         if(class_exists($componentName))
         {
-            $key = Ntentan::camelizeAndLowerFirst($plugin . ($plugin == null ? $camelizedComponent : $camelizedComponent));
+            $key = Text::camelize($plugin . ($plugin == null ? $camelizedComponent : $camelizedComponent));
 
             $componentClass = new ReflectionClass($componentName);
             $componentInstance = $componentClass->newInstanceArgs($arguments);
@@ -367,7 +368,7 @@ class Controller
         for($i = 0; $i<count($routeArray); $i++)
         {
             $p = $routeArray[$i];
-            $pCamelized = Ntentan::camelize($p);
+            $pCamelized = Text::ucamelize($p);
             $filePath = Ntentan::$modulesPath . "/modules/$controllerRoute/$p/";
             if(file_exists($filePath . "{$pCamelized}Controller.php"))
             {
@@ -411,7 +412,7 @@ class Controller
 
                         if($controller->method == '')
                         {
-                            $controller->method = $routeArray[$i + 1] != '' ? Ntentan::camelize($routeArray[$i + 1], ".", "", true) : $controller->defaultMethodName;
+                            $controller->method = $routeArray[$i + 1] != '' ? Text::ucamelize($routeArray[$i + 1], ".", "", true) : $controller->defaultMethodName;
                             $controller->rawMethod = $routeArray[$i + 1] != '' ? $routeArray[$i + 1]: $controller->defaultMethodName;
                         }
 

@@ -48,6 +48,7 @@ require_once "exceptions/FileNotFoundException.php";
 require_once "exceptions/ApiIniFileNotFoundException.php";
 
 use ntentan\caching\Cache;
+use ntentan\utils\Text;
 
 /**
  * A utility class for the Ntentan framework. This class contains the routing
@@ -181,11 +182,6 @@ class Ntentan
     
     const MAX_ERROR_DEPTH = 10;
     
-    public static function init()
-    {
-        
-    }
-    
     public static function getClassFile($class)
     {
         $key = "file_$class";
@@ -277,6 +273,7 @@ class Ntentan
         
         honam\template_engines\TemplateEngine::appendPath('views');
         honam\template_engines\TemplateEngine::appendPath('views/default');
+        honam\helpers\Helper::setBaseUrl("/{$app['prefix']}");
         
         Ntentan::$config = $app;
 
@@ -454,7 +451,7 @@ class Ntentan
             {
                 if(!isset(Ntentan::$loadedDatastores[Ntentan::$config['db']['datastore']]))
                 {
-                    $dataStoreClass = "\\ntentan\\models\\datastores\\" . Ntentan::camelize(Ntentan::$config['db']['datastore']);
+                    $dataStoreClass = "\\ntentan\\models\\datastores\\" . Text::ucamelize(Ntentan::$config['db']['datastore']);
                     if(class_exists($dataStoreClass))
                     {
                         Ntentan::$loadedDatastores[Ntentan::$config['db']['datastore']] = new $dataStoreClass(Ntentan::$config['db']);
@@ -470,7 +467,7 @@ class Ntentan
             {
                 if(!isset(Ntentan::$config['db']['datastore_class']))
                 {
-                    Ntentan::$config['db']['datastore_class'] ="ntentan\\models\\datastores\\" . Ntentan::camelize(Ntentan::$config['db']["datastore"]);
+                    Ntentan::$config['db']['datastore_class'] ="ntentan\\models\\datastores\\" . Text::ucamelize(Ntentan::$config['db']["datastore"]);
                 }
                 return Ntentan::$config['db'];
             }
@@ -582,65 +579,6 @@ class Ntentan
             Ntentan::$plurals[$plural] = $word;
         }
         return $plural;
-    }
-
-    /**
-     * Converts a dot separeted string or under-score separated string into
-     * a camelcase format.
-     * 
-     * @param string $string    The string to be converted.
-     * @param string $delimiter The delimiter to be used as the trigger for 
-     *                          capitalisation
-     * @param string $baseDelimiter Another delimiter to be used as a second trigger for capitalisation
-     * @param string $firstPartLowercase When set to true, the first letter of the camelcase returned is a lowecase character
-     */
-    public static function camelize($string, $delimiter=".", $baseDelimiter = "", $firstPartLowercase = false)
-    {
-        $key = $string . $delimiter . $baseDelimiter . ($firstPartLowercase?"1":"0") . "_camel";
-        $camelized = array_search($key, Ntentan::$camelisations);
-        if($camelized === false)
-        {
-            if($baseDelimiter == "") $baseDelimiter = $delimiter;
-            $parts = explode($delimiter, $string);
-            $camelized = "";
-            foreach($parts as $i => $part)
-            {
-                $part = $delimiter == $baseDelimiter ? ucfirst(Ntentan::camelize($part, "_", $baseDelimiter)) : ucfirst($part);
-                $camelized .= $firstPartLowercase === true ? lcfirst($part) : $part;
-            }
-            Ntentan::$camelisations[$camelized] = $key;
-        }
-        return $camelized;
-    }
-    
-    public static function camelizeAndLowerFirst($string)
-    {
-        return Ntentan::camelize($string, '.', '', true);
-    }
-
-    /**
-     * Converts a camel case string to an underscore separated string.
-     * 
-     * @param unknown_type $string
-     */
-    public static function deCamelize($string)
-    {
-        $deCamelized = array_search($string, Ntentan::$deCamelisations);
-        if($deCamelized === false)
-        {
-            $deCamelized = "";
-            for($i = 0; $i < strlen($string); $i++)
-            {
-                $char = substr($string, $i, 1);
-                if(ctype_upper($char) && $i > 0)
-                {
-                    $deCamelized .= "_";
-                }
-                $deCamelized .= strtolower($char);
-            }
-            Ntentan::$deCamelisations[$deCamelized] = $string;
-        }
-        return $deCamelized;
     }
 
     /**

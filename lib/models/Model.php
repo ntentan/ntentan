@@ -37,6 +37,7 @@ use ntentan\Ntentan;
 use ntentan\models\exceptions\ModelNotFoundException;
 use ntentan\exceptions\MethodNotFoundException;
 use ntentan\caching\Cache;
+use ntentan\utils\Text;
 use \ArrayAccess;
 use \Iterator;
 use \ReflectionObject;
@@ -125,7 +126,7 @@ class Model implements ArrayAccess, Iterator
         $modelInformation = new ReflectionObject($this);
         $last = explode("\\", $modelInformation->getName());
         $modelName = end($last);
-        $this->name = strtolower(Ntentan::deCamelize($modelName));
+        $this->name = strtolower(Text::deCamelize($modelName));
         $this->route = implode(".", array_slice(explode("\\", $modelInformation->getName()), count(explode("/", Ntentan::$namespace)) + 1, -1));
 
         $this->iteratorPosition = 0;
@@ -166,7 +167,7 @@ class Model implements ArrayAccess, Iterator
     {
         $arguments = func_get_args();
         $behaviour = array_shift($arguments);
-        $behaviourClass = "\\ntentan\\models\\behaviours\\$behaviour\\" . Ntentan::camelize($behaviour) . "Behaviour";
+        $behaviourClass = "\\ntentan\\models\\behaviours\\$behaviour\\" . Text::ucamelize($behaviour) . "Behaviour";
         $this->behaviourInstances[$behaviour] = new $behaviourClass();
         $this->behaviourInstances[$behaviour]->init($this);
     }
@@ -186,7 +187,7 @@ class Model implements ArrayAccess, Iterator
         else
         {
             $classNameArray = explode('.', $className);
-            $className = Ntentan::camelize(end($classNameArray));
+            $className = Text::ucamelize(end($classNameArray));
             $return = "\\" . str_replace("/", "\\", Ntentan::$namespace) . "\\modules\\" . implode("\\", $classNameArray) . "\\$className";
             /* $modelClassFile = Ntentan::$modulesPath . '/modules/' . implode('/', $classNameArray) . "/$className.php" ;
               if(!file_exists($modelClassFile))
@@ -456,7 +457,7 @@ class Model implements ArrayAccess, Iterator
 
         if (preg_match("/(get)((?<just>Just)?(?<type>First|All|Count|[0-9]+)?((With)(?<field>[a-zA-Z0-9]+))?)?/", $method, $matches))
         {
-            $field = Ntentan::deCamelize($matches['field']);
+            $field = Text::deCamelize($matches['field']);
             $type = strtolower($matches['type'] == '' ? 'all' : $matches['type']);
             $conditions = array();
             foreach ($arguments as $argument)
