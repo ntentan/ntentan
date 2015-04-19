@@ -357,22 +357,6 @@ class Ntentan
     }
 
     /**
-     * A utility method to add a path to the list of include paths.
-     * @param array $paths
-     */
-    public static function addIncludePath($paths, $prefix = null)
-    {
-        if(is_array($paths))
-        {
-            set_include_path(get_include_path() . PATH_SEPARATOR . $prefix . '/' . implode(PATH_SEPARATOR . $prefix . '/', $paths));
-        }
-        else
-        {
-            set_include_path(get_include_path() . PATH_SEPARATOR . $prefix . PATH_SEPARATOR .$paths);
-        }
-    }
-
-    /**
      * Returns the path of a file which is supposed to be located within the
      * ntentan framework's directory. This method is mostly used internally
      * within the ntentan framework.
@@ -381,11 +365,6 @@ class Ntentan
     public static function getFilePath($path)
     {
         return __DIR__ . "/../$path";
-    }
-
-    public static function getExtensionHome($extension)
-    {
-        
     }
 
     /**

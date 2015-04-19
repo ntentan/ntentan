@@ -384,7 +384,6 @@ class Controller
                 }
                 else
                 {
-                    Ntentan::addIncludePath(Ntentan::$modulesPath . "/$controllerRoute/"); //$controllerName.php";
                     $controllerNamespace = "\\" . str_replace("/", "\\", Ntentan::$namespace . "/modules/$controllerRoute/");
                     $controllerName = $controllerNamespace . $controllerName;
                     if(class_exists($controllerName))
