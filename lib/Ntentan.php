@@ -248,10 +248,6 @@ class Ntentan
             $ntentan['modules_path']:
             $ntentan['namespace'];
         
-        /*Ntentan::$pluginsHome = $ntentan['plugins'] == '' ? 
-            Ntentan::$pluginsHome : 
-            $ntentan['plugins'];        */
-        
         Ntentan::$appHome = $app['home'] == '' ? '.' : $app['home'];    
         Ntentan::$appName = $ntentan['app'];
         Ntentan::$prefix = $app['prefix'];

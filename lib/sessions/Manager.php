@@ -2,6 +2,7 @@
 namespace ntentan\sessions;
 
 use ntentan\Ntentan;
+use ntentan\utils\Text;
 
 class Manager
 {
@@ -21,7 +22,7 @@ class Manager
 
         if($store != '')
         {
-            $handlerClass = "ntentan\\sessions\\stores\\" . Ntentan::camelize($store) . 'Store';
+            $handlerClass = "ntentan\\sessions\\stores\\" . Text::ucamelize($store) . 'Store';
             self::$handler = new $handlerClass;
             $configExpiry = Ntentan::$config[Ntentan::$context]['sessions.lifespan'];
             self::$lifespan = $configExpiry > 0 ? $configExpiry : self::$lifespan;

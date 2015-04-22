@@ -38,6 +38,7 @@ use ntentan\controllers\components\Component;
 use ntentan\models\Model;
 use ntentan\exceptions\MethodNotFoundException;
 use ntentan\views\template_engines\TemplateEngine;
+use ntentan\utils\Text;
 
 use \ReflectionMethod;
 
@@ -239,7 +240,7 @@ class AdminComponent extends Component
         //execute the page enxtension method
         if($this->consoleMode)
         {
-            $pageExtensionMethodName = Ntentan::camelize(Ntentan::plural($this->entity),".","", true) . 'AdminPage';
+            $pageExtensionMethodName = Text::ucamelize(Ntentan::plural($this->entity),".","", true) . 'AdminPage';
             if(method_exists($this->controller, $pageExtensionMethodName))
             {
                 $pageExtensionMethod = new ReflectionMethod($this->controller, $pageExtensionMethodName);
@@ -439,7 +440,7 @@ class AdminComponent extends Component
                         $this->page($index);
                         break;
                     default:
-                        $extensionMethodName = Ntentan::camelize(Ntentan::plural($this->entity),".","", true) . 'Admin' . Ntentan::camelize($action);
+                        $extensionMethodName = Text::ucamelize(Ntentan::plural($this->entity),".","", true) . 'Admin' . Text::ucamelize($action);
                         if(method_exists($this->controller, $extensionMethodName))
                         {
                             $this->view->template = "{$this->entity}_{$action}.tpl.php";
@@ -519,7 +520,7 @@ class AdminComponent extends Component
         
         if($this->consoleMode)
         {
-            $editExtensionMethodName = Ntentan::camelize(Ntentan::plural($this->entity),".","", true) . 'AdminEdit';
+            $editExtensionMethodName = Text::ucamelize(Ntentan::plural($this->entity),".","", true) . 'AdminEdit';
             if(method_exists($this->controller, $editExtensionMethodName))
             {
                 $editExtensionMethod = new ReflectionMethod($this->controller, $editExtensionMethodName);
@@ -574,7 +575,7 @@ class AdminComponent extends Component
         
         if($this->consoleMode)
         {
-            $addExtensionMethodName = Ntentan::camelize(Ntentan::plural($entityCode),".","", true) . 'AdminAdd';
+            $addExtensionMethodName = Text::ucamelize(Ntentan::plural($entityCode),".","", true) . 'AdminAdd';
             if(method_exists($this->controller, $addExtensionMethodName))
             {
                 $addExtensionMethod = new ReflectionMethod($this->controller, $addExtensionMethodName);

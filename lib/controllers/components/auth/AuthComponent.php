@@ -34,6 +34,7 @@ namespace ntentan\controllers\components\auth;
 
 use ntentan\Ntentan;
 use \ntentan\controllers\components\Component;
+use ntentan\utils\Text;
 
 /**
  * The class for the authentication component. This class provides an entry point
@@ -161,7 +162,7 @@ class AuthComponent extends Component
     
     public function login()
     {
-        $authenticatorClass = __NAMESPACE__ . '\\methods\\' . Ntentan::camelize($this->getParameter('auth_method', 'http_request'));
+        $authenticatorClass = __NAMESPACE__ . '\\methods\\' . Text::ucamelize($this->getParameter('auth_method', 'http_request'));
         $this->authMethodInstance = new $authenticatorClass();
         $this->authMethodInstance->setPasswordCryptFunction(
             $this->getParameter(
