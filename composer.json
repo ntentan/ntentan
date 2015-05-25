@@ -5,7 +5,7 @@
     "license" : "MIT",
     "require": {
         "php": ">=5.3.0",
-        "ntentan/views" : "0.*",
+        "ntentan/honam" : "0.*",
         "ntentan/atiaa" : "0.*",
         "ntentan/logger" : "0.*"
     },

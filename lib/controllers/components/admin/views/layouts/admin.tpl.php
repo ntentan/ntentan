@@ -63,7 +63,7 @@
 </div>
 <div class="row">
     <div class="column grid_20_3">
-        <?php echo $widgets->menu($sections_menu)->alias('sections') ?></div>
+        <?php echo $helpers->menu($sections_menu)->setAlias('sections') ?></div>
     <div class="column grid_20_17">
         <div id="admin-contents">
             <?php echo $contents->unescape() ?>

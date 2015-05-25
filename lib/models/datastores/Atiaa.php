@@ -19,7 +19,8 @@ abstract class Atiaa extends SqlDatabase
                 'password' => $parameters['password'],
                 'host' => $parameters['host'],
                 'dbname' => $parameters['name'],
-                'driver' => $parameters['datastore']
+                'driver' => $parameters['datastore'],
+                'file' => $parameters['file']
             ));
             if($parameters['schema'] != '')
             {
