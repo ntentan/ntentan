@@ -134,22 +134,30 @@ abstract class SqlDatabase extends DataStore
             $base .= '/' . $directory;
         }
 
-        //@todo cache the result of this loop so it runs just once
-        do
+        $cacheKey = 'model_table_' . $model->getRoute();
+        if(!Cache::exists($cacheKey))
         {
-            $this->table = implode("_", $path);
-            try
+            do
             {
-                $this->describe();
-                break;
+                $this->table = implode("_", $path);
+                try
+                {
+                    $this->describe();
+                    break;
+                }
+                catch(\ntentan\atiaa\TableNotFoundException $e)
+                {
+                    $this->description = false;
+                    array_shift($path);
+                }
             }
-            catch(\ntentan\atiaa\TableNotFoundException $e)
-            {
-                $this->description = false;
-                array_shift($path);
-            }
+            while(count($path)  > 0);
+            Cache::add($cacheKey, $this->table);
         }
-        while(count($path)  > 0);
+        else
+        {
+            $this->table = Cache::get($cacheKey);
+        }
         
         if($this->table == null)
         {

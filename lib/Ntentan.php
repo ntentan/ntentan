@@ -4,7 +4,7 @@
  * collection of utility static methods which are used accross the framework.
  * 
  * Ntentan Framework
- * Copyright (c) 2008-2012 James Ekow Abaka Ainooson
+ * Copyright (c) 2008-2015 James Ekow Abaka Ainooson
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -41,14 +41,17 @@ namespace ntentan;
  * Include a collection of utility global functions, caching and exceptions. 
  * Classes loaded here are likely to be called before the autoloader kicks in.
  */
-require_once "globals.php";
+/*require_once "globals.php";
 require_once "caching/Cache.php";
 require_once "exceptions/NtentanException.php";
 require_once "exceptions/FileNotFoundException.php";
-require_once "exceptions/ApiIniFileNotFoundException.php";
+require_once "exceptions/ApiIniFileNotFoundException.php";*/
 
 use ntentan\caching\Cache;
 use ntentan\utils\Text;
+use ntentan\honam\TemplateEngine;
+use ntentan\honam\AssetsLoader;
+use ntentan\honam\Helper;
 
 /**
  * A utility class for the Ntentan framework. This class contains the routing
@@ -267,9 +270,10 @@ class Ntentan
         unset($app['prefix']);
         unset($app['context']);
         
-        views\template_engines\TemplateEngine::appendPath('views');
-        views\template_engines\TemplateEngine::appendPath('views/default');
-        views\helpers\Helper::setBaseUrl(Ntentan::getUrl(''));
+        TemplateEngine::appendPath('views');
+        TemplateEngine::appendPath('views/default');
+        AssetsLoader::appendSourceDir('assets');
+        Helper::setBaseUrl(Ntentan::getUrl(''));
         
         Ntentan::$config = $app;
 

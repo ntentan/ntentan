@@ -36,7 +36,7 @@ use ntentan\controllers\exceptions\ComponentNotFoundException;
 use \ReflectionClass;
 use \ReflectionObject;
 use ntentan\Ntentan;
-use ntentan\views\View;
+use ntentan\View;
 use ntentan\models\Model;
 use ntentan\utils\Text;
 
@@ -403,7 +403,7 @@ class Controller
                         if($returnInstanceOnly) return $controller;
                         
                         // Trap for the cache
-                        if(Cache::exists("view_" . Ntentan::getRouteKey()) && Ntentan::$debug === false)
+                        if(Cache::exists("view_" . Ntentan::$route) && Ntentan::$debug === false)
                         {
                             echo Cache::get('view_' . Ntentan::$route);
                             return;
@@ -538,7 +538,7 @@ class Controller
             }
         }
         
-        if($this->view->cacheTimeout !== false && Ntentan::$debug !== true)
+        if($this->view->getCacheTimeout() !== false && Ntentan::$debug !== true)
         {
             Cache::add('view_' . Ntentan::getRouteKey(), $return, $this->view->cacheTimeout);
         }
