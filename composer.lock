@@ -1,23 +1,130 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9d3c8a93cb94134912a33ef98b5d8654",
+    "hash": "3854c4ade3d5e652e4f4a19990d20d31",
     "packages": [
+        {
+            "name": "matthiasmullie/minify",
+            "version": "1.3.26",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/matthiasmullie/minify.git",
+                "reference": "15e564ff494186cddefd82fa9424897a66a50051"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/matthiasmullie/minify/zipball/15e564ff494186cddefd82fa9424897a66a50051",
+                "reference": "15e564ff494186cddefd82fa9424897a66a50051",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pcre": "*",
+                "matthiasmullie/path-converter": "~1.0",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.3.*",
+                "satooshi/php-coveralls": "dev-master",
+                "scrapbook/psr-cache": "~0.2"
+            },
+            "bin": [
+                "bin/minifycss",
+                "bin/minifyjs"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MatthiasMullie\\Minify\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Matthias Mullie",
+                    "email": "minify@mullie.eu",
+                    "homepage": "http://www.mullie.eu",
+                    "role": "Developer"
+                }
+            ],
+            "description": "CSS & JS minifier",
+            "homepage": "http://www.minifier.org",
+            "keywords": [
+                "JS",
+                "css",
+                "javascript",
+                "minifier",
+                "minify"
+            ],
+            "time": "2015-05-13 16:03:46"
+        },
+        {
+            "name": "matthiasmullie/path-converter",
+            "version": "1.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/matthiasmullie/path-converter.git",
+                "reference": "fcda5cc99c45c2e08d7f2ff59b4dd503c729275d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/matthiasmullie/path-converter/zipball/fcda5cc99c45c2e08d7f2ff59b4dd503c729275d",
+                "reference": "fcda5cc99c45c2e08d7f2ff59b4dd503c729275d",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pcre": "*",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.3.*",
+                "satooshi/php-coveralls": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MatthiasMullie\\PathConverter\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Matthias Mullie",
+                    "email": "pathconverter@mullie.eu",
+                    "homepage": "http://www.mullie.eu",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Relative path converter",
+            "homepage": "http://github.com/matthiasmullie/path-converter",
+            "keywords": [
+                "converter",
+                "path",
+                "paths",
+                "relative"
+            ],
+            "time": "2015-05-13 15:40:03"
+        },
         {
             "name": "monolog/monolog",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "03fc68ca1419c7e16050e96c15c7f7e1f2fc26ff"
+                "reference": "bf2bff61743f20a13dc46ff1e3bbd0f19c997d2b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/03fc68ca1419c7e16050e96c15c7f7e1f2fc26ff",
-                "reference": "03fc68ca1419c7e16050e96c15c7f7e1f2fc26ff",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/bf2bff61743f20a13dc46ff1e3bbd0f19c997d2b",
+                "reference": "bf2bff61743f20a13dc46ff1e3bbd0f19c997d2b",
                 "shasum": ""
             },
             "require": {
@@ -31,6 +138,7 @@
                 "aws/aws-sdk-php": "~2.4, >2.4.8",
                 "doctrine/couchdb": "~1.0@dev",
                 "graylog2/gelf-php": "~1.0",
+                "php-console/php-console": "~3.1, >3.1.2",
                 "phpunit/phpunit": "~4.0",
                 "raven/raven": "~0.5",
                 "ruflin/elastica": "0.90.*",
@@ -43,6 +151,7 @@
                 "ext-amqp": "Allow sending log messages to an AMQP server (1.0+ required)",
                 "ext-mongo": "Allow sending log messages to a MongoDB server",
                 "graylog2/gelf-php": "Allow sending log messages to a GrayLog2 server",
+                "php-console/php-console": "Allow sending log messages to Google Chrome",
                 "raven/raven": "Allow sending log messages to a Sentry server",
                 "rollbar/rollbar": "Allow sending log messages to Rollbar",
                 "ruflin/elastica": "Allow sending log messages to an Elastic Search server",
@@ -77,67 +186,20 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2015-04-15 18:23:25"
-        },
-        {
-            "name": "natxet/CssMin",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/natxet/CssMin.git",
-                "reference": "2feb2aa71c5b299369c63ecc256185aaa5c05bcf"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/natxet/CssMin/zipball/2feb2aa71c5b299369c63ecc256185aaa5c05bcf",
-                "reference": "2feb2aa71c5b299369c63ecc256185aaa5c05bcf",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.0-dev"
-                }
-            },
-            "autoload": {
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Joe Scylla",
-                    "email": "joe.scylla@gmail.com",
-                    "homepage": "https://profiles.google.com/joe.scylla"
-                }
-            ],
-            "description": "Minifying CSS",
-            "homepage": "http://code.google.com/p/cssmin/",
-            "keywords": [
-                "css",
-                "minify"
-            ],
-            "time": "2015-01-21 10:40:33"
+            "time": "2015-05-11 14:51:05"
         },
         {
             "name": "ntentan/atiaa",
-            "version": "v0.1.0",
+            "version": "v0.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/atiaa.git",
-                "reference": "011534e21a14ee78558cd14a7d688b2b369a3103"
+                "reference": "b7d751dfdc0c2c159b2e56081497eb318b37cb97"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/011534e21a14ee78558cd14a7d688b2b369a3103",
-                "reference": "011534e21a14ee78558cd14a7d688b2b369a3103",
+                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/b7d751dfdc0c2c159b2e56081497eb318b37cb97",
+                "reference": "b7d751dfdc0c2c159b2e56081497eb318b37cb97",
                 "shasum": ""
             },
             "require": {
@@ -165,7 +227,57 @@
                 }
             ],
             "description": "A slim wrapper around PDO to provide some extra utilities",
-            "time": "2015-02-15 12:00:27"
+            "time": "2015-05-23 12:08:24"
+        },
+        {
+            "name": "ntentan/honam",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ntentan/honam.git",
+                "reference": "357617623900fa42ac07ba6b3d9337bbfb969b61"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ntentan/honam/zipball/357617623900fa42ac07ba6b3d9337bbfb969b61",
+                "reference": "357617623900fa42ac07ba6b3d9337bbfb969b61",
+                "shasum": ""
+            },
+            "require": {
+                "matthiasmullie/minify": "1.*",
+                "ntentan/utils": "0.*"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "1.*",
+                "mustache/mustache": "2.*",
+                "phpunit/phpunit": "4.*",
+                "smarty/smarty": "3.*"
+            },
+            "suggest": {
+                "mustache/mustache": "For mustache template support (2.*)",
+                "natxet/cssmin": "Use CSSMin for CSS minification (3.*)",
+                "smarty/smarty": "For smarty template support (3.*)",
+                "tedivm/jshrink": "Use Jshrink for Javascript Minification (1.*)"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ntentan\\honam\\": "src/",
+                    "ntentan\\honam\\tests\\": "tests/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ekow Abaka Ainooson",
+                    "email": "jainooson@gmail.com"
+                }
+            ],
+            "description": "The views component of the ntentan framework.",
+            "time": "2015-05-26 20:50:39"
         },
         {
             "name": "ntentan/logger",
@@ -209,16 +321,16 @@
         },
         {
             "name": "ntentan/utils",
-            "version": "dev-master",
+            "version": "v0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/utils.git",
-                "reference": "cada79a6d0adff5fae591e93a005fe233e77a8c1"
+                "reference": "e7b5fb75a71d4643108cfe68fc247edfd335c1bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/utils/zipball/cada79a6d0adff5fae591e93a005fe233e77a8c1",
-                "reference": "cada79a6d0adff5fae591e93a005fe233e77a8c1",
+                "url": "https://api.github.com/repos/ntentan/utils/zipball/e7b5fb75a71d4643108cfe68fc247edfd335c1bb",
+                "reference": "e7b5fb75a71d4643108cfe68fc247edfd335c1bb",
                 "shasum": ""
             },
             "require-dev": {
@@ -241,50 +353,7 @@
                 }
             ],
             "description": "Common utility functions shared accross the ntentan framework.",
-            "time": "2015-04-19 09:04:32"
-        },
-        {
-            "name": "ntentan/views",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ntentan/views.git",
-                "reference": "cb3b796445e5f4a5f714ad9f89cf59d5f5e713f4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/views/zipball/cb3b796445e5f4a5f714ad9f89cf59d5f5e713f4",
-                "reference": "cb3b796445e5f4a5f714ad9f89cf59d5f5e713f4",
-                "shasum": ""
-            },
-            "require": {
-                "natxet/cssmin": "3.*",
-                "ntentan/utils": "dev-master",
-                "tedivm/jshrink": "1.*"
-            },
-            "require-dev": {
-                "mikey179/vfsstream": "1.*",
-                "phpunit/phpunit": "4.*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "ntentan\\views\\": "src/",
-                    "ntentan\\views\\tests\\": "tests/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ekow Abaka Ainooson",
-                    "email": "jainooson@gmail.com"
-                }
-            ],
-            "description": "The views component of the ntentan framework.",
-            "time": "2015-04-19 20:39:11"
+            "time": "2015-04-20 08:22:24"
         },
         {
             "name": "psr/log",
@@ -328,59 +397,13 @@
                 "psr-3"
             ],
             "time": "2015-03-26 14:39:45"
-        },
-        {
-            "name": "tedivm/jshrink",
-            "version": "v1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/tedious/JShrink.git",
-                "reference": "7575d9d96f113bc7c1c28ec8231ee086751a9078"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/tedious/JShrink/zipball/7575d9d96f113bc7c1c28ec8231ee086751a9078",
-                "reference": "7575d9d96f113bc7c1c28ec8231ee086751a9078",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "require-dev": {
-                "fabpot/php-cs-fixer": "0.4.0",
-                "phpunit/phpunit": "4.0.*",
-                "satooshi/php-coveralls": "dev-master"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "JShrink": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Robert Hafner",
-                    "email": "tedivm@tedivm.com"
-                }
-            ],
-            "description": "Javascript Minifier built in PHP",
-            "homepage": "http://github.com/tedious/JShrink",
-            "keywords": [
-                "javascript",
-                "minifier"
-            ],
-            "time": "2014-11-11 03:54:14"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "ntentan/views": 20
+        "ntentan/honam": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
