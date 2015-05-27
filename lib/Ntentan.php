@@ -390,7 +390,7 @@ class Ntentan
      *                    route to an Ntentan controller.
      * @param unknown_type $absolute
      */
-    public static function redirect($url, $absolute = false)
+    public static function redirect($url = null, $absolute = false)
     {
         $url = isset($_GET["redirect"]) ? $_GET["redirect"] : $url;
         $url = $absolute === true ? $url : Ntentan::getUrl($url);

@@ -47,8 +47,14 @@ class View
     public function out($viewData)
     {
         require_once 'view_functions.php';
-        $renderedTemplate = honam\TemplateEngine::render($this->template, $viewData);
-        $viewData['contents'] = $renderedTemplate;
-        return honam\TemplateEngine::render($this->layout, $viewData);
+        if($this->template !== false)
+        {
+            $renderedTemplate = honam\TemplateEngine::render($this->template, $viewData);
+            $viewData['contents'] = $renderedTemplate;
+        }
+        if($this->layout !== FALSE)
+        {
+            return honam\TemplateEngine::render($this->layout, $viewData);
+        }
     }
 }
