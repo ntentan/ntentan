@@ -22,9 +22,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "ntentan\\": "lib/",
-            "ntentan\\test_cases\\": "tests/lib/",
-            "ntentan_test_app\\": "tests/app/"
+            "ntentan\\": "src/"
         }
     }
 }
