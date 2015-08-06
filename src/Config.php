@@ -3,16 +3,14 @@ namespace ntentan;
 
 class Config
 {
-    private static $config = [
-        'default' => []
-    ];
+    private static $config;
     
     private static $contexts = [];
     private static $context = 'default';
     
     public static function init($path)
     {
-        self::$config['default'] = self::parseDir($path, true);
+        self::$config = ['default' => self::parseDir($path, true)];
         foreach(self::$contexts as $context) {
             self::$config[$context] = array_merge(
                 self::$config['default'], self::parseDir("$path/$context", false)
@@ -28,7 +26,7 @@ class Config
             if(fnmatch("*.conf.php", $file)) {
                 self::readFile($path, $file, $config);
             }
-            else if(is_dir($file) && $file != '.' && $file != '..') {
+            else if(is_dir("$path/$file") && $file != '.' && $file != '..') {
                 self::$contexts[] = $file;
             }
         } 
@@ -50,6 +48,25 @@ class Config
     
     public static function get($key)
     {
-        return self::$config[$key];
+        return self::$config[self::$context][$key];
+    }
+    
+    public static function setContext($context)
+    {
+        self::$context = $context;
+    }
+    
+    public static function dump()
+    {
+        return self::$config;
+    }
+    
+    public static function set($key, $value)
+    {
+        $exploded = explode('.', $key);
+        if(count($exploded) == 2) {
+            self::$config[self::$context][$exploded[0]][$exploded[1]] = $value;
+        } 
+        self::$config[self::$context][$key] = $value;
     }
 }
