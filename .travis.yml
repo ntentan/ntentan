@@ -10,6 +10,9 @@ matrix:
   include:
    - php: "5.6"
      env: COVERAGE=yes   
+     
+before_script:
+ - composer install --prefer-dist     
 
 script: vendor/bin/phpunit --coverage-clover coverage.clover tests/cases
 after_script: if [ "$COVERAGE" == "yes" ]; then wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
