@@ -18,7 +18,7 @@ class Config
         }
     }
     
-    private function parseDir($path, $contexts) 
+    private static function parseDir($path, $contexts) 
     {
         $config = [];
         $files = scandir($path);
