@@ -48,7 +48,6 @@ require_once "exceptions/FileNotFoundException.php";
 require_once "exceptions/ApiIniFileNotFoundException.php";*/
 
 use ntentan\caching\Cache;
-use ntentan\utils\Text;
 use ntentan\honam\TemplateEngine;
 use ntentan\honam\AssetsLoader;
 use ntentan\honam\Helper;
@@ -226,7 +225,7 @@ class Ntentan
      */
     public static function setup($ntentan, $app = false)
     {
-        // setup autoloader
+        /*// setup autoloader
         spl_autoload_register("ntentan\Ntentan::autoload");
         
         $configFile = Ntentan::$configPath . 'app.ini';
@@ -265,11 +264,6 @@ class Ntentan
             $app[Ntentan::$context]['debug'] == 1 ? 
             true : false;
         
-        unset($app['home']);
-        unset($app['plugins']);
-        unset($app['prefix']);
-        unset($app['context']);
-        
         TemplateEngine::appendPath('views');
         TemplateEngine::appendPath('views/default');
         AssetsLoader::appendSourceDir('assets');
@@ -293,7 +287,7 @@ class Ntentan
         if(!defined('STDOUT'))
         {
             sessions\Manager::start();
-        }
+        }*/
     }
 
     /**
@@ -302,6 +296,10 @@ class Ntentan
      */
     public static function route()
     {
+        Config::init('config');
+        
+        die();
+        
         // Implement the routing engine
         Ntentan::$requestedRoute = $_GET["q"];
         if(Ntentan::$route =='' ) Ntentan::$route = Ntentan::$requestedRoute;
@@ -350,10 +348,10 @@ class Ntentan
         controllers\Controller::load(Ntentan::$route);
         
         // Store all camelisations into the cache;
-        if(count(Ntentan::$camelisations) > $camelisations)
+        /*if(count(Ntentan::$camelisations) > $camelisations)
         {
             Cache::add('nt_camelisations', Ntentan::$camelisations);
-        }        
+        }*/       
     }
 
     /**
@@ -419,45 +417,6 @@ class Ntentan
     }
 
     /**
-     * Returns the default datastore as defined in the config/db.ini
-     * configuration file.
-     */
-    public static function getDefaultDataStore($instance = false)
-    {
-        if(self::getDatastoreConfig())
-        {
-            if($instance === true)
-            {
-                if(!isset(Ntentan::$loadedDatastores[Ntentan::$config['db']['datastore']]))
-                {
-                    $dataStoreClass = "\\ntentan\\models\\datastores\\" . Text::ucamelize(Ntentan::$config['db']['datastore']);
-                    if(class_exists($dataStoreClass))
-                    {
-                        Ntentan::$loadedDatastores[Ntentan::$config['db']['datastore']] = new $dataStoreClass(Ntentan::$config['db']);
-                    }
-                    else
-                    {
-                        throw new exceptions\DataStoreException("Datastore {$dataStoreClass} doesn't exist.");
-                    }
-                }
-                return Ntentan::$loadedDatastores[Ntentan::$config['db']['datastore']];
-            }
-            else
-            {
-                if(!isset(Ntentan::$config['db']['datastore_class']))
-                {
-                    Ntentan::$config['db']['datastore_class'] ="ntentan\\models\\datastores\\" . Text::ucamelize(Ntentan::$config['db']["datastore"]);
-                }
-                return Ntentan::$config['db'];
-            }
-        }
-        else
-        {
-            throw new models\exceptions\DataStoreException("Could not find a suitable datastore");
-        }
-    }
-
-    /**
      * Get the full URI which was sent in.
      */
     public static function getRequestUri()
@@ -475,89 +434,6 @@ class Ntentan
     public static function toSentence($string)
     {
         return ucwords(str_replace("_", " ", $string));
-    }
-
-    /**
-     * Returns the sigular form of any plural english word which is passed to it.
-     * 
-     * @param string $word
-     * @see Ntentan::plural
-     */
-    public static function singular($word)
-    {
-        $singular = array_search($word, Ntentan::$singulars);
-        if($singular == false)
-        {
-            if(substr($word, -3) == "ses")
-            {
-                $singular = substr($word, 0, strlen($word) - 2);
-            }
-            elseif(substr($word, -3) == "ies")
-            {
-                $singular = substr($word, 0, strlen($word) - 3) . "y";
-            }
-            elseif(strtolower($word) == "indices")
-            {
-                $singular = "index";
-            }
-            else if(substr(strtolower($word), -4) == 'news')
-            {
-                $singular = $word;
-            }
-            else if(substr(strtolower($word), -8) == 'branches')
-            {
-                $singular = substr($word, 0, strlen($word) - 2);
-            }
-            else if(substr($word, -1) == "s")
-            {
-                $singular = substr($word, 0, strlen($word) - 1);
-            }
-            else
-            {
-                $singular = $word;
-            }
-            Ntentan::$singulars[$singular] = $word;
-        }
-        return $singular;
-    }
-
-    /**
-     * Returns the plural form of any singular english word which is passed to it.
-     * 
-     * @param string $word
-     */
-    public static function plural($word)
-    {
-        $plural = array_search($word, Ntentan::$plurals);
-        if($plural === false)
-        {
-            if(substr($word, -1) == "y")
-            {
-                $plural = substr($word, 0, strlen($word) - 1) . "ies";
-            }
-            elseif(strtolower($word) == "index")
-            {
-                $plural = "indices";
-            }            
-            elseif(substr($word, -2) == "us")
-            {
-                $plural = $word . "es";
-            } 
-            elseif(substr($word, -2) == "ss")
-            {
-                $plural = $word . "es";
-            }
-            elseif(substr($word, -1) != "s")
-            {
-                $plural = $word . "s";
-            }
-            else
-            {
-                throw new exceptions\UnknownPluralException("Could not determine the plural for $word");
-            }
-            Ntentan::$plurals[$plural] = $word;
-        }
-        return $plural;
     }
 
     /**

@@ -1,7 +1,7 @@
 <?php
 namespace ntentan\controllers\components\auth\methods;
 
-use \ntentan\models\Model;
+use \ntentan\Model;
 
 abstract class AuthMethod
 {
