@@ -41,16 +41,6 @@ namespace ntentan;
  * Include a collection of utility global functions, caching and exceptions. 
  * Classes loaded here are likely to be called before the autoloader kicks in.
  */
-/*require_once "globals.php";
-require_once "caching/Cache.php";
-require_once "exceptions/NtentanException.php";
-require_once "exceptions/FileNotFoundException.php";
-require_once "exceptions/ApiIniFileNotFoundException.php";*/
-
-use ntentan\caching\Cache;
-use ntentan\honam\TemplateEngine;
-use ntentan\honam\AssetsLoader;
-use ntentan\honam\Helper;
 
 /**
  * A utility class for the Ntentan framework. This class contains the routing
@@ -65,457 +55,60 @@ use ntentan\honam\Helper;
 class Ntentan
 {
     /**
-     * The home of the ntentan framework. The directory in which the code for
-     * the ntentan framework resides.
-     * @var string
-     */
-    public static $home;
-    
-    /**
-     * The home of the application
-     */
-    public static $appHome;
-
-    /**
-     * The namespace which holds the modules of the application.
-     * @var string
-     */
-    public static $namespace;
-    
-    /**
-     * The directory in which the code for the modules are stored
-     * @var string
-     */
-    public static $modulesPath;
-
-    /**
-     * The cache method to be used
-     */
-    public static $cacheMethod = "file";
-
-    public static $config;
-    public static $configPath = 'config/';
-
-    public static $debug = false;
-
-    /**
-     * The directory which contains the layouts for the current application.
-     * @var string
-     * @see Layout
-     */
-    public static $viewsPath = "views/";
-
-    /**
-     * The default route to use when no route is specified in the URL.
-     * @var string
-     */
-    public static $defaultRoute = "home";
-    
-    /**
-     * If some routing logic is used to rewrite the route then this default route
-     * should apply.
-     * @var string
-     */
-    public static $postRoutingDefaultRoute = "";
-
-    /**
-     * The route which was requested through the URL. In cases where the route
-     * is altered by the routing engine, this route still remains the same as
-     * what was requested through the URL. The altered route can always be found
-     * in the Ntentan::$route property.
-     * @var string
-     */
-    public static $requestedRoute;
-
-    /**
-     * The routing table. An array of regular expressions and associated
-     * operations. If a particular request sent in through the URL matches a
-     * regular expression in the table, the associated operations are executed.
-     *
-     * @var array
-     */
-    public static $routes = array();
-
-    /**
-     * The route which is currently being executed. If the routing engine has
-     * modified the requested route, this property would hold the value of the
-     * new route.
-     * @var string
-     */
-    public static $route;
-    
-    public static $prefix;
-    
-    /**
-     * A runtime cache for singulars
-     * @var array
-     */
-    private static $singulars = array();
-    
-    /**
-     * A runtime cache for plurals
-     * @var array
-     */
-    private static $plurals = array();
-    
-    /**
-     * A runtime cache for camelisations
-     * @var array
-     */
-    private static $camelisations = array();
-    
-    /**
-     * A runtime cache for de-camelisation
-     * @var array
-     */
-    private static $deCamelisations = array();
-    
-    /**
-     * A runtime cache for loaded datastores
-     * @var array
-     */
-    private static $loadedDatastores = array();
-    
-    public static $context;
-    
-    private static $errorDepth;
-    
-    public static $appName;
-    
-    const MAX_ERROR_DEPTH = 10;
-    
-    public static function getClassFile($class)
-    {
-        $key = "file_$class";
-        if(Cache::exists($key))
-        {
-            $classFile = Cache::get($key);
-        }
-        else
-        {
-            $fullPath = explode("\\", $class);
-
-            //Get rid of any initial empty class name
-            if($fullPath[0] == "") array_shift ($fullPath);
-            $class = array_pop($fullPath);
-
-            $classFile = Ntentan::$appHome . '/' . implode("/",$fullPath) . '/' . $class . '.php';
-            Cache::add($key, $classFile);
-        }
-        return $classFile;
-    }
-    
-    public static function autoload($class)
-    {
-        $classFile = self::getClassFile($class);
-        if(file_exists($classFile))
-        {
-            require_once $classFile;
-        }        
-    }
-
-    /**
-     * The main entry point of the Ntentan application. This method ensures that
-     * ntentan is properly setup for service. It takes the configuration
-     * data as a parameter. The details of the configuration parameter are
-     * extracted from the config file.
+     * Root namespace for entire application.
      * 
-     * @param array $ntentan The configuration data for ntentan
-     * @param array $app The configuration data for the application
+     * @var string
      */
-    public static function setup($ntentan, $app = false)
-    {
-        /*// setup autoloader
-        spl_autoload_register("ntentan\Ntentan::autoload");
-        
-        $configFile = Ntentan::$configPath . 'app.ini';
-        
-        if($app === false && !file_exists($configFile))
-        {
-            throw new exceptions\ApiIniFileNotFoundException("Config file *app.ini* not found");
-        }
-        else
-        {
-            $app = $app === false ? parse_ini_file($configFile, true) : $app;        
-        }
-        
-        // hook in the custom exception handler
-        set_exception_handler(array("\\ntentan\\Ntentan", "exceptionHandler"));
-                
-        // setup paths
-        Ntentan::$home = $ntentan['home'];
-        Ntentan::$namespace = $ntentan['namespace'];
-        
-        Ntentan::$modulesPath = isset($ntentan['modules_path'])?
-            $ntentan['modules_path']:
-            $ntentan['namespace'];
-        
-        Ntentan::$appHome = $app['home'] == '' ? '.' : $app['home'];    
-        Ntentan::$appName = $ntentan['app'];
-        Ntentan::$prefix = $app['prefix'];
-        Ntentan::$context = $app['context'];
-        
-        Ntentan::$cacheMethod = $app[Ntentan::$context]['caching'] == '' ? 
-            Ntentan::$cacheMethod : 
-            $app[Ntentan::$context]['caching'];
-            
-        Ntentan::$debug = 
-            $app[Ntentan::$context]['debug'] == 'true' || 
-            $app[Ntentan::$context]['debug'] == 1 ? 
-            true : false;
-        
-        TemplateEngine::appendPath('views');
-        TemplateEngine::appendPath('views/default');
-        AssetsLoader::appendSourceDir('assets');
-        Helper::setBaseUrl(Ntentan::getUrl(''));
-        
-        Ntentan::$config = $app;
+    private static $namespace;
 
-        logger\Logger::init("logs/application.log");
-        
-        // load cached items
-        if(Cache::exists('nt_camelisations'))
-        {
-            Ntentan::$camelisations = Cache::get('nt_camelisations');
-        }
-        else
-        {
-            Ntentan::$camelisations = array();
-        }
-        $camelisations = count(Ntentan::$camelisations);        
-        
-        if(!defined('STDOUT'))
-        {
-            sessions\Manager::start();
-        }*/
-    }
+    /**
+     * 
+     * 
+     * @var string
+     */
+    private static $configPath = 'config/';
 
+    
+    private static $prefix;
+    
     /**
      * The routing engines entry. This method analyses the URL and implements
      * the routing engine.
      */
-    public static function route()
+    public static function start($namespace)
     {
-        Config::init('config');
+        self::$namespace = $namespace;
+        self::$prefix = Config::get('app.prefix');
+        self::$prefix = (self::$prefix == '' ? '' : '/') . self::$prefix;
         
-        die();
+        Session::start();
+        logger\Logger::init('logs/app.log');
         
-        // Implement the routing engine
-        Ntentan::$requestedRoute = $_GET["q"];
-        if(Ntentan::$route =='' ) Ntentan::$route = Ntentan::$requestedRoute;
-        unset($_GET["q"]);
-        unset($_REQUEST["q"]);
-
-        if(Ntentan::$route == "") 
-        {
-            Ntentan::$route = Ntentan::$defaultRoute;
-        }
-        else
-        {
-            foreach(Ntentan::$routes as $route)
-            {
-                if(preg_match($route["pattern"], Ntentan::$route, $matches) == 1)
-                {
-                    $parts = array();
-                    if(isset($route["route"]))
-                    {
-                        $newRoute = $route["route"];
-                        foreach($matches as $key => $value)
-                        {
-                            $newRoute = str_replace("::$key", $value, $newRoute);
-                            $parts["::$key"] = $value;
-                        }
-                        Ntentan::$route = $newRoute;
-                    }
-                    if(is_array($route["globals"]))
-                    {
-                        foreach($route["globals"] as $key => $value)
-                        {
-                            $GLOBALS["ROUTE_$key"] =str_replace(array_keys($parts), $parts, $value);
-                        }
-                    }
-                    break;
-                }
-            }
-        }
+        honam\TemplateEngine::prependPath('views/default');
+        honam\AssetsLoader::setSiteUrl(self::getUrl('public'));
         
-        if(Ntentan::$route == "") 
-        {
-            Ntentan::$route = isset($route['default']) ? 
-                $route['default'] : Ntentan::$postRoutingDefaultRoute;
-        }        
-
-        controllers\Controller::load(Ntentan::$route);
+        Config::init(self::$configPath);
+        nibii\DriverAdapter::setDefaultSettings(Config::get('db'));
         
-        // Store all camelisations into the cache;
-        /*if(count(Ntentan::$camelisations) > $camelisations)
-        {
-            Cache::add('nt_camelisations', Ntentan::$camelisations);
-        }*/       
+        Router::route();  
     }
-
-    /**
-     * Returns the path of a file which is supposed to be located within the
-     * ntentan framework's directory. This method is mostly used internally
-     * within the ntentan framework.
-     * @param string $path
-     */
-    public static function getFilePath($path)
+    
+    public static function getNamespace()
     {
-        return __DIR__ . "/../$path";
+        return self::$namespace;
     }
-
-    /**
-     * Returns a url which has been formatted purposedly for the application.
-     * @param unknown_type $url
-     */
+    
     public static function getUrl($url)
     {
-        return (Ntentan::$prefix == '' ? '' : '/') . Ntentan::$prefix . ($url[0]!="/" ? "/$url" : $url);
-    }
+        $prefix = Config::get('app.prefix');
+        return ($prefix == '' ? '' : '/') . $prefix . "/$url";
+    }    
     
-    public static function getRouteKey()
-    {
-         return str_replace('/', '_', Ntentan::$route);
-    }
-
-    /**
-     * Write a header to redirect the request to a new location. In cases where
-     * a redirect parameter exists in the request, the $url parameter of this
-     * method is totally ignored.
-     *
-     * @param string $url The url to redirect to. This could be a full URL or a
-     *                    route to an Ntentan controller.
-     * @param unknown_type $absolute
-     */
     public static function redirect($url = null, $absolute = false)
     {
-        $url = isset($_GET["redirect"]) ? $_GET["redirect"] : $url;
+        $redirect = filter_input(INPUT_GET, "redirect");
+        $url = $redirect == '' ? $url : $redirect;
         $url = $absolute === true ? $url : Ntentan::getUrl($url);
         header("Location: $url ");
-    }
-    
-    private static function getDatastoreConfig()
-    {
-        if(!isset(Ntentan::$config['db']))
-        {
-            if(file_exists(Ntentan::$configPath . 'db.ini'))
-            {
-                $db = parse_ini_file(Ntentan::$configPath . 'db.ini', true);
-                Ntentan::$config['db'] = $db[Ntentan::$context];
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        elseif(isset(Ntentan::$config['db']))
-        {
-            return true;
-        }
-    }
-
-    /**
-     * Get the full URI which was sent in.
-     */
-    public static function getRequestUri()
-    {
-        return 'http'. ($_SERVER['HTTPS'] ? 's' : null) .'://'. $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-    }
-
-    /**
-     * Converts an underscore seperated string into a sentence by replacing the
-     * underscores with spaces and capitalizing the first character of all the
-     * new words which are formed.
-     * 
-     * @param unknown_type $string
-     */
-    public static function toSentence($string)
-    {
-        return ucwords(str_replace("_", " ", $string));
-    }
-
-    /**
-     * Adds a route to the routing engine of the system.
-     * 
-     * @param string $source
-     * @param string $dest
-     */
-    public static function addRoute($source, $dest)
-    {
-        Ntentan::$routes[] = array($source, $dest);
-    }
-
-    /**
-     * Returns true if the request is an AJAX request.
-     * 
-     * @return boolean
-     */
-    public static function isAjax()
-    {
-        if($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') return true; else return false;
-    }
-
-    public static function error($message, $subTitle = null, $type = null, $showTrace = true, $trace = false)
-    {
-        Ntentan::$errorDepth++;
-        if(isset(Ntentan::$config[Ntentan::$context]['error_handler']) && Ntentan::$debug === false && Ntentan::$errorDepth < Ntentan::MAX_ERROR_DEPTH)
-        {
-            controllers\Controller::load(Ntentan::$config[Ntentan::$context]['error_handler']);
-        }
-        else
-        {
-            ob_clean();
-            echo Ntentan::message($message, $subTitle, $type, $showTrace, $trace);
-        }
-    }  
-
-    public static function message($message, $subTitle = null, $type = null, $showTrace = true, $trace = false)
-    {
-        // Be silent in production systems at all cost
-        if(Ntentan::$debug == false) return;
-        
-        if($showTrace === true)
-        {
-            $trace = is_array($trace) ? $trace : debug_backtrace();
-        }
-        ob_start();
-        if(defined('STDERR') || ini_get('html_errors') == 'off' || ini_get('html_errors') == '0')
-        {
-            include Ntentan::getFilePath("templates/message-cli.tpl.php");
-        }
-        else
-        {
-            include Ntentan::getFilePath("templates/message.tpl.php");
-        }
-        $message = ob_get_clean();
-        return $message;
-    }
-
-    /**
-     * Default call back for displaying exceptions.
-     * @param Exception $exception
-     */
-    public static function exceptionHandler($exception)
-    {
-        $class = new \ReflectionObject($exception);
-        $logged = logger\Logger::log(logger\Logger::INFO, $exception->getMessage() . "\n" . $exception->getTraceAsString());
-        
-        echo Ntentan::error(
-            "Exception <code><b>{$class->getName()}</b></code> thrown in " .
-            "<code><b>{$exception->getFile()}</b></code> on line " .
-            "<code><b>{$exception->getLine()}</b></code>. " . 
-             $exception->getMessage() .
-             ( $logged === false ? 
-                 "\n\n<p>Failed to log this exception. Please check and ensure " . 
-                  "that the file [logs/application.log] exists and is " .
-                  "writable.</p>" : ""
-             ),
-            "Exception <code>" . $class->getName() . "</code> thrown",
-            null,
-            true,
-            $exception->getTrace()
-        );
-    }
+    }    
 }

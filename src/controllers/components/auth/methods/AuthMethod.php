@@ -19,13 +19,7 @@ abstract class AuthMethod
     {
         $usersModelClass = Model::getClassName($this->usersModel);
         $users = new $usersModelClass();
-        $result = $users->getJustFirst(
-            array(
-                'conditions' => array(
-                    $this->usersFields['username'] => $username
-                )
-            )
-        );
+        $result = $users->filter('username = ?', $username)->fetchFirst();
         $passwordCrypt = $this->passwordCrypt;
         if($passwordCrypt($password, $result->password) && $result->blocked != '1')
         {

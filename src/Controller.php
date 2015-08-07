@@ -29,7 +29,7 @@
  * @license MIT
  */
 
-namespace ntentan\controllers;
+namespace ntentan;
 
 use ntentan\caching\Cache;
 use ntentan\controllers\exceptions\ComponentNotFoundException;
@@ -226,10 +226,20 @@ class Controller
     {
         $arguments = func_get_args();
         $component = array_shift($arguments);
+        $namespace = Ntentan::getNamespace();
         
         // Attempt to load an application component
-        $namespace = "\\" . Ntentan::$namespace . "\\components";
+        $namespace = "\\$namespace\\components";
         $className = $this->loadComponent($component, $arguments, $namespace); 
+        if(is_string($className))
+        {
+            return;
+        }
+        
+        // Attempt to load a core component
+        $className = $this->loadComponent(
+            $component, $arguments, '\\ntentan\\controllers\\components'
+        );
         if(is_string($className))
         {
             return;
@@ -249,15 +259,7 @@ class Controller
         {
             return;
         }
-        
-        // Attempt to load a core component
-        $className = $this->loadComponent(
-            $component, $arguments, '\\ntentan\\controllers\\components'
-        );
-        if(is_string($className))
-        {
-            return;
-        }
+                
         throw new exceptions\ComponentNotFoundException(
             "Component not found *$component*"
         );
@@ -273,7 +275,6 @@ class Controller
 
             $componentClass = new ReflectionClass($componentName);
             $componentInstance = $componentClass->newInstanceArgs($arguments);
-            $componentInstance->filePath = Ntentan::getFilePath("lib/controllers/components/$component");
             
             $this->componentInstances[$key] = $componentInstance;
             $this->componentInstances[$key]->setController($this);
@@ -363,13 +364,15 @@ class Controller
     {
         $controllerRoute = '';
         $routeArray = explode('/', $route);
+        $namespace = Ntentan::getNamespace();
+        $modelRoute = "";
 
         // Loop through the filtered path and extract the controller class
         for($i = 0; $i<count($routeArray); $i++)
         {
             $p = $routeArray[$i];
             $pCamelized = Text::ucamelize($p);
-            $filePath = Ntentan::$modulesPath . "/modules/$controllerRoute/$p/";
+            $filePath = "src/modules/$controllerRoute/$p/";
             if(file_exists($filePath . "{$pCamelized}Controller.php"))
             {
                 $controllerName = $pCamelized."Controller";
@@ -384,7 +387,7 @@ class Controller
                 }
                 else
                 {
-                    $controllerNamespace = "\\" . str_replace("/", "\\", Ntentan::$namespace . "/modules/$controllerRoute/");
+                    $controllerNamespace = "\\" . str_replace("/", "\\", "$namespace/modules/$controllerRoute/");
                     $controllerName = $controllerNamespace . $controllerName;
                     if(class_exists($controllerName))
                     {
@@ -403,11 +406,11 @@ class Controller
                         if($returnInstanceOnly) return $controller;
                         
                         // Trap for the cache
-                        if(Cache::exists("view_" . Ntentan::$route) && Ntentan::$debug === false)
+                        /*if(Cache::exists("view_" . Ntentan::$route) && Ntentan::$debug === false)
                         {
                             echo Cache::get('view_' . Ntentan::$route);
                             return;
-                        }
+                        }*/
 
                         if($controller->method == '')
                         {
@@ -423,7 +426,7 @@ class Controller
                     }
                     else
                     {
-                        Ntentan::error("Controller class *$controllerName* not found.");
+                        throw new \Exception("Controller class *$controllerName* not found.");
                     }
                     $controller->runMethod(array_slice($routeArray, $i + 2));
                     return;
@@ -443,7 +446,7 @@ class Controller
         {
             $message = "Controller not found for route *$route*";
         }
-        Ntentan::error($message);
+        throw new \Exception($message);
     }
 
     /**
@@ -508,6 +511,7 @@ class Controller
     public function runMethod($params, $method = null)
     {
         $path = $method === null ? $this->method : $method;
+        $return = null;
         if(method_exists($this, $path))
         {
             $controllerClass = new ReflectionClass($this->getName());

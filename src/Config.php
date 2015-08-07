@@ -48,7 +48,11 @@ class Config
     
     public static function get($key)
     {
-        return self::$config[self::$context][$key];
+        if(isset(self::$config[self::$context][$key]))
+        {
+            return self::$config[self::$context][$key];
+        }
+        return null;
     }
     
     public static function setContext($context)

@@ -31,7 +31,7 @@
 
 namespace ntentan\controllers\components;
 
-use ntentan\controllers\Controller;
+use ntentan\Controller;
 use \ReflectionMethod;
 
 /**

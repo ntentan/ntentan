@@ -33,8 +33,9 @@
 namespace ntentan\controllers\components\auth;
 
 use ntentan\Ntentan;
-use \ntentan\controllers\components\Component;
+use ntentan\controllers\components\Component;
 use ntentan\utils\Text;
+use ntentan\Session;
 
 /**
  * The class for the authentication component. This class provides an entry point
@@ -66,12 +67,13 @@ class AuthComponent extends Component
 
     protected $parameters;
     private $authMethodInstance;
+    private $authenticated;
 
     public function __construct($parameters = array())
     {
         parent::__construct();
         $this->parameters = $parameters;
-        $this->authenticated = $_SESSION['logged_in'];
+        $this->authenticated = Session::get('logged_in');
     }
     
     private function getParameter($parameter, $default = null)
@@ -96,9 +98,9 @@ class AuthComponent extends Component
             }
         }
 
-        if($_SESSION["logged_in"] !== true)
+        if($this->authenticated !== true)
         {
-            $this->set('app_name', Ntentan::$appName);
+            $this->set('app_name', \ntentan\Config::get('app.name'));
             $this->set('title', "Login");
             $this->login();
         }
@@ -109,16 +111,11 @@ class AuthComponent extends Component
         $this->set("login_message", $this->authMethodInstance->getMessage());
         $this->set("login_status", false);
         $loginRoute = $this->getParameter('login_route', $this->controller->route . "/login");
-        if(Ntentan::$route != $loginRoute && Ntentan::$requestedRoute != $loginRoute)
+        $route = \ntentan\Router::getRoute();
+        \ntentan\logger\Logger::info("$route : $loginRoute");
+        if($route !== $loginRoute)
         {
-            Ntentan::redirect(
-                $loginRoute .
-                (
-                    Ntentan::$requestedRoute == ""
-                    ? "" :
-                    (Ntentan::$requestedRoute == $logoutRoute ? "" : "?redirect=" . urlencode(Ntentan::$requestedRoute))
-                )
-            );
+            Ntentan::redirect($loginRoute);
         }
     }
     
@@ -172,8 +169,8 @@ class AuthComponent extends Component
                 }
             )
         );
-        $this->authMethodInstance->setUsersModel($this->parameters['users_model']);
-        $this->authMethodInstance->setUsersModelFields($this->parameters['users_model_fields']);
+        $this->authMethodInstance->setUsersModel($this->getParameter('users_model'));
+        $this->authMethodInstance->setUsersModelFields($this->getParameter('users_model_fields'));
         
         if($this->loggedIn())
         {
@@ -191,7 +188,7 @@ class AuthComponent extends Component
 
     public function logout()
     {
-        $_SESSION = array();
+        Session::reset();
         Ntentan::redirect($this->getParameter('login_route', $this->controller->route . "/login"));
     }
 
