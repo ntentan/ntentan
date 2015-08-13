@@ -1,6 +1,8 @@
 <?php
 namespace ntentan;
 
+use ntentan\utils\Input;
+
 class Router
 {
     /**
@@ -20,7 +22,7 @@ class Router
      * @var array
      */
     private static $routes = array();
-    
+
     /**
      * The route which is currently being executed. If the routing engine has
      * modified the requested route, this property would hold the value of the
@@ -28,28 +30,28 @@ class Router
      * @var string
      */
     private static $route;
-    
+
     private static $defaultRoute = 'home';
-    
+
     private static $destinationType;
-    
+
     private static $vars = [];
-    
+
     public static function route()
     {
-        self::$route = self::$defaultRoute;
-        self::$requestedRoute = filter_input(INPUT_GET, 'q');
+        self::$requestedRoute = Input::exists(Input::GET, 'q') ? Input::get('q') : self::$defaultRoute;
+        self::$route = self::$requestedRoute;
         self::$destinationType = 'ROUTE';
-        
+
         foreach(self::$routes as $route) {
-            if(self::reroute($route)) {
+            if(self::reRoute($route)) {
                 break;
             }
-        }    
+        }
         
         self::loadController();
     }
-    
+
     private static function rewriteRoute($route, $matches, &$parts)
     {
         foreach($matches as $key => $value)
@@ -59,15 +61,15 @@ class Router
         }
         return $route;
     }
-    
+
     private static function setGlobals($route, $parts)
     {
         foreach($route["globals"] as $key => $value)
         {
             self::$vars[$key] = str_replace(array_keys($parts), $parts, $value);
-        }        
+        }
     }
-    
+
     private static function reRoute($route)
     {
         if(preg_match($route["pattern"], self::$requestedRoute, $matches))
@@ -83,30 +85,35 @@ class Router
                 self::setGlobals($route, $parts);
             }
             return true;
-        }        
+        }
         return false;
     }
-    
+
     private static function loadController()
     {
         Controller::load(self::$route);
     }
-    
+
     public static function setDefaultRoute($defaultRoute)
     {
         self::$defaultRoute = $defaultRoute;
     }
-    
+
     public static function getRoute()
     {
         return self::$route;
     }
-    
+
+    public static function getRequestedRoute()
+    {
+        return self::$requestedRoute;
+    }
+
     public static function setRoutes($routes)
     {
         self::$routes = $routes;
     }
-    
+
     public static function getVar($var)
     {
         if(isset(self::$vars[$var])) {

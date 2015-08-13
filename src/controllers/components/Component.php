@@ -177,6 +177,11 @@ class Component extends Controller
         return $ret;
     }
     
+    public function getView()
+    {
+        return $this->controller->getView();
+    }
+    
     protected function getViewInstance()
     {
         return $this->controller->getViewInstance();
