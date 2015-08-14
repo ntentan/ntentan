@@ -38,7 +38,6 @@ use \ReflectionClass;
 use ntentan\Ntentan;
 use ntentan\View;
 use ntentan\utils\Text;
-use ntentan\utils\Utils;
 
 /**
  * The Controller class represents the base class for all controllers that are
@@ -250,13 +249,14 @@ class Controller
             $method = $controllerClass->GetMethod($path);
             if ($view->getTemplate() == null) {
                 $view->setTemplate(
-                        str_replace("/", "_", Router::getRoute())
-                        . '_' . $path
-                        . '.tpl.php'
+                    str_replace("/", "_", Router::getRoute())
+                    . '_' . $path
+                    . '.tpl.php'
                 );
             }
             $method->invokeArgs($this, $params);
             $return = $view->out($this->getData());
+            echo $return;
         } else {
             foreach ($this->componentInstances as $component) {
                 //@todo Look at how to prevent this from running several times
@@ -267,11 +267,6 @@ class Controller
                 }
             }
         }
-
-        if ($view->getCacheTimeout() !== false && Ntentan::$debug !== true) {
-            Cache::add('view_' . Ntentan::getRouteKey(), $return, $view->cacheTimeout);
-        }
-        echo $return;
     }
 
     protected function getView()

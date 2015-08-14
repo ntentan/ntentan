@@ -95,7 +95,7 @@ class Ntentan
         nibii\Nibii::setClassResolver(function($name){
             $namespace = Ntentan::getNamespace();
             return "\\$namespace\\modules\\" . str_replace(".", "\\", $name) . "\\" .
-                Text::ucamelize(reset(explode('.', $name)));
+                Text::ucamelize(reset(explode('.', $name)));                    
         });
 
         Router::route();

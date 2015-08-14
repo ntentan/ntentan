@@ -19,6 +19,11 @@ class View
     private $template;
     private $cacheTimeout = false;
     
+    public function __construct()
+    {
+        $this->layout = 'main.tpl.php';
+    }
+    
     public function getCacheTimeout()
     {
         return $this->cacheTimeout;
