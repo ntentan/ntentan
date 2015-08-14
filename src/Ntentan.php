@@ -92,7 +92,10 @@ class Ntentan
         Config::init(self::$configPath);
         nibii\DriverAdapter::setDefaultSettings(Config::get('db'));
 
-        nibii\Nibii::setClassResolver(function($name){
+        nibii\Nibii::setClassResolver(function($name, $context){
+            if($context == nibii\Relationship::BELONGS_TO) {
+                $name = Text::pluralize($name);
+            }
             $namespace = Ntentan::getNamespace();
             return "\\$namespace\\modules\\" . str_replace(".", "\\", $name) . "\\" .
                 Text::ucamelize(reset(explode('.', $name)));                    
