@@ -88,6 +88,8 @@ class Ntentan
 
         honam\TemplateEngine::prependPath('views/default');
         honam\AssetsLoader::setSiteUrl(self::getUrl('public'));
+        honam\AssetsLoader::appendSourceDir('assets');
+        honam\AssetsLoader::setDestinationDir('public');
 
         Config::init(self::$configPath);
         nibii\DriverAdapter::setDefaultSettings(Config::get('db'));
