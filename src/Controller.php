@@ -301,4 +301,9 @@ class Controller
     {
         
     }
+    
+    public function setDefaultMethod($defaultMethod)
+    {
+        $this->defaultMethod = $defaultMethod;
+    }
 }
