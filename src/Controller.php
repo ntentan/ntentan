@@ -249,8 +249,8 @@ class Controller
             $method = $controllerClass->GetMethod($path);
             if ($view->getTemplate() == null) {
                 $view->setTemplate(
-                    str_replace("/", "_", Router::getRoute())
-                    . '_' . $path
+                    str_replace("/", "_", $this->route)
+                    . $path
                     . '.tpl.php'
                 );
             }
