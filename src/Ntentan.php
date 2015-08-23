@@ -93,6 +93,7 @@ class Ntentan
 
         Config::init(self::$configPath);
         nibii\DriverAdapter::setDefaultSettings(Config::get('db'));
+        kaikai\Cache::init(Config::get('cache'));
 
         nibii\Nibii::setClassResolver(function($name, $context){
             if($context == nibii\Relationship::BELONGS_TO) {
