@@ -87,6 +87,7 @@ class Ntentan
         logger\Logger::init('logs/app.log');
 
         honam\TemplateEngine::prependPath('views/default');
+        honam\TemplateEngine::prependPath('views');
         honam\AssetsLoader::setSiteUrl(self::getUrl('public'));
         honam\AssetsLoader::appendSourceDir('assets');
         honam\AssetsLoader::setDestinationDir('public');
