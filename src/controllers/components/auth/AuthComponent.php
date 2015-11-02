@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Source file for the auth component
  *
@@ -37,19 +38,16 @@ use ntentan\controllers\components\Component;
 use ntentan\utils\Text;
 use ntentan\Session;
 use ntentan\Router;
+use ntentan\Parameters;
 
 /**
- * The class for the authentication component. This class provides an entry point
- * through which the various authentication methods could be used. It also acts
- * as a watch dog of some sort which prevents un authenticated users from
- * acessing sections of the site they are not entitled to. Finally this class
- * provides a role mechanism so that the various users of the system can be limited
- * to what they have access to based on thei attached role.
+ * The class for the authentication component.
  *
  * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
  */
 class AuthComponent extends Component
 {
+
     /**
      *
      */
@@ -73,34 +71,19 @@ class AuthComponent extends Component
     public function __construct($parameters = array())
     {
         parent::__construct();
-        $this->parameters = $parameters;
+        $this->parameters = Parameters::wrap($parameters);
         $this->authenticated = Session::get('logged_in');
-    }
-
-    private function getParameter($parameter, $default = null)
-    {
-        if(isset($this->parameters[$parameter]))
-        {
-            return $this->parameters[$parameter];
-        }
-        else
-        {
-            return $default;
-        }
     }
 
     public function init()
     {
-        foreach($this->getParameter('excluded_routes', array()) as $excludedRoute)
-        {
-            if(preg_match("/$excludedRoute/i", Ntentan::$route) > 0)
-            {
+        foreach ($this->parameters->get('excluded_routes', array()) as $excludedRoute) {
+            if (preg_match("/$excludedRoute/i", Ntentan::$route) > 0) {
                 return;
             }
         }
 
-        if($this->authenticated !== true)
-        {
+        if ($this->authenticated !== true) {
             $this->set('app_name', \ntentan\Config::get('app.name'));
             $this->set('title', "Login");
             $this->login();
@@ -111,14 +94,13 @@ class AuthComponent extends Component
     {
         $this->set("login_message", $this->authMethodInstance->getMessage());
         $this->set("login_status", false);
-        $loginRoute = $this->getParameter('login_route', $this->controller->getRoute() . "login");
+        $loginRoute = $this->parameters->get('login_route', $this->controller->getRoute() . "login");
         $route = Router::getRoute();
         $requestedRoute = Router::getRequestedRoute();
 
         \ntentan\logger\Logger::info("$route : $loginRoute");
 
-        if($route !== $loginRoute && $requestedRoute !== $loginRoute)
-        {
+        if ($route !== $loginRoute && $requestedRoute !== $loginRoute) {
             Ntentan::redirect($loginRoute);
         }
     }
@@ -126,14 +108,13 @@ class AuthComponent extends Component
     private function performSuccessOperation()
     {
         $this->authenticated = true;
-        switch($this->getParameter('on_success', self::REDIRECT))
-        {
+        switch ($this->parameters->get('on_success', self::REDIRECT)) {
             case self::REDIRECT:
-                Ntentan::redirect($this->getParameter('redirect_route', '/'));
+                Ntentan::redirect($this->parameters->get('redirect_route', '/'));
                 break;
 
             case self::CALL_FUNCTION:
-                $function = $this->getParameter('success_function');
+                $function = $this->parameters->get('success_function');
                 $function();
                 break;
 
@@ -144,10 +125,9 @@ class AuthComponent extends Component
 
     private function performFailureOperation()
     {
-        switch($this->getParameter('on_failure', self::REDIRECT))
-        {
+        switch ($this->getParameter('on_failure', self::REDIRECT)) {
             case self::CALL_FUNCTION:
-                $function = $this->getParameter('failure_function');
+                $function = $this->parameters->get('failure_function');
                 $function();
                 break;
 
@@ -163,29 +143,24 @@ class AuthComponent extends Component
 
     public function login()
     {
-        $authenticatorClass = __NAMESPACE__ . '\\methods\\' . Text::ucamelize($this->getParameter('auth_method', 'http_request'));
+        $authenticatorClass = __NAMESPACE__ . '\\methods\\' . Text::ucamelize($this->parameters->get('auth_method', 'http_request'));
         $this->authMethodInstance = new $authenticatorClass();
         $this->authMethodInstance->setPasswordCryptFunction(
-            $this->getParameter(
-                'password_crypt',
-                function($password, $storedPassword){
+            $this->parameters->get(
+                'password_crypt', 
+                function($password, $storedPassword) {
                     return md5($password) == $storedPassword;
                 }
             )
         );
-        $this->authMethodInstance->setUsersModel($this->getParameter('users_model'));
-        $this->authMethodInstance->setUsersModelFields($this->getParameter('users_model_fields'));
+        $this->authMethodInstance->setUsersModel($this->parameters->get('users_model'));
+        $this->authMethodInstance->setUsersModelFields($this->parameters->get('users_model_fields'));
 
-        if($this->loggedIn())
-        {
+        if ($this->loggedIn()) {
             $this->performSuccessOperation();
-        }
-        else if($this->authMethodInstance->login())
-        {
+        } else if ($this->authMethodInstance->login()) {            
             $this->performSuccessOperation();
-        }
-        else
-        {
+        } else {            
             $this->performFailureOperation();
         }
     }
@@ -193,7 +168,7 @@ class AuthComponent extends Component
     public function logout()
     {
         Session::reset();
-        Ntentan::redirect($this->getParameter('login_route', $this->controller->route . "/login"));
+        Ntentan::redirect($this->parameters->get('login_route', $this->controller->route . "/login"));
     }
 
     public static function userId()
@@ -208,13 +183,11 @@ class AuthComponent extends Component
 
     public function getProfile()
     {
-        if($_SESSION['logged_in'])
-        {
+        if ($_SESSION['logged_in']) {
             return $_SESSION["user"];
-        }
-        else
-        {
+        } else {
             $this->redirectToLogin();
         }
     }
+
 }

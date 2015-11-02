@@ -116,14 +116,18 @@ class Ntentan
     public static function getUrl($url)
     {
         $prefix = Config::get('app.prefix');
-        return ($prefix == '' ? '' : '/') . $prefix . "/$url";
+        $newUrl = ($prefix == '' ? '' : '/') . $prefix;
+        if($url) {
+            $newUrl .= ($url[0] == '/' ? '' : '/') . "$url";
+        }
+        return $newUrl;
     }
 
     public static function redirect($url = null, $absolute = false)
     {
         $redirect = filter_input(INPUT_GET, "redirect");
         $url = $redirect == '' ? $url : $redirect;
-        $url = $absolute === true ? $url : Ntentan::getUrl($url);
-        header("Location: $url ");
+        $url = $absolute === true ? $url : Ntentan::getUrl($url);  
+        header("Location: $url");
     }
 }
