@@ -32,7 +32,6 @@
 
 namespace ntentan;
 
-use ntentan\caching\Cache;
 use ntentan\controllers\exceptions\ComponentNotFoundException;
 use \ReflectionClass;
 use ntentan\Ntentan;
