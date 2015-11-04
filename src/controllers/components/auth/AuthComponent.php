@@ -125,7 +125,7 @@ class AuthComponent extends Component
 
     private function performFailureOperation()
     {
-        switch ($this->getParameter('on_failure', self::REDIRECT)) {
+        switch ($this->parameters->get('on_failure', self::REDIRECT)) {
             case self::CALL_FUNCTION:
                 $function = $this->parameters->get('failure_function');
                 $function();
@@ -171,7 +171,7 @@ class AuthComponent extends Component
         Ntentan::redirect($this->parameters->get('login_route', $this->controller->route . "/login"));
     }
 
-    public static function userId()
+    public static function getUserId()
     {
         return $_SESSION["user_id"];
     }
