@@ -12,4 +12,10 @@ class Model extends RecordWrapper
         return "\\$namespace\\modules\\" . str_replace(".", "\\", $name) . "\\" . 
             Text::ucamelize(reset(explode('.', $name)));
     }
+    
+    public static function load($name)
+    {
+        $class = self::getClassName($name);
+        return new $class();
+    }
 }
