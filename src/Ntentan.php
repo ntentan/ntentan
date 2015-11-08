@@ -97,7 +97,7 @@ class Ntentan
            $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
 
            if (file_exists($file)) {
-               require $file;
+               require_once $file;
            }
        });        
 
@@ -114,13 +114,37 @@ class Ntentan
         nibii\DriverAdapter::setDefaultSettings(Config::get('db'));
         kaikai\Cache::init(Config::get('cache'));
 
-        nibii\Nibii::setClassResolver(function($name, $context){
+        nibii\Nibii::setClassResolver(function($name, $context) use ($namespace){
             if($context == nibii\Relationship::BELONGS_TO) {
                 $name = Text::pluralize($name);
             }
-            $namespace = Ntentan::getNamespace();
+            //$namespace = Ntentan::getNamespace();
             return "\\$namespace\\modules\\" . str_replace(".", "\\", $name) . "\\" .
                 Text::ucamelize(reset(explode('.', $name)));                    
+        });
+        
+        nibii\Nibii::setModelJoiner(function($classA, $classB) use ($namespace) {
+            $classBParts = explode('\\', substr(nibii\Nibii::getClassName($classB), 1));
+            $classAParts = explode('\\', $classA);
+            $joinerParts = [];
+            
+            foreach($classAParts as $i => $part) {
+                if($part == $classBParts[$i]) {
+                    $joinerParts[] = $part;
+                } else {
+                    break;
+                }
+            }
+            
+            $namespace = [Text::deCamelize(end($classAParts)), Text::deCamelize(end($classBParts))];
+            sort($namespace);
+            $joinerParts[] = implode('_', $namespace);
+            
+            $class = [end($classAParts), end($classBParts)];
+            sort($class);
+            $joinerParts[] = implode('', $class);
+            
+            return implode('\\', $joinerParts);
         });
 
         Router::route();
