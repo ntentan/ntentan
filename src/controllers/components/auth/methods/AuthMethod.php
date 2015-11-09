@@ -17,8 +17,7 @@ abstract class AuthMethod
     
     public function authLocalPassword($username, $password)
     {
-        $usersModelClass = Model::getClassName($this->usersModel);
-        $users = new $usersModelClass();
+        $users = Model::load($this->usersModel);
         $result = $users->filter('username = ?', $username)->fetchFirst();
         $passwordCrypt = $this->passwordCrypt;
         if($passwordCrypt($password, $result->password) && $result->blocked != '1')

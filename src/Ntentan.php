@@ -146,6 +146,18 @@ class Ntentan
             
             return implode('\\', $joinerParts);
         });
+        
+        nibii\Nibii::setTableResolver(function($instance) use ($namespace){
+            $className = new \ReflectionClass($instance);
+            return str_replace(
+                '\\', '_', 
+                substr(
+                    $className->getName(), 
+                    strlen("$namespace\\modules\\"), 
+                    strlen($className->getName()) - 1 - strlen("$namespace\\modules\\") - strlen($className->getShortName())
+                )
+            );
+        });
 
         Router::route();
     }
