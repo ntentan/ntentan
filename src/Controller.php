@@ -53,6 +53,8 @@ use ntentan\utils\Text;
  */
 class Controller
 {
+    
+    use utils\DependencyIjector;
 
     private $defaultMethod = 'run';
 
@@ -123,7 +125,7 @@ class Controller
         }
 
         throw new exceptions\ComponentNotFoundException(
-        "Component not found *$component*"
+            "Component not found *$component*"
         );
     }
 

@@ -168,7 +168,7 @@ class AuthComponent extends Component
     public function logout()
     {
         Session::reset();
-        Ntentan::redirect($this->parameters->get('login_route', $this->controller->route . "/login"));
+        Ntentan::redirect($this->parameters->get('login_route', $this->controller->getRoute() . "/login"));
     }
 
     public static function getUserId()
