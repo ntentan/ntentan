@@ -54,7 +54,7 @@ use ntentan\utils\Text;
 class Controller
 {
     
-    use utils\DependencyIjector;
+    use utils\DependencyInjector;
 
     private $defaultMethod = 'run';
 
@@ -92,70 +92,19 @@ class Controller
      * @todo cache the location of a component once found to prevent unessearry
      * checking
      */
-    public function addComponent()
+    public function addComponent($component, $params = null)
     {
-        $arguments = func_get_args();
-        $component = array_shift($arguments);
-        $namespace = Ntentan::getNamespace();
-
-        // Attempt to load an application component
-        $namespace = "\\$namespace\\components";
-        $className = $this->loadComponent($component, $arguments, $namespace);
-        if (is_string($className)) {
-            return;
-        }
-
-        // Attempt to load a core component
-        $className = $this->loadComponent(
-                $component, $arguments, '\\ntentan\\controllers\\components'
-        );
-        if (is_string($className)) {
-            return;
-        }
-
-        // Attempt to load plugin component
-        $componentPaths = explode(".", $component);
-        $namespace = "\\ntentan\\extensions\\{$componentPaths[0]}\\components";
-        $className = $this->loadComponent(
-                $componentPaths[1], $arguments, $namespace, $componentPaths[0]
-        );
-
-        if (is_string($className)) {
-            return;
-        }
-
-        throw new exceptions\ComponentNotFoundException(
-            "Component not found *$component*"
-        );
+        $componentInstance = $this->loadDependency($component, $params);
+        $componentInstance->setController($this);
     }
 
     public function __get($property)
     {
         if (substr($property, -9) == "Component") {
             $component = substr($property, 0, strlen($property) - 9);
-            return $this->getComponentInstance($component);
+            return $this->getDependency($component);
         } else {
             throw new \Exception("Unknown property *{$property}* requested");
-        }
-    }
-
-    private function loadComponent($component, $arguments, $path, $plugin = null)
-    {
-        $camelizedComponent = Text::ucamelize($component);
-        $componentName = "$path\\$component\\{$camelizedComponent}Component";
-        if (class_exists($componentName)) {
-            $key = Text::camelize($plugin . ($plugin == null ? $camelizedComponent : $camelizedComponent));
-
-            $componentClass = new ReflectionClass($componentName);
-            $componentInstance = $componentClass->newInstanceArgs($arguments);
-
-            $this->componentInstances[$key] = $componentInstance;
-            $this->componentInstances[$key]->setController($this);
-            $this->componentInstances[$key]->init();
-
-            return $componentName;
-        } else {
-            return false;
         }
     }
 
@@ -258,16 +207,18 @@ class Controller
             $method->invokeArgs($this, $params);
             $return = $view->out($this->getData());
             echo $return;
+            return;
         } else {
-            foreach ($this->componentInstances as $component) {
+            foreach ($this->loadedDependencies as $component) {
                 //@todo Look at how to prevent this from running several times
                 if ($component->hasMethod($path)) {
                     $component->variables = $this->variables;
                     $component->runMethod($params, $path);
-                    break;
+                    return;
                 }
             }
         }
+        throw new exceptions\RouteNotAvailableException;
     }
 
     protected function getView()

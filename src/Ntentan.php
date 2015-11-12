@@ -158,8 +158,46 @@ class Ntentan
                 )
             );
         });
+        
+        Controller::setDependencyResolver(
+            function($component) use ($namespace) {
+                return Ntentan::dependencyResolver($component, 'component', [$namespace, 'controllers\components']);
+            }
+        );
+        
+        nibii\RecordWrapper::setDependencyResolver(
+            function($behaviour) use ($namespace) {
+                return Ntentan::dependencyResolver($behaviour, 'behaviour', [$namespace, 'nibii\behaviours']);
+            }
+        );
 
         Router::route();
+    }
+    
+    public static function dependencyResolver($dependency, $type, $namespaces)
+    {
+        // Attempt to load an application component
+        $className = Text::ucamelize($dependency) . Text::ucamelize($type);
+        $class = "\\{$namespaces[0]}\\{$type}s\\$dependency\\$className";
+        if(class_exists($class)) {
+            return $class;
+        }
+
+        // Attempt to load a core dependency
+        $class = "\\ntentan\\{$namespaces[1]}\\$className";
+        if(class_exists($class)) {
+            return $class;
+        }
+
+        // Attempt to load plugin dependency
+        $dependencyPaths = explode(".", $dependency);
+        $className = array_pop($dependencyPaths);
+        $class= "\\ntentan\\extensions\\" . implode("\\", $dependencyPaths) . "\\{$type}s\\$className";
+        if(class_exists($class)) {
+            return $class;
+        }
+
+        throw new exceptions\ComponentNotFoundException("[$dependency] $type not found");
     }
 
     public static function getNamespace()

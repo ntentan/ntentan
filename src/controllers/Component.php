@@ -29,7 +29,7 @@
  * @license MIT
  */
 
-namespace ntentan\controllers\components;
+namespace ntentan\controllers;
 
 use ntentan\Controller;
 use \ReflectionMethod;
@@ -83,6 +83,7 @@ class Component extends Controller
 
     /**
      * Sets the controller instance of this component.
+     * 
      * @param Controller $controller
      */
     public function setController($controller)
@@ -102,6 +103,7 @@ class Component extends Controller
 
     /**
      * Sets the controller route of this component.
+     * 
      * @param $controllerRoute
      */
     public function setControllerRoute($controllerRoute)

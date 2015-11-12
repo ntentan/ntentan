@@ -31,10 +31,10 @@
  * @license MIT
  */
 
-namespace ntentan\controllers\components\auth;
+namespace ntentan\controllers\components;
 
 use ntentan\Ntentan;
-use ntentan\controllers\components\Component;
+use ntentan\controllers\Component;
 use ntentan\utils\Text;
 use ntentan\Session;
 use ntentan\Router;
