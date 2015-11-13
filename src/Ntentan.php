@@ -72,12 +72,8 @@ class Ntentan
 
 
     private static $prefix;
-
-    /**
-     * The routing engines entry. This method analyses the URL and implements
-     * the routing engine.
-     */
-    public static function start($namespace)
+    
+    public static function init($namespace)
     {
         self::$namespace = $namespace;
         self::$prefix = Config::get('app.prefix');
@@ -101,14 +97,7 @@ class Ntentan
            }
        });        
 
-        Session::start();
         logger\Logger::init('logs/app.log');
-
-        honam\TemplateEngine::prependPath('views/default');
-        honam\TemplateEngine::prependPath('views');
-        honam\AssetsLoader::setSiteUrl(self::getUrl('public'));
-        honam\AssetsLoader::appendSourceDir('assets');
-        honam\AssetsLoader::setDestinationDir('public');
 
         Config::init(self::$configPath);
         nibii\DriverAdapter::setDefaultSettings(Config::get('db'));
@@ -169,8 +158,22 @@ class Ntentan
             function($behaviour) use ($namespace) {
                 return Ntentan::dependencyResolver($behaviour, 'behaviour', [$namespace, 'nibii\behaviours']);
             }
-        );
+        );        
+    }
 
+    /**
+     * The routing engines entry. This method analyses the URL and implements
+     * the routing engine.
+     */
+    public static function start($namespace)
+    {
+        self::init($namespace);
+        Session::start();
+        honam\TemplateEngine::prependPath('views/default');
+        honam\TemplateEngine::prependPath('views');
+        honam\AssetsLoader::setSiteUrl(self::getUrl('public'));
+        honam\AssetsLoader::appendSourceDir('assets');
+        honam\AssetsLoader::setDestinationDir('public');        
         Router::route();
     }
     
