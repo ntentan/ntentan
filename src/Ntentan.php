@@ -109,7 +109,7 @@ class Ntentan
             }
             //$namespace = Ntentan::getNamespace();
             return "\\$namespace\\modules\\" . str_replace(".", "\\", $name) . "\\" .
-                Text::ucamelize(reset(explode('.', $name)));                    
+                Text::ucamelize(explode('.', $name)[0]);                    
         });
         
         nibii\Nibii::setModelJoiner(function($classA, $classB) use ($namespace) {

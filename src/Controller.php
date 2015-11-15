@@ -96,6 +96,7 @@ class Controller
     {
         $componentInstance = $this->loadDependency($component, $params);
         $componentInstance->setController($this);
+        $componentInstance->init();
     }
 
     public function __get($property)

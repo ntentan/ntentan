@@ -82,7 +82,7 @@ class AuthComponent extends Component
                 return;
             }
         }
-
+        
         if ($this->authenticated !== true) {
             $this->set('app_name', \ntentan\Config::get('app.name'));
             $this->set('title', "Login");
@@ -173,18 +173,18 @@ class AuthComponent extends Component
 
     public static function getUserId()
     {
-        return $_SESSION["user_id"];
+        return Session::get("user_id");
     }
 
     public static function loggedIn()
     {
-        return isset($_SESSION['user']);
+        return isset(Session::get('user')['id']);
     }
 
     public function getProfile()
     {
-        if ($_SESSION['logged_in']) {
-            return $_SESSION["user"];
+        if (Session::get('logged_in')) {
+            return Session::get('user');
         } else {
             $this->redirectToLogin();
         }
