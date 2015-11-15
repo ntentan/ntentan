@@ -143,7 +143,7 @@ class AuthComponent extends Component
 
     public function login()
     {
-        $authenticatorClass = __NAMESPACE__ . '\\methods\\' . Text::ucamelize($this->parameters->get('auth_method', 'http_request'));
+        $authenticatorClass = '\ntentan\controllers\components\auth\\' . Text::ucamelize($this->parameters->get('auth_method', 'http_request'));
         $this->authMethodInstance = new $authenticatorClass();
         $this->authMethodInstance->setPasswordCryptFunction(
             $this->parameters->get(

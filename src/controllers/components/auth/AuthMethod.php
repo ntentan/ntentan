@@ -1,5 +1,5 @@
 <?php
-namespace ntentan\controllers\components\auth\methods;
+namespace ntentan\controllers\components\auth;
 
 use \ntentan\Model;
 
