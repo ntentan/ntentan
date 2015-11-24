@@ -107,7 +107,6 @@ class Ntentan
             if($context == nibii\Relationship::BELONGS_TO) {
                 $name = Text::pluralize($name);
             }
-            //$namespace = Ntentan::getNamespace();
             return "\\$namespace\\modules\\" . str_replace(".", "\\", $name) . "\\" .
                 Text::ucamelize(explode('.', $name)[0]);                    
         });

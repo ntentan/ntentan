@@ -38,7 +38,7 @@ class Router
 
     public static function route()
     {
-        self::$requestedRoute = Input::get('q');
+        self::$requestedRoute = substr(parse_url(Input::server('REQUEST_URI'), PHP_URL_PATH), 1);
         self::$route = self::$requestedRoute;
         self::$destinationType = 'ROUTE';
 
