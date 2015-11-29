@@ -163,7 +163,13 @@ class Controller
                 break;
             }
         }
-
+        
+        if(!is_a($controller, '\ntentan\Controller')) {
+            throw new exceptions\ControllerNotFoundException(
+                "Controller not found on route " . Router::getRequestedRoute()
+            );
+        }
+        
         $method = array_shift($routeArray);
         $controller->runMethod($routeArray, $method);
     }
