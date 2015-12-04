@@ -18,6 +18,11 @@ class Session
         return null;
     }
     
+    public static function set($key, $value)
+    {
+        $_SESSION[$key] = $value;
+    }
+    
     public static function reset()
     {
         $_SESSION = [];

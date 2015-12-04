@@ -8,7 +8,7 @@ class HttpRequest extends AuthMethod
 {
     public function login()
     {
-        TemplateEngine::appendPath(__DIR__ . '/views');
+        TemplateEngine::appendPath(__DIR__. '/../../../../views/auth');
         if(Input::exists(Input::POST, $this->usersFields['username']) && Input::exists(Input::POST, $this->usersFields['password']))
         {
             return $this->authLocalPassword(

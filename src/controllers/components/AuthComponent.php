@@ -189,5 +189,5 @@ class AuthComponent extends Component
             $this->redirectToLogin();
         }
     }
-
+    
 }
