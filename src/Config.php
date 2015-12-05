@@ -55,6 +55,11 @@ class Config
         return null;
     }
     
+    public static function exists($key)
+    {
+        return isset(self::$config[self::$context][$key]);
+    }
+    
     public static function setContext($context)
     {
         self::$context = $context;

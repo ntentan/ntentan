@@ -4,7 +4,7 @@ namespace ntentan\controllers\components\auth;
 use ntentan\honam\TemplateEngine;
 use ntentan\utils\Input;
 
-class HttpRequest extends AuthMethod
+class HttpRequestAuthMethod extends AbstractAuthMethod
 {
     public function login()
     {

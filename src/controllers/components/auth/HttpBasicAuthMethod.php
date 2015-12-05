@@ -1,7 +1,7 @@
 <?php
 namespace ntentan\controllers\components\auth;
 
-class HttpBasic extends AuthMethod
+class HttpBasicAuthMethod extends AbstractAuthMethod
 {
     public function login()
     {

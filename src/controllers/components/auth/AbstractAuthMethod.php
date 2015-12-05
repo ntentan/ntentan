@@ -3,7 +3,7 @@ namespace ntentan\controllers\components\auth;
 
 use \ntentan\Model;
 
-abstract class AuthMethod
+abstract class AbstractAuthMethod
 {
     private $usersModel = 'users';
     protected $usersFields = array(

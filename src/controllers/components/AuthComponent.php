@@ -67,6 +67,11 @@ class AuthComponent extends Component
     protected $parameters;
     private $authMethodInstance;
     private $authenticated;
+    private static $authMethods = [
+        'http_request' => '\ntentan\controllers\components\auth\HttpRequestAuthMethod',
+        'http_digest' => '\ntentan\controllers\components\auth\HttpDigestAuthMethod',
+        'http_basic' => '\ntentan\controllers\components\auth\HttpBasicAuthMethod',
+    ];
 
     public function __construct($parameters = array())
     {
@@ -140,11 +145,25 @@ class AuthComponent extends Component
                 break;
         }
     }
+    
+    public static function registerAuthMethod($authMethod, $class) 
+    {
+        self::$authMethods[$authMethod] = $class;
+    }
+    
+    private function getAuthMethod()
+    {
+        $authMethod = $this->parameters->get('auth_method', 'http_request');
+        if(!isset(self::$authMethods[$authMethod])) {
+            throw new \Exception("Auth method $authMethod not found");
+        }
+        $class = self::$authMethods[$authMethod];
+        return new $class();
+    }
 
     public function login()
     {
-        $authenticatorClass = '\ntentan\controllers\components\auth\\' . Text::ucamelize($this->parameters->get('auth_method', 'http_request'));
-        $this->authMethodInstance = new $authenticatorClass();
+        $this->authMethodInstance = $this->getAuthMethod();
         $this->authMethodInstance->setPasswordCryptFunction(
             $this->parameters->get(
                 'password_crypt', 
