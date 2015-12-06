@@ -21,8 +21,9 @@ class HttpBasicAuthMethod extends AbstractAuthMethod
             }
             else
             {
-                header('WWW-Authenticate: Basic realm="Invalid username or password please provide a valid username"');
+                header('WWW-Authenticate: Basic realm="Invalid username or password please provide valid credentials"');
                 header('HTTP/1.0 401 Unauthorized');
+                return false;
             }
         }        
     }

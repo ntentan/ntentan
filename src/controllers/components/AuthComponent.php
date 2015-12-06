@@ -35,7 +35,6 @@ namespace ntentan\controllers\components;
 
 use ntentan\Ntentan;
 use ntentan\controllers\Component;
-use ntentan\utils\Text;
 use ntentan\Session;
 use ntentan\Router;
 use ntentan\Parameters;
@@ -177,7 +176,8 @@ class AuthComponent extends Component
 
         if ($this->loggedIn()) {
             $this->performSuccessOperation();
-        } else if ($this->authMethodInstance->login()) {            
+        } else if ($this->authMethodInstance->login()) {  
+            Session::set('logged_in', true);
             $this->performSuccessOperation();
         } else {            
             $this->performFailureOperation();
