@@ -1,5 +1,5 @@
 <?php
-namespace ntentan\controllers\exceptions;
+namespace ntentan\exceptions;
 
 class ControllerNotFoundException extends \Exception
 {
