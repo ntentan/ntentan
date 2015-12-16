@@ -100,7 +100,7 @@ class Ntentan
         logger\Logger::init('logs/app.log');
 
         Config::init(self::$configPath);
-        nibii\DriverAdapter::setDefaultSettings(Config::get('db'));
+        atiaa\Db::setDefaultSettings(Config::get('db'));
         kaikai\Cache::init(Config::get('cache'));
 
         nibii\Nibii::setClassResolver(function($name, $context) use ($namespace){
