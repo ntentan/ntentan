@@ -127,6 +127,15 @@ class Controller
     {
         return $variable != null ? $this->variables[$variable] : $this->variables;
     }
+    
+    private static function unescapeUrl($parts)
+    {
+        $output = [];
+        foreach($parts as $part) {
+            $output[] = urldecode($part);
+        }
+        return $output;
+    }
 
     /**
      * A utility method to load a controller. This method loads the controller
@@ -143,7 +152,7 @@ class Controller
      */
     public static function load($route)
     {
-        $routeArray = explode('/', $route);
+        $routeArray = self::unescapeUrl(explode('/', $route));
         $numParts = count($routeArray);
         $namespace = Ntentan::getNamespace();
         $className = "\\$namespace\\modules\\";
@@ -199,7 +208,7 @@ class Controller
     private function runMethod($params, $method)
     {
         $view = $this->getView();
-        $path = $method === null ? $this->defaultMethod : $method;
+        $path = Text::camelize($method === null ? $this->defaultMethod : $method);
         $return = null;
         if (method_exists($this, $path)) {
             $controllerClass = new ReflectionClass($this);
