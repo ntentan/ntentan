@@ -19,6 +19,11 @@ class View
     private $template;
     private $cacheTimeout = false;
     
+    public function setContentType($contentType)
+    {
+        header("Content-Type: $contentType");
+    }
+    
     public function __construct()
     {
         $this->layout = 'main.tpl.php';
