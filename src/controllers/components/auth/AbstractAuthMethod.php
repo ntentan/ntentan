@@ -55,6 +55,11 @@ abstract class AbstractAuthMethod
         $this->passwordCrypt = $passwordCrypt;
     }
     
+    protected function setMessage($message)
+    {
+        $this->message = $message;
+    }
+    
     public function getMessage()
     {
         return $this->message;

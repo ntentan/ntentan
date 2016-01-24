@@ -38,6 +38,7 @@ use ntentan\controllers\Component;
 use ntentan\Session;
 use ntentan\Router;
 use ntentan\Parameters;
+use ntentan\utils\Input;
 
 /**
  * The class for the authentication component.
@@ -172,7 +173,14 @@ class AuthComponent extends Component
             )
         );
         $this->authMethodInstance->setUsersModel($this->parameters->get('users_model'));
-        $this->authMethodInstance->setUsersModelFields($this->parameters->get('users_model_fields'));
+        $userModelFields = $this->parameters->get('users_model_fields');
+        $this->authMethodInstance->setUsersModelFields($userModelFields);
+        $this->set('login_data',
+            [
+                $userModelFields['username'] => Input::post($userModelFields['username']), 
+                $userModelFields['password'] => Input::post($userModelFields['password'])
+            ]
+        );
 
         if ($this->loggedIn()) {
             $this->performSuccessOperation();
@@ -208,5 +216,4 @@ class AuthComponent extends Component
             $this->redirectToLogin();
         }
     }
-    
 }
