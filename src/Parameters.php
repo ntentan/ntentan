@@ -32,17 +32,16 @@ class Parameters implements \ArrayAccess
 
     public function offsetGet($offset)
     {
-        return $this->parameters[$offset];
+        return $this->get($offset);
     }
 
     public function offsetSet($offset, $value)
     {
-        // Do nothing
+        $this->parameters[$offset] = $value;
     }
 
     public function offsetUnset($offset)
     {
-        // Do nothing
+        unset($this->parameters[$offset]);
     }
-
 }
