@@ -6,16 +6,6 @@ use ntentan\utils\Input;
 
 class Router
 {
-
-    /**
-     * The route which was requested through the URL. In cases where the route
-     * is altered by the routing engine, this route still remains the same as
-     * what was requested through the URL. The altered route can always be found
-     * in the Ntentan::$route property.
-     * @var string
-     */
-    private static $requestedRoute;
-
     /**
      * The routing table. An array of regular expressions and associated
      * operations. If a particular request sent in through the URL matches a
@@ -23,7 +13,13 @@ class Router
      *
      * @var array
      */
-    private static $routes = array();
+    private static $routes = [];
+    
+    /**
+     *
+     * @var type 
+     */
+    private static $routeOrder = [];
 
     /**
      * The route which is currently being executed. If the routing engine has
@@ -32,86 +28,48 @@ class Router
      * @var string
      */
     private static $route;
-    private static $defaultRoute = 'home';
-    private static $destinationType;
+
     private static $vars = [];
 
-    public static function route()
-    {
-        self::$requestedRoute = substr(parse_url(Input::server('REQUEST_URI'), PHP_URL_PATH), 1);
-        self::$route = self::$requestedRoute;
-        self::$destinationType = 'ROUTE';
 
-        foreach (self::$routes as $route) {
-            if (self::reRoute($route)) {
-                break;
+    public static function loadResource($path)
+    {
+        foreach(self::$routeOrder as $routeName) {
+            $route = self::$routes[$routeName];
+            if(self::match($path, $route['pattern'], $matches)) {
+                
             }
         }
-
-        self::loadController();
     }
-
-    private static function rewriteRoute($route, $matches, &$parts)
+    
+    private static function match($path, $pattern, &$matches)
     {
-        foreach ($matches as $key => $value) {
-            $route = str_replace("::$key", $value, $route);
-            $parts["::$key"] = $value;
-        }
-        return $route;
-    }
-
-    private static function setGlobals($route, $parts)
-    {
-        foreach ($route["globals"] as $key => $value) {
-            self::$vars[$key] = str_replace(array_keys($parts), $parts, $value);
+        $segments = explode('/', $path);
+        $patterns = explode('/', $pattern);
+        for($i = 0; $i < count($segments); $i++) {
+            
         }
     }
-
-    private static function reRoute($route)
+    
+    private static function getRegexp($pattern)
     {
-        if (preg_match($route["pattern"], self::$requestedRoute, $matches)) {
-            $parts = array();
-            if (isset($route["route"])) {
-                self::$route = self::rewriteRoute($route['route'], $matches, $parts);
-            }
-            if(self::$route == '' && isset($route['default'])) {
-                self::$route = $route['default'];
-            }
-            if (isset($route["globals"])) {
-                self::setGlobals($route, $parts);
-            }
-            return true;
-        }
-        return false;
+        preg_replace_callback(
+            "/\{.*\}/", 
+            function($segment){
+                var_dump($segment);
+            }, 
+            $pattern
+        );
     }
 
-    private static function loadController()
+    public static function setRoute($name, $pattern, $resource, $parameters = [])
     {
-        if(self::$route == '')
-        {
-            self::$route = self::$defaultRoute;
-        }
-        Controller::load(self::$route);
-    }
-
-    public static function setDefaultRoute($defaultRoute)
-    {
-        self::$defaultRoute = $defaultRoute;
-    }
-
-    public static function getRoute()
-    {
-        return self::$route;
-    }
-
-    public static function getRequestedRoute()
-    {
-        return self::$requestedRoute;
-    }
-
-    public static function setRoutes($routes)
-    {
-        self::$routes = $routes;
+        self::$routeOrder[] = $name;
+        self::$routes[$name] = [
+            'pattern' => $pattern,
+            'resource' => $resource,
+            'parameters' => $parameters
+        ];
     }
 
     public static function getVar($var)
@@ -121,5 +79,4 @@ class Router
         }
         return null;
     }
-
 }
