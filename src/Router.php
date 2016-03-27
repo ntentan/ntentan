@@ -42,6 +42,8 @@ class Router
         }
     }
     
+    
+    
     private static function match($path, $pattern, &$matches)
     {
         $segments = explode('/', $path);
@@ -62,7 +64,7 @@ class Router
         );
     }
 
-    public static function setRoute($name, $pattern, $resource, $parameters = [])
+    public static function setRoute($name, $pattern, $parameters = [])
     {
         self::$routeOrder[] = $name;
         self::$routes[$name] = [
