@@ -68,7 +68,7 @@ class Router
             strtolower($controller), utils\Text::ucamelize("{$controller}")
         );
         if(class_exists($controllerClass)) {
-            self::$routerVariables = $params;
+            self::$routerVariables += $params;
             $controllerInstance = new $controllerClass();
             $controllerInstance->executeControllerAction($action, $params);
             return true;
@@ -79,7 +79,7 @@ class Router
     
     private static function match($route, $description)
     {
-        if(preg_match("|{$description['regexp']}|i", $route, $matches)) {            
+        if(preg_match("|{$description['regexp']}|i", $route, $matches)) {           
             $parameters = $description['parameters']['default'] + 
                 Input::get() + Input::post();
             
@@ -88,7 +88,14 @@ class Router
                     $parameters[$key] = $value;
                 }
             }
-            return self::loadController($parameters);
+            
+            if(isset($parameters['controller'])) {
+                return self::loadController($parameters);
+            } elseif(isset($parameters['route'])) {
+                self::$routerVariables += $parameters;
+                self::loadResource($parameters['route']);
+                return true;
+            }
         }
         return false;
     }
@@ -103,11 +110,13 @@ class Router
             "/{(?<prefix>\*|#)?(?<name>[a-z_][a-zA_Z0-9\_]*)}/", 
             function($matches) {
                 self::$tempVariables[] = $matches['name'];
-                return "(?<{$matches['name']}>[a-z0-9-_.~:#[\]@!$&'()*+,;=]+)?";
+                    return sprintf(
+                        "(?<{$matches['name']}>[a-z0-9_.~:#[\]@!$&'()*+,;=%s]+)?", 
+                        $matches['prefix'] ? "\-/_" : null
+                    );
             },
             str_replace('/', '(/)?', $pattern)
         );
-            
         foreach($parameters['default'] as $parameter => $value) {
             if(!in_array($parameter, self::$tempVariables)) self::$tempVariables[] = $parameter;
         }

@@ -159,6 +159,8 @@ class Controller
             {
                 if(isset($params[$methodParameter->name])) {
                     $invokeParameters[] = $params[$methodParameter->name];
+                } else {
+                    $invokeParameters[] = null;
                 }
             }
             
