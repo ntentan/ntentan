@@ -13,7 +13,7 @@ class Router
      *
      * @var array
      */
-    private static $routes = [];
+    private static $routes;
     
     /**
      *
@@ -40,20 +40,19 @@ class Router
     public static function loadResource($route)
     {
         self::$route = $route;
-        if($route == '') {
-            self::loadController([
+        if($route == '' && isset(self::$route['default']['parameters']['default'])) {
+            if(self::loadController([
                 'controller' => self::$routes['default']['parameters']['default']['controller'], 
                 'action' => self::$routes['default']['parameters']['default']['action']
-            ]);
-            return;
-        }
-        foreach(self::$routeOrder as $routeName) {
-            $routeDesription = self::$routes[$routeName];
-            if(self::match($route, $routeDesription)) {
-                return;
+            ])) return;
+        } else { 
+            foreach(self::$routeOrder as $routeName) {
+                $routeDesription = self::$routes[$routeName];
+                if(self::match($route, $routeDesription)) {
+                    return;
+                }
             }
         }
-        
         throw new exceptions\RouteNotAvailableException(
            $route == '' ? 'Default route' : $route
         );
@@ -117,8 +116,10 @@ class Router
             },
             str_replace('/', '(/)?', $pattern)
         );
-        foreach($parameters['default'] as $parameter => $value) {
-            if(!in_array($parameter, self::$tempVariables)) self::$tempVariables[] = $parameter;
+        if(isset($parameters['default'])) {
+            foreach($parameters['default'] as $parameter => $value) {
+                if(!in_array($parameter, self::$tempVariables)) self::$tempVariables[] = $parameter;
+            }
         }
         
         self::$routes[$name] = [
