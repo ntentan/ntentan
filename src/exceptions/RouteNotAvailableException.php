@@ -38,8 +38,8 @@ class RouteNotAvailableException extends NtentanException
     public function __construct($route = null)
     {
         if($route == '') {
-            $route = Router::getRequestedRoute();
+            $route = Router::getRoute();
         }
-        parent::__construct("Route $route is currently not available.");
+        parent::__construct("Route [$route] is currently not available.");
     }
 }

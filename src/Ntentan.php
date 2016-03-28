@@ -159,6 +159,17 @@ class Ntentan
             }
         );        
     }
+    
+    public static function loadResource()
+    {
+        Session::start();
+        honam\TemplateEngine::prependPath('views/default');
+        honam\TemplateEngine::prependPath('views');
+        honam\AssetsLoader::setSiteUrl(self::getUrl('public'));
+        honam\AssetsLoader::appendSourceDir('assets');
+        honam\AssetsLoader::setDestinationDir('public');        
+        Router::loadResource(substr(utils\Input::server('PATH_INFO'), 1));        
+    }
 
     /**
      * The routing engines entry. This method analyses the URL and implements
@@ -167,13 +178,7 @@ class Ntentan
     public static function start($namespace)
     {
         self::init($namespace);
-        Session::start();
-        honam\TemplateEngine::prependPath('views/default');
-        honam\TemplateEngine::prependPath('views');
-        honam\AssetsLoader::setSiteUrl(self::getUrl('public'));
-        honam\AssetsLoader::appendSourceDir('assets');
-        honam\AssetsLoader::setDestinationDir('public');        
-        Router::route();
+        self::loadResource();
     }
     
     public static function dependencyResolver($dependency, $type, $namespaces)

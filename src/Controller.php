@@ -78,7 +78,6 @@ class Controller
      * @var View
      */
     private $view;
-    private $method;
     private $route;
 
     /**
@@ -137,90 +136,33 @@ class Controller
         return $output;
     }
 
-    /**
-     * A utility method to load a controller. This method loads the controller
-     * and fetches the contents of the controller into the Controller::$contents
-     * variable if the get_contents parameter is set to true on call. If a
-     * controller doesn't exist in the module path, a ModelController is loaded
-     * to help manipulate the contents of the model. If no model exists in that
-     * location, it is asumed to be a package and a package controller is
-     * loaded.
-     *
-     * @param $path                 The path for the model to be loaded.
-     * @param $returnInstanceOnly   Fources the method to return only the instance of the controller object.
-     * @return Controller
-     */
-    public static function load($route)
-    {
-        $routeArray = self::unescapeUrl(explode('/', $route));
-        $numParts = count($routeArray);
-        $namespace = Ntentan::getNamespace();
-        $className = "\\$namespace\\modules\\";
-        $controller = null;
-        $controllerRoute = null;
-
-        for ($i = 0; $i < $numParts; $i++) {
-            $testClass = $className . $routeArray[$i] . "\\" . Text::ucamelize($routeArray[$i]) . "Controller";
-            $controllerRoute .= "$routeArray[$i]/";
-            $className .= array_shift($routeArray) . "\\";
-
-            if (class_exists($testClass)) {
-                $controller = new $testClass();
-                $controller->route = $controllerRoute;
-                $controller->view = new View();
-                $controller->init();
-                break;
-            }
-        }
-        
-        if(!is_a($controller, '\ntentan\Controller')) {
-            throw new exceptions\ControllerNotFoundException(
-                "Controller not found on route " . Router::getRequestedRoute()
-            );
-        }
-        
-        $method = array_shift($routeArray);
-        $controller->runMethod($routeArray, $method);
-    }
-
-    /**
-     * Returns true if this controller has the requested method and returns
-     * false otherwise.
-     * @param string $method
-     * @return booleam
-     */
-    public function hasMethod($method = null)
-    {
-        $ret = false;
-        $path = $method === null ? $this->method : $method;
-        if (method_exists($this, $path)) {
-            $ret = true;
-        } else {
-            foreach ($this->componentInstances as $component) {
-                $ret = $component->hasMethod($path);
-                if ($ret)
-                    break;
-            }
-        }
-        return $ret;
-    }
-
-    private function runMethod($params, $method)
+    public function executeControllerAction($action, $params)
     {
         $view = $this->getView();
-        $path = Text::camelize($method === null ? $this->defaultMethod : $method);
+        $name = strtolower(substr((new ReflectionClass($this))->getShortName(), 0, -10));
+        $path = Text::camelize($action === null ? $this->defaultMethod : $action);
         $return = null;
+        $invokeParameters = [];
+        
         if (method_exists($this, $path)) {
             $controllerClass = new ReflectionClass($this);
             $method = $controllerClass->GetMethod($path);
             if ($view->getTemplate() == null) {
                 $view->setTemplate(
-                    str_replace("/", "_", $this->route)
-                    . $path
+                    "{$name}_{$action}"
                     . '.tpl.php'
                 );
             }
-            $method->invokeArgs($this, $params);
+            
+            $methodParameters = $method->getParameters();
+            foreach($methodParameters as $methodParameter)
+            {
+                if(isset($params[$methodParameter->name])) {
+                    $invokeParameters[] = $params[$methodParameter->name];
+                }
+            }
+            
+            $method->invokeArgs($this, $invokeParameters);
             $return = $view->out($this->getData());
             echo $return;
             return;
@@ -229,7 +171,7 @@ class Controller
                 //@todo Look at how to prevent this from running several times
                 if ($component->hasMethod($path)) {
                     $component->variables = $this->variables;
-                    $component->runMethod($params, $path);
+                    $component->executeControllerAction($path, $params);
                     return;
                 }
             }
@@ -239,6 +181,9 @@ class Controller
 
     protected function getView()
     {
+        if($this->view == null) {
+            $this->view = new View();
+        }
         return $this->view;
     }
 
@@ -258,20 +203,5 @@ class Controller
                 throw new ComponentNotFoundException("Component <code><b>$component</b></code> not currently loaded.");
             }
         }
-    }
-    
-    public function getRoute()
-    {
-        return $this->route;
-    }
-    
-    public function init()
-    {
-        
-    }
-    
-    public function setDefaultMethod($defaultMethod)
-    {
-        $this->defaultMethod = $defaultMethod;
     }
 }

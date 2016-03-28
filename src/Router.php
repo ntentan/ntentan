@@ -20,6 +20,8 @@ class Router
      * @var type 
      */
     private static $routeOrder = [];
+    
+    private static $tempVariables = [];
 
     /**
      * The route which is currently being executed. If the routing engine has
@@ -29,56 +31,105 @@ class Router
      */
     private static $route;
 
-    private static $vars = [];
+    /**
+     *
+     * @var type 
+     */
+    private static $routerVariables = [];
 
-
-    public static function loadResource($path)
+    public static function loadResource($route)
     {
+        self::$route = $route;
+        if($route == '') {
+            self::loadController([
+                'controller' => self::$routes['default']['parameters']['default']['controller'], 
+                'action' => self::$routes['default']['parameters']['default']['action']
+            ]);
+            return;
+        }
         foreach(self::$routeOrder as $routeName) {
-            $route = self::$routes[$routeName];
-            if(self::match($path, $route['pattern'], $matches)) {
-                
+            $routeDesription = self::$routes[$routeName];
+            if(self::match($route, $routeDesription)) {
+                return;
             }
         }
+        
+        throw new exceptions\RouteNotAvailableException(
+           $route == '' ? 'Default route' : $route
+        );
     }
     
-    
-    
-    private static function match($path, $pattern, &$matches)
+    private static function loadController($params = [])
     {
-        $segments = explode('/', $path);
-        $patterns = explode('/', $pattern);
-        for($i = 0; $i < count($segments); $i++) {
-            
+        $controller = $params['controller'];
+        $action = $params['action'];
+        $controllerClass = sprintf(
+            '\%s\modules\%s\%sController', Ntentan::getNamespace(), 
+            strtolower($controller), utils\Text::ucamelize("{$controller}")
+        );
+        if(class_exists($controllerClass)) {
+            self::$routerVariables = $params;
+            $controllerInstance = new $controllerClass();
+            $controllerInstance->executeControllerAction($action, $params);
+            return true;
+        } else {
+            return false;
         }
     }
     
-    private static function getRegexp($pattern)
+    private static function match($route, $description)
     {
-        preg_replace_callback(
-            "/\{.*\}/", 
-            function($segment){
-                var_dump($segment);
-            }, 
-            $pattern
-        );
+        if(preg_match("|{$description['regexp']}|i", $route, $matches)) {            
+            $parameters = $description['parameters']['default'] + 
+                Input::get() + Input::post();
+            
+            foreach($matches as $key => $value) {
+                if(!is_numeric($key)) {
+                    $parameters[$key] = $value;
+                }
+            }
+            return self::loadController($parameters);
+        }
+        return false;
     }
 
-    public static function setRoute($name, $pattern, $parameters = [])
+    public static function mapRoute($name, $pattern, $parameters = [])
     {
         self::$routeOrder[] = $name;
+        self::$tempVariables = [];
+        
+        // Get a regular expression from the pattern
+        $regexp = preg_replace_callback(
+            "/{(?<prefix>\*|#)?(?<name>[a-z_][a-zA_Z0-9\_]*)}/", 
+            function($matches) {
+                self::$tempVariables[] = $matches['name'];
+                return "(?<{$matches['name']}>[a-z0-9-_.~:#[\]@!$&'()*+,;=]+)?";
+            },
+            str_replace('/', '(/)?', $pattern)
+        );
+            
+        foreach($parameters['default'] as $parameter => $value) {
+            if(!in_array($parameter, self::$tempVariables)) self::$tempVariables[] = $parameter;
+        }
+        
         self::$routes[$name] = [
             'pattern' => $pattern,
-            'resource' => $resource,
-            'parameters' => $parameters
+            'regexp' => $regexp,
+            'parameters' => $parameters,
+            'variables' => self::$tempVariables
         ];
     }
 
     public static function getVar($var)
     {
-        if (isset(self::$vars[$var])) {
-            return self::$vars[$var];
+        if (isset(self::$routerVariables[$var])) {
+            return self::$routerVariables[$var];
         }
         return null;
+    }
+    
+    public static function getRoute()
+    {
+        return self::$route;
     }
 }

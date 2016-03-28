@@ -99,14 +99,10 @@ class AuthComponent extends Component
     {
         $this->set("login_message", $this->authMethodInstance->getMessage());
         $this->set("login_status", false);
-        $loginRoute = $this->parameters->get('login_route', $this->controller->getRoute() . "login");
         $route = Router::getRoute();
-        $requestedRoute = Router::getRequestedRoute();
 
-        \ntentan\logger\Logger::info("$route : $loginRoute");
-
-        if ($route !== $loginRoute && $requestedRoute !== $loginRoute) {
-            Ntentan::redirect($loginRoute);
+        if ($route !== $this->parameters['login_route']) {
+            Ntentan::redirect($this->parameters['login_route']);
         }
     }
 
@@ -195,7 +191,7 @@ class AuthComponent extends Component
     public function logout()
     {
         Session::reset();
-        Ntentan::redirect($this->parameters->get('login_route', $this->controller->getRoute() . "/login"));
+        Ntentan::redirect($this->parameters->get('login_route', "/login"));
     }
 
     public static function getUserId()
