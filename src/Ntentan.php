@@ -167,8 +167,8 @@ class Ntentan
         honam\TemplateEngine::prependPath('views');
         honam\AssetsLoader::setSiteUrl(self::getUrl('public'));
         honam\AssetsLoader::appendSourceDir('assets');
-        honam\AssetsLoader::setDestinationDir('public');        
-        Router::loadResource(substr(utils\Input::server('PATH_INFO'), 1));        
+        honam\AssetsLoader::setDestinationDir('public');     
+        Router::loadResource(substr(utils\Input::server('REQUEST_URI'), 1));        
     }
 
     /**

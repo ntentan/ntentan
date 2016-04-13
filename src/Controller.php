@@ -78,7 +78,9 @@ class Controller
      * @var View
      */
     private $view;
-    private $route;
+    
+    
+    private $boundParameters = [];
 
     /**
      * Adds a component to the controller. Component loading is done with the
@@ -135,6 +137,29 @@ class Controller
         }
         return $output;
     }
+    
+    private function bindParameter(&$invokeParameters, $methodParameter, $params)
+    {        
+        if(isset($params[$methodParameter->name])) {
+            $invokeParameters[] = $params[$methodParameter->name];
+            $this->boundParameters[$methodParameter->name] = true;
+        } else {
+            $type = $methodParameter->getClass();        
+            if($type !== null) {
+                $instance = $type->newInstance();
+                $binder = controllers\ModelBinders::get($type->getName());
+                $invokeParameters[] = $binder->bind($instance);
+                $this->boundParameters[$methodParameter->name] = $binder->getBound();
+            } else {
+                $invokeParameters[] = null;
+            }
+        }        
+    }
+    
+    public function isBound($parameter)
+    {
+        return $this->boundParameters[$parameter];
+    }
 
     public function executeControllerAction($action, $params)
     {
@@ -157,11 +182,7 @@ class Controller
             $methodParameters = $method->getParameters();
             foreach($methodParameters as $methodParameter)
             {
-                if(isset($params[$methodParameter->name])) {
-                    $invokeParameters[] = $params[$methodParameter->name];
-                } else {
-                    $invokeParameters[] = null;
-                }
+                $this->bindParameter($invokeParameters, $methodParameter, $params);
             }
             
             $method->invokeArgs($this, $invokeParameters);
