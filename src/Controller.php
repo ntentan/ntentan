@@ -79,6 +79,8 @@ class Controller
      */
     private $view;
     
+    private $name;
+    
     
     private $boundParameters = [];
 
@@ -156,25 +158,68 @@ class Controller
         }        
     }
     
-    public function isBound($parameter)
+    protected function isBound($parameter)
     {
         return $this->boundParameters[$parameter];
+    }
+    
+    private function parseDocComment($comment)
+    {
+        $lines = explode("\n", $comment);
+        $attributes = [];
+        foreach($lines as $line) {
+            if(preg_match("/@ntentan\.(?<attribute>[a-z]+)\s+(?<value>[a-zA-Z0-9]+)/", $line, $matches)) {
+                $attributes[$matches['attribute']] = $matches['value'];
+            }
+        }
+        return $attributes;
+    }
+    
+    private function getMethod($path)
+    {
+        $methods = kaikai\Cache::read(
+            "controller.{$this->name}.methods", 
+            function() {
+                $class = new ReflectionClass($this);
+                $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
+                $results = [];
+                foreach($methods as $method) {
+                    if($method->class != $class->getName()) continue;
+                    $docComments = $this->parseDocComment($method->getDocComment());
+                    $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['verb'] : $method->getName();
+                    $results[$keyName] = [
+                        'name' => $method->getName()
+                    ];
+                }
+                return $results;
+            }
+        );
+        
+        if(isset($methods[$path . utils\Input::server('REQUEST_METHOD')])) {
+            $methodName = $methods[$path . utils\Input::server('REQUEST_METHOD')]['name'];
+        } else if(isset($methods[$path])) {
+            $methodName = $path;
+        }
+        
+        if(isset($methodName))
+            return new \ReflectionMethod($this, $methodName);
+        else
+            return false;
     }
 
     public function executeControllerAction($action, $params)
     {
         $view = $this->getView();
-        $name = strtolower(substr((new ReflectionClass($this))->getShortName(), 0, -10));
+        $this->name = strtolower(substr((new ReflectionClass($this))->getShortName(), 0, -10));
         $path = Text::camelize($action === null ? $this->defaultMethod : $action);
         $return = null;
         $invokeParameters = [];
         
-        if (method_exists($this, $path)) {
-            $controllerClass = new ReflectionClass($this);
-            $method = $controllerClass->GetMethod($path);
+        
+        if ($method = $this->getMethod($path)) {
             if ($view->getTemplate() == null) {
                 $view->setTemplate(
-                    "{$name}_{$action}"
+                    "{$this->name}_{$action}"
                     . '.tpl.php'
                 );
             }
