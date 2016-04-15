@@ -40,7 +40,7 @@ class DefaultModelBinder
         foreach($fields as $field)
         {
             if(isset($requestData[$field])) {
-                $object->$field = $requestData[$field];
+                $object->$field = $requestData[$field] == '' ? null : $requestData[$field];
                 $this->bound = true;
             }
         }
