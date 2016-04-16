@@ -3,8 +3,8 @@
 namespace ntentan;
 
 use ntentan\utils\Input;
-use ntentan\panie\DIContainer;
-use ntentan\panie\DIContainerException;
+use ntentan\panie\Container;
+use ntentan\panie\ContainerException;
 
 class Router
 {
