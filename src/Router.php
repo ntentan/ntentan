@@ -3,6 +3,8 @@
 namespace ntentan;
 
 use ntentan\utils\Input;
+use ntentan\panie\DIContainer;
+use ntentan\panie\DIContainerException;
 
 class Router
 {
@@ -72,14 +74,13 @@ class Router
             Ntentan::getNamespace(), 
             utils\Text::ucamelize("{$controller}")
         );
-        if(class_exists($controllerClass)) {
-            self::$routerVariables += $params;
-            $controllerInstance = new $controllerClass();
-            $controllerInstance->executeControllerAction($action, $params);
-            return true;
-        } else {
+        try{
+            $controllerInstance = Container::resolve($controllerClass);
+            $controllerInstance->executeControllerAction($action, $params);            
+        } catch (ContainerException $e) {
             return false;
         }
+        return true;
     }
     
     private static function match($route, $description)
