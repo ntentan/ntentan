@@ -107,8 +107,7 @@ class Ntentan
             if($context == nibii\Relationship::BELONGS_TO) {
                 $name = Text::pluralize($name);
             }
-            return "\\$namespace\\modules\\" . str_replace(".", "\\", $name) . "\\" .
-                Text::ucamelize(explode('.', $name)[0]);                    
+            return "\\$namespace\\models\\" . Text::ucamelize(explode('.', $name)[0]);                    
         });
         
         nibii\Nibii::setModelJoiner(function($classA, $classB) use ($namespace) {
@@ -124,27 +123,11 @@ class Ntentan
                 }
             }
             
-            $namespace = [Text::deCamelize(end($classAParts)), Text::deCamelize(end($classBParts))];
-            sort($namespace);
-            $joinerParts[] = implode('_', $namespace);
-            
             $class = [end($classAParts), end($classBParts)];
             sort($class);
             $joinerParts[] = implode('', $class);
             
             return implode('\\', $joinerParts);
-        });
-        
-        nibii\Nibii::setTableResolver(function($instance) use ($namespace){
-            $className = new \ReflectionClass($instance);
-            return str_replace(
-                '\\', '_', 
-                substr(
-                    $className->getName(), 
-                    strlen("$namespace\\modules\\"), 
-                    strlen($className->getName()) - 1 - strlen("$namespace\\modules\\") - strlen($className->getShortName())
-                )
-            );
         });
         
         Controller::setDependencyResolver(
@@ -163,7 +146,7 @@ class Ntentan
     public static function loadResource()
     {
         Session::start();
-        honam\TemplateEngine::prependPath('views/default');
+        honam\TemplateEngine::prependPath('views/shared');
         honam\TemplateEngine::prependPath('views');
         honam\AssetsLoader::setSiteUrl(self::getUrl('public'));
         honam\AssetsLoader::appendSourceDir('assets');

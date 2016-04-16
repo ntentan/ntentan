@@ -16,7 +16,7 @@ class Router
     private static $routes;
     
     /**
-     *
+     * Keeps track of the order in which routes were added to the routing table.
      * @var type 
      */
     private static $routeOrder = [];
@@ -32,11 +32,16 @@ class Router
     private static $route;
 
     /**
-     *
+     * Variables exposed through getVar()
      * @var type 
      */
     private static $routerVariables = [];
 
+    /**
+     * Invoke the router to load a given resource.
+     * @param string $route
+     * @throws exceptions\RouteNotAvailableException
+     */
     public static function loadResource($route)
     {
         self::$route = $route;
@@ -63,8 +68,9 @@ class Router
         $controller = $params['controller'];
         $action = $params['action'];
         $controllerClass = sprintf(
-            '\%s\modules\%s\%sController', Ntentan::getNamespace(), 
-            strtolower($controller), utils\Text::ucamelize("{$controller}")
+            '\%s\controllers\%sController', 
+            Ntentan::getNamespace(), 
+            utils\Text::ucamelize("{$controller}")
         );
         if(class_exists($controllerClass)) {
             self::$routerVariables += $params;

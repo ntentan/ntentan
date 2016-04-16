@@ -217,6 +217,7 @@ class Controller
         
         
         if ($method = $this->getMethod($path)) {
+            honam\TemplateEngine::prependPath("views/{$this->name}");
             if ($view->getTemplate() == null) {
                 $view->setTemplate(
                     "{$this->name}_{$action}"
@@ -247,6 +248,11 @@ class Controller
         throw new exceptions\RouteNotAvailableException;
     }
 
+    /**
+     * Get an instance of the View class.
+     * 
+     * @return \ntentan\View
+     */
     protected function getView()
     {
         if($this->view == null) {
