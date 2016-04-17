@@ -4,7 +4,7 @@ namespace ntentan;
 
 use ntentan\utils\Input;
 use ntentan\panie\Container;
-use ntentan\panie\ContainerException;
+use ntentan\panie\exceptions\ResolutionException;
 
 class Router
 {
@@ -74,13 +74,12 @@ class Router
             Ntentan::getNamespace(), 
             utils\Text::ucamelize("{$controller}")
         );
-        try{
+        if($controllerClass = Container::getResolvedClassName($controllerClass)) {
             $controllerInstance = Container::resolve($controllerClass);
             $controllerInstance->executeControllerAction($action, $params);            
-        } catch (ContainerException $e) {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
     
     private static function match($route, $description)

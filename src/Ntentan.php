@@ -102,33 +102,10 @@ class Ntentan
         Config::init(self::$configPath);
         atiaa\Db::setDefaultSettings(Config::get('db'));
         kaikai\Cache::init(Config::get('cache'));
-
-        nibii\Nibii::setClassResolver(function($name, $context) use ($namespace){
-            if($context == nibii\Relationship::BELONGS_TO) {
-                $name = Text::pluralize($name);
-            }
-            return "\\$namespace\\models\\" . Text::ucamelize(explode('.', $name)[0]);                    
-        });
         
-        nibii\Nibii::setModelJoiner(function($classA, $classB) use ($namespace) {
-            $classBParts = explode('\\', substr(nibii\Nibii::getClassName($classB), 1));
-            $classAParts = explode('\\', $classA);
-            $joinerParts = [];
-            
-            foreach($classAParts as $i => $part) {
-                if($part == $classBParts[$i]) {
-                    $joinerParts[] = $part;
-                } else {
-                    break;
-                }
-            }
-            
-            $class = [end($classAParts), end($classBParts)];
-            sort($class);
-            $joinerParts[] = implode('', $class);
-            
-            return implode('\\', $joinerParts);
-        });
+        panie\Container::bind(nibii\interfaces\ClassResolverInterface::class, ModelResolvers::class);
+        panie\Container::bind(nibii\interfaces\ModelJoinerInterface::class, ModelResolvers::class);
+        panie\Container::bind(nibii\interfaces\TableNameResolverInterface::class, nibii\DefaultModelResolvers::class);
         
         Controller::setDependencyResolver(
             function($component) use ($namespace) {
