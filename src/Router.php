@@ -3,7 +3,7 @@
 namespace ntentan;
 
 use ntentan\utils\Input;
-use ntentan\panie\Container;
+use ntentan\panie\InjectionContainer;
 use ntentan\panie\exceptions\ResolutionException;
 
 class Router
@@ -74,8 +74,8 @@ class Router
             Ntentan::getNamespace(), 
             utils\Text::ucamelize("{$controller}")
         );
-        if($controllerClass = Container::getResolvedClassName($controllerClass)) {
-            $controllerInstance = Container::resolve($controllerClass);
+        if($controllerClass = InjectionContainer::getResolvedClassName($controllerClass)) {
+            $controllerInstance = InjectionContainer::resolve($controllerClass);
             $controllerInstance->executeControllerAction($action, $params);            
             return true;
         }
