@@ -81,32 +81,32 @@ class Ntentan
         
         spl_autoload_register(function ($class) use($namespace) {
 
-           $prefix = "$namespace\\";
-           $baseDir = 'src/';
-           $len = strlen($prefix);
-           
-           if (strncmp($prefix, $class, $len) !== 0) {
-               return;
-           }
+            $prefix = "$namespace\\";
+            $baseDir = 'src/';
+            $len = strlen($prefix);
 
-           $relativeClass = substr($class, $len);
-           $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
+            if (strncmp($prefix, $class, $len) !== 0) {
+                return;
+            }
 
-           if (file_exists($file)) {
-               require_once $file;
-           }
-       });        
+            $relativeClass = substr($class, $len);
+            $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
+
+            if (file_exists($file)) {
+                require_once $file;
+            }
+        });        
 
         logger\Logger::init('logs/app.log');
 
         Config::init(self::$configPath);
         atiaa\Db::setDefaultSettings(Config::get('db'));
-        kaikai\Cache::init(Config::get('cache'));
+        kaikai\Cache::init();
         
-        panie\InjectionContainer::bind(nibii\interfaces\ClassResolverInterface::class, ModelResolvers::class);
-        panie\InjectionContainer::bind(nibii\interfaces\ModelJoinerInterface::class, ModelResolvers::class);
-        panie\InjectionContainer::bind(nibii\interfaces\TableNameResolverInterface::class, nibii\DefaultModelResolvers::class);
-        panie\InjectionContainer::bind(panie\ComponentResolverInterface::class, ModelResolvers::class);
+        panie\InjectionContainer::bind(nibii\interfaces\ClassResolverInterface::class, ClassNameResolver::class);
+        panie\InjectionContainer::bind(nibii\interfaces\ModelJoinerInterface::class, ClassNameResolver::class);
+        panie\InjectionContainer::bind(nibii\interfaces\TableNameResolverInterface::class, nibii\ClassNameResolver::class);
+        panie\InjectionContainer::bind(panie\ComponentResolverInterface::class, ClassNameResolver::class);
         Controller::setComponentResolverParameters([
             'type' => 'component',
             'namespaces' => [$namespace, 'controllers\components']
@@ -114,19 +114,7 @@ class Ntentan
         nibii\RecordWrapper::setComponentResolverParameters([
             'type' => 'behaviour',
             'namespaces' => [$namespace, 'nibii\behaviours']
-        ]);
-        
-        /*Controller::setDependencyResolver(
-            function($component) use ($namespace) {
-                return Ntentan::dependencyResolver($component, 'component', [$namespace, 'controllers\components']);
-            }
-        );
-        
-        nibii\RecordWrapper::setDependencyResolver(
-            function($behaviour) use ($namespace) {
-                return Ntentan::dependencyResolver($behaviour, 'behaviour', [$namespace, 'nibii\behaviours']);
-            }
-        );*/        
+        ]);    
     }
     
     public static function loadResource()

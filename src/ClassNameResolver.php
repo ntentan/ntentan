@@ -12,9 +12,9 @@ use ntentan\panie\ComponentResolverInterface;
  * Description of ModelClassResolver
  * @author ekow
  */
-class ModelResolvers implements ClassResolverInterface, ModelJoinerInterface, ComponentResolverInterface
+class ClassNameResolver implements ClassResolverInterface, ModelJoinerInterface, ComponentResolverInterface
 {
-    public function getClassName($model, $context)
+    public function getModelClassName($model, $context)
     {
         if($context == nibii\Relationship::BELONGS_TO) {
             $model = Text::pluralize($model);
@@ -23,7 +23,7 @@ class ModelResolvers implements ClassResolverInterface, ModelJoinerInterface, Co
         return "\\$namespace\\models\\" . Text::ucamelize(explode('.', $model)[0]);        
     }
 
-    public function getJunctionClass($classA, $classB)
+    public function getJunctionClassName($classA, $classB)
     {
         $classBParts = explode('\\', substr(nibii\Nibii::getClassName($classB), 1));
         $classAParts = explode('\\', $classA);
@@ -44,7 +44,7 @@ class ModelResolvers implements ClassResolverInterface, ModelJoinerInterface, Co
         return implode('\\', $joinerParts);        
     }
 
-    public function getComponentClass($component, $parameters)
+    public function getComponentClassName($component, $parameters)
     {
          // Attempt to load an application component
         $type = $parameters['type'];
