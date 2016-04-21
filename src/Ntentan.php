@@ -79,23 +79,7 @@ class Ntentan
         self::$prefix = Config::get('app.prefix');
         self::$prefix = (self::$prefix == '' ? '' : '/') . self::$prefix;
         
-        spl_autoload_register(function ($class) use($namespace) {
-
-            $prefix = "$namespace\\";
-            $baseDir = 'src/';
-            $len = strlen($prefix);
-
-            if (strncmp($prefix, $class, $len) !== 0) {
-                return;
-            }
-
-            $relativeClass = substr($class, $len);
-            $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
-
-            if (file_exists($file)) {
-                require_once $file;
-            }
-        });        
+        self::setupAutoloader();
 
         logger\Logger::init('logs/app.log');
 
@@ -115,6 +99,26 @@ class Ntentan
             'type' => 'behaviour',
             'namespaces' => [$namespace, 'nibii\behaviours']
         ]);    
+    }
+    
+    private static function setupAutoloader()
+    {
+        spl_autoload_register(function ($class) {
+            $prefix = Ntentan::getNamespace() . "\\";
+            $baseDir = 'src/';
+            $len = strlen($prefix);
+
+            if (strncmp($prefix, $class, $len) !== 0) {
+                return;
+            }
+
+            $relativeClass = substr($class, $len);
+            $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
+
+            if (file_exists($file)) {
+                require_once $file;
+            }
+        });          
     }
     
     public static function loadResource()
@@ -151,13 +155,5 @@ class Ntentan
             $newUrl .= ($url[0] == '/' ? '' : '/') . "$url";
         }
         return $newUrl;
-    }
-
-    public static function redirect($url = null, $absolute = false)
-    {
-        $redirect = filter_input(INPUT_GET, "redirect");
-        $url = $redirect == '' ? $url : $redirect;
-        $url = $absolute === true ? $url : Ntentan::getUrl($url);  
-        header("Location: $url");
     }
 }

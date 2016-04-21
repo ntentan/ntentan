@@ -148,4 +148,9 @@ class Router
     {
         return self::$route;
     }
+    
+    public static function getRouteDefinition($routeName)
+    {
+        return self::$routes[$routeName];
+    }
 }
