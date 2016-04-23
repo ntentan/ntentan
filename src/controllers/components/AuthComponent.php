@@ -39,6 +39,7 @@ use ntentan\Session;
 use ntentan\Router;
 use ntentan\Parameters;
 use ntentan\utils\Input;
+use ntentan\View;
 
 /**
  * The class for the authentication component.
@@ -89,20 +90,20 @@ class AuthComponent extends Component
         }
         
         if ($this->authenticated !== true) {
-            $this->set('app_name', \ntentan\Config::get('app.name'));
-            $this->set('title', "Login");
+            View::set('app_name', \ntentan\Config::get('app.name'));
+            View::set('title', "Login");
             $this->login();
         }
     }
 
     public function redirectToLogin()
     {
-        $this->set("login_message", $this->authMethodInstance->getMessage());
-        $this->set("login_status", false);
+        View::set("login_message", $this->authMethodInstance->getMessage());
+        View::set("login_status", false);
         $route = Router::getRoute();
         
         if ($route !== $this->parameters['login_route']) {
-            Ntentan::redirect($this->parameters['login_route']);
+            return \ntentan\controllers\Redirect::path($this->parameters['login_route']);
         }
     }
 
@@ -120,7 +121,7 @@ class AuthComponent extends Component
                 break;
 
             default:
-                $this->set('login_status', true);
+                View::set('login_status', true);
         }
     }
 
@@ -137,7 +138,7 @@ class AuthComponent extends Component
                 break;
 
             default:
-                $this->set('login_status', false);
+                View::set('login_status', false);
                 break;
         }
     }
@@ -171,7 +172,7 @@ class AuthComponent extends Component
         $this->authMethodInstance->setUsersModel($this->parameters->get('users_model'));
         $userModelFields = $this->parameters->get('users_model_fields');
         $this->authMethodInstance->setUsersModelFields($userModelFields);
-        $this->set('login_data',
+        View::set('login_data',
             [
                 $userModelFields['username'] => Input::post($userModelFields['username']), 
                 $userModelFields['password'] => Input::post($userModelFields['password'])

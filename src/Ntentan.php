@@ -84,7 +84,7 @@ class Ntentan
         logger\Logger::init('logs/app.log');
 
         Config::init(self::$configPath);
-        atiaa\Db::setDefaultSettings(Config::get('db'));
+        //atiaa\Db::setDefaultSettings(Config::get('db'));
         kaikai\Cache::init();
         
         panie\InjectionContainer::bind(nibii\interfaces\ClassResolverInterface::class, ClassNameResolver::class);

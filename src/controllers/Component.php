@@ -115,10 +115,10 @@ class Component extends Controller
      * (non-PHPdoc)
      * @see controllers/ntentan\controllers.Controller::set()
      */
-    public function set($params1, $params2 = null)
+    /*public function set($params1, $params2 = null)
     {
         $this->controller->set($params1, $params2);
-    }
+    }*/
     
     public function setIfNotSet($params1, $params2 = null)
     {
