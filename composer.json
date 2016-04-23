@@ -8,7 +8,7 @@
         "ntentan/honam" : "0.*",
         "ntentan/logger" : "0.*",
         "ntentan/nibii" : "0.*",
-        "ntentan/config": "0.*",
+        "ntentan/config": "dev-master",
         "ntentan/panie": "dev-master"
     },
     "require-dev": {
