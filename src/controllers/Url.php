@@ -1,7 +1,7 @@
 <?php
 
 namespace ntentan\controllers;
-use ntentan\Config;
+use ntentan\config\Config;
 use ntentan\Router;
 
 /**

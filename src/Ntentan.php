@@ -38,6 +38,7 @@
 namespace ntentan;
 
 use ntentan\utils\Text;
+use ntentan\config\Config;
 
 /**
  * Include a collection of utility global functions, caching and exceptions.
@@ -83,7 +84,7 @@ class Ntentan
 
         logger\Logger::init('logs/app.log');
 
-        Config::init(self::$configPath);
+        Config::readPath(self::$configPath, 'ntentan');
         //atiaa\Db::setDefaultSettings(Config::get('db'));
         kaikai\Cache::init();
         
@@ -91,6 +92,9 @@ class Ntentan
         panie\InjectionContainer::bind(nibii\interfaces\ModelJoinerInterface::class, ClassNameResolver::class);
         panie\InjectionContainer::bind(nibii\interfaces\TableNameResolverInterface::class, nibii\ClassNameResolver::class);
         panie\InjectionContainer::bind(panie\ComponentResolverInterface::class, ClassNameResolver::class);
+        panie\InjectionContainer::bind(nibii\DriverAdapter::class, nibii\ClassNameResolver::getDriverAdapterClassName());
+        panie\InjectionContainer::bind(atiaa\Driver::class, atiaa\Db::getDefaultDriverClassName());
+        
         Controller::setComponentResolverParameters([
             'type' => 'component',
             'namespaces' => [$namespace, 'controllers\components']

@@ -40,6 +40,8 @@ use ntentan\Router;
 use ntentan\Parameters;
 use ntentan\utils\Input;
 use ntentan\View;
+use ntentan\config\Config;
+use ntentan\controllers\Redirect;
 
 /**
  * The class for the authentication component.
@@ -90,7 +92,7 @@ class AuthComponent extends Component
         }
         
         if ($this->authenticated !== true) {
-            View::set('app_name', \ntentan\Config::get('app.name'));
+            View::set('app_name', Config::get('ntentan:app.name'));
             View::set('title', "Login");
             $this->login();
         }
@@ -103,7 +105,7 @@ class AuthComponent extends Component
         $route = Router::getRoute();
         
         if ($route !== $this->parameters['login_route']) {
-            return \ntentan\controllers\Redirect::path($this->parameters['login_route']);
+            return Redirect::path($this->parameters['login_route']);
         }
     }
 
@@ -112,7 +114,7 @@ class AuthComponent extends Component
         $this->authenticated = true;
         switch ($this->parameters->get('on_success', self::REDIRECT)) {
             case self::REDIRECT:
-                Ntentan::redirect($this->parameters->get('redirect_route', '/'));
+                return Redirect::path($this->parameters->get('redirect_route', '/'));
                 break;
 
             case self::CALL_FUNCTION:
@@ -192,7 +194,7 @@ class AuthComponent extends Component
     public function logout()
     {
         Session::reset();
-        Ntentan::redirect($this->parameters->get('login_route', "/login"));
+        Redirect::path($this->parameters->get('login_route', "/login"));
     }
 
     public static function getUserId()

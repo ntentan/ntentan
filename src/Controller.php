@@ -195,7 +195,6 @@ class Controller
             foreach ($this->loadedComponents as $component) {
                 //@todo Look at how to prevent this from running several times
                 if ($component->hasMethod($path)) {
-                    $component->variables = $this->variables;
                     $component->executeControllerAction($path, $params);
                     return;
                 }
@@ -215,10 +214,5 @@ class Controller
             $this->view = new View();
         }
         return $this->view;
-    }
-
-    protected function setViewInstance($viewInstance)
-    {
-        $this->viewInstance = $viewInstance;
     }
 }
