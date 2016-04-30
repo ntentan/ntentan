@@ -8,8 +8,8 @@
         "ntentan/honam" : "0.*",
         "ntentan/logger" : "0.*",
         "ntentan/nibii" : "0.*",
-        "ntentan/config": "dev-master",
-        "ntentan/panie": "dev-master"
+        "ntentan/config": "0.*",
+        "ntentan/panie": "0.*"
     },
     "require-dev": {
         "phpunit/phpunit" : "4.*"
