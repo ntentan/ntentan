@@ -69,11 +69,7 @@ class Router
     {
         $controller = $params['controller'];
         $action = $params['action'];
-        $controllerClass = sprintf(
-            '\%s\controllers\%sController', 
-            Ntentan::getNamespace(), 
-            utils\Text::ucamelize("{$controller}")
-        );
+        $controllerClass = InjectionContainer::singleton(controllers\interfaces\ClassResolverInterface::class)->getControllerClassName($controller);
         if($controllerClass = InjectionContainer::getResolvedClassName($controllerClass)) {
             $controllerInstance = InjectionContainer::resolve($controllerClass);
             $controllerInstance->executeControllerAction($action, $params);            

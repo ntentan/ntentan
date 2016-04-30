@@ -85,15 +85,23 @@ class Ntentan
         logger\Logger::init('logs/app.log');
 
         Config::readPath(self::$configPath, 'ntentan');
-        //atiaa\Db::setDefaultSettings(Config::get('db'));
         kaikai\Cache::init();
         
-        panie\InjectionContainer::bind(nibii\interfaces\ClassResolverInterface::class, ClassNameResolver::class);
-        panie\InjectionContainer::bind(nibii\interfaces\ModelJoinerInterface::class, ClassNameResolver::class);
-        panie\InjectionContainer::bind(nibii\interfaces\TableNameResolverInterface::class, nibii\ClassNameResolver::class);
-        panie\InjectionContainer::bind(panie\ComponentResolverInterface::class, ClassNameResolver::class);
-        panie\InjectionContainer::bind(nibii\DriverAdapter::class, nibii\ClassNameResolver::getDriverAdapterClassName());
-        panie\InjectionContainer::bind(atiaa\Driver::class, atiaa\Db::getDefaultDriverClassName());
+        panie\InjectionContainer::bind(nibii\interfaces\ClassResolverInterface::class)
+            ->to(ClassNameResolver::class);
+        panie\InjectionContainer::bind(nibii\interfaces\ModelJoinerInterface::class)
+            ->to(ClassNameResolver::class);
+        panie\InjectionContainer::bind(nibii\interfaces\TableNameResolverInterface::class)
+            ->to(nibii\ClassNameResolver::class);
+        panie\InjectionContainer::bind(panie\ComponentResolverInterface::class)
+            ->to(ClassNameResolver::class);
+        panie\InjectionContainer::bind(controllers\interfaces\ClassResolverInterface::class)
+            ->to(ClassNameResolver::class);
+        
+        if(Config::get('ntentan:db.driver')){
+            panie\InjectionContainer::bind(nibii\DriverAdapter::class, nibii\ClassNameResolver::getDriverAdapterClassName());
+            panie\InjectionContainer::bind(atiaa\Driver::class, atiaa\Db::getDefaultDriverClassName());
+        }
         
         Controller::setComponentResolverParameters([
             'type' => 'component',
@@ -129,7 +137,7 @@ class Ntentan
     {
         Session::start();
         honam\TemplateEngine::prependPath('views/shared');
-        honam\TemplateEngine::prependPath('views');
+        honam\TemplateEngine::prependPath('views/layouts');
         honam\AssetsLoader::setSiteUrl(self::getUrl('public'));
         honam\AssetsLoader::appendSourceDir('assets');
         honam\AssetsLoader::setDestinationDir('public');     

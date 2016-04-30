@@ -3,7 +3,8 @@
 namespace ntentan;
 
 use ntentan\utils\Text;
-use ntentan\nibii\interfaces\ClassResolverInterface;
+use ntentan\nibii\interfaces\ClassResolverInterface as ModelClassNameResolver;
+use ntentan\controllers\interfaces\ClassResolverInterface as ControllerClassNameResolver;
 use ntentan\nibii\interfaces\ModelJoinerInterface;
 use ntentan\nibii\interfaces\TableNameResolverInterface;
 use ntentan\panie\ComponentResolverInterface;
@@ -12,7 +13,7 @@ use ntentan\panie\ComponentResolverInterface;
  * Description of ModelClassResolver
  * @author ekow
  */
-class ClassNameResolver implements ClassResolverInterface, ModelJoinerInterface, ComponentResolverInterface
+class ClassNameResolver implements ModelClassNameResolver, ControllerClassNameResolver, ModelJoinerInterface, ComponentResolverInterface
 {
     public function getModelClassName($model, $context)
     {
@@ -20,7 +21,7 @@ class ClassNameResolver implements ClassResolverInterface, ModelJoinerInterface,
             $model = Text::pluralize($model);
         }
         $namespace = Ntentan::getNamespace();
-        return "\\$namespace\\models\\" . Text::ucamelize(explode('.', $model)[0]);        
+        return "\\$namespace\\models\\" . Text::ucamelize($model);        
     }
 
     public function getJunctionClassName($classA, $classB)
@@ -72,4 +73,14 @@ class ClassNameResolver implements ClassResolverInterface, ModelJoinerInterface,
 
         throw new exceptions\ComponentNotFoundException("[$dependency] $type not found");        
     }
+
+    public function getControllerClassName($name)
+    {
+        return sprintf(
+            '\%s\controllers\%sController', 
+            Ntentan::getNamespace(), 
+            utils\Text::ucamelize($name)
+        );        
+    }
+
 }
