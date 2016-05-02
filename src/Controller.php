@@ -144,7 +144,7 @@ class Controller
                     if(substr($methodName, 0, 2) == '__') continue;
                     if(array_search($methodName, ['addComponent', 'executeControllerAction', 'setComponentResolverParameters'])) continue;
                     $docComments = $this->parseDocComment($method->getDocComment());
-                    $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['verb'] : $methodName;
+                    $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
                     $results[$keyName] = [
                         'name' => $method->getName()
                     ];

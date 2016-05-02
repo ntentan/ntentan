@@ -99,39 +99,6 @@ class Component extends Controller
     }
 
     /**
-     * Sets the controller route of this component.
-     * 
-     * @param $controllerRoute
-     */
-    public function setControllerRoute($controllerRoute)
-    {
-        $this->route = $controllerRoute;
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see controllers/ntentan\controllers.Controller::set()
-     */
-    /*public function set($params1, $params2 = null)
-    {
-        $this->controller->set($params1, $params2);
-    }*/
-    
-    public function setIfNotSet($params1, $params2 = null)
-    {
-        $this->controller->setIfNotSet($params1, $params2);
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see controllers/ntentan\controllers.Controller::get()
-     */
-    public function getData($variable = null)
-    {
-        return $this->controller->getData($variable);
-    }
-
-    /**
      * Calls a method from the controller to which this component is attached.
      */
     protected function callControllerMethod()
@@ -174,21 +141,6 @@ class Component extends Controller
             $ret = true;
         }
         return $ret;
-    }
-    
-    public function getView()
-    {
-        return $this->controller->getView();
-    }
-    
-    protected function getViewInstance()
-    {
-        return $this->controller->getViewInstance();
-    }
-    
-    protected function setViewInstance($viewInstance)
-    {
-        $this->controller->setViewInstance($viewInstance);
     }
     
     protected function getComponentInstance($component = false)
