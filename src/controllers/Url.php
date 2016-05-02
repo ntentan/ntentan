@@ -11,8 +11,9 @@ use ntentan\Router;
  */
 class Url
 {
-    public static function action($action, $controller = null, $variables = [])
+    public static function action($action, $variables = [])
     {
+        $controller = Router::getVar('controller_path');
         return Config::get('app.prefix') . "/$controller/$action";
     }
     

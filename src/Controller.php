@@ -83,7 +83,7 @@ class Controller
     {
         $componentInstance = $this->getComponentInstance($component);
         $componentInstance->setController($this);
-        $componentInstance->init();
+        $componentInstance->init($params);
     }
 
     public function __get($property)
@@ -140,9 +140,11 @@ class Controller
                 $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
                 $results = [];
                 foreach($methods as $method) {
-                    if($method->class != $class->getName()) continue;
+                    $methodName = $method->getName();
+                    if(substr($methodName, 0, 2) == '__') continue;
+                    if(array_search($methodName, ['addComponent', 'executeControllerAction', 'setComponentResolverParameters'])) continue;
                     $docComments = $this->parseDocComment($method->getDocComment());
-                    $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['verb'] : $method->getName();
+                    $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['verb'] : $methodName;
                     $results[$keyName] = [
                         'name' => $method->getName()
                     ];
@@ -165,18 +167,16 @@ class Controller
 
     public function executeControllerAction($action, $params)
     {
-        $view = $this->getView();
         $this->name = strtolower(substr((new ReflectionClass($this))->getShortName(), 0, -10));
-        $path = Text::camelize($action === null ? $this->defaultMethod : $action);
+        $path = Text::camelize($action === null ? 'index' : $action);
         $return = null;
         $invokeParameters = [];
         
-        
         if ($method = $this->getMethod($path)) {
             honam\TemplateEngine::prependPath("views/{$this->name}");
-            if ($view->getTemplate() == null) {
-                $view->setTemplate(
-                    "{$this->name}_{$action}"
+            if (View::getTemplate() == null) {
+                View::setTemplate(
+                    "{$this->name}_{$path}"
                     . '.tpl.php'
                 );
             }
@@ -188,7 +188,7 @@ class Controller
             }
             
             $method->invokeArgs($this, $invokeParameters);
-            $return = $view->out();
+            $return = View::out();
             echo $return;
             return;
         } else {
@@ -200,19 +200,6 @@ class Controller
                 }
             }
         }
-        throw new exceptions\RouteNotAvailableException;
-    }
-
-    /**
-     * Get an instance of the View class.
-     * 
-     * @return \ntentan\View
-     */
-    protected function getView()
-    {
-        if($this->view == null) {
-            $this->view = new View();
-        }
-        return $this->view;
+        throw new exceptions\ControllerActionNotFoundException($this, $path);
     }
 }

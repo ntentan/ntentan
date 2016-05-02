@@ -76,15 +76,11 @@ class AuthComponent extends Component
         'http_basic' => '\ntentan\controllers\components\auth\HttpBasicAuthMethod',
     ];
 
-    public function __construct($parameters = array())
+    public function init($parameters = array())
     {
-        parent::__construct();
         $this->parameters = Parameters::wrap($parameters);
         $this->authenticated = Session::get('logged_in');
-    }
 
-    public function init()
-    {
         foreach ($this->parameters->get('excluded_routes', array()) as $excludedRoute) {
             if (preg_match("/$excludedRoute/i", Ntentan::$route) > 0) {
                 return;
@@ -103,9 +99,10 @@ class AuthComponent extends Component
         View::set("login_message", $this->authMethodInstance->getMessage());
         View::set("login_status", false);
         $route = Router::getRoute();
+        $loginRoute = $this->parameters->get('login_route', 'login');
         
-        if ($route !== $this->parameters['login_route']) {
-            return Redirect::path($this->parameters['login_route']);
+        if ($route !== $loginRoute) {
+            return Redirect::path($loginRoute);
         }
     }
 
@@ -118,8 +115,7 @@ class AuthComponent extends Component
                 break;
 
             case self::CALL_FUNCTION:
-                $function = $this->parameters->get('success_function');
-                $function();
+                call_user_func($this->parameters->get('success_function'));
                 break;
 
             default:

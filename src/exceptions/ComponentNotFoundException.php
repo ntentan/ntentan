@@ -1,7 +1,7 @@
 <?php
 namespace ntentan\exceptions;
 
-class ComponentNotFoundException extends \Exception
+class ComponentNotFoundException extends NtentanException
 {
     
 }

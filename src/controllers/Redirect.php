@@ -15,13 +15,13 @@ namespace ntentan\controllers;
  */
 class Redirect
 {
-    public static function action($action, $controller = null, $variables = [])
+    public static function action($action, $variables = [])
     {
-        header("Location: " + Url::action($action, $controller, $variables));
+        header("Location: " . Url::action($action, $variables));
     }
     
     public static function path($path)
     {
-        header("Location: " + Url::path($path));
+        header("Location: " . Url::path($path));
     }
 }

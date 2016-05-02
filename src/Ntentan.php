@@ -97,10 +97,11 @@ class Ntentan
             ->to(ClassNameResolver::class);
         panie\InjectionContainer::bind(controllers\interfaces\ClassResolverInterface::class)
             ->to(ClassNameResolver::class);
-        
         if(Config::get('ntentan:db.driver')){
-            panie\InjectionContainer::bind(nibii\DriverAdapter::class, nibii\ClassNameResolver::getDriverAdapterClassName());
-            panie\InjectionContainer::bind(atiaa\Driver::class, atiaa\Db::getDefaultDriverClassName());
+            panie\InjectionContainer::bind(nibii\DriverAdapter::class)
+                ->to(nibii\ClassNameResolver::getDriverAdapterClassName());
+            panie\InjectionContainer::bind(atiaa\Driver::class)
+                ->to(atiaa\Db::getDefaultDriverClassName());
         }
         
         Controller::setComponentResolverParameters([

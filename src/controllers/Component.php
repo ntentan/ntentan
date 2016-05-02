@@ -61,13 +61,10 @@ class Component extends Controller
      * @var Controller
      */
     protected $controller;
-
-    /**
-     * Dummy constructor.
-     */
-    public function __construct()
+    
+    public function init()
     {
-
+        
     }
     
     public function __get($property)
