@@ -97,6 +97,7 @@ class Ntentan
             ->to(ClassNameResolver::class);
         panie\InjectionContainer::bind(controllers\interfaces\ClassResolverInterface::class)
             ->to(ClassNameResolver::class);
+        
         if(Config::get('ntentan:db.driver')){
             panie\InjectionContainer::bind(nibii\DriverAdapter::class)
                 ->to(nibii\ClassNameResolver::getDriverAdapterClassName());

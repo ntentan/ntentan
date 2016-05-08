@@ -8,6 +8,8 @@
 
 namespace ntentan\controllers;
 
+use ntentan\panie\InjectionContainer;
+
 /**
  * Description of ModelBinders
  *
@@ -17,7 +19,6 @@ class ModelBinders
 {
     private static $binders = [];
     private static $customBinderInstances = [];
-    private static $defaultBinderIntance;
     
     private static function getCustomBinder($binder)
     {
@@ -25,14 +26,6 @@ class ModelBinders
             self::$customBinderInstances[$binder] = new $binder();
         }
         return self::$customBinderInstances[$binder];
-    }
-    
-    private static function getDefaultBinder()
-    {
-        if(self::$defaultBinderIntance === null) {
-            self::$defaultBinderIntance = new DefaultModelBinder();
-        }
-        return self::$defaultBinderIntance;
     }
     
     public static function register($type, $binder) 
@@ -45,7 +38,7 @@ class ModelBinders
         if(isset(self::$binders[$type])) {
             return self::getCustomBinder(self::$binders[$type]);
         } else {
-            return self::getDefaultBinder();
+            return InjectionContainer::singleton(ModelBinderInterface::class);
         }
     }
 }

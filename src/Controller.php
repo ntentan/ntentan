@@ -104,9 +104,8 @@ class Controller
         } else {
             $type = $methodParameter->getClass();        
             if($type !== null) {
-                $instance = $type->newInstance();
                 $binder = controllers\ModelBinders::get($type->getName());
-                $invokeParameters[] = $binder->bind($instance);
+                $invokeParameters[] = $binder->bind($this, $type->getName());
                 $this->boundParameters[$methodParameter->name] = $binder->getBound();
             } else {
                 $invokeParameters[] = null;
@@ -124,7 +123,7 @@ class Controller
         $lines = explode("\n", $comment);
         $attributes = [];
         foreach($lines as $line) {
-            if(preg_match("/@ntentan\.(?<attribute>[a-z]+)\s+(?<value>[a-zA-Z0-9]+)/", $line, $matches)) {
+            if(preg_match("/@ntentan\.(?<attribute>[a-z]+)\s+(?<value>.+)/", $line, $matches)) {
                 $attributes[$matches['attribute']] = $matches['value'];
             }
         }
@@ -146,7 +145,8 @@ class Controller
                     $docComments = $this->parseDocComment($method->getDocComment());
                     $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
                     $results[$keyName] = [
-                        'name' => $method->getName()
+                        'name' => $method->getName(),
+                        'binder' => isset($docComments['binder']) ? $docComments['binder'] : controllers\DefaultModelBinder::class
                     ];
                 }
                 return $results;
@@ -154,15 +154,12 @@ class Controller
         );
         
         if(isset($methods[$path . utils\Input::server('REQUEST_METHOD')])) {
-            $methodName = $methods[$path . utils\Input::server('REQUEST_METHOD')]['name'];
+            return $methods[$path . utils\Input::server('REQUEST_METHOD')];
         } else if(isset($methods[$path])) {
-            $methodName = $path;
+            return $methods[$path];
         }
         
-        if(isset($methodName))
-            return new \ReflectionMethod($this, $methodName);
-        else
-            return false;
+        return false;
     }
 
     public function executeControllerAction($action, $params)
@@ -170,9 +167,12 @@ class Controller
         $this->name = strtolower(substr((new ReflectionClass($this))->getShortName(), 0, -10));
         $path = Text::camelize($action === null ? 'index' : $action);
         $return = null;
-        $invokeParameters = [];
+        $invokeParameters = [];       
         
-        if ($method = $this->getMethod($path)) {
+        if ($methodDetails = $this->getMethod($path)) {
+            panie\InjectionContainer::bind(controllers\ModelBinderInterface::class)
+                ->to($methodDetails['binder']); 
+            $method = new \ReflectionMethod($this, $methodDetails['name']);
             honam\TemplateEngine::prependPath("views/{$this->name}");
             if (View::getTemplate() == null) {
                 View::setTemplate(
