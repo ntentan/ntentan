@@ -135,7 +135,7 @@ class Ntentan
         });          
     }
     
-    public static function loadResource()
+    public static function run()
     {
         Session::start();
         honam\TemplateEngine::prependPath('views/shared');
@@ -143,17 +143,7 @@ class Ntentan
         honam\AssetsLoader::setSiteUrl(self::getUrl('public'));
         honam\AssetsLoader::appendSourceDir('assets');
         honam\AssetsLoader::setDestinationDir('public');     
-        Router::loadResource(substr(utils\Input::server('REQUEST_URI'), 1));        
-    }
-
-    /**
-     * The routing engines entry. This method analyses the URL and implements
-     * the routing engine.
-     */
-    public static function start($namespace)
-    {
-        self::init($namespace);
-        self::loadResource();
+        Router::execute(substr(utils\Input::server('REQUEST_URI'), 1));        
     }
 
     public static function getNamespace()
