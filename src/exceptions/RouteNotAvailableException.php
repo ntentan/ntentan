@@ -35,11 +35,18 @@ use ntentan\Router;
 
 class RouteNotAvailableException extends NtentanException
 {
-    public function __construct($route = null)
+    public function __construct($route = null, $attemptedResources = [])
     {
         if($route == '') {
             $route = Router::getRoute();
         }
-        parent::__construct("Route [$route] is currently not available.");
+        parent::__construct(
+            "Route [$route] is currently not available. " .
+            (
+                count($attemptedResources) 
+                ? "Failed to find any of the following resources: [" . implode(", ", $attemptedResources) . "]"
+                : ""
+            )
+        );
     }
 }
