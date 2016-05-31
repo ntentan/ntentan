@@ -47,11 +47,12 @@ class ClassNameResolver implements ModelClassNameResolver, ControllerClassNameRe
 
     public function getComponentClassName($component, $parameters)
     {
-         // Attempt to load an application component
+        // Attempt to load an application component
         $type = $parameters['type'];
+        $camelType = Text::ucamelize($type);
         $namespaces = $parameters['namespaces'];
         
-        $className = Text::ucamelize($component) . Text::ucamelize($type);
+        $className = Text::ucamelize($component) . $camelType;
         $class = "\\{$namespaces[0]}\\{$type}s\\$component\\$className";
         if(class_exists($class)) {
             return $class;
@@ -65,13 +66,13 @@ class ClassNameResolver implements ModelClassNameResolver, ControllerClassNameRe
 
         // Attempt to load plugin dependency
         $componentPaths = explode(".", $component);
-        $className = array_pop($dependencyPaths);
-        $class= "\\ntentan\\extensions\\" . implode("\\", $dependencyPaths) . "\\{$type}s\\$className";
+        $className = Text::ucamelize(array_pop($componentPaths));
+        $class= "\\ntentan\\extensions\\" . implode("\\", $componentPaths) . "\\{$type}s\\$className$camelType";
         if(class_exists($class)) {
             return $class;
         }
 
-        throw new exceptions\ComponentNotFoundException("[$dependency] $type not found");        
+        throw new exceptions\ComponentNotFoundException("[$component] $type not found");        
     }
 
     public function getControllerClassName($name)

@@ -56,12 +56,7 @@ class Controller
     
     use panie\ComponentContainerTrait;
 
-    /**
-     * The instance of the view template which is going to be used to render
-     * the output of this controller.
-     * @var View
-     */
-    private $view;
+    private $componentMap;
     
     private $name;
     
@@ -81,6 +76,7 @@ class Controller
      */
     public function addComponent($component, $params = null)
     {
+        $this->componentMap[Text::camelize($component, '.')] = $component;
         $componentInstance = $this->getComponentInstance($component);
         $componentInstance->setController($this);
         $componentInstance->init($params);
@@ -90,12 +86,18 @@ class Controller
     {
         if (substr($property, -9) == "Component") {
             $component = substr($property, 0, strlen($property) - 9);
-            return $this->getComponentInstance($component);
+            return $this->getComponentInstance($this->componentMap[$component]);
         } else {
             throw new \Exception("Unknown property *{$property}* requested");
         }
     }
     
+    /**
+     * 
+     * @param array $invokeParameters
+     * @param \ReflectionParameter $methodParameter
+     * @param array $params
+     */
     private function bindParameter(&$invokeParameters, $methodParameter, $params)
     {        
         if(isset($params[$methodParameter->name])) {
