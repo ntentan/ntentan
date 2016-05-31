@@ -43,7 +43,7 @@ class Router
      */
     public static function execute($route)
     {
-        self::$route = $route;        
+        self::$route = explode('?', $route)[0];        
         $parameters = self::getStaticRouteParameters($route, $routeName);
         if(self::loadResource($parameters, $routeName)) return;
         
@@ -54,7 +54,7 @@ class Router
         
         // Throw an exception if we're still alive
         throw new exceptions\RouteNotAvailableException(
-           $route == '' ? 'Default route' : $route
+           self::$route == '' ? 'Default route' : self::$route
         );
     }
     
@@ -88,6 +88,7 @@ class Router
     {
         foreach(self::$routes[$routeName]['parameters']['default'] as $parameter => $value)
         {
+            if($routeName == 'default' && self::$route != '') continue;
             if(!isset($parameters[$parameter]))
                 $parameters[$parameter] = $value;
             else if($parameters[$parameter] === '')
@@ -97,6 +98,7 @@ class Router
         if(isset($parameters['controller'])) {
             return self::loadController($parameters);
         } 
+        return false;
     }
     
     private static function loadController($params = [])
