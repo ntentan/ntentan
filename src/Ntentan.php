@@ -142,8 +142,8 @@ class Ntentan
         honam\TemplateEngine::prependPath('views/layouts');
         honam\AssetsLoader::setSiteUrl(self::getUrl('public'));
         honam\AssetsLoader::appendSourceDir('assets');
-        honam\AssetsLoader::setDestinationDir('public');     
-        Router::execute(substr(utils\Input::server('REQUEST_URI'), 1));        
+        honam\AssetsLoader::setDestinationDir('public');   
+        Router::execute(substr(utils\Input::server('PATH_INFO'), 1));        
     }
 
     public static function getNamespace()

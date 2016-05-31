@@ -14,7 +14,11 @@ class Url
     public static function action($action, $variables = [])
     {
         $controller = Router::getVar('controller_path');
-        return Config::get('app.prefix') . "/$controller/$action";
+        $queries = [];
+        foreach($variables as $key => $value) {
+            $queries[] = sprintf("%s=%s", urldecode($key), urlencode($value));
+        }
+        return Config::get('app.prefix') . "/$controller/$action" . (count($queries) ? "?" . implode('&', $queries) : "");
     }
     
     public static function path($path)

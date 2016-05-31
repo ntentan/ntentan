@@ -93,6 +93,7 @@ class Router
             else if($parameters[$parameter] === '')
                 $parameters[$parameter] = $value;
         }
+        $parameters += Input::get();
         if(isset($parameters['controller'])) {
             return self::loadController($parameters);
         } 
