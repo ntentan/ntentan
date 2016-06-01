@@ -56,7 +56,7 @@ class Controller
     
     use panie\ComponentContainerTrait;
 
-    private $componentMap;
+    private $componentMap = [];
     
     private $name;
     
