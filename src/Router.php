@@ -92,6 +92,8 @@ class Router
     
     private static function loadResource($parameters, $routeName)
     {
+        if($routeName == null) return false;
+        
         foreach(self::$routes[$routeName]['parameters']['default'] as $parameter => $value)
         {
             if($routeName == 'default' && self::$route != '') continue;
@@ -110,7 +112,7 @@ class Router
     private static function loadController($params = [])
     {
         $controller = $params['controller'];
-        $action = $params['action'];
+        $action = isset($params['action']) ? $params['action'] : null;
         
         // Try to get the classname based on router parameters
         $controllerClassName = InjectionContainer::singleton(controllers\interfaces\ClassResolverInterface::class)
@@ -138,8 +140,7 @@ class Router
     private static function match($route, $description)
     {
         $parameters = [];
-        if(preg_match("|{$description['regexp']}|i", $route, $matches)) {           
-            //var_dump($matches, $description['regexp']);
+        if(preg_match("|{$description['regexp']}|i", $route, $matches)) {      
             foreach($matches as $key => $value) {
                 if(!is_numeric($key)) {
                     $parameters[$key] = $value;
