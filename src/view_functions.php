@@ -39,7 +39,7 @@ use ntentan\Ntentan;
  */
 function u($url)
 {
-    return Ntentan::getUrl($url);
+    return \ntentan\controllers\Url::path($url);
 }
 
 /**

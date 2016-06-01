@@ -39,6 +39,7 @@ namespace ntentan;
 
 use ntentan\utils\Text;
 use ntentan\config\Config;
+use ntentan\controllers\Url;
 
 /**
  * Include a collection of utility global functions, caching and exceptions.
@@ -140,7 +141,7 @@ class Ntentan
         Session::start();
         honam\TemplateEngine::prependPath('views/shared');
         honam\TemplateEngine::prependPath('views/layouts');
-        honam\AssetsLoader::setSiteUrl(self::getUrl('public'));
+        honam\AssetsLoader::setSiteUrl(Url::path('public'));
         honam\AssetsLoader::appendSourceDir('assets');
         honam\AssetsLoader::setDestinationDir('public');   
         Router::execute(substr(utils\Input::server('REQUEST_URI'), 1));        
@@ -149,15 +150,5 @@ class Ntentan
     public static function getNamespace()
     {
         return self::$namespace;
-    }
-
-    public static function getUrl($url)
-    {
-        $prefix = Config::get('app.prefix');
-        $newUrl = ($prefix == '' ? '' : '/') . $prefix;
-        if($url) {
-            $newUrl .= ($url[0] == '/' ? '' : '/') . "$url";
-        }
-        return $newUrl;
     }
 }
