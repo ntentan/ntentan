@@ -58,9 +58,6 @@ class Controller
 
     private $componentMap = [];
     
-    private $name;
-    
-    
     private $boundParameters = [];
 
     /**
@@ -135,7 +132,7 @@ class Controller
     private function getMethod($path)
     {
         $methods = kaikai\Cache::read(
-            "controller.{$this->name}.methods", 
+            "controller.{$this->getClassName()}.methods", 
             function() {
                 $class = new ReflectionClass($this);
                 $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
@@ -163,11 +160,28 @@ class Controller
         
         return false;
     }
+    
+    protected function getClassName()
+    {
+        return (new ReflectionClass($this))->getShortName();
+    }
+    
+    protected function getName()
+    {
+        $className = $this->getClassName();
+        $name = '';
+        if(substr($className, -10) == 'Controller') {
+            $name = substr($className, 0, -10);
+        } else {
+            $name = substr($className, 0, -9);
+        }
+        return strtolower($name);
+    }
 
     public function executeControllerAction($action, $params)
     {
-        $this->name = strtolower(substr((new ReflectionClass($this))->getShortName(), 0, -10));
-        $path = Text::camelize($action === null ? 'index' : $action);
+        $name = $this->getName();
+        $path = Text::camelize($action);
         $return = null;
         $invokeParameters = [];       
         
@@ -175,10 +189,10 @@ class Controller
             panie\InjectionContainer::bind(controllers\ModelBinderInterface::class)
                 ->to($methodDetails['binder']); 
             $method = new \ReflectionMethod($this, $methodDetails['name']);
-            honam\TemplateEngine::prependPath("views/{$this->name}");
+            honam\TemplateEngine::prependPath("views/{$name}");
             if (View::getTemplate() == null) {
                 View::setTemplate(
-                    "{$this->name}_{$path}"
+                    "{$name}_{$action}"
                     . '.tpl.php'
                 );
             }
