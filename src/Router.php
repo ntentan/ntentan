@@ -96,7 +96,9 @@ class Router
         
         foreach(self::$routes[$routeName]['parameters']['default'] as $parameter => $value)
         {
-            if($routeName == 'default' && self::$route != '') continue;
+            // Only set the controller on default route, if route is empty
+            if($routeName == 'default' && self::$route != '' && $parameter == 'controller') continue;
+            
             if(!isset($parameters[$parameter]))
                 $parameters[$parameter] = $value;
             else if($parameters[$parameter] === '')
