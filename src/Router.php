@@ -172,12 +172,12 @@ class Router
             self::$tempVariables = [];
 
             $regexp = preg_replace_callback(
-                "/{(?<prefix>\*|#)?(?<name>[a-z_][a-zA_Z0-9\_]*)}/", 
+                "/{(?<prefix>\*|\?)?(?<name>[a-z_][a-zA-Z0-9\_]*)}/", 
                 function($matches) {
                     self::$tempVariables[] = $matches['name'];
                     return sprintf(
                         "(?<{$matches['name']}>[a-z0-9_.~:#[\]@!$&'()*+,;=%s]+)?", 
-                        $matches['prefix'] ? "\-/_" : null
+                        $matches['prefix'] == '*' ? "\-/_" : null
                     );
                 },
                 str_replace('/', '(/)?', $pattern)
