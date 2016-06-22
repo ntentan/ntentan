@@ -18,12 +18,12 @@ class Url
         foreach($variables as $key => $value) {
             $queries[] = sprintf("%s=%s", urldecode($key), urlencode($value));
         }
-        $path = Config::get('app.prefix') . ($controller == "" ? "" : "/$controller");
-        return "$path/$action" . (count($queries) ? "?" . implode('&', $queries) : "");
+        $path = Config::get('ntentan:app.prefix') . ($controller == "" ? "" : "/$controller");
+        return preg_replace('~/+~', '/', "$path/$action" . (count($queries) ? "?" . implode('&', $queries) : ""));
     }
     
     public static function path($path)
     {
-        return Config::get('ntentan:app.prefix') . ($path[0] == '/' ? '' : '/') .  "$path";
+        return preg_replace('~/+~', '/', Config::get('ntentan:app.prefix') . "/$path");
     }
 }

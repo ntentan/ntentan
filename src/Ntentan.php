@@ -144,6 +144,7 @@ class Ntentan
         honam\AssetsLoader::setSiteUrl(Url::path('public'));
         honam\AssetsLoader::appendSourceDir('assets');
         honam\AssetsLoader::setDestinationDir('public');   
+        honam\Helper::setBaseUrl(Url::path(''));
         Router::execute(substr(utils\Input::server('REQUEST_URI'), 1));        
     }
 
