@@ -1,12 +1,6 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-namespace ntentan\controllers;
+namespace ntentan\controllers\model_binders;
 
 use ntentan\utils\Input;
 use ntentan\Controller;
@@ -29,12 +23,12 @@ class DefaultModelBinder implements ModelBinderInterface
         return array_keys($object->getDescription()->getFields());
     }
     
-    public function bind(Controller $controller, $type)
+    public function bind(Controller $controller, $type, $name)
     {
         $this->bound = false;
         $object = \ntentan\panie\InjectionContainer::resolve($type);
         if(is_a($object, '\ntentan\Model')) {
-            $fields = $this->getModelFields($object);
+            $fields = $this->getModelFields($object);   
         } else {
             $fields = $this->getClassFields($object);
         }

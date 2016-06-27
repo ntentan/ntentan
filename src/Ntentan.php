@@ -114,6 +114,13 @@ class Ntentan
             'type' => 'behaviour',
             'namespaces' => [$namespace, 'nibii\behaviours']
         ]);    
+        controllers\ModelBinderRegister::setDefaultBinderClass(
+            controllers\ntentan\DefaultModelBinder::class
+        );
+        controllers\ModelBinderRegister::register(
+            utils\filesystem\UploadedFile::class, 
+            controllers\model_binders\UploadedFileBinder::class
+        );
     }
     
     private static function setupAutoloader()

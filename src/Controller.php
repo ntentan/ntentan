@@ -103,8 +103,8 @@ class Controller
         } else {
             $type = $methodParameter->getClass();        
             if($type !== null) {
-                $binder = controllers\ModelBinders::get($type->getName());
-                $invokeParameters[] = $binder->bind($this, $type->getName());
+                $binder = controllers\ModelBinderRegister::get($type->getName());
+                $invokeParameters[] = $binder->bind($this, $type->getName(), $methodParameter->name);
                 $this->boundParameters[$methodParameter->name] = $binder->getBound();
             } else {
                 $invokeParameters[] = null;
@@ -145,7 +145,9 @@ class Controller
                     $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
                     $results[$keyName] = [
                         'name' => $method->getName(),
-                        'binder' => isset($docComments['binder']) ? $docComments['binder'] : controllers\DefaultModelBinder::class
+                        'binder' => isset($docComments['binder']) 
+                            ? $docComments['binder'] 
+                            : controllers\ModelBinderRegister::getDefaultBinderClass()
                     ];
                 }
                 return $results;
