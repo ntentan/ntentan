@@ -3,6 +3,7 @@
 namespace ntentan\controllers\model_binders;
 
 use ntentan\controllers\ModelBinderInterface;
+use ntentan\utils\filesystem\UploadedFile;
 
 /**
  * 
@@ -15,7 +16,7 @@ class UploadedFileBinder implements ModelBinderInterface
     public function bind(\ntentan\Controller $controller, $type, $name)
     {
         $this->bound = true;
-        return new \ntentan\utils\filesystem\UploadedFile($_FILES[$name]);
+        return new UploadedFile($_FILES[$name]);
     }
 
     public function getBound()
