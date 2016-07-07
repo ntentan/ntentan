@@ -10,7 +10,7 @@ use ntentan\Controller;
  *
  * @author ekow
  */
-class DefaultModelBinder implements ModelBinderInterface
+class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface
 {   
     private $bound;
     

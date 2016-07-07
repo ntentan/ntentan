@@ -37,7 +37,6 @@
  */
 namespace ntentan;
 
-use ntentan\utils\Text;
 use ntentan\config\Config;
 use ntentan\controllers\Url;
 
@@ -115,7 +114,7 @@ class Ntentan
             'namespaces' => [$namespace, 'nibii\behaviours']
         ]);    
         controllers\ModelBinderRegister::setDefaultBinderClass(
-            controllers\ntentan\DefaultModelBinder::class
+            controllers\model_binders\DefaultModelBinder::class
         );
         controllers\ModelBinderRegister::register(
             utils\filesystem\UploadedFile::class, 

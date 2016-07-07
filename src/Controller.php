@@ -32,9 +32,7 @@
 
 namespace ntentan;
 
-use ntentan\controllers\exceptions\ComponentNotFoundException;
 use \ReflectionClass;
-use ntentan\Ntentan;
 use ntentan\View;
 use ntentan\utils\Text;
 
