@@ -44,10 +44,12 @@ class DefaultRouter implements interfaces\RouterInterface
      */
     public function execute($route)
     {
-        $this->route = explode('?', $route)[0];        
-        $staticParameters = $this->getRouteParameters($route, $routeName);
-        if($this->loadResource($staticParameters, $routeName)) return;
-
+        $this->route = explode('?', $route)[0];   
+        $routeName = '';
+        $parameters = $this->getRouteParameters($route, $routeName);
+        if($this->loadResource($parameters, $routeName)) {
+            return;
+        }
         
         // Throw an exception if we're still alive
         throw new exceptions\RouteNotAvailableException(
@@ -124,35 +126,42 @@ class DefaultRouter implements interfaces\RouterInterface
         if(preg_match("|{$description['regexp']}|i", $route, $matches)) {      
             foreach($matches as $key => $value) {
                 if(!is_numeric($key)) {
-                    $parameters[$key] = $value;
+                    $parameters[$key] = $this->expandParameter($key, $value);
                 }
-            }
-            
-            if(isset($parameters['route'])) {
-                $parameters += $this->loadResource($parameters['route']);
             }
             return $parameters;
         }
         return false;
     }
+    
+    private function expandParameter(&$key, $value)
+    {
+        $parts = explode('____', $key);
+        if($parts[1] == 'array'){
+            $key = $parts[0];
+            return explode('/', $value);
+        } 
+        return $value;
+    }
 
     public function mapRoute($name, $pattern, $parameters = [])
     {
-        // generate a PCRE regular expression from pattern
+        // Generate a PCRE regular expression from pattern
         $this->tempVariables = [];
 
         $regexp = preg_replace_callback(
-            "/{(?<prefix>\*|\?)?(?<name>[a-z_][a-zA-Z0-9\_]*)}/", 
+            "/{(?<prefix>\*|\#)?(?<name>[a-z_][a-zA-Z0-9\_]*)}/", 
             function($matches) {
                 $this->tempVariables[] = $matches['name'];
                 return sprintf(
-                    "(?<{$matches['name']}>[a-z0-9_.~:#[\]@!$&'()*+,;=%s]+)?", 
-                    $matches['prefix'] == '*' ? "\-/_" : null
+                    "(?<{$matches['name']}%s>[a-z0-9_.~:#[\]@!$&'()*+,;=%s]+)?", 
+                    $matches['prefix'] == '#' ? '____array' : null,
+                    $matches['prefix'] != '' ? "\-/_" : null
                 );
             },
             str_replace('/', '(/)?', $pattern)
         );
-
+            
         $routeDetails = [
             'pattern' => $pattern,
             'regexp' => $regexp,
