@@ -6,14 +6,14 @@
  * and open the template in the editor.
  */
 
-namespace ntentan\controllers\interfaces;
+namespace ntentan\interfaces;
 
 /**
  * Description of ClassNameResolverInterface
  *
  * @author ekow
  */
-interface ClassResolverInterface
+interface ControllerClassResolverInterface
 {
     public function getControllerClassName($name);
 }

@@ -39,6 +39,13 @@ namespace ntentan;
 
 use ntentan\config\Config;
 use ntentan\controllers\Url;
+use ntentan\interfaces\ControllerClassResolverInterface;
+use ntentan\nibii\interfaces\ModelClassResolverInterface;
+use ntentan\nibii\interfaces\ModelJoinerInterface;
+use ntentan\nibii\interfaces\TableNameResolverInterface;
+use ntentan\panie\ComponentResolverInterface;
+use ntentan\nibii\DriverAdapter;
+use ntentan\nibii\Resolver;
 
 /**
  * Include a collection of utility global functions, caching and exceptions.
@@ -87,22 +94,16 @@ class Ntentan
         Config::readPath(self::$configPath, 'ntentan');
         kaikai\Cache::init();
         
-        panie\InjectionContainer::bind(nibii\interfaces\ClassResolverInterface::class)
-            ->to(ClassNameResolver::class);
-        panie\InjectionContainer::bind(nibii\interfaces\ModelJoinerInterface::class)
-            ->to(ClassNameResolver::class);
-        panie\InjectionContainer::bind(nibii\interfaces\TableNameResolverInterface::class)
-            ->to(nibii\ClassNameResolver::class);
-        panie\InjectionContainer::bind(panie\ComponentResolverInterface::class)
-            ->to(ClassNameResolver::class);
-        panie\InjectionContainer::bind(controllers\interfaces\ClassResolverInterface::class)
-            ->to(ClassNameResolver::class);
+        panie\InjectionContainer::bind(ModelClassResolverInterface::class)->to(ClassNameResolver::class);
+        panie\InjectionContainer::bind(ModelJoinerInterface::class)->to(ClassNameResolver::class);
+        panie\InjectionContainer::bind(TableNameResolverInterface::class)->to(nibii\Resolver::class);
+        panie\InjectionContainer::bind(ComponentResolverInterface::class)->to(ClassNameResolver::class);
+        panie\InjectionContainer::bind(ControllerClassResolverInterface::class)->to(ClassNameResolver::class);
+        panie\InjectionContainer::bind(controllers\RouterInterface::class)->to(DefaultRouter::class);
         
         if(Config::get('ntentan:db.driver')){
-            panie\InjectionContainer::bind(nibii\DriverAdapter::class)
-                ->to(nibii\ClassNameResolver::getDriverAdapterClassName());
-            panie\InjectionContainer::bind(atiaa\Driver::class)
-                ->to(atiaa\Db::getDefaultDriverClassName());
+            panie\InjectionContainer::bind(DriverAdapter::class)->to(Resolver::getDriverAdapterClassName());
+            panie\InjectionContainer::bind(atiaa\Driver::class)->to(atiaa\Db::getDefaultDriverClassName());
         }
         
         Controller::setComponentResolverParameters([
@@ -150,12 +151,17 @@ class Ntentan
         honam\AssetsLoader::setSiteUrl(Url::path('public'));
         honam\AssetsLoader::appendSourceDir('assets');
         honam\AssetsLoader::setDestinationDir('public');   
-        honam\Helper::setBaseUrl(Url::path(''));
-        Router::execute(substr(utils\Input::server('REQUEST_URI'), 1));        
+        honam\Helper::setBaseUrl(Url::path(''));     
+        self::getRouter()->execute(substr(utils\Input::server('REQUEST_URI'), 1));
     }
 
     public static function getNamespace()
     {
         return self::$namespace;
+    }
+    
+    public static function getRouter()
+    {
+        return panie\InjectionContainer::singleton(controllers\RouterInterface::class);
     }
 }

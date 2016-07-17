@@ -3,17 +3,16 @@
 namespace ntentan;
 
 use ntentan\utils\Text;
-use ntentan\nibii\interfaces\ClassResolverInterface as ModelClassNameResolver;
-use ntentan\controllers\interfaces\ClassResolverInterface as ControllerClassNameResolver;
+use ntentan\nibii\interfaces\ModelClassResolverInterface;
+use ntentan\interfaces\ControllerClassResolverInterface;
 use ntentan\nibii\interfaces\ModelJoinerInterface;
-use ntentan\nibii\interfaces\TableNameResolverInterface;
 use ntentan\panie\ComponentResolverInterface;
 
 /**
  * Description of ModelClassResolver
  * @author ekow
  */
-class ClassNameResolver implements ModelClassNameResolver, ControllerClassNameResolver, ModelJoinerInterface, ComponentResolverInterface
+class ClassNameResolver implements ModelClassResolverInterface, ControllerClassResolverInterface, ModelJoinerInterface, ComponentResolverInterface
 {
     public function getModelClassName($model, $context)
     {

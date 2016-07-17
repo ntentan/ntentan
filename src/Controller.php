@@ -105,7 +105,8 @@ class Controller
                 $invokeParameters[] = $binder->bind($this, $type->getName(), $methodParameter->name);
                 $this->boundParameters[$methodParameter->name] = $binder->getBound();
             } else {
-                $invokeParameters[] = null;
+                $invokeParameters[] = $methodParameter->isDefaultValueAvailable() ? 
+                    $methodParameter->getDefaultValue() : null;
             }
         }        
     }
