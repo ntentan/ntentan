@@ -98,7 +98,7 @@ class AuthComponent extends Component
     {
         View::set("login_message", $this->authMethodInstance->getMessage());
         View::set("login_status", false);
-        $route = Router::getRoute();
+        $route = Ntentan::getRouter()->getRoute();
         $loginRoute = $this->parameters->get('login_route', 'login');
         
         if ($route !== $loginRoute) {
