@@ -44,7 +44,7 @@ use ntentan\config\Config;
 use ntentan\controllers\Redirect;
 
 /**
- * The class for the authentication component.
+ * AuthComponent provides a simplified authentication scheme
  *
  * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
  */
