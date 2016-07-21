@@ -8,9 +8,10 @@ use ntentan\panie\InjectionContainer;
 class DefaultRouter implements interfaces\RouterInterface
 {
     /**
-     * The routing table. An array of regular expressions and associated
-     * operations. If a particular request sent in through the URL matches a
-     * regular expression in the table, the associated operations are executed.
+     * The routing table. 
+     * An array of regular expressions and associated operations. If a particular 
+     * request sent in through the URL matches a regular expression in the table, 
+     * the associated operations are executed.
      *
      * @var array
      */
@@ -22,6 +23,7 @@ class DefaultRouter implements interfaces\RouterInterface
      * The route which is currently being executed. If the routing engine has
      * modified the requested route, this property would hold the value of the
      * new route.
+     * 
      * @var string
      */
     private $route;
@@ -77,7 +79,7 @@ class DefaultRouter implements interfaces\RouterInterface
         
         foreach($this->routes[$routeName]['parameters']['default'] as $parameter => $value)
         {
-            // Only set the controller on default route, if route is empty
+            // Only set the controller on default route, if no route is presented to the router.
             if($routeName == 'default' && $this->route != '' && $parameter == 'controller') continue;
             
             if(!isset($parameters[$parameter]))
