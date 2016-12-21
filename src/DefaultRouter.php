@@ -5,6 +5,10 @@ namespace ntentan;
 use ntentan\utils\Input;
 use ntentan\panie\InjectionContainer;
 
+/**
+ * Provides default routing logic that loads controllers based on URL requests 
+ * passed to the framework.
+ */
 class DefaultRouter implements interfaces\RouterInterface
 {
     /**
