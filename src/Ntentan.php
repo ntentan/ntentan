@@ -72,15 +72,26 @@ class Ntentan
     private static $namespace;
 
     /**
-     *
+     * Directory where application configurations are stored.
      *
      * @var string
      */
     private static $configPath = 'config/';
 
-
+    /**
+     * A prefix to expect in-front of all URLS. This is useful when running your
+     * application through a sub-directory.
+     * 
+     * @var string
+     */
     private static $prefix;
     
+    /**
+     * Initializes an application that has all its classes found in the base
+     * namespace.
+     * 
+     * @param string $namespace
+     */
     public static function init($namespace)
     {
         self::$namespace = $namespace;
@@ -99,7 +110,7 @@ class Ntentan
         panie\InjectionContainer::bind(TableNameResolverInterface::class)->to(nibii\Resolver::class);
         panie\InjectionContainer::bind(ComponentResolverInterface::class)->to(ClassNameResolver::class);
         panie\InjectionContainer::bind(ControllerClassResolverInterface::class)->to(ClassNameResolver::class);
-        panie\InjectionContainer::bind(controllers\RouterInterface::class)->to(DefaultRouter::class);
+        panie\InjectionContainer::bind(interfaces\RouterInterface::class)->to(DefaultRouter::class);
         
         if(Config::get('ntentan:db.driver')){
             panie\InjectionContainer::bind(DriverAdapter::class)->to(Resolver::getDriverAdapterClassName());
@@ -123,6 +134,11 @@ class Ntentan
         );
     }
     
+    /**
+     * Initialises ntentan's autoloader mechanism for classes that require
+     * the application's namespace. These would be the classes that you
+     * would write for this application.
+     */
     private static function setupAutoloader()
     {
         spl_autoload_register(function ($class) {
@@ -162,6 +178,6 @@ class Ntentan
     
     public static function getRouter()
     {
-        return panie\InjectionContainer::singleton(controllers\RouterInterface::class);
+        return panie\InjectionContainer::singleton(interfaces\RouterInterface::class);
     }
 }
