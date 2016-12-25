@@ -143,6 +143,7 @@ class DefaultRouter implements interfaces\RouterInterface
     private function expandParameter(&$key, $value)
     {
         $parts = explode('____', $key);
+        if(!isset($parts[1])) return $value;
         if($parts[1] == 'array'){
             $key = $parts[0];
             return explode('/', $value);
