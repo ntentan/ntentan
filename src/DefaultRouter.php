@@ -66,15 +66,13 @@ class DefaultRouter implements interfaces\RouterInterface
     
     private function getRouteParameters($route, &$routeName)
     {
-        $parameters = [];
-        
         // Go through predefined routes till a match is found
         foreach($this->routes as $routeName => $routeDescription) {
             $parameters = $this->match($route, $routeDescription);
-            if($parameters !== false) break;
+            if($parameters !== false) return $parameters;           
         }
-        
-        return $parameters;
+        $routeName = 'default';
+        return [];
     }
     
     private function loadResource($parameters, $routeName)
@@ -129,7 +127,7 @@ class DefaultRouter implements interfaces\RouterInterface
     private function match($route, $description)
     {
         $parameters = [];
-        if(preg_match("|{$description['regexp']}|i", urldecode($route), $matches)) {      
+        if(preg_match("|{$description['regexp']}|i", urldecode($route), $matches)) {     
             foreach($matches as $key => $value) {
                 if(!is_numeric($key)) {
                     $parameters[$key] = $this->expandParameter($key, $value);
