@@ -176,6 +176,10 @@ class Ntentan
         return self::$namespace;
     }
     
+    /**
+     * 
+     * @return RouterInterface
+     */
     public static function getRouter()
     {
         return panie\InjectionContainer::singleton(interfaces\RouterInterface::class);
