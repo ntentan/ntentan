@@ -9,10 +9,12 @@ use ntentan\nibii\interfaces\ModelJoinerInterface;
 use ntentan\panie\ComponentResolverInterface;
 
 /**
- * Description of ModelClassResolver
+ * Provides implementations of the various name resolver interfaces.
  * @author ekow
  */
-class ClassNameResolver implements ModelClassResolverInterface, ControllerClassResolverInterface, ModelJoinerInterface, ComponentResolverInterface
+class ClassNameResolver implements ModelClassResolverInterface, 
+    ControllerClassResolverInterface, ModelJoinerInterface, 
+    ComponentResolverInterface
 {
     public function getModelClassName($model, $context)
     {
