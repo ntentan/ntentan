@@ -110,7 +110,7 @@ class Ntentan
         panie\InjectionContainer::bind(TableNameResolverInterface::class)->to(nibii\Resolver::class);
         panie\InjectionContainer::bind(ComponentResolverInterface::class)->to(ClassNameResolver::class);
         panie\InjectionContainer::bind(ControllerClassResolverInterface::class)->to(ClassNameResolver::class);
-        panie\InjectionContainer::bind(interfaces\RouterInterface::class)->to(DefaultRouter::class);
+        panie\InjectionContainer::bind(interfaces\RouterInterface::class)->to(Router::class);
         
         if(Config::get('ntentan:db.driver')){
             panie\InjectionContainer::bind(DriverAdapter::class)->to(Resolver::getDriverAdapterClassName());
@@ -182,6 +182,6 @@ class Ntentan
      */
     public static function getRouter()
     {
-        return panie\InjectionContainer::singleton(interfaces\RouterInterface::class);
+        return panie\InjectionContainer::singleton(Router::class);
     }
 }

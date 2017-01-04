@@ -9,7 +9,7 @@ use ntentan\panie\InjectionContainer;
  * Provides default routing logic that loads controllers based on URL requests 
  * passed to the framework.
  */
-class DefaultRouter implements interfaces\RouterInterface
+class Router
 {
     /**
      * The routing table. 
@@ -22,6 +22,10 @@ class DefaultRouter implements interfaces\RouterInterface
     private $routes = [];
     
     private $tempVariables = [];
+    
+    private $register = [
+        'controller' => loaders\ControllerLoader::class
+    ];
 
     /**
      * The route which is currently being executed. If the routing engine has
@@ -90,38 +94,20 @@ class DefaultRouter implements interfaces\RouterInterface
                 $parameters[$parameter] = $value;
         }
         $parameters += Input::get() + Input::post();
-        if(isset($parameters['controller'])) {
+        $this->routerVariables = $parameters;
+        foreach($this->register as $key => $class) {
+            if(isset($parameters[$key])) {
+                return InjectionContainer::resolve($class)->load($parameters);
+            }
+        }
+        /*if(isset($parameters['controller'])) {
             return $this->loadController($parameters);
-        } 
+        }*/ 
         return false;
     }
     
     private function loadController($params = [])
     {
-        $controller = $params['controller'];
-        $action = isset($params['action']) ? $params['action'] : null;
-        
-        // Try to get the classname based on router parameters
-        $controllerClassName = InjectionContainer::singleton(interfaces\ControllerClassResolverInterface::class)
-            ->getControllerClassName($controller);
-        
-        // Try to resolve the classname 
-        $resolvedControllerClass = InjectionContainer::getResolvedClassName($controllerClassName);
-        
-        if($resolvedControllerClass) {
-            // use resolved class name
-            $params['controller_path'] = $controller;
-            $controllerInstance = InjectionContainer::resolve($controllerClassName);
-        } else if(class_exists($controller)) {
-            // use controller class
-            $controllerInstance = InjectionContainer::resolve($controller);
-        } else {
-            $this->attemptedControllers[] = $controllerClassName;
-            return false;
-        }
-        $this->routerVariables += $params;
-        $controllerInstance->executeControllerAction($action, $params);            
-        return true;
     }
     
     private function match($route, $description)
