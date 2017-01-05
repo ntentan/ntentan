@@ -4,8 +4,10 @@ namespace ntentan\loaders;
 
 use ntentan\panie\InjectionContainer;
 use ntentan\interfaces\ControllerClassResolverInterface;
+use ntentan\interfaces\ResourceLoaderInterface;
 
-class ControllerLoader {
+class ControllerLoader implements ResourceLoaderInterface
+{
     public function load($params) {
         $controller = $params['controller'];
         $action = isset($params['action']) ? $params['action'] : null;
@@ -25,11 +27,9 @@ class ControllerLoader {
             // use controller class
             $controllerInstance = InjectionContainer::resolve($controller);
         } else {
-            $this->attemptedControllers[] = $controllerClassName;
-            return false;
+            return ['success' => true, 'message' => "Failed to load class [$controllerClassName]"];
         }
         $controllerInstance->executeControllerAction($action, $params);            
-        return true;
-        
+        return ['success' => true];
     }
 }

@@ -57,14 +57,13 @@ class Router
         $this->route = explode('?', $route)[0];   
         $routeName = '';
         $parameters = $this->getRouteParameters($route, $routeName);
-        if($this->loadResource($parameters, $routeName)) {
-            return;
-        }
+        $response = $this->loadResource($parameters, $routeName);
+        if($response['success']) return;
         
         // Throw an exception if we're still alive
         throw new exceptions\RouteNotAvailableException(
-            $this->route == '' ? 'Default route' : $this->route,
-            $this->attemptedControllers
+            $response['message'],
+            $this->route == '' ? 'Default route' : $this->route
         );
     }
     
@@ -103,11 +102,7 @@ class Router
         /*if(isset($parameters['controller'])) {
             return $this->loadController($parameters);
         }*/ 
-        return false;
-    }
-    
-    private function loadController($params = [])
-    {
+        return ['success' => false, 'message' => 'Failed to find a suitable loader for this route'];
     }
     
     private function match($route, $description)
@@ -179,5 +174,10 @@ class Router
     public function getRouteDefinition($routeName)
     {
         return $this->routes[$routeName];
+    }
+    
+    public function registerLoader($tag, $class, $direction = 'append')
+    {
+        $this->register[$tag] = $class;
     }
 }

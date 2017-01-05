@@ -177,8 +177,8 @@ class Ntentan
     }
     
     /**
-     * 
-     * @return RouterInterface
+     * Returns the singleton instance of the router used by the framework.
+     * @return Router
      */
     public static function getRouter()
     {
