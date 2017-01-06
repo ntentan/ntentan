@@ -41,11 +41,6 @@ class Router
      * @var type 
      */
     private $routerVariables = [];
-    
-    /**
-     * 
-     */
-    private $attemptedControllers = [];
 
     /**
      * Invoke the router to load a given resource.
@@ -58,7 +53,9 @@ class Router
         $routeName = '';
         $parameters = $this->getRouteParameters($route, $routeName);
         $response = $this->loadResource($parameters, $routeName);
-        if($response['success']) return;
+        if($response['success']) {
+            return;
+        }
         
         // Throw an exception if we're still alive
         throw new exceptions\RouteNotAvailableException(
@@ -164,6 +161,11 @@ class Router
             return $this->routerVariables[$var];
         }
         return null;
+    }
+    
+    public function setVar($var, $value)
+    {
+        $this->routerVariables[$var] = $value;
     }
     
     public function getRoute()

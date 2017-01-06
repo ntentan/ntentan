@@ -2,7 +2,7 @@
 
 namespace ntentan\controllers;
 use ntentan\config\Config;
-use ntentan\Router;
+use ntentan\Ntentan;
 
 /**
  * Description of Url
@@ -13,7 +13,7 @@ class Url
 {
     public static function action($action, $variables = [])
     {
-        $controller = Router::getVar('controller_path');
+        $controller = Ntentan::getRouter()->getVar('controller_path');
         $queries = [];
         foreach($variables as $key => $value) {
             $queries[] = sprintf("%s=%s", urldecode($key), urlencode($value));

@@ -22,12 +22,13 @@ class ControllerLoader implements ResourceLoaderInterface
         if($resolvedControllerClass) {
             // use resolved class name
             $params['controller_path'] = $controller;
+            Ntentan::getRouter()->setVar('controller_path', $controller);
             $controllerInstance = InjectionContainer::resolve($controllerClassName);
         } else if(class_exists($controller)) {
             // use controller class
             $controllerInstance = InjectionContainer::resolve($controller);
         } else {
-            return ['success' => true, 'message' => "Failed to load class [$controllerClassName]"];
+            return ['success' => false, 'message' => "Failed to load class [$controllerClassName]"];
         }
         $controllerInstance->executeControllerAction($action, $params);            
         return ['success' => true];
