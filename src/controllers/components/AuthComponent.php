@@ -170,6 +170,8 @@ class AuthComponent extends Component
         $this->authMethodInstance->setUsersModel($this->parameters->get('users_model'));
         $userModelFields = $this->parameters->get('users_model_fields');
         $this->authMethodInstance->setUsersModelFields($userModelFields);
+        View::setLayout('auth_main');
+        View::setTemplate('auth_login');
         View::set('login_data',
             [
                 $userModelFields['username'] => Input::post($userModelFields['username']), 
