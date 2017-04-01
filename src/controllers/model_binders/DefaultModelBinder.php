@@ -10,41 +10,38 @@ use ntentan\Controller;
  *
  * @author ekow
  */
-class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface
-{   
+class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface {
+
     private $bound;
-    
+
     /**
      * 
      * @param \ntentan\Model $object
      */
-    private function getModelFields($object)
-    {
+    private function getModelFields($object) {
         return array_keys($object->getDescription()->getFields());
     }
-    
-    public function bind(Controller $controller, $type, $name)
-    {
+
+    public function bind(Controller $controller, $type, $name) {
         $this->bound = false;
         $object = \ntentan\panie\InjectionContainer::resolve($type);
-        if(is_a($object, '\ntentan\Model')) {
-            $fields = $this->getModelFields($object);   
+        if (is_a($object, '\ntentan\Model')) {
+            $fields = $this->getModelFields($object);
         } else {
             $fields = $this->getClassFields($object);
         }
         $requestData = Input::post() + Input::get();
-        foreach($fields as $field)
-        {
-            if(isset($requestData[$field])) {
+        foreach ($fields as $field) {
+            if (isset($requestData[$field])) {
                 $object->$field = $requestData[$field] == '' ? null : $requestData[$field];
                 $this->bound = true;
             }
         }
         return $object;
     }
-    
-    public function getBound()
-    {
+
+    public function getBound() {
         return $this->bound;
     }
+
 }
