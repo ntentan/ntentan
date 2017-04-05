@@ -182,6 +182,7 @@ class Controller
     public function executeControllerAction($action, $params)
     {
         $name = $this->getName();
+        $action = $action == '' ? 'index' : $action;
         $path = Text::camelize($action);
         $return = null;
         $invokeParameters = [];       
