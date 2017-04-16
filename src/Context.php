@@ -1,7 +1,8 @@
 <?php
+
 /**
  * Common utilities file for the Ntentan framework. This file contains a
- * collection of utility static methods which are used accross the framework.
+ * collection of utility methods which are used accross the framework.
  *
  * Ntentan Framework
  * Copyright (c) 2008-2015 James Ekow Abaka Ainooson
@@ -29,12 +30,11 @@
  * @copyright Copyright 2010 James Ekow Abaka Ainooson
  * @license MIT
  */
-
-
 /**
  * Root namespace for all ntentan classes
  * @author ekow
  */
+
 namespace ntentan;
 
 use ntentan\config\Config;
@@ -46,6 +46,7 @@ use ntentan\nibii\interfaces\TableNameResolverInterface;
 use ntentan\panie\ComponentResolverInterface;
 use ntentan\nibii\DriverAdapter;
 use ntentan\nibii\Resolver;
+use ntentan\utils\Input;
 
 /**
  * Include a collection of utility global functions, caching and exceptions.
@@ -62,21 +63,14 @@ use ntentan\nibii\Resolver;
  *  @author     James Ainooson <jainooson@gmail.com>
  *  @license    MIT
  */
-class Ntentan
-{
-    /**
-     * Root namespace for entire application.
-     *
-     * @var string
-     */
-    private static $namespace;
+class Context {
 
     /**
      * Directory where application configurations are stored.
      *
      * @var string
      */
-    private static $configPath = 'config/';
+    private $configPath = 'config/';
 
     /**
      * A prefix to expect in-front of all URLS. This is useful when running your
@@ -84,39 +78,62 @@ class Ntentan
      * 
      * @var string
      */
-    private static $prefix;
+    private $prefix;
     
+    private $container;
+    
+    private $namespace = 'app';
+    
+    /**
+     *
+     * @var Application 
+     */
+    private $app;
+    
+    /**
+     * @return Context New context
+     */
+    public static function initialize($namespace = 'app') {
+        $container = new panie\Container();
+        // Force binding of context as singleton in container
+        $container->bind(self::class)->to(self::class)->asSingleton();
+        return $container->resolve(
+            self::class, ['container' => $container, 'namespace' => $namespace]
+        );
+    }
+
     /**
      * Initializes an application that has all its classes found in the base
      * namespace.
      * 
+     * @param panie\Container $container
      * @param string $namespace
      */
-    public static function init($namespace)
-    {
-        self::$namespace = $namespace;
-        self::$prefix = Config::get('app.prefix');
-        self::$prefix = (self::$prefix == '' ? '' : '/') . self::$prefix;
-        
-        self::setupAutoloader();
+    public function __construct($container, $namespace) {
+        $this->container = $container;
+        $this->setupAutoloader();
+        $this->prefix = Config::get('app.prefix');
+        $this->prefix = ($this->prefix == '' ? '' : '/') . $this->prefix;
+
+        //self::setupAutoloader();
 
         logger\Logger::init('logs/app.log');
 
-        Config::readPath(self::$configPath, 'ntentan');
+        Config::readPath($this->configPath, 'ntentan');
         kaikai\Cache::init();
-        
-        panie\InjectionContainer::bind(ModelClassResolverInterface::class)->to(ClassNameResolver::class);
-        panie\InjectionContainer::bind(ModelJoinerInterface::class)->to(ClassNameResolver::class);
-        panie\InjectionContainer::bind(TableNameResolverInterface::class)->to(nibii\Resolver::class);
-        panie\InjectionContainer::bind(ComponentResolverInterface::class)->to(ClassNameResolver::class);
-        panie\InjectionContainer::bind(ControllerClassResolverInterface::class)->to(ClassNameResolver::class);
-        panie\InjectionContainer::bind(interfaces\RouterInterface::class)->to(Router::class);
-        
-        if(Config::get('ntentan:db.driver')){
-            panie\InjectionContainer::bind(DriverAdapter::class)->to(Resolver::getDriverAdapterClassName());
-            panie\InjectionContainer::bind(atiaa\Driver::class)->to(atiaa\Db::getDefaultDriverClassName());
+
+        $container->bind(ModelClassResolverInterface::class)->to(ClassNameResolver::class);
+        $container->bind(ModelJoinerInterface::class)->to(ClassNameResolver::class);
+        $container->bind(TableNameResolverInterface::class)->to(nibii\Resolver::class);
+        $container->bind(ComponentResolverInterface::class)->to(ClassNameResolver::class);
+        $container->bind(ControllerClassResolverInterface::class)->to(ClassNameResolver::class);
+        $container->bind(interfaces\RouterInterface::class)->to(Router::class);
+
+        if (Config::get('ntentan:db.driver')) {
+            $container->bind(DriverAdapter::class)->to(Resolver::getDriverAdapterClassName());
+            $container->bind(atiaa\Driver::class)->to(atiaa\Db::getDefaultDriverClassName());
         }
-        
+
         Controller::setComponentResolverParameters([
             'type' => 'component',
             'namespaces' => [$namespace, 'controllers\components']
@@ -124,25 +141,24 @@ class Ntentan
         nibii\RecordWrapper::setComponentResolverParameters([
             'type' => 'behaviour',
             'namespaces' => [$namespace, 'nibii\behaviours']
-        ]);    
+        ]);
+        
         controllers\ModelBinderRegister::setDefaultBinderClass(
             controllers\model_binders\DefaultModelBinder::class
         );
         controllers\ModelBinderRegister::register(
-            utils\filesystem\UploadedFile::class, 
-            controllers\model_binders\UploadedFileBinder::class
+            utils\filesystem\UploadedFile::class, controllers\model_binders\UploadedFileBinder::class
         );
     }
-    
+
     /**
      * Initialises ntentan's autoloader mechanism for classes that require
      * the application's namespace. These would be the classes that you
      * would write for this application.
      */
-    private static function setupAutoloader()
-    {
+    private function setupAutoloader() {
         spl_autoload_register(function ($class) {
-            $prefix = Ntentan::getNamespace() . "\\";
+            $prefix = $this->namespace . "\\";
             $baseDir = 'src/';
             $len = strlen($prefix);
 
@@ -156,32 +172,39 @@ class Ntentan
             if (file_exists($file)) {
                 require_once $file;
             }
-        });          
+        });
     }
     
-    public static function run()
-    {
-        Session::start();
+    /**
+     * 
+     * @return Router
+     */
+    public function getRouter() {
+        return $this->container->singleton(Router::class);
+    }
+    
+    public function getContainer() {
+        return $this->container;
+    }
+    
+    public function getApp() {
+        return $this->app;
+    }
+
+    public function execute($applicationClass = Application::class) {
+        /*Session::start();
         honam\TemplateEngine::prependPath('views/shared');
         honam\TemplateEngine::prependPath('views/layouts');
         honam\AssetsLoader::setSiteUrl(Url::path('public'));
         honam\AssetsLoader::appendSourceDir('assets');
-        honam\AssetsLoader::setDestinationDir('public');   
-        honam\Helper::setBaseUrl(Url::path(''));     
-        self::getRouter()->execute(substr(utils\Input::server('REQUEST_URI'), 1));
+        honam\AssetsLoader::setDestinationDir('public');
+        honam\Helper::setBaseUrl(Url::path(''));
+        self::getRouter()->execute(substr(utils\Input::server('REQUEST_URI'), 1));*/
+        $this->app = $this->container->resolve($applicationClass);
+        $route = $this->getRouter()->route(substr(Input::server('REQUEST_URI'), 1));
+        $this->app->setup();
+        $pipeline = $this->app->getPipeline();
+        $this->container->resolve(PipelineRunner::class)->run($pipeline, $route);
     }
 
-    public static function getNamespace()
-    {
-        return self::$namespace;
-    }
-    
-    /**
-     * Returns the singleton instance of the router used by the framework.
-     * @return Router
-     */
-    public static function getRouter()
-    {
-        return panie\InjectionContainer::singleton(Router::class);
-    }
 }
