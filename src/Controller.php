@@ -179,7 +179,7 @@ class Controller
         return strtolower($name);
     }
 
-    public function executeControllerAction($action, $params)
+    public function executeControllerAction($action, $params, $container)
     {
         $name = $this->getName();
         $action = $action == '' ? 'index' : $action;
@@ -188,7 +188,7 @@ class Controller
         $invokeParameters = [];       
         
         if ($methodDetails = $this->getMethod($path)) {
-            panie\InjectionContainer::bind(controllers\ModelBinderInterface::class)
+            $container->bind(controllers\ModelBinderInterface::class)
                 ->to($methodDetails['binder']); 
             $method = new \ReflectionMethod($this, $methodDetails['name']);
             honam\TemplateEngine::prependPath("views/{$name}");

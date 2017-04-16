@@ -21,10 +21,7 @@ class Router {
      */
     private $routes = [];
     private $tempVariables = [];
-    private $register = [
-        'controller' => loaders\ControllerLoader::class
-    ];
-
+    
     /**
      * The route which is currently being executed. If the routing engine has
      * modified the requested route, this property would hold the value of the
@@ -47,54 +44,26 @@ class Router {
      */
     public function route($route) {
         $this->route = explode('?', $route)[0];
-        $routeName = 'default';
+        $routeName = '';
         $parameters = [];
         
         // Go through predefined routes till a match is found
         foreach ($this->routes as $routeName => $routeDescription) {
             $parameters = $this->match($route, $routeDescription);
-            if ($parameters !== false) break;
-        }
-                
-        return ['parameters' => $parameters, 'name' => $routeName];
-        
-        /*$response = $this->loadResource($parameters, $routeName);
-        if ($response['success']) {
-            return;
-        }
-
-        // Throw an exception if we're still alive
-        throw new exceptions\RouteNotAvailableException(
-        $response['message'], $this->route == '' ? 'Default route' : $this->route
-        );*/
-    }
-
-    /*private function loadResource($parameters, $routeName) {
-        if ($routeName == null)
-            return false;
-
-        foreach ($this->routes[$routeName]['parameters']['default'] as $parameter => $value) {
-            // Only set the controller on default route, if no route is presented to the router.
-            if ($routeName == 'default' && $this->route != '' && $parameter == 'controller')
-                continue;
-
-            if (!isset($parameters[$parameter]))
-                $parameters[$parameter] = $value;
-            else if ($parameters[$parameter] === '')
-                $parameters[$parameter] = $value;
-        }
-        $parameters += Input::get() + Input::post();
-        $this->routerVariables = $parameters;
-        foreach ($this->register as $key => $class) {
-            if (isset($parameters[$key])) {
-                return InjectionContainer::resolve($class)->load($parameters);
+            if ($parameters !== false) {
+                return [
+                    'route' => $this->route, 
+                    'parameters' => $parameters, 
+                    'description' => $this->routes[$routeName]
+                ];
             }
         }
-        /* if(isset($parameters['controller'])) {
-          return $this->loadController($parameters);
-          } */
-        /*return ['success' => false, 'message' => 'Failed to find a suitable loader for this route'];
-    }*/
+        return [
+            'route' => $this->route,
+            'parameters' => $parameters, 
+            'description' => $this->routes['default']
+        ];
+    }
 
     private function match($route, $description) {
         $parameters = [];
@@ -134,6 +103,7 @@ class Router {
         );
 
         $routeDetails = [
+            'name' => $name,
             'pattern' => $pattern,
             'regexp' => $regexp,
             'parameters' => $parameters,

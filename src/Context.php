@@ -111,6 +111,7 @@ class Context {
      */
     public function __construct($container, $namespace) {
         $this->container = $container;
+        $this->namespace = $namespace;
         $this->setupAutoloader();
         $this->prefix = Config::get('app.prefix');
         $this->prefix = ($this->prefix == '' ? '' : '/') . $this->prefix;
@@ -127,7 +128,6 @@ class Context {
         $container->bind(TableNameResolverInterface::class)->to(nibii\Resolver::class);
         $container->bind(ComponentResolverInterface::class)->to(ClassNameResolver::class);
         $container->bind(ControllerClassResolverInterface::class)->to(ClassNameResolver::class);
-        $container->bind(interfaces\RouterInterface::class)->to(Router::class);
 
         if (Config::get('ntentan:db.driver')) {
             $container->bind(DriverAdapter::class)->to(Resolver::getDriverAdapterClassName());
@@ -161,7 +161,7 @@ class Context {
             $prefix = $this->namespace . "\\";
             $baseDir = 'src/';
             $len = strlen($prefix);
-
+            
             if (strncmp($prefix, $class, $len) !== 0) {
                 return;
             }
@@ -170,9 +170,13 @@ class Context {
             $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
 
             if (file_exists($file)) {
-                require_once $file;
+                include $file;
             }
         });
+    }
+    
+    public function getNamespace() {
+        return $this->namespace;
     }
     
     /**
@@ -192,17 +196,10 @@ class Context {
     }
 
     public function execute($applicationClass = Application::class) {
-        /*Session::start();
-        honam\TemplateEngine::prependPath('views/shared');
-        honam\TemplateEngine::prependPath('views/layouts');
-        honam\AssetsLoader::setSiteUrl(Url::path('public'));
-        honam\AssetsLoader::appendSourceDir('assets');
-        honam\AssetsLoader::setDestinationDir('public');
-        honam\Helper::setBaseUrl(Url::path(''));
-        self::getRouter()->execute(substr(utils\Input::server('REQUEST_URI'), 1));*/
+        Session::start();
         $this->app = $this->container->resolve($applicationClass);
-        $route = $this->getRouter()->route(substr(Input::server('REQUEST_URI'), 1));
         $this->app->setup();
+        $route = $this->getRouter()->route(substr(Input::server('REQUEST_URI'), 1));
         $pipeline = $this->app->getPipeline();
         $this->container->resolve(PipelineRunner::class)->run($pipeline, $route);
     }

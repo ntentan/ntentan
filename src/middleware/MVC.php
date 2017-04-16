@@ -2,19 +2,41 @@
 
 namespace ntentan\middleware;
 
+use ntentan\utils\Input;
+use ntentan\honam\TemplateEngine;
+use ntentan\honam\Helper;
+use ntentan\honam\AssetsLoader;
+use ntentan\controllers\Url;
+use ntentan\Context;
+
 class MVC extends \ntentan\Middleware {
     
-    public function run($route, $response) {
-        
+    private $container;
+    
+    private $loaders = [
+        'controller' => loaders\ControllerLoader::class
+    ];    
+    
+    public function __construct(Context $context) {
+        $this->container = $context->getContainer();
     }
     
-    private function loadResource($parameters, $routeName) {
-        if ($routeName == null)
-            return false;
-
-        foreach ($this->routes[$routeName]['parameters']['default'] as $parameter => $value) {
+    public function run($route, $response) {
+        TemplateEngine::prependPath('views/shared');
+        TemplateEngine::prependPath('views/layouts');
+        AssetsLoader::setSiteUrl(Url::path('public'));
+        AssetsLoader::appendSourceDir('assets');
+        AssetsLoader::setDestinationDir('public');
+        Helper::setBaseUrl(Url::path(''));
+        return $this->loadResource($route);
+    }
+    
+    private function loadResource($route) {
+        $parameters = $route['parameters'];
+        $routeDescription = $route['description'];
+        foreach ($routeDescription['parameters']['default'] as $parameter => $value) {
             // Only set the controller on default route, if no route is presented to the router.
-            if ($routeName == 'default' && $this->route != '' && $parameter == 'controller')
+            if ($routeDescription['name'] == 'default' && $route['route'] != '' && $parameter == 'controller')
                 continue;
 
             if (!isset($parameters[$parameter]))
@@ -23,16 +45,16 @@ class MVC extends \ntentan\Middleware {
                 $parameters[$parameter] = $value;
         }
         $parameters += Input::get() + Input::post();
-        $this->routerVariables = $parameters;
-        foreach ($this->register as $key => $class) {
+        foreach ($this->loaders as $key => $class) {
             if (isset($parameters[$key])) {
-                return InjectionContainer::resolve($class)->load($parameters);
+                return $this->container->resolve($class)->load($parameters);
             }
         }
-        /* if(isset($parameters['controller'])) {
-          return $this->loadController($parameters);
-          } */
-        /*return ['success' => false, 'message' => 'Failed to find a suitable loader for this route'];
+        return ['success' => false, 'message' => 'Failed to find a suitable loader for this route'];
     }    
+    
+    public function registerLoader($key, $class) {
+        $this->loaders[$key] = $class;
+    }
 
 }
