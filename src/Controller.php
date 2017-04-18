@@ -57,6 +57,8 @@ class Controller
     private $componentMap = [];
     
     private $boundParameters = [];
+    
+    protected $context;
 
     /**
      * Adds a component to the controller. Component loading is done with the
@@ -68,6 +70,7 @@ class Controller
      * @param string $component Name of the component
      * @todo cache the location of a component once found to prevent unessearry
      * checking
+     * @todo Consider axing this component architecture in favour of PHP traits
      */
     public function addComponent($component, $params = null)
     {
@@ -130,7 +133,7 @@ class Controller
     
     private function getMethod($path)
     {
-        $methods = kaikai\Cache::read(
+        $methods = $this->context->getCache()->read(
             "controller.{$this->getClassName()}.methods", 
             function() {
                 $class = new ReflectionClass($this);
@@ -179,16 +182,17 @@ class Controller
         return strtolower($name);
     }
 
-    public function executeControllerAction($action, $params, $container)
+    public function executeControllerAction($action, $params, $context)
     {
         $name = $this->getName();
         $action = $action == '' ? 'index' : $action;
         $path = Text::camelize($action);
         $return = null;
         $invokeParameters = [];       
+        $this->context = $context;
         
         if ($methodDetails = $this->getMethod($path)) {
-            $container->bind(controllers\ModelBinderInterface::class)
+            $context->getContainer()->bind(controllers\ModelBinderInterface::class)
                 ->to($methodDetails['binder']); 
             $method = new \ReflectionMethod($this, $methodDetails['name']);
             honam\TemplateEngine::prependPath("views/{$name}");

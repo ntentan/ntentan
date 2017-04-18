@@ -38,7 +38,6 @@
 namespace ntentan;
 
 use ntentan\config\Config;
-use ntentan\controllers\Url;
 use ntentan\interfaces\ControllerClassResolverInterface;
 use ntentan\nibii\interfaces\ModelClassResolverInterface;
 use ntentan\nibii\interfaces\ModelJoinerInterface;
@@ -84,6 +83,8 @@ class Context {
     
     private $namespace = 'app';
     
+    private $cache;
+    
     /**
      *
      * @var Application 
@@ -121,7 +122,7 @@ class Context {
         logger\Logger::init('logs/app.log');
 
         Config::readPath($this->configPath, 'ntentan');
-        kaikai\Cache::init();
+        $this->cache = new kaikai\Cache($container);
 
         $container->bind(ModelClassResolverInterface::class)->to(ClassNameResolver::class);
         $container->bind(ModelJoinerInterface::class)->to(ClassNameResolver::class);
@@ -191,8 +192,20 @@ class Context {
         return $this->container;
     }
     
+    /**
+     * 
+     * @return Application
+     */
     public function getApp() {
         return $this->app;
+    }
+    
+    /**
+     * 
+     * @return kaikai\Cache
+     */
+    public function getCache() {
+        return $this->cache;
     }
 
     public function execute($applicationClass = Application::class) {
