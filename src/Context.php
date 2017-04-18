@@ -85,6 +85,8 @@ class Context {
     
     private $cache;
     
+    private $modelBinders;
+    
     /**
      *
      * @var Application 
@@ -129,27 +131,21 @@ class Context {
         $container->bind(TableNameResolverInterface::class)->to(nibii\Resolver::class);
         $container->bind(ComponentResolverInterface::class)->to(ClassNameResolver::class);
         $container->bind(ControllerClassResolverInterface::class)->to(ClassNameResolver::class);
+        $container->bind(View::class)->to(View::class)->asSingleton();
 
         if (Config::get('ntentan:db.driver')) {
             $container->bind(DriverAdapter::class)->to(Resolver::getDriverAdapterClassName());
             $container->bind(atiaa\Driver::class)->to(atiaa\Db::getDefaultDriverClassName());
         }
-
-        Controller::setComponentResolverParameters([
-            'type' => 'component',
-            'namespaces' => [$namespace, 'controllers\components']
-        ]);
-        nibii\RecordWrapper::setComponentResolverParameters([
-            'type' => 'behaviour',
-            'namespaces' => [$namespace, 'nibii\behaviours']
-        ]);
         
-        controllers\ModelBinderRegister::setDefaultBinderClass(
+        $this->modelBinders = new controllers\ModelBinderRegister($container);
+        $this->modelBinders->setDefaultBinderClass(
             controllers\model_binders\DefaultModelBinder::class
         );
-        controllers\ModelBinderRegister::register(
+        $this->modelBinders->register(
             utils\filesystem\UploadedFile::class, controllers\model_binders\UploadedFileBinder::class
         );
+        $this->modelBinders->register(View::class, controllers\model_binders\ViewBinder::class);
     }
 
     /**
@@ -207,6 +203,13 @@ class Context {
     public function getCache() {
         return $this->cache;
     }
+    
+    /**
+     * @return controllers\ModelBinderRegister
+     */
+    public function getModelBinders() {
+        return $this->modelBinders;
+    }
 
     public function execute($applicationClass = Application::class) {
         Session::start();
@@ -214,7 +217,8 @@ class Context {
         $this->app->setup();
         $route = $this->getRouter()->route(substr(Input::server('REQUEST_URI'), 1));
         $pipeline = $this->app->getPipeline();
-        $this->container->resolve(PipelineRunner::class)->run($pipeline, $route);
+        $output = $this->container->resolve(PipelineRunner::class)->run($pipeline, $route);
+        echo $output;
     }
 
 }

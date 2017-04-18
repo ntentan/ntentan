@@ -49,39 +49,14 @@ use ntentan\utils\Text;
  * @todo    Controllers must output data that can be passed to some kind of
  *          template engine like smarty.
  */
-class Controller
-{
-    
-    use panie\ComponentContainerTrait;
+class Controller {
 
     private $componentMap = [];
-    
     private $boundParameters = [];
-    
-    protected $context;
+    private $activeAction;
+    private $context;
 
-    /**
-     * Adds a component to the controller. Component loading is done with the
-     * following order of priority.
-     *  1. Application components
-     *  2. Plugin components
-     *  3. Core components
-     *  
-     * @param string $component Name of the component
-     * @todo cache the location of a component once found to prevent unessearry
-     * checking
-     * @todo Consider axing this component architecture in favour of PHP traits
-     */
-    public function addComponent($component, $params = null)
-    {
-        $this->componentMap[Text::camelize($component, '.')] = $component;
-        $componentInstance = $this->getComponentInstance($component);
-        $componentInstance->setController($this);
-        $componentInstance->init($params);
-    }
-
-    public function __get($property)
-    {
+    public function __get($property) {
         if (substr($property, -9) == "Component") {
             $component = substr($property, 0, strlen($property) - 9);
             return $this->getComponentInstance($this->componentMap[$component]);
@@ -90,91 +65,91 @@ class Controller
         }
     }
     
+    protected function getContext() {
+        return $this->context;
+    }
+
     /**
      * 
      * @param array $invokeParameters
      * @param \ReflectionParameter $methodParameter
      * @param array $params
      */
-    private function bindParameter(&$invokeParameters, $methodParameter, $params)
-    {        
-        if(isset($params[$methodParameter->name])) {
+    private function bindParameter(&$invokeParameters, $methodParameter, $params) {
+        if (isset($params[$methodParameter->name])) {
             $invokeParameters[] = $params[$methodParameter->name];
             $this->boundParameters[$methodParameter->name] = true;
         } else {
-            $type = $methodParameter->getClass();        
-            if($type !== null) {
-                $binder = controllers\ModelBinderRegister::get($type->getName());
-                $invokeParameters[] = $binder->bind($this, $type->getName(), $methodParameter->name);
+            $type = $methodParameter->getClass();
+            if ($type !== null) {
+                $binder = $this->context->getModelBinders()->get($type->getName());
+                $invokeParameters[] = $binder->bind($this, $this->activeAction, $type->getName(), $methodParameter->name);
                 $this->boundParameters[$methodParameter->name] = $binder->getBound();
             } else {
-                $invokeParameters[] = $methodParameter->isDefaultValueAvailable() ? 
-                    $methodParameter->getDefaultValue() : null;
+                $invokeParameters[] = $methodParameter->isDefaultValueAvailable() ?
+                        $methodParameter->getDefaultValue() : null;
             }
-        }        
+        }
     }
-    
-    protected function isBound($parameter)
-    {
+
+    protected function isBound($parameter) {
         return $this->boundParameters[$parameter];
     }
-    
-    private function parseDocComment($comment)
-    {
+
+    private function parseDocComment($comment) {
         $lines = explode("\n", $comment);
         $attributes = [];
-        foreach($lines as $line) {
-            if(preg_match("/@ntentan\.(?<attribute>[a-z]+)\s+(?<value>.+)/", $line, $matches)) {
+        foreach ($lines as $line) {
+            if (preg_match("/@ntentan\.(?<attribute>[a-z]+)\s+(?<value>.+)/", $line, $matches)) {
                 $attributes[$matches['attribute']] = $matches['value'];
             }
         }
         return $attributes;
     }
-    
-    private function getMethod($path)
-    {
+
+    private function getMethod($path) {
+        $className = (new ReflectionClass($this))->getShortName();
         $methods = $this->context->getCache()->read(
-            "controller.{$this->getClassName()}.methods", 
-            function() {
-                $class = new ReflectionClass($this);
-                $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
-                $results = [];
-                foreach($methods as $method) {
-                    $methodName = $method->getName();
-                    if(substr($methodName, 0, 2) == '__') continue;
-                    if(array_search($methodName, ['addComponent', 'executeControllerAction', 'setComponentResolverParameters'])) continue;
-                    $docComments = $this->parseDocComment($method->getDocComment());
-                    $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
-                    $results[$keyName] = [
-                        'name' => $method->getName(),
-                        'binder' => isset($docComments['binder']) 
-                            ? $docComments['binder'] 
-                            : controllers\ModelBinderRegister::getDefaultBinderClass()
-                    ];
-                }
-                return $results;
+                "controller.{$className}.methods", function() {
+            $class = new ReflectionClass($this);
+            $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
+            $results = [];
+            foreach ($methods as $method) {
+                $methodName = $method->getName();
+                if (substr($methodName, 0, 2) == '__')
+                    continue;
+                if (array_search($methodName, ['getActiveControllerAction', 'executeControllerAction']))
+                    continue;
+                $docComments = $this->parseDocComment($method->getDocComment());
+                $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
+                $results[$keyName] = [
+                    'name' => $method->getName(),
+                    'binder' => isset($docComments['binder']) 
+                        ? $docComments['binder'] 
+                        : $this->context->getModelBinders()->getDefaultBinderClass()
+                ];
             }
+            return $results;
+        }
         );
-        
-        if(isset($methods[$path . utils\Input::server('REQUEST_METHOD')])) {
+
+        if (isset($methods[$path . utils\Input::server('REQUEST_METHOD')])) {
             return $methods[$path . utils\Input::server('REQUEST_METHOD')];
-        } else if(isset($methods[$path])) {
+        } else if (isset($methods[$path])) {
             return $methods[$path];
         }
-        
+
         return false;
     }
-    
-    protected function getClassName()
-    {
+
+    /*protected function getClassName() {
         return (new ReflectionClass($this))->getShortName();
     }
-    
-    protected function getName()
-    {
+
+    protected function getName() {
         $className = $this->getClassName();
         $name = '';
-        if(substr($className, -10) == 'Controller') {
+        if (substr($className, -10) == 'Controller') {
             $name = substr($className, 0, -10);
         } else {
             $name = substr($className, 0, -9);
@@ -182,46 +157,31 @@ class Controller
         return strtolower($name);
     }
 
-    public function executeControllerAction($action, $params, $context)
-    {
-        $name = $this->getName();
+    public function getActiveControllerAction() {
+        return $this->activeAction;
+    }*/
+
+    public function executeControllerAction($action, $params, $context) {
         $action = $action == '' ? 'index' : $action;
-        $path = Text::camelize($action);
+        $methodName = Text::camelize($action);
         $return = null;
-        $invokeParameters = [];       
+        $invokeParameters = [];
         $this->context = $context;
-        
-        if ($methodDetails = $this->getMethod($path)) {
-            $context->getContainer()->bind(controllers\ModelBinderInterface::class)
-                ->to($methodDetails['binder']); 
+
+        if ($methodDetails = $this->getMethod($methodName)) {
+            $this->activeAction = $action;
+            $container = $context->getContainer();
+            $container->bind(controllers\ModelBinderInterface::class)
+                    ->to($methodDetails['binder']);
             $method = new \ReflectionMethod($this, $methodDetails['name']);
-            honam\TemplateEngine::prependPath("views/{$name}");
-            if (View::getTemplate() == null) {
-                View::setTemplate(
-                    "{$name}_{$action}"
-                    . '.tpl.php'
-                );
-            }
-            
             $methodParameters = $method->getParameters();
-            foreach($methodParameters as $methodParameter)
-            {
+            foreach ($methodParameters as $methodParameter) {
                 $this->bindParameter($invokeParameters, $methodParameter, $params);
             }
-            
-            $method->invokeArgs($this, $invokeParameters);
-            $return = View::out();
-            echo $return;
-            return;
-        } else {
-            foreach ($this->loadedComponents as $component) {
-                //@todo Look at how to prevent this from running several times
-                if ($component->hasMethod($path)) {
-                    $component->executeControllerAction($path, $params);
-                    return;
-                }
-            }
+
+            return $method->invokeArgs($this, $invokeParameters);
         }
-        throw new exceptions\ControllerActionNotFoundException($this, $path);
+        throw new exceptions\ControllerActionNotFoundException($this, $methodName);
     }
+
 }

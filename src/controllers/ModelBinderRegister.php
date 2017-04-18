@@ -2,48 +2,49 @@
 
 namespace ntentan\controllers;
 
-use ntentan\panie\InjectionContainer;
+use ntentan\panie\Container;
 
 /**
  * 
  *
  * @author ekow
  */
-class ModelBinderRegister
-{
-    private static $binders = [];
-    private static $customBinderInstances = [];
-    private static $defaultBinderClass;
+class ModelBinderRegister {
+
+    private $binders = [];
+    private $customBinderInstances = [];
+    private $defaultBinderClass;
+    private $container;
     
-    private static function getCustomBinder($binder)
-    {
-        if(!isset(self::$customBinderInstances[$binder])) {
-            self::$customBinderInstances[$binder] = new $binder();
+    public function __construct(Container $container) {
+        $this->container = $container;
+    }
+
+    private function getCustomBinder($binder) {
+        if (!isset($this->customBinderInstances[$binder])) {
+            $this->customBinderInstances[$binder] = $this->container->resolve($binder);
         }
-        return self::$customBinderInstances[$binder];
+        return $this->customBinderInstances[$binder];
     }
-    
-    public static function setDefaultBinderClass($defaultBinderClass)
-    {
-        self::$defaultBinderClass = $defaultBinderClass;
+
+    public function setDefaultBinderClass($defaultBinderClass) {
+        $this->defaultBinderClass = $defaultBinderClass;
     }
-    
-    public static function getDefaultBinderClass()
-    {
-        return self::$defaultBinderClass;
+
+    public function getDefaultBinderClass() {
+        return $this->defaultBinderClass;
     }
-    
-    public static function register($type, $binder) 
-    {
-        self::$binders[$type] = $binder;
+
+    public function register($type, $binder) {
+        $this->binders[$type] = $binder;
     }
-    
-    public static function get($type)
-    {
-        if(isset(self::$binders[$type])) {
-            return self::getCustomBinder(self::$binders[$type]);
+
+    public function get($type) {
+        if (isset($this->binders[$type])) {
+            return $this->getCustomBinder($this->binders[$type]);
         } else {
-            return InjectionContainer::singleton(ModelBinderInterface::class);
+            return $this->container->singleton(ModelBinderInterface::class);
         }
     }
+
 }

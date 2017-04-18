@@ -4,6 +4,7 @@ namespace ntentan\controllers\model_binders;
 
 use ntentan\utils\Input;
 use ntentan\Controller;
+use ntentan\panie\Container;
 
 /**
  * Description of DefaultModelBinder
@@ -13,6 +14,12 @@ use ntentan\Controller;
 class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface {
 
     private $bound;
+    
+    private $container;
+    
+    public function __construct(Container $container) {
+        $this->container = $container;
+    }
 
     /**
      * 
@@ -22,9 +29,9 @@ class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface {
         return array_keys($object->getDescription()->getFields());
     }
 
-    public function bind(Controller $controller, $type, $name) {
+    public function bind(Controller $controller, $action, $type, $name) {
         $this->bound = false;
-        $object = \ntentan\panie\InjectionContainer::resolve($type);
+        $object = $this->container->resolve($type);
         if (is_a($object, '\ntentan\Model')) {
             $fields = $this->getModelFields($object);
         } else {
