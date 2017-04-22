@@ -31,25 +31,23 @@
  * @license MIT
  */
 
-namespace ntentan\controllers\components;
+namespace ntentan\middleware;
 
 use ntentan\Ntentan;
-use ntentan\controllers\Component;
 use ntentan\Session;
-use ntentan\Router;
 use ntentan\Parameters;
 use ntentan\utils\Input;
 use ntentan\View;
 use ntentan\config\Config;
-use ntentan\controllers\Redirect;
+use ntentan\Context;
+use ntentan\middleware\auth\HttpRequestAuthMethod;
 
 /**
  * AuthComponent provides a simplified authentication scheme
  *
  * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
  */
-class AuthComponent extends Component
-{
+class AuthMiddleware extends \ntentan\Middleware {
 
     /**
      *
@@ -67,47 +65,37 @@ class AuthComponent extends Component
      */
     const DO_NOTHING = 'do_nothing';
 
-    protected $parameters;
     private $authMethodInstance;
     private $authenticated;
     private static $authMethods = [
-        'http_request' => '\ntentan\controllers\components\auth\HttpRequestAuthMethod',
-        'http_digest' => '\ntentan\controllers\components\auth\HttpDigestAuthMethod',
-        'http_basic' => '\ntentan\controllers\components\auth\HttpBasicAuthMethod',
+        'http_request' => HttpRequestAuthMethod::class
     ];
+    
+    private $context;
 
-    public function init($parameters = array())
-    {
-        $this->parameters = Parameters::wrap($parameters);
+    public function __construct(Context $context) {
+        $this->context = $context;
         $this->authenticated = Session::get('logged_in');
 
-        foreach ($this->parameters->get('excluded_routes', array()) as $excludedRoute) {
+        /*foreach ($this->parameters->get('excluded_routes', array()) as $excludedRoute) {
             if (preg_match("/$excludedRoute/i", Ntentan::$route) > 0) {
                 return;
             }
-        }
-        
-        if ($this->authenticated !== true) {
-            View::set('app_name', Config::get('ntentan:app.name'));
-            View::set('title', "Login");
-            $this->login();
-        }
+        }*/
     }
 
-    public function redirectToLogin()
-    {
+    public function redirectToLogin() {
         View::set("login_message", $this->authMethodInstance->getMessage());
         View::set("login_status", false);
         $route = Ntentan::getRouter()->getRoute();
         $loginRoute = $this->parameters->get('login_route', 'login');
-        
+
         if ($route !== $loginRoute) {
             return Redirect::path($loginRoute);
         }
     }
 
-    private function performSuccessOperation()
-    {
+    private function performSuccessOperation() {
         $this->authenticated = true;
         switch ($this->parameters->get('on_success', self::REDIRECT)) {
             case self::REDIRECT:
@@ -123,8 +111,7 @@ class AuthComponent extends Component
         }
     }
 
-    private function performFailureOperation()
-    {
+    private function performFailureOperation() {
         switch ($this->parameters->get('on_failure', self::REDIRECT)) {
             case self::CALL_FUNCTION:
                 $function = $this->parameters->get('failure_function');
@@ -140,77 +127,77 @@ class AuthComponent extends Component
                 break;
         }
     }
-    
-    public static function registerAuthMethod($authMethod, $class) 
-    {
+
+    public static function registerAuthMethod($authMethod, $class) {
         self::$authMethods[$authMethod] = $class;
     }
-    
-    private function getAuthMethod()
-    {
-        $authMethod = $this->parameters->get('auth_method', 'http_request');
-        if(!isset(self::$authMethods[$authMethod])) {
+
+    private function getAuthMethod() {
+        $authMethod = $this->getParameters()->get('auth_method', 'http_request');
+        if (!isset(self::$authMethods[$authMethod])) {
             throw new \Exception("Auth method $authMethod not found");
         }
         $class = self::$authMethods[$authMethod];
-        return new $class();
+        return $this->context->getContainer()->resolve($class);
     }
 
-    public function login()
-    {
+    public function login() {
         $this->authMethodInstance = $this->getAuthMethod();
         $this->authMethodInstance->setPasswordCryptFunction(
-            $this->parameters->get(
-                'password_crypt', 
-                function($password, $storedPassword) {
+                $this->parameters->get(
+                        'password_crypt', function($password, $storedPassword) {
                     return md5($password) == $storedPassword;
                 }
-            )
+                )
         );
         $this->authMethodInstance->setUsersModel($this->parameters->get('users_model'));
         $userModelFields = $this->parameters->get('users_model_fields');
         $this->authMethodInstance->setUsersModelFields($userModelFields);
         View::setLayout('auth_main');
         View::setTemplate('auth_login');
-        View::set('login_data',
-            [
-                $userModelFields['username'] => Input::post($userModelFields['username']), 
-                $userModelFields['password'] => Input::post($userModelFields['password'])
-            ]
+        View::set('login_data', [
+            $userModelFields['username'] => Input::post($userModelFields['username']),
+            $userModelFields['password'] => Input::post($userModelFields['password'])
+                ]
         );
 
         if ($this->loggedIn()) {
             $this->performSuccessOperation();
-        } else if ($this->authMethodInstance->login()) {  
+        } else if ($this->authMethodInstance->login()) {
             Session::set('logged_in', true);
             $this->performSuccessOperation();
-        } else {            
+        } else {
             $this->performFailureOperation();
         }
     }
 
-    public function logout()
-    {
+    public function logout() {
         Session::reset();
         Redirect::path($this->parameters->get('login_route', "/login"));
     }
 
-    public static function getUserId()
-    {
+    public static function getUserId() {
         return Session::get("user_id");
     }
 
-    public static function loggedIn()
-    {
-        return isset(Session::get('user')['id']);
+    public function run($route, $response) {
+        if(Session::get('logged_in')) {
+            return $this->next($route, $response);
+        } 
+        $response = $this->getAuthMethod()->login($this->context, $route);
+        if($response === true) {
+            return $this->next($route, $response);
+        } else {
+            return $response;
+        }
     }
 
-    public function getProfile()
-    {
+    public function getProfile() {
         if (Session::get('logged_in')) {
             return Session::get('user');
         } else {
             $this->redirectToLogin();
         }
     }
+
 }

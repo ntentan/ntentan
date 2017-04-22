@@ -204,6 +204,10 @@ class Context {
         return $this->cache;
     }
     
+    public function getRedirect($path) {
+        return new Redirect($path);
+    }
+    
     /**
      * @return controllers\ModelBinderRegister
      */

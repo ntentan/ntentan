@@ -27,4 +27,12 @@ class Application {
         
     }
     
+    public function appendMiddleware($class) {
+        $this->pipeline[] = $class;
+    }
+    
+    public function prependMiddleware($class) {
+        $this->pipeline = [$class] + $this->pipeline;
+    }
+    
 }

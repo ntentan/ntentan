@@ -9,6 +9,7 @@ abstract class Middleware {
      * @var PipelineRunner
      */
     private $runner;
+    private static $parameters;
     
     public abstract function run($route, $response);
     
@@ -18,6 +19,15 @@ abstract class Middleware {
     
     protected function next($response) {
         return $this->runner->runMiddleware($response);
+    }
+    
+    public static function with($parameters) {
+        self::$parameters = Parameters::wrap($parameters);
+        return get_called_class();
+    }
+    
+    protected function getParameters() {
+        return self::$parameters ?? Parameters::wrap([]);
     }
 
 }

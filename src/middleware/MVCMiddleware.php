@@ -9,7 +9,7 @@ use ntentan\honam\AssetsLoader;
 use ntentan\controllers\Url;
 use ntentan\Context;
 
-class MVC extends \ntentan\Middleware {
+class MVCMiddleware extends \ntentan\Middleware {
     
     private $container;
     

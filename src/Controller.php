@@ -33,7 +33,6 @@
 namespace ntentan;
 
 use \ReflectionClass;
-use ntentan\View;
 use ntentan\utils\Text;
 
 /**

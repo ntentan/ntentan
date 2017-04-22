@@ -1,10 +1,12 @@
 <?php
-namespace ntentan\controllers\components\auth;
 
-use \ntentan\Model;
+namespace ntentan\middleware\auth;
 
-abstract class AbstractAuthMethod
-{
+use ntentan\Model;
+use ntentan\Context;
+
+abstract class AbstractAuthMethod {
+
     private $usersModel = 'users';
     protected $usersFields = array(
         'username' => 'username',
@@ -12,56 +14,51 @@ abstract class AbstractAuthMethod
     );
     private $message;
     private $passwordCrypt;
-    
-    abstract public function login();
-    
-    public function authLocalPassword($username, $password)
-    {
+    private $parameters;
+
+    abstract public function login(Context $context, $route);
+
+    public function authLocalPassword($username, $password) {
         $users = Model::load($this->usersModel);
         $result = $users->filter('username = ?', $username)->fetchFirst();
         $passwordCrypt = $this->passwordCrypt;
-        if($passwordCrypt($password, $result->password) && $result->blocked != '1')
-        {
+        if ($passwordCrypt($password, $result->password) && $result->blocked != '1') {
             $_SESSION["username"] = $username;
             $_SESSION["user_id"] = $result["id"];
             $_SESSION["user"] = $result->toArray();
             return true;
-        }
-        else
-        {
+        } else {
             $this->message = "Invalid username or password!";
             return false;
         }
     }
-    
-    public function setUsersModel($usersModel)
-    {
-        if(!$usersModel == null)
-        {
+
+    public function setUsersModel($usersModel) {
+        if (!$usersModel == null) {
             $this->usersModel = $usersModel;
         }
     }
-    
-    public function setUsersModelFields($fields)
-    {
-        if(!$fields == null)
-        {
+
+    public function setUsersModelFields($fields) {
+        if (!$fields == null) {
             $this->usersFields = $fields;
         }
     }
-    
-    public function setPasswordCryptFunction($passwordCrypt)
-    {
+
+    public function setPasswordCryptFunction($passwordCrypt) {
         $this->passwordCrypt = $passwordCrypt;
     }
-    
-    protected function setMessage($message)
-    {
+
+    protected function setMessage($message) {
         $this->message = $message;
     }
-    
-    public function getMessage()
-    {
+
+    public function getMessage() {
         return $this->message;
     }
+    
+    protected function getParameters() {
+        
+    }
+
 }
