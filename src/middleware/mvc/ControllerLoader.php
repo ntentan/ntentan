@@ -5,33 +5,41 @@ namespace ntentan\middleware\mvc;
 use ntentan\panie\InjectionContainer;
 use ntentan\interfaces\ControllerClassResolverInterface;
 use ntentan\interfaces\ResourceLoaderInterface;
+use ntentan\Context;
 
 class ControllerLoader implements ResourceLoaderInterface {
+    
+    private $container;
+    private $context;
+    
+    public function __construct(Context $context) {
+        $this->context = $context;
+        $this->container = $context->getContainer();
+    }
 
     public function load($params) {
         $controller = $params['controller'];
         $action = isset($params['action']) ? $params['action'] : null;
 
         // Try to get the classname based on router parameters
-        $controllerClassName = InjectionContainer::singleton(ControllerClassResolverInterface::class)
+        $controllerClassName = $this->container->resolve(ControllerClassResolverInterface::class)
                 ->getControllerClassName($controller);
 
         // Try to resolve the classname 
-        $resolvedControllerClass = InjectionContainer::getResolvedClassName($controllerClassName);
+        $resolvedControllerClass = $this->container->getResolvedClassName($controllerClassName);
 
         if ($resolvedControllerClass) {
             // use resolved class name
             $params['controller_path'] = $controller;
             Ntentan::getRouter()->setVar('controller_path', $controller);
-            $controllerInstance = InjectionContainer::resolve($controllerClassName);
+            $controllerInstance = $this->container->resolve($controllerClassName);
         } else if (class_exists($controller)) {
             // use controller class
-            $controllerInstance = InjectionContainer::resolve($controller);
+            $controllerInstance = $this->container->resolve($controller);
         } else {
-            return ['success' => false, 'message' => "Failed to load class [$controllerClassName]"];
+            throw new ControllerNotFoundException("Failed to find $controllerClassName]");
         }
-        $controllerInstance->executeControllerAction($action, $params);
-        return ['success' => true];
+        return $controllerInstance->executeControllerAction($action, $params, $this->context);
     }
 
 }

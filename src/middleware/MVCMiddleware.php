@@ -14,7 +14,7 @@ class MVCMiddleware extends \ntentan\Middleware {
     private $container;
     
     private $loaders = [
-        'controller' => loaders\ControllerLoader::class
+        'controller' => mvc\ControllerLoader::class
     ];    
     
     public function __construct(Context $context) {

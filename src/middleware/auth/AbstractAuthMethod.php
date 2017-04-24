@@ -58,7 +58,11 @@ abstract class AbstractAuthMethod {
     }
     
     protected function getParameters() {
-        
+        return $this->parameters;
+    }
+    
+    public function setParameters($parameters) {
+        $this->parameters = $parameters;
     }
 
 }

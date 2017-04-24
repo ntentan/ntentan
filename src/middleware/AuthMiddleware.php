@@ -138,17 +138,20 @@ class AuthMiddleware extends \ntentan\Middleware {
             throw new \Exception("Auth method $authMethod not found");
         }
         $class = self::$authMethods[$authMethod];
-        return $this->context->getContainer()->resolve($class);
+        $authMethod = $this->context->getContainer()->resolve($class);
+        $authMethod->setParameters($this->getParameters());
+        return $authMethod;
     }
 
     public function login() {
         $this->authMethodInstance = $this->getAuthMethod();
         $this->authMethodInstance->setPasswordCryptFunction(
-                $this->parameters->get(
-                        'password_crypt', function($password, $storedPassword) {
+            $this->parameters->get(
+                'password_crypt', 
+                function($password, $storedPassword) {
                     return md5($password) == $storedPassword;
                 }
-                )
+            )
         );
         $this->authMethodInstance->setUsersModel($this->parameters->get('users_model'));
         $userModelFields = $this->parameters->get('users_model_fields');

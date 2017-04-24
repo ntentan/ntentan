@@ -9,7 +9,7 @@ class Application {
      * @var Context 
      */
     protected $context;
-    private $pipeline = [middleware\MVC::class];
+    private $pipeline = [middleware\MVCMiddleware::class];
     
     /**
      * 
@@ -32,7 +32,7 @@ class Application {
     }
     
     public function prependMiddleware($class) {
-        $this->pipeline = [$class] + $this->pipeline;
+        array_unshift($this->pipeline, $class);
     }
     
 }

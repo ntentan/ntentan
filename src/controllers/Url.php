@@ -31,7 +31,7 @@ class Url
 
 
     public static function action($action, $variables = []) {
-        return 
+        //return 
     }
     
     public static function path($path)
