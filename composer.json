@@ -9,7 +9,7 @@
         "ntentan/logger" : "0.*",
         "ntentan/nibii" : "dev-master",
         "ntentan/config": "0.*",
-        "ntentan/panie": "0.*"
+        "ntentan/panie": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit" : "4.*"

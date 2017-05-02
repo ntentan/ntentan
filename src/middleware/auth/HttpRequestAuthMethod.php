@@ -18,12 +18,13 @@ class HttpRequestAuthMethod extends AbstractAuthMethod {
                 return true;
             };
         } 
-        $loginRoute = $this->getParameters()->get("login_dir", "login");
-        $excluded = $this->getParameters()->get('excluded', [$loginRoute]);
+        $parameters = $this->getParameters();
+        $loginRoute = $parameters->get("login_route", "login");
+        $excluded = $parameters->get('excluded', [$loginRoute]);
         if(in_array($route['route'], $excluded)) {
             return true;
         }
-        return $context->getRedirect();
+        return $context->getRedirect($parameters->get("login_route", "login"));
     }
 
 }

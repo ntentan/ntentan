@@ -78,21 +78,17 @@ class Context {
      * @var string
      */
     private $prefix;
-    
     private $container;
-    
     private $namespace = 'app';
-    
     private $cache;
-    
     private $modelBinders;
-    
+
     /**
      *
      * @var Application 
      */
     private $app;
-    
+
     /**
      * @return Context New context
      */
@@ -124,6 +120,7 @@ class Context {
         logger\Logger::init('logs/app.log');
 
         Config::readPath($this->configPath, 'ntentan');
+        //@todo invoke this with the DI
         $this->cache = new kaikai\Cache($container);
 
         $container->bind(ModelClassResolverInterface::class)->to(ClassNameResolver::class);
@@ -137,13 +134,13 @@ class Context {
             $container->bind(DriverAdapter::class)->to(Resolver::getDriverAdapterClassName());
             $container->bind(atiaa\Driver::class)->to(atiaa\Db::getDefaultDriverClassName());
         }
-        
+
         $this->modelBinders = new controllers\ModelBinderRegister($container);
         $this->modelBinders->setDefaultBinderClass(
-            controllers\model_binders\DefaultModelBinder::class
+                controllers\model_binders\DefaultModelBinder::class
         );
         $this->modelBinders->register(
-            utils\filesystem\UploadedFile::class, controllers\model_binders\UploadedFileBinder::class
+                utils\filesystem\UploadedFile::class, controllers\model_binders\UploadedFileBinder::class
         );
         $this->modelBinders->register(View::class, controllers\model_binders\ViewBinder::class);
     }
@@ -158,7 +155,7 @@ class Context {
             $prefix = $this->namespace . "\\";
             $baseDir = 'src/';
             $len = strlen($prefix);
-            
+
             if (strncmp($prefix, $class, $len) !== 0) {
                 return;
             }
@@ -171,11 +168,11 @@ class Context {
             }
         });
     }
-    
+
     public function getNamespace() {
         return $this->namespace;
     }
-    
+
     /**
      * 
      * @return Router
@@ -183,11 +180,11 @@ class Context {
     public function getRouter() {
         return $this->container->singleton(Router::class);
     }
-    
+
     public function getContainer() {
         return $this->container;
     }
-    
+
     /**
      * 
      * @return Application
@@ -195,7 +192,7 @@ class Context {
     public function getApp() {
         return $this->app;
     }
-    
+
     /**
      * 
      * @return kaikai\Cache
@@ -203,11 +200,11 @@ class Context {
     public function getCache() {
         return $this->cache;
     }
-    
+
     public function getRedirect($path) {
         return new Redirect($path);
     }
-    
+
     /**
      * @return controllers\ModelBinderRegister
      */
