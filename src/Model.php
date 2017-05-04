@@ -1,4 +1,5 @@
 <?php
+
 namespace ntentan;
 
 use ntentan\nibii\RecordWrapper;
@@ -7,25 +8,24 @@ use ntentan\nibii\RecordWrapper;
  * An extension of the nibii\RecordWrapper which contains specific Ntentan
  * extensions.
  */
-class Model extends RecordWrapper
-{
+class Model extends RecordWrapper {
+
     /**
      * Loads a model described by a string.
      * @param string $name
      * @return \ntentan\Model
      */
-    public static function load($name)
-    {
-        return nibii\Nibii::load($name);
+    public static function load($name) {
+        return nibii\Context::getInstance()->load($name);
     }
-    
+
     /**
      * Get a descriptive name for the model.
      * Names are usually deduced from the class name of the underlying model.
      * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return (new \ReflectionClass($this))->getShortName();
     }
+
 }

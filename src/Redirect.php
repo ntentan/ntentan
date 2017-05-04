@@ -22,7 +22,7 @@ class Redirect {
     }
 
     public function __toString() {
-        header("Location: {$this->url}");
+        header("Location: /{$this->url}");
         return "Redirecting to {$this->url} ...";
     }
 

@@ -10,32 +10,30 @@ use ntentan\Context;
  *
  * @author ekow
  */
-class Url
-{
+class Url {
+
     private $context;
-    
+
     private function __construct(Context $context) {
         $this->context = $context;
     }
-    
+
     private function getActionUrl($action, $variables) {
-        $url = 
-        $controller = $this->context->getRouter()->getVar('controller_path');
+        $url = $controller = $this->context->getRouter()->getVar('controller_path');
         $queries = [];
-        foreach($variables as $key => $value) {
+        foreach ($variables as $key => $value) {
             $queries[] = sprintf("%s=%s", urldecode($key), urlencode($value));
         }
         $path = Config::get('ntentan:app.prefix') . ($controller == "" ? "" : "/$controller");
-        return preg_replace('~/+~', '/', "$path/$action" . (count($queries) ? "?" . implode('&', $queries) : ""));        
+        return preg_replace('~/+~', '/', "$path/$action" . (count($queries) ? "?" . implode('&', $queries) : ""));
     }
-
 
     public static function action($action, $variables = []) {
         //return 
     }
-    
-    public static function path($path)
-    {
+
+    public static function path($path) {
         return preg_replace('~/+~', '/', Config::get('ntentan:app.prefix') . "/$path");
     }
+
 }

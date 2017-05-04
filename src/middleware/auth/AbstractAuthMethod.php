@@ -4,14 +4,10 @@ namespace ntentan\middleware\auth;
 
 use ntentan\Model;
 use ntentan\Context;
+use ntentan\Session;
 
 abstract class AbstractAuthMethod {
 
-    private $usersModel = 'users';
-    protected $usersFields = array(
-        'username' => 'username',
-        'password' => 'password'
-    );
     private $message;
     private $passwordCrypt;
     private $parameters;
@@ -19,42 +15,24 @@ abstract class AbstractAuthMethod {
     abstract public function login(Context $context, $route);
 
     public function authLocalPassword($username, $password) {
-        $users = Model::load($this->usersModel);
+        $users = Model::load($this->parameters->get('users_model'));
         $result = $users->filter('username = ?', $username)->fetchFirst();
-        $passwordCrypt = $this->passwordCrypt;
+        $passwordCrypt = $this->parameters->get(
+            'password_crypt_function',
+            function($password, $storedPassword) {
+                return md5($password) == $storedPassword;
+            }                
+        );
         if ($passwordCrypt($password, $result->password) && $result->blocked != '1') {
-            $_SESSION["username"] = $username;
-            $_SESSION["user_id"] = $result["id"];
-            $_SESSION["user"] = $result->toArray();
+            Session::set("logged_in", true);
+            Session::set("username", $username);
+            Session::set("user_id", $result["id"]);
+            Session::set("user", $result->toArray());
             return true;
         } else {
             $this->message = "Invalid username or password!";
             return false;
         }
-    }
-
-    public function setUsersModel($usersModel) {
-        if (!$usersModel == null) {
-            $this->usersModel = $usersModel;
-        }
-    }
-
-    public function setUsersModelFields($fields) {
-        if (!$fields == null) {
-            $this->usersFields = $fields;
-        }
-    }
-
-    public function setPasswordCryptFunction($passwordCrypt) {
-        $this->passwordCrypt = $passwordCrypt;
-    }
-
-    protected function setMessage($message) {
-        $this->message = $message;
-    }
-
-    public function getMessage() {
-        return $this->message;
     }
     
     protected function getParameters() {

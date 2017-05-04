@@ -9,22 +9,22 @@ use ntentan\Context;
 class HttpRequestAuthMethod extends AbstractAuthMethod {
 
     public function login(Context $context, $route) {
-        TemplateEngine::appendPath(__DIR__ . '/../../../../views/auth');
-        if (Input::exists(Input::POST, $this->usersFields['username']) && Input::exists(Input::POST, $this->usersFields['password'])) {
+        $parameters = $this->getParameters();
+        $usernameField = $parameters->get('username_field', "username");
+        $passwordField = $parameters->get('password_field', "password");
+        if (Input::exists(Input::POST, $usernameField) && Input::exists(Input::POST, $passwordField)) {
             if($this->authLocalPassword(
-                Input::post($this->usersFields['username']), 
-                Input::post($this->usersFields['password'])
+                Input::post($usernameField), 
+                Input::post($passwordField)
             )) {
-                return true;
+                return $context->getRedirect($parameters->get('redirect_route', ''));
             };
         } 
-        $parameters = $this->getParameters();
-        $loginRoute = $parameters->get("login_route", "login");
-        $excluded = $parameters->get('excluded', [$loginRoute]);
-        if(in_array($route['route'], $excluded)) {
-            return true;
-        }
-        return $context->getRedirect($parameters->get("login_route", "login"));
+        
+        if($route['route'] != $parameters->get("login_route", "login")) {
+            return $context->getRedirect($parameters->get("login_route", "login"));
+        } 
+        return true;
     }
 
 }
