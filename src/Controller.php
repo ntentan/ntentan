@@ -67,6 +67,11 @@ class Controller {
     protected function getContext() {
         return $this->context;
     }
+    
+    protected function getRedirect() {
+        $redirect = new Redirect($this->context->getApp()->getParameters()['controller_path']);
+        return $redirect;
+    }
 
     /**
      * 
@@ -140,25 +145,6 @@ class Controller {
 
         return false;
     }
-
-    /*protected function getClassName() {
-        return (new ReflectionClass($this))->getShortName();
-    }
-
-    protected function getName() {
-        $className = $this->getClassName();
-        $name = '';
-        if (substr($className, -10) == 'Controller') {
-            $name = substr($className, 0, -10);
-        } else {
-            $name = substr($className, 0, -9);
-        }
-        return strtolower($name);
-    }
-
-    public function getActiveControllerAction() {
-        return $this->activeAction;
-    }*/
 
     public function executeControllerAction($action, $params, $context) {
         $action = $action == '' ? 'index' : $action;

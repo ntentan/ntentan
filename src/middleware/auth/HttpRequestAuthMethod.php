@@ -2,9 +2,9 @@
 
 namespace ntentan\middleware\auth;
 
-use ntentan\honam\TemplateEngine;
 use ntentan\utils\Input;
 use ntentan\Context;
+use ntentan\View;
 
 class HttpRequestAuthMethod extends AbstractAuthMethod {
 
@@ -18,7 +18,10 @@ class HttpRequestAuthMethod extends AbstractAuthMethod {
                 Input::post($passwordField)
             )) {
                 return $context->getRedirect($parameters->get('redirect_route', ''));
-            };
+            } else {
+                $view = $context->getContainer()->resolve(View::class);
+                $view->set('auth_message', $this->message);
+            }
         } 
         
         if($route['route'] != $parameters->get("login_route", "login")) {

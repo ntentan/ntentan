@@ -16,7 +16,7 @@ class Model extends RecordWrapper {
      * @return \ntentan\Model
      */
     public static function load($name) {
-        return nibii\Context::getInstance()->load($name);
+        return nibii\ORMContext::getInstance()->load($name);
     }
 
     /**

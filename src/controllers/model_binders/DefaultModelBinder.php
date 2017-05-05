@@ -15,7 +15,7 @@ class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface {
 
     private $bound;
     
-    private $container;
+    protected $container;
     
     public function __construct(Container $container) {
         $this->container = $container;

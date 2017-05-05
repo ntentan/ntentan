@@ -10,6 +10,7 @@ class Application {
      */
     protected $context;
     private $pipeline = [middleware\MVCMiddleware::class];
+    private $paremeters;
     
     /**
      * 
@@ -17,6 +18,7 @@ class Application {
      */
     public function __construct(Context $context) {
         $this->context = $context;
+        $this->paremeters = Parameters::wrap([]);
     }
     
     public function getPipeline() {
@@ -33,6 +35,10 @@ class Application {
     
     public function prependMiddleware($class) {
         array_unshift($this->pipeline, $class);
+    }
+    
+    public function getParameters() {
+        return $this->paremeters;
     }
     
 }

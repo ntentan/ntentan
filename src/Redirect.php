@@ -25,5 +25,9 @@ class Redirect {
         header("Location: /{$this->url}");
         return "Redirecting to {$this->url} ...";
     }
+    
+    public function toAction($action) {
+        $this->url += "/{$action}";
+    }
 
 }

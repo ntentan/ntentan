@@ -8,8 +8,7 @@ use ntentan\Session;
 
 abstract class AbstractAuthMethod {
 
-    private $message;
-    private $passwordCrypt;
+    protected $message;
     private $parameters;
 
     abstract public function login(Context $context, $route);
