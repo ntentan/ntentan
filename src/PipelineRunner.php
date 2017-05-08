@@ -36,7 +36,8 @@ class PipelineRunner {
     
     public function runMiddleware($response = null) {
         $middleware = array_shift($this->pipeline);
-        $instance = $this->container->resolve($middleware);
+        $instance = $this->container->resolve($middleware[0]);
+        $instance->setParameters($middleware[1] ?? []);
         $instance->injectRunner($this);
         return $instance->run($this->route, $response);
     }

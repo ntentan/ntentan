@@ -14,7 +14,7 @@ abstract class AbstractAuthMethod {
     abstract public function login(Context $context, $route);
 
     public function authLocalPassword($username, $password) {
-        $users = Model::load($this->parameters->get('users_model'));
+        $users = Model::load($this->parameters->get('users_model', 'users'));
         $result = $users->filter('username = ?', $username)->fetchFirst();
         $passwordCrypt = $this->parameters->get(
             'password_crypt_function',

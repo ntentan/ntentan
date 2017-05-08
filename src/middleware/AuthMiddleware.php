@@ -36,6 +36,7 @@ namespace ntentan\middleware;
 use ntentan\Session;
 use ntentan\Context;
 use ntentan\middleware\auth\HttpRequestAuthMethod;
+use ntentan\middleware\auth\HttpBasicAuthMethod;
 
 /**
  * AuthComponent provides a simplified authentication scheme
@@ -44,26 +45,10 @@ use ntentan\middleware\auth\HttpRequestAuthMethod;
  */
 class AuthMiddleware extends \ntentan\Middleware {
 
-    /**
-     *
-     */
-    const REDIRECT = 'redirect';
-
-    /**
-     *
-     */
-    const CALL_FUNCTION = 'call_function';
-
-    /**
-     *
-     * @var string
-     */
-    const DO_NOTHING = 'do_nothing';
-
-    private $authMethodInstance;
     private $authenticated;
     private static $authMethods = [
-        'http_request' => HttpRequestAuthMethod::class
+        'http_request' => HttpRequestAuthMethod::class,
+        'http_basic' => HttpBasicAuthMethod::class
     ];
     
     private $context;

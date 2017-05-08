@@ -221,7 +221,7 @@ class Context {
         $this->app = $this->container->resolve($applicationClass);
         $this->app->setup();
         $route = $this->getRouter()->route(substr(Input::server('REQUEST_URI'), 1));
-        $pipeline = $this->app->getPipeline();
+        $pipeline = $route['description']['parameters']['pipeline'] ?? $this->app->getPipeline();
         $output = $this->container->resolve(PipelineRunner::class)->run($pipeline, $route);
         echo $output;
     }

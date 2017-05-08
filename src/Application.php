@@ -9,7 +9,7 @@ class Application {
      * @var Context 
      */
     protected $context;
-    private $pipeline = [middleware\MVCMiddleware::class];
+    private $pipeline = [];
     private $paremeters;
     
     /**
@@ -19,6 +19,7 @@ class Application {
     public function __construct(Context $context) {
         $this->context = $context;
         $this->paremeters = Parameters::wrap([]);
+        $this->prependMiddleware(middleware\MVCMiddleware::class);
     }
     
     public function getPipeline() {
@@ -29,12 +30,12 @@ class Application {
         
     }
     
-    public function appendMiddleware($class) {
-        $this->pipeline[] = $class;
+    public function appendMiddleware($class, $options = []) {
+        $this->pipeline[] = [$class, $options];
     }
     
-    public function prependMiddleware($class) {
-        array_unshift($this->pipeline, $class);
+    public function prependMiddleware($class, $options = []) {
+        array_unshift($this->pipeline, [$class, $options]);
     }
     
     public function getParameters() {
