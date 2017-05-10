@@ -72,6 +72,12 @@ class Controller {
         $redirect = new Redirect($this->context->getApp()->getParameters()['controller_path']);
         return $redirect;
     }
+    
+    protected function getActionUrl($action) {
+        return $this->context->getUrl(
+            "{$this->context->getApp()->getParameters()['controller_path']}/$action"
+        );
+    }
 
     /**
      * 

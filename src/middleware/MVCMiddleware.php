@@ -6,12 +6,12 @@ use ntentan\utils\Input;
 use ntentan\honam\TemplateEngine;
 use ntentan\honam\Helper;
 use ntentan\honam\AssetsLoader;
-use ntentan\controllers\Url;
 use ntentan\Context;
 
 class MVCMiddleware extends \ntentan\Middleware {
     
     private $container;
+    private $context;
     
     private $loaders = [
         'controller' => mvc\ControllerLoader::class
@@ -19,15 +19,16 @@ class MVCMiddleware extends \ntentan\Middleware {
     
     public function __construct(Context $context) {
         $this->container = $context->getContainer();
+        $this->context = $context;
     }
     
     public function run($route, $response) {
         TemplateEngine::prependPath('views/shared');
         TemplateEngine::prependPath('views/layouts');
-        AssetsLoader::setSiteUrl(Url::path('public'));
+        AssetsLoader::setSiteUrl($this->context->getUrl('public'));
         AssetsLoader::appendSourceDir('assets');
         AssetsLoader::setDestinationDir('public');
-        Helper::setBaseUrl(Url::path(''));
+        Helper::setBaseUrl($this->context->getUrl(''));
         return $this->loadResource($route);
     }
     

@@ -6,7 +6,7 @@
     "require": {
         "php": ">=5.4.0",
         "ntentan/honam" : "0.*",
-        "ntentan/logger" : "0.*",
+        "monolog/monolog" : "@stable",
         "ntentan/nibii" : "dev-master",
         "ntentan/config": "0.*",
         "ntentan/panie": "dev-master"

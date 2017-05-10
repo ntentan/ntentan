@@ -2,9 +2,6 @@
 
 namespace ntentan;
 
-use ntentan\honam\TemplateEngine;
-use ntentan\honam\AssetsLoader;
-
 /**
  * Description of View
  *
@@ -23,8 +20,9 @@ class View {
      * @var Array
      */
     private $variables = array();
-    
+
     public function __construct() {
+        
     }
 
     public function setContentType($contentType) {
@@ -65,7 +63,6 @@ class View {
     }
 
     public function __toString() {
-        require_once 'view_functions.php';
         $viewData = $this->variables;
         if ($this->template != false) {
             $renderedTemplate = honam\TemplateEngine::render($this->template, $viewData);

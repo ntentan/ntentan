@@ -14,7 +14,7 @@ class Url {
 
     private $context;
 
-    private function __construct(Context $context) {
+    public function __construct(Context $context) {
         $this->context = $context;
     }
 
@@ -26,14 +26,6 @@ class Url {
         }
         $path = Config::get('ntentan:app.prefix') . ($controller == "" ? "" : "/$controller");
         return preg_replace('~/+~', '/', "$path/$action" . (count($queries) ? "?" . implode('&', $queries) : ""));
-    }
-
-    public static function action($action, $variables = []) {
-        //return 
-    }
-
-    public static function path($path) {
-        return preg_replace('~/+~', '/', Config::get('ntentan:app.prefix') . "/$path");
     }
 
 }

@@ -82,6 +82,7 @@ class Context {
     private $namespace = 'app';
     private $cache;
     private $modelBinders;
+    private static $instance;
 
     /**
      *
@@ -96,9 +97,11 @@ class Context {
         $container = new panie\Container();
         // Force binding of context as singleton in container
         $container->bind(self::class)->to(self::class)->asSingleton();
-        return $container->resolve(
+        $context = $container->resolve(
             self::class, ['container' => $container, 'namespace' => $namespace]
         );
+        self::$instance = $context;
+        return $context;
     }
 
     /**
@@ -207,6 +210,10 @@ class Context {
 
     public function getRedirect($path) {
         return new Redirect($path);
+    }
+    
+    public function getUrl($path) {
+        return preg_replace('~/+~', '/', Config::get('ntentan:app.prefix') . "/$path");        
     }
 
     /**
