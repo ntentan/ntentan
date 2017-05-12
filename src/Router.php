@@ -2,9 +2,6 @@
 
 namespace ntentan;
 
-use ntentan\utils\Input;
-use ntentan\panie\InjectionContainer;
-
 /**
  * Provides default routing logic that loads controllers based on URL requests 
  * passed to the framework.
@@ -67,7 +64,7 @@ class Router {
 
     private function match($route, $description) {
         $parameters = [];
-        if (preg_match("|{$description['regexp']}|i", urldecode($route), $matches)) {
+        if (preg_match("|^{$description['regexp']}$|i", urldecode($route), $matches)) {
             foreach ($matches as $key => $value) {
                 if (!is_numeric($key)) {
                     $parameters[$key] = $this->expandParameter($key, $value);

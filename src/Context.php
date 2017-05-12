@@ -118,10 +118,6 @@ class Context {
         $this->prefix = Config::get('app.prefix');
         $this->prefix = ($this->prefix == '' ? '' : '/') . $this->prefix;
 
-        //self::setupAutoloader();
-
-        logger\Logger::init('logs/app.log');
-
         Config::readPath($this->configPath, 'ntentan');
         //@todo invoke this with the DI
         $this->cache = new kaikai\Cache($container);
@@ -227,7 +223,7 @@ class Context {
         Session::start();
         $this->app = $this->container->resolve($applicationClass);
         $this->app->setup();
-        $route = $this->getRouter()->route(substr(Input::server('REQUEST_URI'), 1));
+        $route = $this->getRouter()->route(substr(Input::server('PATH_INFO'), 1));
         $pipeline = $route['description']['parameters']['pipeline'] ?? $this->app->getPipeline();
         $output = $this->container->resolve(PipelineRunner::class)->run($pipeline, $route);
         echo $output;
