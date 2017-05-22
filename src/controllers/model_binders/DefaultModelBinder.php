@@ -58,6 +58,7 @@ class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface {
         $requestData = Input::post() + Input::get();
         $fields = $this->getModelFields($object);
         
+        //@todo Clean up this mess!
         foreach ($requestData as $field => $value) {
             if (isset($fields[$field])) {
                 if(isset($fields[$field]['fields'])) {
