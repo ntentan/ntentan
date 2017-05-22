@@ -63,8 +63,11 @@ class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface {
                 if(isset($fields[$field]['fields'])) {
                     $instance = $fields[$field]['instance'];
                     foreach($fields[$field]['fields'] as $relatedField) {
-                        $instance[$relatedField] = $requestData["{$fields[$field]['model']}.$relatedField"];
-                        unset($requestData[$data]);
+                        $requestField = "{$fields[$field]['model']}.$relatedField";
+                        if(isset($requestData[$requestField])) {
+                            $instance[$relatedField] = $requestData[$requestField];
+                            unset($requestData[$data]);
+                        }
                     }
                     $object[$fields[$field]['model']] = $instance;
                 } else {
@@ -73,8 +76,6 @@ class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface {
                 }
             }
         }
-        var_dump($object);
-        die();
         return $object;
     }
 
