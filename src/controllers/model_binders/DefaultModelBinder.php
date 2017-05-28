@@ -3,7 +3,6 @@
 namespace ntentan\controllers\model_binders;
 
 use ntentan\utils\Input;
-use ntentan\utils\Text;
 use ntentan\Controller;
 use ntentan\panie\Container;
 
@@ -36,16 +35,22 @@ class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface {
                 'model' => $model,
                 'instance' => $modelRelationship->getModelInstance()
             ];
-            $relationshipFields = $modelRelationship->getModelInstance()->getDescription()->getFields();
+            $relationshipFields = array_map(
+                function($field) {
+                    return $field['name'];
+                },
+                $modelRelationship->getModelInstance()->getDescription()->getFields()
+            );
             foreach($relationshipFields as $field) {
-                $relationshipField = "$model.{$field['name']}";
-                $relationship['fields'][] = $field['name'];
+                $relationshipField = "$model.$field";
+                $relationship['fields'] = $relationshipFields;
                 $fields[$relationshipField] = $relationship;
             }
         }
-        
         return $fields; 
     }
+    
+    
   
     public function bind(Controller $controller, $action, $type, $name) {
         $this->bound = false;
@@ -57,23 +62,39 @@ class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface {
         
         $requestData = Input::post() + Input::get();
         $fields = $this->getModelFields($object);
+        $requestFields = array_keys($requestData);
         
         //@todo Clean up this mess!
-        foreach ($requestData as $field => $value) {
+        while (!empty($requestFields)) {
+            $field = array_pop($requestFields);
+            // If the field in request data is also in model
             if (isset($fields[$field])) {
+                // If the field has its own subfields
                 if(isset($fields[$field]['fields'])) {
-                    $instance = $fields[$field]['instance'];
+                    //$instance = $fields[$field]['instance'];
+                    $relatedData = [];
                     foreach($fields[$field]['fields'] as $relatedField) {
                         $requestField = "{$fields[$field]['model']}.$relatedField";
                         if(isset($requestData[$requestField])) {
-                            $instance[$relatedField] = $requestData[$requestField];
-                            unset($requestData[$data]);
+                            if(is_array($requestData[$requestField])) {
+                                foreach($requestData[$requestField] as $fieldKey => $fieldValue) {
+                                    if(!isset($relatedData[$fieldKey])) {
+                                        $relatedData[$fieldKey] = [];
+                                    }
+                                    $relatedData[$fieldKey][$relatedField] = $fieldValue;
+                                }
+                            } else {
+                                $relatedData[$relatedField] = $requestData[$requestField];
+                            }
+                            if($requestField != $field){
+                                unset($requestFields[array_search($requestField, $requestFields)]);
+                            }
                         }
                     }
-                    $object[$fields[$field]['model']] = $instance;
+                    $fields[$field]['instance']->setData($relatedData);
+                    $object[$fields[$field]['model']] = $fields[$field]['instance'];
                 } else {
                     $object[$field] = $requestData[$field] == '' ? null : $requestData[$field];
-                    unset($requestData[$field]);
                 }
             }
         }
