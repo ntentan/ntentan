@@ -63,7 +63,7 @@ class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface {
         $requestData = Input::post() + Input::get();
         $fields = $this->getModelFields($object);
         $requestFields = array_keys($requestData);
-        
+                
         //@todo Clean up this mess!
         while (!empty($requestFields)) {
             $field = array_pop($requestFields);
@@ -98,6 +98,7 @@ class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface {
                 }
             }
         }
+       
         return $object;
     }
 
