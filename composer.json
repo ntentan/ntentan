@@ -8,7 +8,7 @@
         "ntentan/honam" : "0.*",
         "monolog/monolog" : "@stable",
         "ntentan/nibii" : "dev-master",
-        "ntentan/config": "0.*",
+        "ntentan/config": "dev-master",
         "ntentan/panie": "dev-master"
     },
     "require-dev": {
@@ -25,5 +25,6 @@
         "psr-4": {
             "ntentan\\": "src/"
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
