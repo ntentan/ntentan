@@ -46,6 +46,7 @@ use ntentan\panie\ComponentResolverInterface;
 use ntentan\nibii\DriverAdapter;
 use ntentan\nibii\Resolver;
 use ntentan\utils\Input;
+use ntentan\kaikai\Cache;
 
 /**
  * Include a collection of utility global functions, caching and exceptions.
@@ -62,14 +63,15 @@ use ntentan\utils\Input;
  *  @author     James Ainooson <jainooson@gmail.com>
  *  @license    MIT
  */
-class Context {
+class Context
+{
 
     /**
      * Directory where application configurations are stored.
      *
      * @var string
      */
-    private $configPath = 'config/';
+    private $config;
 
     /**
      * A prefix to expect in-front of all URLS. This is useful when running your
@@ -114,14 +116,17 @@ class Context {
     public function __construct($container, $namespace) {
         $this->container = $container;
         $this->namespace = $namespace;
+        $this->config = Config::readPath('config');
         $this->setupAutoloader();
-        $this->prefix = Config::get('app.prefix');
+        $this->prefix = $this->config->get('app.prefix');
         $this->prefix = ($this->prefix == '' ? '' : '/') . $this->prefix;
 
-        Config::readPath($this->configPath, 'ntentan');
         //@todo invoke this with the DI
-        $this->cache = new kaikai\Cache($container);
-
+        
+        $container->bind(kaikai\CacheBackendInterface::class)
+            ->to(Cache::getBackendClassName(
+                $this->config->get('cache.backend', 'volatile')
+            ));
         $container->bind(ModelClassResolverInterface::class)->to(ClassNameResolver::class);
         $container->bind(ModelJoinerInterface::class)->to(ClassNameResolver::class);
         $container->bind(TableNameResolverInterface::class)->to(nibii\Resolver::class);
@@ -129,21 +134,23 @@ class Context {
         $container->bind(ControllerClassResolverInterface::class)->to(ClassNameResolver::class);
         $container->bind(View::class)->to(View::class)->asSingleton();
         $container->bind(nibii\ORMContext::class)->to(nibii\ORMContext::class)->asSingleton();
-        
-        $driver = Config::get('ntentan:db.driver');
+
+        $dbConfig = $this->config->get('db');
+        $driver = $dbConfig['driver'];
+        $this->cache = $container->resolve(Cache::class, ['config' => $dbConfig]);
 
         if ($driver) {
-            $container->bind(DriverAdapter::class)->to(Resolver::getDriverAdapterClassName());
+            $container->bind(DriverAdapter::class)->to(Resolver::getDriverAdapterClassName($driver));
             $container->bind(atiaa\Driver::class)->to(atiaa\DbContext::getDriverClassName($driver));
-            $container->resolve(nibii\ORMContext::class);
+            $container->resolve(nibii\ORMContext::class, ['config' => $dbConfig]);
         }
 
         $this->modelBinders = new controllers\ModelBinderRegister($container);
         $this->modelBinders->setDefaultBinderClass(
-            controllers\model_binders\DefaultModelBinder::class
+                controllers\model_binders\DefaultModelBinder::class
         );
         $this->modelBinders->register(
-            utils\filesystem\UploadedFile::class, controllers\model_binders\UploadedFileBinder::class
+                utils\filesystem\UploadedFile::class, controllers\model_binders\UploadedFileBinder::class
         );
         $this->modelBinders->register(View::class, controllers\model_binders\ViewBinder::class);
     }
@@ -207,9 +214,9 @@ class Context {
     public function getRedirect($path) {
         return new Redirect($path);
     }
-    
+
     public function getUrl($path) {
-        return preg_replace('~/+~', '/', Config::get('ntentan:app.prefix') . "/$path");        
+        return preg_replace('~/+~', '/', $this->config->get('app.prefix') . "/$path");
     }
 
     /**
