@@ -116,17 +116,13 @@ class Context
     public function __construct($container, $namespace) {
         $this->container = $container;
         $this->namespace = $namespace;
-        $this->config = Config::readPath('config');
+        $this->config = new Config();
+        $this->config->readPath('config');
         $this->setupAutoloader();
         $this->prefix = $this->config->get('app.prefix');
         $this->prefix = ($this->prefix == '' ? '' : '/') . $this->prefix;
 
-        //@todo invoke this with the DI
-        
-        $container->bind(kaikai\CacheBackendInterface::class)
-            ->to(Cache::getBackendClassName(
-                $this->config->get('cache.backend', 'volatile')
-            ));
+        $container->bind(kaikai\CacheBackendInterface::class)->to(Cache::getBackendClassName($this->config->get('cache.backend', 'volatile')));
         $container->bind(ModelClassResolverInterface::class)->to(ClassNameResolver::class);
         $container->bind(ModelJoinerInterface::class)->to(ClassNameResolver::class);
         $container->bind(TableNameResolverInterface::class)->to(nibii\Resolver::class);
@@ -147,10 +143,10 @@ class Context
 
         $this->modelBinders = new controllers\ModelBinderRegister($container);
         $this->modelBinders->setDefaultBinderClass(
-                controllers\model_binders\DefaultModelBinder::class
+            controllers\model_binders\DefaultModelBinder::class
         );
         $this->modelBinders->register(
-                utils\filesystem\UploadedFile::class, controllers\model_binders\UploadedFileBinder::class
+            utils\filesystem\UploadedFile::class, controllers\model_binders\UploadedFileBinder::class
         );
         $this->modelBinders->register(View::class, controllers\model_binders\ViewBinder::class);
     }
@@ -209,6 +205,10 @@ class Context
      */
     public function getCache() {
         return $this->cache;
+    }
+    
+    public function getConfig() {
+        return $this->config;
     }
 
     public function getRedirect($path) {
