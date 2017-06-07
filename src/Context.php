@@ -47,6 +47,7 @@ use ntentan\nibii\DriverAdapter;
 use ntentan\nibii\Resolver;
 use ntentan\utils\Input;
 use ntentan\kaikai\Cache;
+use ntentan\panie\Container;
 
 /**
  * Include a collection of utility global functions, caching and exceptions.
@@ -95,13 +96,13 @@ class Context
     /**
      * @return Context New context
      */
-    public static function initialize($namespace = 'app') {
+    public static function initialize($namespace = 'app', $applicationClass = Application::class) {
         $container = new panie\Container();
         // Force binding of context as singleton in container
         $container->bind(self::class)->to(self::class)->asSingleton();
-        $context = $container->resolve(
-            self::class, ['container' => $container, 'namespace' => $namespace]
-        );
+        $context = $container->resolve(self::class, ['namespace' => $namespace]);
+        $context->app = $container->resolve($applicationClass);
+        $context->app->setup();         
         self::$instance = $context;
         return $context;
     }
@@ -113,7 +114,7 @@ class Context
      * @param panie\Container $container
      * @param string $namespace
      */
-    public function __construct($container, $namespace) {
+    public function __construct(Container $container, $namespace) {
         $this->container = $container;
         $this->namespace = $namespace;
         $this->config = new Config();
@@ -148,7 +149,7 @@ class Context
         $this->modelBinders->register(
             utils\filesystem\UploadedFile::class, controllers\model_binders\UploadedFileBinder::class
         );
-        $this->modelBinders->register(View::class, controllers\model_binders\ViewBinder::class);
+        $this->modelBinders->register(View::class, controllers\model_binders\ViewBinder::class);          
     }
 
     /**
@@ -228,8 +229,6 @@ class Context
 
     public function execute($applicationClass = Application::class) {
         Session::start();
-        $this->app = $this->container->resolve($applicationClass);
-        $this->app->setup();
         $route = $this->getRouter()->route(substr(Input::server('PATH_INFO'), 1));
         $pipeline = $route['description']['parameters']['pipeline'] ?? $this->app->getPipeline();
         $output = $this->container->resolve(PipelineRunner::class)->run($pipeline, $route);
