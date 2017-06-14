@@ -96,8 +96,8 @@ class Context
     /**
      * @return Context New context
      */
-    public static function initialize($namespace = 'app', $applicationClass = Application::class) {
-        $container = new panie\Container();
+    public static function initialize($namespace = 'app', $applicationClass = Application::class, panie\Container $container = null) {
+        $container = $container ?? new panie\Container();
         // Force binding of context as singleton in container
         $container->bind(self::class)->to(self::class)->asSingleton();
         $context = $container->resolve(self::class, ['namespace' => $namespace]);
