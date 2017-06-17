@@ -27,5 +27,12 @@ class Model extends RecordWrapper {
     public function getName() {
         return (new \ReflectionClass($this))->getShortName();
     }
+    
+    protected function addError(&$array, $field, $error) {
+        if(!isset($array[$field])) {
+            $array[$field] = [];
+        }
+        $array[$field][] = $error;
+    }
 
 }
