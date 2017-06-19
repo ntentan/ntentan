@@ -34,5 +34,14 @@ class Model extends RecordWrapper {
         }
         $array[$field][] = $error;
     }
+    
+    public function getTable() {
+        $dbStore = $this->getDBStoreInformation();
+        return "{$dbStore['quoted_table']}";
+    }
+    
+    public function getDriver() {
+        return $this->getAdapter()->getDriver();
+    }
 
 }
