@@ -50,7 +50,14 @@ class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface {
         return $fields; 
     }
     
-    
+    private function cast($value, $type) {
+        switch($type) {
+            case 'integer': return (int) $value;                
+            case 'double': return (double) $value;                
+            case 'boolean': return (bool) $value;                
+            default: return $value;                
+        }
+    }
   
     public function bind(Controller $controller, $action, $type, $name) {
         $this->bound = false;
@@ -59,6 +66,8 @@ class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface {
         if (!is_a($object, '\ntentan\Model')) {
             return false;
         }
+        
+        $fieldDescriptions = $object->getDescription()->getFields();
         
         $requestData = Input::post() + Input::get();
         $fields = $this->getModelFields($object);
@@ -94,7 +103,7 @@ class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface {
                     $fields[$field]['instance']->setData($relatedData);
                     $object[$fields[$field]['model']] = $fields[$field]['instance'];
                 } else {
-                    $object[$field] = $requestData[$field] == '' ? null : $requestData[$field];
+                    $object[$field] = $requestData[$field] == '' ? null : $this->cast($requestData[$field], $fieldDescriptions[$field]['type']);
                 }
             }
         }

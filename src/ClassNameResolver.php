@@ -6,15 +6,13 @@ use ntentan\utils\Text;
 use ntentan\nibii\interfaces\ModelClassResolverInterface;
 use ntentan\interfaces\ControllerClassResolverInterface;
 use ntentan\nibii\interfaces\ModelJoinerInterface;
-use ntentan\panie\ComponentResolverInterface;
 
 /**
  * Provides implementations of the various name resolver interfaces.
  * @author ekow
  */
 class ClassNameResolver implements ModelClassResolverInterface, 
-    ControllerClassResolverInterface, ModelJoinerInterface, 
-    ComponentResolverInterface
+    ControllerClassResolverInterface, ModelJoinerInterface
 {
     public function getModelClassName($model, $context)
     {
@@ -44,36 +42,6 @@ class ClassNameResolver implements ModelClassResolverInterface,
         $joinerParts[] = implode('', $class);
 
         return implode('\\', $joinerParts);        
-    }
-
-    public function getComponentClassName($component, $parameters)
-    {
-        // Attempt to load an application component
-        $type = $parameters['type'];
-        $camelType = Text::ucamelize($type);
-        $namespaces = $parameters['namespaces'];
-        
-        $className = Text::ucamelize($component) . $camelType;
-        $class = "\\{$namespaces[0]}\\{$type}s\\$component\\$className";
-        if(class_exists($class)) {
-            return $class;
-        }
-
-        // Attempt to load a core dependency
-        $class = "\\ntentan\\{$namespaces[1]}\\$className";
-        if(class_exists($class)) {
-            return $class;
-        }
-
-        // Attempt to load plugin dependency
-        $componentPaths = explode(".", $component);
-        $className = Text::ucamelize(array_pop($componentPaths));
-        $class= "\\ntentan\\extensions\\" . implode("\\", $componentPaths) . "\\{$type}s\\$className$camelType";
-        if(class_exists($class)) {
-            return $class;
-        }
-
-        throw new exceptions\ComponentNotFoundException("[$component] $type not found");        
     }
 
     public function getControllerClassName($name)
