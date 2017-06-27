@@ -7,9 +7,9 @@
         "php": ">=5.4.0",
         "ntentan/honam" : "0.*",
         "monolog/monolog" : "@stable",
-        "ntentan/nibii" : "dev-master",
-        "ntentan/config": "dev-master",
-        "ntentan/panie": "dev-master"
+        "ntentan/nibii" : "0.*",
+        "ntentan/config": "0.*",
+        "ntentan/panie": "0.*"
     },
     "require-dev": {
         "phpunit/phpunit" : "4.*"
@@ -25,6 +25,5 @@
         "psr-4": {
             "ntentan\\": "src/"
         }
-    },
-    "minimum-stability": "dev"
+    }
 }
