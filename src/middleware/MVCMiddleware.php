@@ -5,7 +5,6 @@ namespace ntentan\middleware;
 use ntentan\utils\Input;
 use ntentan\honam\TemplateEngine;
 use ntentan\honam\Helper;
-use ntentan\honam\AssetsLoader;
 use ntentan\Context;
 
 class MVCMiddleware extends \ntentan\Middleware {
@@ -25,9 +24,6 @@ class MVCMiddleware extends \ntentan\Middleware {
     public function run($route, $response) {
         TemplateEngine::prependPath('views/shared');
         TemplateEngine::prependPath('views/layouts');
-        AssetsLoader::setSiteUrl($this->context->getUrl('public'));
-        AssetsLoader::appendSourceDir('assets');
-        AssetsLoader::setDestinationDir('public');
         Helper::setBaseUrl($this->context->getUrl(''));
         return $this->loadResource($route);
     }
