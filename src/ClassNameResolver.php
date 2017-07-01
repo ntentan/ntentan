@@ -14,13 +14,19 @@ use ntentan\nibii\interfaces\ModelJoinerInterface;
 class ClassNameResolver implements ModelClassResolverInterface, 
     ControllerClassResolverInterface, ModelJoinerInterface
 {
+    
+    private $namespace;
+    
+    public function __construct(\ntentan\Context $context) {
+        $this->namespace = $context->getNamespace();
+    }
+    
     public function getModelClassName($model, $context)
     {
         if($context == nibii\Relationship::BELONGS_TO) {
             $model = Text::pluralize($model);
         }
-        $namespace = Ntentan::getNamespace();
-        return "\\$namespace\\models\\" . Text::ucamelize($model);        
+        return "\\{$this->namespace}\\models\\" . Text::ucamelize($model);        
     }
 
     public function getJunctionClassName($classA, $classB)
@@ -48,7 +54,7 @@ class ClassNameResolver implements ModelClassResolverInterface,
     {
         return sprintf(
             '\%s\controllers\%sController', 
-            Ntentan::getNamespace(), 
+            $this->namespace, 
             utils\Text::ucamelize($name)
         );        
     }

@@ -31,7 +31,7 @@ class ControllerLoader implements ResourceLoaderInterface {
         if ($resolvedControllerClass) {
             // use resolved class name
             $params['controller_path'] = $controller;
-            Ntentan::getRouter()->setVar('controller_path', $controller);
+            $this->context->getRouter()->setVar('controller_path', $controller);
             $controllerInstance = $this->container->resolve($controllerClassName);
         } else if (class_exists($controller)) {
             // use controller class
