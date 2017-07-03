@@ -48,14 +48,16 @@ use ntentan\utils\Text;
  * @todo    Controllers must output data that can be passed to some kind of
  *          template engine like smarty.
  */
-class Controller {
+class Controller
+{
 
     private $componentMap = [];
     private $boundParameters = [];
     private $activeAction;
     private $context;
 
-    public function __get($property) {
+    public function __get($property)
+    {
         if (substr($property, -9) == "Component") {
             $component = substr($property, 0, strlen($property) - 9);
             return $this->getComponentInstance($this->componentMap[$component]);
@@ -63,19 +65,22 @@ class Controller {
             throw new \Exception("Unknown property *{$property}* requested");
         }
     }
-    
-    protected function getContext() {
+
+    protected function getContext()
+    {
         return $this->context;
     }
-    
-    protected function getRedirect() {
-        $redirect = new Redirect($this->context->getApp()->getParameters()['controller_path']);
+
+    protected function getRedirect()
+    {
+        $redirect = new Redirect($this->context->getParameter('controller_path'));
         return $redirect;
     }
-    
-    protected function getActionUrl($action) {
+
+    protected function getActionUrl($action)
+    {
         return $this->context->getUrl(
-            "{$this->context->getApp()->getParameters()['controller_path']}/$action"
+                        "{$this->context->getParameter('controller_path')}/$action"
         );
     }
 
@@ -85,7 +90,8 @@ class Controller {
      * @param \ReflectionParameter $methodParameter
      * @param array $params
      */
-    private function bindParameter(&$invokeParameters, $methodParameter, $params) {
+    private function bindParameter(&$invokeParameters, $methodParameter, $params)
+    {
         if (isset($params[$methodParameter->name])) {
             $invokeParameters[] = $params[$methodParameter->name];
             $this->boundParameters[$methodParameter->name] = true;
@@ -102,11 +108,13 @@ class Controller {
         }
     }
 
-    protected function isBound($parameter) {
+    protected function isBound($parameter)
+    {
         return $this->boundParameters[$parameter];
     }
 
-    private function parseDocComment($comment) {
+    private function parseDocComment($comment)
+    {
         $lines = explode("\n", $comment);
         $attributes = [];
         foreach ($lines as $line) {
@@ -117,7 +125,8 @@ class Controller {
         return $attributes;
     }
 
-    private function getMethod($path) {
+    private function getMethod($path)
+    {
         $className = (new ReflectionClass($this))->getShortName();
         $methods = $this->context->getCache()->read(
                 "controller.{$className}.methods", function() {
@@ -134,9 +143,7 @@ class Controller {
                 $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
                 $results[$keyName] = [
                     'name' => $method->getName(),
-                    'binder' => isset($docComments['binder']) 
-                        ? $docComments['binder'] 
-                        : $this->context->getModelBinders()->getDefaultBinderClass()
+                    'binder' => isset($docComments['binder']) ? $docComments['binder'] : $this->context->getModelBinders()->getDefaultBinderClass()
                 ];
             }
             return $results;
@@ -152,7 +159,8 @@ class Controller {
         return false;
     }
 
-    public function executeControllerAction($action, $params, $context) {
+    public function executeControllerAction($action, $params, $context)
+    {
         $action = $action == '' ? 'index' : $action;
         $methodName = Text::camelize($action);
         $return = null;

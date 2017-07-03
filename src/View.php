@@ -7,7 +7,8 @@ namespace ntentan;
  *
  * @author ekow
  */
-class View {
+class View
+{
 
     private $layout = 'main.tpl.php';
     private $template;
@@ -21,31 +22,38 @@ class View {
      */
     private $variables = array();
 
-    public function __construct() {
+    public function __construct()
+    {
         
     }
 
-    public function setContentType($contentType) {
+    public function setContentType($contentType)
+    {
         header("Content-Type: $contentType");
     }
 
-    public function getCacheTimeout() {
+    public function getCacheTimeout()
+    {
         return $this->cacheTimeout;
     }
 
-    public function setCacheTimeout($cacheTimeout) {
+    public function setCacheTimeout($cacheTimeout)
+    {
         $this->cacheTimeout = $cacheTimeout;
     }
 
-    public function setLayout($layout) {
+    public function setLayout($layout)
+    {
         $this->layout = $layout;
     }
 
-    public function getTemplate() {
+    public function getTemplate()
+    {
         return $this->template;
     }
 
-    public function setTemplate($template) {
+    public function setTemplate($template)
+    {
         $this->template = $template;
     }
 
@@ -54,7 +62,8 @@ class View {
      * @param mixed $params1
      * @param string $params2
      */
-    public function set($params1, $params2 = null) {
+    public function set($params1, $params2 = null)
+    {
         if (is_string($params1)) {
             $this->variables[$params1] = $params2;
         } else if (is_array($params1)) {
@@ -62,7 +71,8 @@ class View {
         }
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         $viewData = $this->variables;
         if ($this->template != false) {
             $renderedTemplate = honam\TemplateEngine::render($this->template, $viewData);

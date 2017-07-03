@@ -11,22 +11,22 @@ use ntentan\nibii\interfaces\ModelJoinerInterface;
  * Provides implementations of the various name resolver interfaces.
  * @author ekow
  */
-class ClassNameResolver implements ModelClassResolverInterface, 
-    ControllerClassResolverInterface, ModelJoinerInterface
+class ClassNameResolver implements ModelClassResolverInterface, ControllerClassResolverInterface, ModelJoinerInterface
 {
-    
+
     private $namespace;
-    
-    public function __construct(\ntentan\Context $context) {
+
+    public function __construct(\ntentan\Context $context)
+    {
         $this->namespace = $context->getNamespace();
     }
-    
+
     public function getModelClassName($model, $context)
     {
-        if($context == nibii\Relationship::BELONGS_TO) {
+        if ($context == nibii\Relationship::BELONGS_TO) {
             $model = Text::pluralize($model);
         }
-        return "\\{$this->namespace}\\models\\" . Text::ucamelize($model);        
+        return "\\{$this->namespace}\\models\\" . Text::ucamelize($model);
     }
 
     public function getJunctionClassName($classA, $classB)
@@ -35,8 +35,8 @@ class ClassNameResolver implements ModelClassResolverInterface,
         $classAParts = explode('\\', $classA);
         $joinerParts = [];
 
-        foreach($classAParts as $i => $part) {
-            if($part == $classBParts[$i]) {
+        foreach ($classAParts as $i => $part) {
+            if ($part == $classBParts[$i]) {
                 $joinerParts[] = $part;
             } else {
                 break;
@@ -47,16 +47,14 @@ class ClassNameResolver implements ModelClassResolverInterface,
         sort($class);
         $joinerParts[] = implode('', $class);
 
-        return implode('\\', $joinerParts);        
+        return implode('\\', $joinerParts);
     }
 
     public function getControllerClassName($name)
     {
         return sprintf(
-            '\%s\controllers\%sController', 
-            $this->namespace, 
-            utils\Text::ucamelize($name)
-        );        
+                '\%s\controllers\%sController', $this->namespace, utils\Text::ucamelize($name)
+        );
     }
 
 }

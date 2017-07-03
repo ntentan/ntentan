@@ -8,14 +8,16 @@ use ntentan\nibii\RecordWrapper;
  * An extension of the nibii\RecordWrapper which contains specific Ntentan
  * extensions.
  */
-class Model extends RecordWrapper {
+class Model extends RecordWrapper
+{
 
     /**
      * Loads a model described by a string.
      * @param string $name
      * @return \ntentan\Model
      */
-    public static function load($name) {
+    public static function load($name)
+    {
         return nibii\ORMContext::getInstance()->load($name);
     }
 
@@ -24,23 +26,27 @@ class Model extends RecordWrapper {
      * Names are usually deduced from the class name of the underlying model.
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return (new \ReflectionClass($this))->getShortName();
     }
-    
-    protected function addError(&$array, $field, $error) {
-        if(!isset($array[$field])) {
+
+    protected function addError(&$array, $field, $error)
+    {
+        if (!isset($array[$field])) {
             $array[$field] = [];
         }
         $array[$field][] = $error;
     }
-    
-    public function getTable() {
+
+    public function getTable()
+    {
         $dbStore = $this->getDBStoreInformation();
         return "{$dbStore['quoted_table']}";
     }
-    
-    public function getDriver() {
+
+    public function getDriver()
+    {
         return $this->getAdapter()->getDriver();
     }
 

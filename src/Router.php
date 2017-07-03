@@ -6,7 +6,8 @@ namespace ntentan;
  * Provides default routing logic that loads controllers based on URL requests 
  * passed to the framework.
  */
-class Router {
+class Router
+{
 
     /**
      * The routing table. 
@@ -17,8 +18,7 @@ class Router {
      * @var array
      */
     private $routes = [];
-    private $tempVariables = [];
-    
+
     /**
      * The route which is currently being executed. If the routing engine has
      * modified the requested route, this property would hold the value of the
@@ -29,40 +29,36 @@ class Router {
     private $route;
 
     /**
-     * Variables exposed through getVar()
-     * @var type 
-     */
-    private $routerVariables = [];
-
-    /**
      * Invoke the router to load a given resource.
      * @param string $route
      * @throws exceptions\RouteNotAvailableException
      */
-    public function route($route) {
+    public function route($route)
+    {
         $this->route = explode('?', $route)[0];
         $routeName = '';
         $parameters = [];
-        
+
         // Go through predefined routes till a match is found
         foreach ($this->routes as $routeName => $routeDescription) {
             $parameters = $this->match($route, $routeDescription);
             if ($parameters !== false) {
                 return [
-                    'route' => $this->route, 
-                    'parameters' => $parameters, 
+                    'route' => $this->route,
+                    'parameters' => $parameters,
                     'description' => $this->routes[$routeName]
                 ];
             }
         }
         return [
             'route' => $this->route,
-            'parameters' => $parameters, 
+            'parameters' => $parameters,
             'description' => $this->routes['default']
         ];
     }
 
-    private function match($route, $description) {
+    private function match($route, $description)
+    {
         $parameters = [];
         if (preg_match("|^{$description['regexp']}$|i", urldecode($route), $matches)) {
             foreach ($matches as $key => $value) {
@@ -75,7 +71,8 @@ class Router {
         return false;
     }
 
-    private function expandParameter(&$key, $value) {
+    private function expandParameter(&$key, $value)
+    {
         $parts = explode('____', $key);
         if (!isset($parts[1]))
             return $value;
@@ -86,13 +83,13 @@ class Router {
         return $value;
     }
 
-    public function mapRoute($name, $pattern, $parameters = []) {
+    public function mapRoute($name, $pattern, $parameters = [])
+    {
         // Generate a PCRE regular expression from pattern
-        $this->tempVariables = [];
-
+        $variables;
         $regexp = preg_replace_callback(
-                "/{(?<prefix>\*|\#)?(?<name>[a-z_][a-zA-Z0-9\_]*)}/", function($matches) {
-            $this->tempVariables[] = $matches['name'];
+                "/{(?<prefix>\*|\#)?(?<name>[a-z_][a-zA-Z0-9\_]*)}/", function($matches) use (&$variables) {
+            $variables[] = $matches['name'];
             return sprintf(
                     "(?<{$matches['name']}%s>[a-z0-9_.~:#[\]@!$&'()*+,;=%s\s]+)?", $matches['prefix'] == '#' ? '____array' : null, $matches['prefix'] != '' ? "\-/_" : null
             );
@@ -104,32 +101,24 @@ class Router {
             'pattern' => $pattern,
             'regexp' => $regexp,
             'parameters' => $parameters,
-            'variables' => $this->tempVariables
+            'variables' => $variables
         ];
 
         $this->routes[$name] = $routeDetails;
     }
 
-    public function getVar($var) {
-        if (isset($this->routerVariables[$var])) {
-            return $this->routerVariables[$var];
-        }
-        return null;
-    }
-
-    public function setVar($var, $value) {
-        $this->routerVariables[$var] = $value;
-    }
-
-    public function getRoute() {
+    public function getRoute()
+    {
         return $this->route;
     }
 
-    public function getRouteDefinition($routeName) {
+    public function getRouteDefinition($routeName)
+    {
         return $this->routes[$routeName];
     }
 
-    public function registerLoader($tag, $class, $direction = 'append') {
+    public function registerLoader($tag, $class, $direction = 'append')
+    {
         $this->register[$tag] = $class;
     }
 

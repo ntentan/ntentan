@@ -13,21 +13,26 @@ namespace ntentan;
  *
  * @author ekow
  */
-class Redirect {
+class Redirect
+{
 
     private $url;
 
-    public function __construct($url) {
+    public function __construct($url)
+    {
         $this->url = $url;
     }
 
-    public function __toString() {
-        header("Location: /{$this->url}");
+    public function __toString()
+    {
+        header("Location: {$this->url}");
         return "Redirecting to {$this->url} ...";
     }
-    
-    public function toAction($action) {
-        $this->url += "/{$action}";
+
+    public function toAction($action)
+    {
+        $this->url .= "/{$action}";
+        return $this;
     }
 
 }

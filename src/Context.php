@@ -85,6 +85,12 @@ class Context
     private $namespace = 'app';
     private $cache;
     private $modelBinders;
+    
+    /**
+     *
+     * @var Parameters
+     */
+    private $parameters;
     private static $instance;
 
     /**
@@ -96,13 +102,15 @@ class Context
     /**
      * @return Context New context
      */
-    public static function initialize($namespace = 'app', $applicationClass = Application::class, panie\Container $container = null) {
+    public static function initialize($namespace = 'app', $applicationClass = Application::class, panie\Container $container = null)
+    {
         $container = $container ?? new panie\Container();
         // Force binding of context as singleton in container
         $container->bind(self::class)->to(self::class)->asSingleton();
         $context = $container->resolve(self::class, ['namespace' => $namespace]);
         $context->app = $container->resolve($applicationClass);
-        $context->app->setup();         
+        $context->app->setup();
+        $context->parameters = Parameters::wrap([]);
         self::$instance = $context;
         return $context;
     }
@@ -114,7 +122,8 @@ class Context
      * @param panie\Container $container
      * @param string $namespace
      */
-    public function __construct(Container $container, $namespace) {
+    public function __construct(Container $container, $namespace)
+    {
         $this->container = $container;
         $this->namespace = $namespace;
         $this->config = new Config();
@@ -144,12 +153,12 @@ class Context
 
         $this->modelBinders = new controllers\ModelBinderRegister($container);
         $this->modelBinders->setDefaultBinderClass(
-            controllers\model_binders\DefaultModelBinder::class
+                controllers\model_binders\DefaultModelBinder::class
         );
         $this->modelBinders->register(
-            utils\filesystem\UploadedFile::class, controllers\model_binders\UploadedFileBinder::class
+                utils\filesystem\UploadedFile::class, controllers\model_binders\UploadedFileBinder::class
         );
-        $this->modelBinders->register(View::class, controllers\model_binders\ViewBinder::class);          
+        $this->modelBinders->register(View::class, controllers\model_binders\ViewBinder::class);
     }
 
     /**
@@ -157,7 +166,8 @@ class Context
      * the application's namespace. These would be the classes that you
      * would write for this application.
      */
-    private function setupAutoloader() {
+    private function setupAutoloader()
+    {
         spl_autoload_register(function ($class) {
             $prefix = $this->namespace . "\\";
             $baseDir = 'src/';
@@ -176,7 +186,8 @@ class Context
         });
     }
 
-    public function getNamespace() {
+    public function getNamespace()
+    {
         return $this->namespace;
     }
 
@@ -184,11 +195,13 @@ class Context
      * 
      * @return Router
      */
-    public function getRouter() {
+    public function getRouter()
+    {
         return $this->container->singleton(Router::class);
     }
 
-    public function getContainer() {
+    public function getContainer()
+    {
         return $this->container;
     }
 
@@ -196,7 +209,8 @@ class Context
      * 
      * @return Application
      */
-    public function getApp() {
+    public function getApp()
+    {
         return $this->app;
     }
 
@@ -204,35 +218,51 @@ class Context
      * 
      * @return kaikai\Cache
      */
-    public function getCache() {
+    public function getCache()
+    {
         return $this->cache;
     }
-    
-    public function getConfig() {
+
+    public function getConfig()
+    {
         return $this->config;
     }
 
-    public function getRedirect($path) {
+    public function getRedirect($path)
+    {
         return new Redirect($path);
     }
 
-    public function getUrl($path) {
+    public function getUrl($path)
+    {
         return preg_replace('~/+~', '/', $this->config->get('app.prefix') . "/$path");
     }
 
     /**
      * @return controllers\ModelBinderRegister
      */
-    public function getModelBinders() {
+    public function getModelBinders()
+    {
         return $this->modelBinders;
     }
 
-    public function execute($applicationClass = Application::class) {
+    public function execute($applicationClass = Application::class)
+    {
         Session::start();
         $route = $this->getRouter()->route(substr(Input::server('PATH_INFO'), 1));
         $pipeline = $route['description']['parameters']['pipeline'] ?? $this->app->getPipeline();
         $output = $this->container->resolve(PipelineRunner::class)->run($pipeline, $route);
         echo $output;
+    }
+
+    public function getParameter($parameter)
+    {
+        return $this->parameters->get($parameter);
+    }
+    
+    public function setParameter($parameter, $value)
+    {
+        $this->parameters->set($parameter, $value);
     }
 
 }
