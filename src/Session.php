@@ -4,7 +4,6 @@ namespace ntentan;
 
 class Session
 {
-
     public static function start()
     {
         session_start();
@@ -27,5 +26,4 @@ class Session
     {
         $_SESSION = [];
     }
-
 }

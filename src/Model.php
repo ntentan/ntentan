@@ -49,5 +49,4 @@ class Model extends RecordWrapper
     {
         return $this->getAdapter()->getDriver();
     }
-
 }

@@ -24,12 +24,9 @@ class ModelStore implements Store
     public function read($sessionId)
     {
         $this->session = $this->session->getFirstWithId($sessionId);
-        if($this->session->count() == 1)
-        {
+        if ($this->session->count() == 1) {
             return $this->session->data;
-        }
-        else
-        {
+        } else {
             $this->new = true;
             return '';
         }
@@ -37,16 +34,13 @@ class ModelStore implements Store
     
     public function write($sessionId, $sessionData)
     {
-        if($this->new)
-        {
+        if ($this->new) {
             $this->session->id = $sessionId;
             $this->session->data = $sessionData;
             $this->session->expires = time() + Manager::$lifespan;
             $this->session->lifespan = Manager::$lifespan;
             $this->session->save();
-        }
-        else
-        {
+        } else {
             $this->session->data = $sessionData;
             $this->session->expires = time() + Manager::$lifespan;
             $this->session->lifespan = Manager::$lifespan;
@@ -61,7 +55,6 @@ class ModelStore implements Store
     
     public function gc($lifetime)
     {
-        
     }
     
     public function isNew()

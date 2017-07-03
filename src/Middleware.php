@@ -12,7 +12,7 @@ abstract class Middleware
     private $runner;
     private $parameters;
 
-    public abstract function run($route, $response);
+    abstract public function run($route, $response);
 
     public function injectRunner(PipelineRunner $runner)
     {
@@ -33,5 +33,4 @@ abstract class Middleware
     {
         return $this->parameters;
     }
-
 }

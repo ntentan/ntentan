@@ -6,21 +6,22 @@ use ntentan\Model;
 use ntentan\Context;
 use ntentan\Session;
 
-abstract class AbstractAuthMethod {
-
+abstract class AbstractAuthMethod
+{
     protected $message;
     private $parameters;
 
     abstract public function login(Context $context, $route);
 
-    public function authLocalPassword($username, $password) {
+    public function authLocalPassword($username, $password)
+    {
         $users = Model::load($this->parameters->get('users_model', 'users'));
         $result = $users->filter('username = ?', $username)->fetchFirst();
         $passwordCrypt = $this->parameters->get(
             'password_crypt_function',
-            function($password, $storedPassword) {
+            function ($password, $storedPassword) {
                 return md5($password) == $storedPassword;
-            }                
+            }
         );
         if ($passwordCrypt($password, $result->password) && $result->blocked != '1') {
             Session::set("logged_in", true);
@@ -34,12 +35,13 @@ abstract class AbstractAuthMethod {
         }
     }
     
-    protected function getParameters() {
+    protected function getParameters()
+    {
         return $this->parameters;
     }
     
-    public function setParameters($parameters) {
+    public function setParameters($parameters)
+    {
         $this->parameters = $parameters;
     }
-
 }

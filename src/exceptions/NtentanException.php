@@ -5,5 +5,4 @@ use \Exception;
 
 class NtentanException extends Exception
 {
-    
 }

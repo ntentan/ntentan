@@ -3,16 +3,16 @@
 namespace ntentan;
 
 /**
- * Provides default routing logic that loads controllers based on URL requests 
+ * Provides default routing logic that loads controllers based on URL requests
  * passed to the framework.
  */
 class Router
 {
 
     /**
-     * The routing table. 
-     * An array of regular expressions and associated operations. If a particular 
-     * request sent in through the URL matches a regular expression in the table, 
+     * The routing table.
+     * An array of regular expressions and associated operations. If a particular
+     * request sent in through the URL matches a regular expression in the table,
      * the associated operations are executed.
      *
      * @var array
@@ -23,7 +23,7 @@ class Router
      * The route which is currently being executed. If the routing engine has
      * modified the requested route, this property would hold the value of the
      * new route.
-     * 
+     *
      * @var string
      */
     private $route;
@@ -74,8 +74,9 @@ class Router
     private function expandParameter(&$key, $value)
     {
         $parts = explode('____', $key);
-        if (!isset($parts[1]))
+        if (!isset($parts[1])) {
             return $value;
+        }
         if ($parts[1] == 'array') {
             $key = $parts[0];
             return explode('/', $value);
@@ -88,12 +89,12 @@ class Router
         // Generate a PCRE regular expression from pattern
         $variables;
         $regexp = preg_replace_callback(
-                "/{(?<prefix>\*|\#)?(?<name>[a-z_][a-zA-Z0-9\_]*)}/", function($matches) use (&$variables) {
-            $variables[] = $matches['name'];
-            return sprintf(
+                "/{(?<prefix>\*|\#)?(?<name>[a-z_][a-zA-Z0-9\_]*)}/", function ($matches) use (&$variables) {
+                    $variables[] = $matches['name'];
+                    return sprintf(
                     "(?<{$matches['name']}%s>[a-z0-9_.~:#[\]@!$&'()*+,;=%s\s]+)?", $matches['prefix'] == '#' ? '____array' : null, $matches['prefix'] != '' ? "\-/_" : null
             );
-        }, str_replace('/', '(/)?', $pattern)
+                }, str_replace('/', '(/)?', $pattern)
         );
 
         $routeDetails = [
@@ -121,5 +122,4 @@ class Router
     {
         $this->register[$tag] = $class;
     }
-
 }

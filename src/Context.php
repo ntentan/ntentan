@@ -77,7 +77,7 @@ class Context
     /**
      * A prefix to expect in-front of all URLS. This is useful when running your
      * application through a sub-directory.
-     * 
+     *
      * @var string
      */
     private $prefix;
@@ -95,7 +95,7 @@ class Context
 
     /**
      *
-     * @var Application 
+     * @var Application
      */
     private $app;
 
@@ -118,7 +118,7 @@ class Context
     /**
      * Initializes an application that has all its classes found in the base
      * namespace.
-     * 
+     *
      * @param panie\Container $container
      * @param string $namespace
      */
@@ -192,7 +192,7 @@ class Context
     }
 
     /**
-     * 
+     *
      * @return Router
      */
     public function getRouter()
@@ -206,7 +206,7 @@ class Context
     }
 
     /**
-     * 
+     *
      * @return Application
      */
     public function getApp()
@@ -215,7 +215,7 @@ class Context
     }
 
     /**
-     * 
+     *
      * @return kaikai\Cache
      */
     public function getCache()
@@ -264,5 +264,4 @@ class Context
     {
         $this->parameters->set($parameter, $value);
     }
-
 }

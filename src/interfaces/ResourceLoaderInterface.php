@@ -7,7 +7,7 @@ namespace ntentan\interfaces;
  *
  * @author ekow
  */
-interface ResourceLoaderInterface 
+interface ResourceLoaderInterface
 {
     public function load($parameters);
 }

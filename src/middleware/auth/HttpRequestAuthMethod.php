@@ -6,15 +6,16 @@ use ntentan\utils\Input;
 use ntentan\Context;
 use ntentan\View;
 
-class HttpRequestAuthMethod extends AbstractAuthMethod {
-
-    public function login(Context $context, $route) {
+class HttpRequestAuthMethod extends AbstractAuthMethod
+{
+    public function login(Context $context, $route)
+    {
         $parameters = $this->getParameters();
         $usernameField = $parameters->get('username_field', "username");
         $passwordField = $parameters->get('password_field', "password");
         if (Input::exists(Input::POST, $usernameField) && Input::exists(Input::POST, $passwordField)) {
-            if($this->authLocalPassword(
-                Input::post($usernameField), 
+            if ($this->authLocalPassword(
+                Input::post($usernameField),
                 Input::post($passwordField)
             )) {
                 return $context->getRedirect($parameters->get('redirect_route', ''));
@@ -22,12 +23,11 @@ class HttpRequestAuthMethod extends AbstractAuthMethod {
                 $view = $context->getContainer()->resolve(View::class);
                 $view->set('auth_message', $this->message);
             }
-        } 
+        }
         
-        if($route['route'] != $parameters->get("login_route", "login")) {
+        if ($route['route'] != $parameters->get("login_route", "login")) {
             return $context->getRedirect($parameters->get("login_route", "login"));
-        } 
+        }
         return true;
     }
-
 }

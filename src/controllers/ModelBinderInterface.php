@@ -15,8 +15,8 @@ use ntentan\Controller;
  *
  * @author ekow
  */
-interface ModelBinderInterface {
-
+interface ModelBinderInterface
+{
     public function bind(Controller $controller, $action, $type, $name);
 
     public function getBound();

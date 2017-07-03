@@ -7,13 +7,13 @@ class Application
 
     /**
      *
-     * @var Context 
+     * @var Context
      */
     protected $context;
     private $pipeline = [];
 
     /**
-     * 
+     *
      * @param type $context
      */
     public function __construct(Context $context)
@@ -29,7 +29,6 @@ class Application
 
     public function setup()
     {
-        
     }
 
     public function appendMiddleware($class, $options = [])
@@ -41,5 +40,4 @@ class Application
     {
         array_unshift($this->pipeline, [$class, $options]);
     }
-
 }

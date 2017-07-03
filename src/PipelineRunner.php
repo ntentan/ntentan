@@ -46,5 +46,4 @@ class PipelineRunner
         $instance->injectRunner($this);
         return $instance->run($this->route, $response);
     }
-
 }

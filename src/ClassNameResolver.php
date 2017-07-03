@@ -13,7 +13,6 @@ use ntentan\nibii\interfaces\ModelJoinerInterface;
  */
 class ClassNameResolver implements ModelClassResolverInterface, ControllerClassResolverInterface, ModelJoinerInterface
 {
-
     private $namespace;
 
     public function __construct(\ntentan\Context $context)
@@ -56,5 +55,4 @@ class ClassNameResolver implements ModelClassResolverInterface, ControllerClassR
                 '\%s\controllers\%sController', $this->namespace, utils\Text::ucamelize($name)
         );
     }
-
 }

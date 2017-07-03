@@ -15,7 +15,6 @@ namespace ntentan;
  */
 class Redirect
 {
-
     private $url;
 
     public function __construct($url)
@@ -34,5 +33,4 @@ class Redirect
         $this->url .= "/{$action}";
         return $this;
     }
-
 }

@@ -13,7 +13,6 @@ use ntentan\panie\Container;
  */
 class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface
 {
-
     private $bound;
     protected $container;
 
@@ -23,7 +22,7 @@ class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface
     }
 
     /**
-     * 
+     *
      * @param \ntentan\Model $object
      */
     private function getModelFields($object)
@@ -36,7 +35,7 @@ class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface
         $reflection = new \ReflectionClass($object);
         $properties = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC);
         $fields = [];
-        foreach($properties as $property) {
+        foreach ($properties as $property) {
             $fields[] = $property->name;
         }
         return $fields;
@@ -65,5 +64,4 @@ class DefaultModelBinder implements \ntentan\controllers\ModelBinderInterface
     {
         return $this->bound;
     }
-
 }

@@ -2,10 +2,10 @@
 
 /**
  * The Controller base class for the Ntentan framework
- * 
+ *
  * Ntentan Framework
  * Copyright (c) 2008-2012 James Ekow Abaka Ainooson
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -13,18 +13,18 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
- * 
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
  * @author James Ainooson <jainooson@gmail.com>
  * @copyright Copyright 2010 James Ekow Abaka Ainooson
  * @license MIT
@@ -50,7 +50,6 @@ use ntentan\utils\Text;
  */
 class Controller
 {
-
     private $componentMap = [];
     private $boundParameters = [];
     private $activeAction;
@@ -85,7 +84,7 @@ class Controller
     }
 
     /**
-     * 
+     *
      * @param array $invokeParameters
      * @param \ReflectionParameter $methodParameter
      * @param array $params
@@ -129,30 +128,32 @@ class Controller
     {
         $className = (new ReflectionClass($this))->getShortName();
         $methods = $this->context->getCache()->read(
-                "controller.{$className}.methods", function() {
-            $class = new ReflectionClass($this);
-            $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
-            $results = [];
-            foreach ($methods as $method) {
-                $methodName = $method->getName();
-                if (substr($methodName, 0, 2) == '__')
-                    continue;
-                if (array_search($methodName, ['getActiveControllerAction', 'executeControllerAction']))
-                    continue;
-                $docComments = $this->parseDocComment($method->getDocComment());
-                $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
-                $results[$keyName] = [
+                "controller.{$className}.methods", function () {
+                    $class = new ReflectionClass($this);
+                    $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
+                    $results = [];
+                    foreach ($methods as $method) {
+                        $methodName = $method->getName();
+                        if (substr($methodName, 0, 2) == '__') {
+                            continue;
+                        }
+                        if (array_search($methodName, ['getActiveControllerAction', 'executeControllerAction'])) {
+                            continue;
+                        }
+                        $docComments = $this->parseDocComment($method->getDocComment());
+                        $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
+                        $results[$keyName] = [
                     'name' => $method->getName(),
                     'binder' => isset($docComments['binder']) ? $docComments['binder'] : $this->context->getModelBinders()->getDefaultBinderClass()
                 ];
-            }
-            return $results;
-        }
+                    }
+                    return $results;
+                }
         );
 
         if (isset($methods[$path . utils\Input::server('REQUEST_METHOD')])) {
             return $methods[$path . utils\Input::server('REQUEST_METHOD')];
-        } else if (isset($methods[$path])) {
+        } elseif (isset($methods[$path])) {
             return $methods[$path];
         }
 
@@ -182,5 +183,4 @@ class Controller
         }
         throw new exceptions\ControllerActionNotFoundException($this, $methodName);
     }
-
 }

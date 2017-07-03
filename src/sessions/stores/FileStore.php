@@ -22,19 +22,13 @@ class FileStore implements Store
     public function read($sessionId)
     {
         $this->file = getcwd() . "/tmp/nt_sess_$sessionId";
-        if(file_exists($this->file))
-        {
-            if(filemtime($this->file) + Manager::$expiry > time())
-            {
+        if (file_exists($this->file)) {
+            if (filemtime($this->file) + Manager::$expiry > time()) {
                 return file_get_contents($this->file);
-            }
-            else
-            {
+            } else {
                 return '';
             }
-        }
-        else
-        {
+        } else {
             return '';
         }
     }
@@ -43,14 +37,11 @@ class FileStore implements Store
     {
         $file = fopen($this->file, "w");
         
-        if($file !== false)
-        {
+        if ($file !== false) {
             fwrite($file, $data);
             fclose($file);
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -63,17 +54,15 @@ class FileStore implements Store
     
     public function gc($lifetime)
     {
-        foreach (glob("{$this->path}/sess_*") as $filename)
-        {
-            if(filemtime($filename) + Manager::$expiry < time())
-            {
+        foreach (glob("{$this->path}/sess_*") as $filename) {
+            if (filemtime($filename) + Manager::$expiry < time()) {
                 unlink($file);
             }
-        }        
+        }
         return true;
     }
     
-    public function isNew() 
+    public function isNew()
     {
         return true;
     }

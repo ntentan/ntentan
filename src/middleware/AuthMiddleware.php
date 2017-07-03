@@ -43,8 +43,8 @@ use ntentan\middleware\auth\HttpBasicAuthMethod;
  *
  * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
  */
-class AuthMiddleware extends \ntentan\Middleware {
-
+class AuthMiddleware extends \ntentan\Middleware
+{
     private $authenticated;
     private static $authMethods = [
         'http_request' => HttpRequestAuthMethod::class,
@@ -53,16 +53,19 @@ class AuthMiddleware extends \ntentan\Middleware {
     
     private $context;
 
-    public function __construct(Context $context) {
+    public function __construct(Context $context)
+    {
         $this->context = $context;
         $this->authenticated = Session::get('logged_in');
     }
 
-    public static function registerAuthMethod($authMethod, $class) {
+    public static function registerAuthMethod($authMethod, $class)
+    {
         self::$authMethods[$authMethod] = $class;
     }
 
-    private function getAuthMethod() {
+    private function getAuthMethod()
+    {
         $authMethod = $this->getParameters()->get('auth_method', 'http_request');
         if (!isset(self::$authMethods[$authMethod])) {
             throw new \Exception("Auth method $authMethod not found");
@@ -73,23 +76,23 @@ class AuthMiddleware extends \ntentan\Middleware {
         return $authMethod;
     }
 
-    public function run($route, $response) {
-        if(Session::get('logged_in')) {
+    public function run($route, $response)
+    {
+        if (Session::get('logged_in')) {
             return $this->next($route, $response);
-        } 
+        }
         
         $parameters = $this->getParameters();
-        $excluded = $parameters->get('excluded', []);        
-        if(in_array($route['route'], $excluded)) {
+        $excluded = $parameters->get('excluded', []);
+        if (in_array($route['route'], $excluded)) {
             return $this->next($route, $response);
         }
         
         $response = $this->getAuthMethod()->login($this->context, $route);
-        if($response === true) {
+        if ($response === true) {
             return $this->next($route, $response);
         } else {
             return $response;
         }
     }
-
 }

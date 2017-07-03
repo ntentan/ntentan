@@ -9,7 +9,6 @@ namespace ntentan;
  */
 class View
 {
-
     private $layout = 'main.tpl.php';
     private $template;
     private $cacheTimeout = false;
@@ -24,7 +23,6 @@ class View
 
     public function __construct()
     {
-        
     }
 
     public function setContentType($contentType)
@@ -66,7 +64,7 @@ class View
     {
         if (is_string($params1)) {
             $this->variables[$params1] = $params2;
-        } else if (is_array($params1)) {
+        } elseif (is_array($params1)) {
             $this->variables += $params1;
         }
     }
@@ -78,9 +76,8 @@ class View
             $renderedTemplate = honam\TemplateEngine::render($this->template, $viewData);
             $viewData['contents'] = $renderedTemplate;
         }
-        if ($this->layout != FALSE) {
+        if ($this->layout != false) {
             return honam\TemplateEngine::render($this->layout, $viewData);
         }
     }
-
 }

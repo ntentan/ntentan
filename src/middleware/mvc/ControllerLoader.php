@@ -9,7 +9,6 @@ use ntentan\Context;
 
 class ControllerLoader implements ResourceLoaderInterface
 {
-
     private $container;
     private $context;
 
@@ -28,7 +27,7 @@ class ControllerLoader implements ResourceLoaderInterface
         $controllerClassName = $this->container->resolve(ControllerClassResolverInterface::class)
                 ->getControllerClassName($controller);
 
-        // Try to resolve the classname 
+        // Try to resolve the classname
         $resolvedControllerClass = $this->container->getResolvedClassName($controllerClassName);
 
         if ($resolvedControllerClass) {
@@ -36,7 +35,7 @@ class ControllerLoader implements ResourceLoaderInterface
             $params['controller_path'] = $controller;
             $this->context->setParameter('controller_path', $controller);
             $controllerInstance = $this->container->resolve($controllerClassName);
-        } else if (class_exists($controller)) {
+        } elseif (class_exists($controller)) {
             // use controller class
             $controllerInstance = $this->container->resolve($controller);
         } else {
@@ -44,5 +43,4 @@ class ControllerLoader implements ResourceLoaderInterface
         }
         return $controllerInstance->executeControllerAction($action, $params, $this->context);
     }
-
 }

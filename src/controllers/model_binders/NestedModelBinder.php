@@ -13,7 +13,6 @@ use ntentan\panie\Container;
  */
 class NestedModelBinder implements \ntentan\controllers\ModelBinderInterface
 {
-
     private $bound;
     protected $container;
 
@@ -23,7 +22,7 @@ class NestedModelBinder implements \ntentan\controllers\ModelBinderInterface
     }
 
     /**
-     * 
+     *
      * @param \ntentan\Model $object
      */
     private function getModelFields($object)
@@ -39,9 +38,9 @@ class NestedModelBinder implements \ntentan\controllers\ModelBinderInterface
                 'instance' => $modelRelationship->getModelInstance()
             ];
             $relationshipFields = array_map(
-                    function($field) {
-                return $field['name'];
-            }, $modelRelationship->getModelInstance()->getDescription()->getFields()
+                    function ($field) {
+                        return $field['name'];
+                    }, $modelRelationship->getModelInstance()->getDescription()->getFields()
             );
             foreach ($relationshipFields as $field) {
                 $relationshipField = "$model.$field";
@@ -119,5 +118,4 @@ class NestedModelBinder implements \ntentan\controllers\ModelBinderInterface
     {
         return $this->bound;
     }
-
 }

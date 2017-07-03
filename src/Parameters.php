@@ -4,7 +4,6 @@ namespace ntentan;
 
 class Parameters implements \ArrayAccess
 {
-
     private $parameters;
 
     private function __construct($parameters, $defaults)
@@ -51,5 +50,4 @@ class Parameters implements \ArrayAccess
     {
         unset($this->parameters[$offset]);
     }
-
 }

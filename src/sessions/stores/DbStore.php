@@ -7,7 +7,7 @@ use ntentan\Ntentan;
 require_once "Store.php";
 /**
  * DBS
- * 
+ *
  * @author ekow
  */
 class DbStore implements Store
@@ -26,21 +26,17 @@ class DbStore implements Store
     
     public function write($sessionId, $data)
     {
-        if($this->new)
-        {
+        if ($this->new) {
             $this->db->query(
                 sprintf(
                     "INSERT into sessions(id, data, expires, lifespan) VALUES('%s', '%s', %d, %d)",
-                    $sessionId, 
-                    $this->db->escape($data), 
-                    time() + Manager::$lifespan, 
+                    $sessionId,
+                    $this->db->escape($data),
+                    time() + Manager::$lifespan,
                     Manager::$lifespan
                 )
             );
-        }
-        else
-        {
-            
+        } else {
             $this->db->query(
                 sprintf(
                     "UPDATE sessions SET data = '%s', expires = %d WHERE id = '%s'",
@@ -57,13 +53,10 @@ class DbStore implements Store
         $result = $this->db->query(
             sprintf("SELECT data, lifespan FROM sessions WHERE id = '%s' AND expires > %d", $sessionId, time())
         );
-        if(count($result) == 0)
-        {
+        if (count($result) == 0) {
             $this->new = true;
             return '';
-        }
-        else
-        {
+        } else {
             $this->lifeSpan = $result[0]['lifespan'];
             return $result[0]['data'];
         }
@@ -77,7 +70,7 @@ class DbStore implements Store
     public function destroy($sessionId)
     {
         $this->db->query(sprintf("DELETE FROM sessions WHERE id = '%s'", $sessionId));
-        return true;        
+        return true;
     }
     
     public function gc($lifetime)
