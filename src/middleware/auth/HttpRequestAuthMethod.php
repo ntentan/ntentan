@@ -18,14 +18,14 @@ class HttpRequestAuthMethod extends AbstractAuthMethod
                 Input::post($usernameField),
                 Input::post($passwordField)
             )) {
-                return $context->getRedirect($parameters->get('redirect_route', ''));
+                return $context->getRedirect($parameters->get('redirect_route', $context->getUrl('/')));
             } else {
                 $view = $context->getContainer()->resolve(View::class);
                 $view->set('auth_message', $this->message);
             }
         }
         
-        if ($route['route'] != $parameters->get("login_route", "login")) {
+        if ($context->getUrl($route['route']) != $parameters->get("login_route", "login")) {
             return $context->getRedirect($parameters->get("login_route", "login"));
         }
         return true;
