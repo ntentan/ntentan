@@ -65,6 +65,10 @@ class Controller
         }
     }
 
+    /**
+     * 
+     * @return \ntentan\Context
+     */
     protected function getContext()
     {
         return $this->context;

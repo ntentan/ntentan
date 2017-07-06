@@ -48,6 +48,7 @@ use ntentan\nibii\Resolver;
 use ntentan\utils\Input;
 use ntentan\kaikai\Cache;
 use ntentan\panie\Container;
+use ntentan\sessions\SessionContainer;
 
 /**
  * Include a collection of utility global functions, caching and exceptions.
@@ -248,8 +249,12 @@ class Context
 
     public function execute($applicationClass = Application::class)
     {
-        Session::start();
-        $route = $this->getRouter()->route(substr(Input::server('PATH_INFO'), 1));
+        $sessionContainerType = $this->config->get('app.sessions.container', 'default');
+        if($sessionContainerType !== 'default') {
+            $sessionContainer = $this->container->resolve(SessionContainer::getClassName($sessionContainerType));
+        }
+        session_start();
+        $route = $this->getRouter()->route(substr(parse_url(Input::server('REQUEST_URI'), PHP_URL_PATH), 1));
         $pipeline = $route['description']['parameters']['pipeline'] ?? $this->app->getPipeline();
         $output = $this->container->resolve(PipelineRunner::class)->run($pipeline, $route);
         echo $output;
