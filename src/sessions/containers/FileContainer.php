@@ -59,7 +59,7 @@ class FileContainer extends SessionContainer
     public function gc($lifetime)
     {
         foreach (glob("{$this->path}/sess_*") as $filename) {
-            if (filemtime($filename) + Manager::$expiry < time()) {
+            if (filemtime($filename) + $this->lifespan < time()) {
                 unlink($file);
             }
         }
