@@ -33,15 +33,15 @@ class Router
      * @param string $route
      * @throws exceptions\RouteNotAvailableException
      */
-    public function route($route)
+    public function route($route, $prefix = null)
     {
-        $this->route = explode('?', $route)[0];
+        $this->route = substr(explode('?', $route)[0], strlen($prefix));
         $routeName = '';
         $parameters = [];
 
         // Go through predefined routes till a match is found
         foreach ($this->routes as $routeName => $routeDescription) {
-            $parameters = $this->match($route, $routeDescription);
+            $parameters = $this->match($this->route, $routeDescription);
             if ($parameters !== false) {
                 return [
                     'route' => $this->route,

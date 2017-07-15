@@ -50,57 +50,81 @@ use ntentan\kaikai\Cache;
 use ntentan\panie\Container;
 use ntentan\sessions\SessionContainer;
 
-/**
- * Include a collection of utility global functions, caching and exceptions.
- * Classes loaded here are likely to be called before the autoloader kicks in.
- */
 
 /**
- * A utility class for the Ntentan framework. This class contains the routing
- * framework used for routing the pages. Routing involves the analysis of the
- * URL and the loading of the controllers which are requested through the URL.
- * This class also has several utility methods which help in the overall
- * operation of the entire framework.
+ * A context within which the current request is served.
+ * The context holds instances of utility classes that are needed by ntentan in order to serve a request.
  *
- *  @author     James Ainooson <jainooson@gmail.com>
- *  @license    MIT
+ * @author     James Ainooson <jainooson@gmail.com>
+ * @license    MIT
  */
 class Context
 {
 
     /**
-     * Directory where application configurations are stored.
+     * An instance of the \ntentan\config\Config object which holds the applications configurations.
      *
-     * @var string
+     * @var \ntentan\config\Config
      */
     private $config;
 
     /**
-     * A prefix to expect in-front of all URLS. This is useful when running your
-     * application through a sub-directory.
-     *
+     * An instance of the dependency injection container.
+     * 
+     * @var \ntentan\panie\Container
+     */
+    private $container;
+    
+    /**
+     * The namespace under which the application code is kept.
+     * 
      * @var string
      */
-    private $prefix;
-    private $container;
     private $namespace = 'app';
+    
+    /**
+     * An instance of the caching class.
+     * 
+     * @var \ntentan\kaikai\Cache
+     */
     private $cache;
+    
+    /**
+     * An instance of the model binder register.
+     * 
+     * @var \ntentan\controllers\model_binders\ModelBinderRegister
+     */
     private $modelBinders;
     
     /**
-     *
-     * @var Parameters
+     * Stores parameters that are shared across the application.
+     * 
+     * @var \ntentan\Parameters
      */
     private $parameters;
+    
+    /**
+     * A static instance of this context. 
+     * Used in situations where the context is accessed statically.
+     * 
+     * @var ntentan\Context
+     */
     private static $instance;
 
     /**
-     *
+     * An instance of the Application class that was used to initialize the application.
+     * 
      * @var Application
      */
     private $app;
 
     /**
+     * Create an instance of the context.
+     * 
+     * @param string $namespace The namespace for the application
+     * @param string $applicationClass The name of an application class to be setup with the context.
+     * @param \ntentan\panie\Container $container A dependency injection container to use.
+     * 
      * @return Context New context
      */
     public static function initialize($namespace = 'app', $applicationClass = Application::class, panie\Container $container = null)
@@ -117,13 +141,12 @@ class Context
     }
 
     /**
-     * Initializes an application that has all its classes found in the base
-     * namespace.
+     * Constructor for the context
      *
      * @param panie\Container $container
      * @param string $namespace
      */
-    public function __construct(Container $container, $namespace)
+    private function __construct(Container $container, $namespace)
     {
         $this->container = $container;
         $this->namespace = $namespace;
@@ -163,9 +186,7 @@ class Context
     }
 
     /**
-     * Initialises ntentan's autoloader mechanism for classes that require
-     * the application's namespace. These would be the classes that you
-     * would write for this application.
+     * Initialises ntentan's autoloader mechanism for classes that require the application's namespace. 
      */
     private function setupAutoloader()
     {
@@ -187,27 +208,47 @@ class Context
         });
     }
 
+    /**
+     * Get the namespace for this application.
+     * 
+     * @return string
+     */
     public function getNamespace()
     {
         return $this->namespace;
     }
 
     /**
-     *
+     * Get an instance of the router used for routing requests.
+     * 
      * @return Router
      */
     public function getRouter()
     {
         return $this->container->singleton(Router::class);
     }
-
+    
+    /**
+     * Get an instance of the container used within the context.
+     * During initialisation, ntentan either creates a new container or receives an existing container. This method
+     * returns that container instance. It is advisable in most cases to use this same container to resolve your 
+     * own classes too.
+     * 
+     * @return \ntentan\panie\Container
+     */
     public function getContainer()
     {
         return $this->container;
     }
 
     /**
-     *
+     * Return an instance of the application class that was used to setup this context.
+     * While instantiating the context, an instance of the application class is created. While creating this application
+     * object, the class can extend the setup() method to run custom code before any other part of the application runs.
+     * In addition to the setup method, you can add other application specific methods to your application class for
+     * use during application runtime. The framework presents a default Application class in cases where none is
+     * supplied.
+     * 
      * @return Application
      */
     public function getApp()
@@ -254,7 +295,7 @@ class Context
             $sessionContainer = $this->container->resolve(SessionContainer::getClassName($sessionContainerType));
         }
         session_start();
-        $route = $this->getRouter()->route(substr(parse_url(Input::server('REQUEST_URI'), PHP_URL_PATH), 1));
+        $route = $this->getRouter()->route(substr(parse_url(Input::server('REQUEST_URI'), PHP_URL_PATH), 1), $this->config->get('app.prefix'));
         $pipeline = $route['description']['parameters']['pipeline'] ?? $this->app->getPipeline();
         $output = $this->container->resolve(PipelineRunner::class)->run($pipeline, $route);
         echo $output;
