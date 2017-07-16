@@ -37,13 +37,14 @@ use ntentan\Session;
 use ntentan\Context;
 use ntentan\middleware\auth\HttpRequestAuthMethod;
 use ntentan\middleware\auth\HttpBasicAuthMethod;
+use ntentan\Middleware;
 
 /**
  * AuthComponent provides a simplified authentication scheme
  *
  * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
  */
-class AuthMiddleware extends \ntentan\Middleware
+class AuthMiddleware extends Middleware
 {
     private $authenticated;
     private static $authMethods = [

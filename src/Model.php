@@ -8,7 +8,7 @@ use ntentan\nibii\RecordWrapper;
  * An extension of the nibii\RecordWrapper which contains specific Ntentan
  * extensions.
  */
-class Model extends RecordWrapper
+class Model extends RecordWrapper implements \Serializable
 {
 
     /**
@@ -18,7 +18,7 @@ class Model extends RecordWrapper
      */
     public static function load($name)
     {
-        return nibii\ORMContext::getInstance()->load($name);
+        return nibii\ORMContext::getInstance(Context::getInstance()->getContainer())->load($name);
     }
 
     /**
@@ -49,4 +49,29 @@ class Model extends RecordWrapper
     {
         return $this->getAdapter()->getDriver();
     }
+    
+    public function serialize()
+    {
+        return json_encode([
+            'data' => $this->getData(),
+            'table' => $this->table,
+            'schema' => $this->schema,
+            'hasMany' => $this->hasMany,
+            'belongsTo' => $this->belongsTo,
+            'manyHaveMany' => $this->manyHaveMany
+        ]);
+    }
+
+    public function unserialize($serialized)
+    {
+        $unserialized = json_decode($serialized, true);
+        $this->setData($unserialized['data']);
+        $this->table = $unserialized['table'];
+        $this->schema = $unserialized['schema'];
+        $this->hasMany = $unserialized['hasMany'];
+        $this->belongsTo = $unserialized['belongsTo'];
+        $this->manyHaveMany = $unserialized['manyHaveMany'];
+        $this->initialize();
+    }
+
 }

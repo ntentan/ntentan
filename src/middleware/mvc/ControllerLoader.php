@@ -32,8 +32,7 @@ class ControllerLoader implements ResourceLoaderInterface
 
         if ($resolvedControllerClass) {
             // use resolved class name
-            $params['controller_path'] = $controller;
-            $this->context->setParameter('controller_path', $controller);
+            $this->context->setParameter('controller_path', $this->context->getUrl($controller));
             $controllerInstance = $this->container->resolve($controllerClassName);
         } elseif (class_exists($controller)) {
             // use controller class

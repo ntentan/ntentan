@@ -65,6 +65,10 @@ class Controller
         }
     }
 
+    /**
+     * 
+     * @return \ntentan\Context
+     */
     protected function getContext()
     {
         return $this->context;
@@ -78,9 +82,7 @@ class Controller
 
     protected function getActionUrl($action)
     {
-        return $this->context->getUrl(
-                        "{$this->context->getParameter('controller_path')}/$action"
-        );
+        return "{$this->context->getParameter('controller_path')}/$action";
     }
 
     /**
