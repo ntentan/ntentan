@@ -21,10 +21,6 @@ class View
      */
     private $variables = array();
 
-    public function __construct()
-    {
-    }
-
     public function setContentType($contentType)
     {
         header("Content-Type: $contentType");
