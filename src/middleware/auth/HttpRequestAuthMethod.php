@@ -6,28 +6,43 @@ use ntentan\utils\Input;
 use ntentan\Context;
 use ntentan\View;
 
+/**
+ * An authentication method that receives a username and password through an HTTP request.
+ * The parameters which should be sent through a POST request are retrieved and validated against a local auth database.
+ */
 class HttpRequestAuthMethod extends AbstractAuthMethod
 {
+    private function isExcluded($route, $excludedRoutes, $context)
+    {
+        foreach($excludedRoutes as $excluded) {
+            if($context->getUrl($route) === $excluded) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public function login(Context $context, $route)
     {
         $parameters = $this->getParameters();
         $usernameField = $parameters->get('username_field', "username");
         $passwordField = $parameters->get('password_field', "password");
+        
         if (Input::exists(Input::POST, $usernameField) && Input::exists(Input::POST, $passwordField)) {
-            if ($this->authLocalPassword(
-                Input::post($usernameField),
-                Input::post($passwordField)
-            )) {
+            $username = Input::post($usernameField);
+            if ($this->authLocalPassword($username, Input::post($passwordField))) {
                 return $context->getRedirect($parameters->get('redirect_route', $context->getUrl('/')));
             } else {
                 $view = $context->getContainer()->resolve(View::class);
-                $view->set('auth_message', $this->message);
+                $view->set(['auth_message' => $this->message, 'username' => $username]);
             }
         }
         
-        if ($context->getUrl($route['route']) != $parameters->get("login_route", "login")) {
-            return $context->getRedirect($parameters->get("login_route", "login"));
+        $excluded = array_merge($parameters->get('excluded_routes', []), [$parameters->get('login_route', '/login')]);
+        if(!$this->isExcluded($route['route'], $excluded, $context)) {
+            return $context->getRedirect($parameters->get('login_route', '/login'));
         }
+        
         return true;
     }
 }

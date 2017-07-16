@@ -18,7 +18,7 @@ class Model extends RecordWrapper implements \Serializable
      */
     public static function load($name)
     {
-        return nibii\ORMContext::getInstance()->load($name);
+        return nibii\ORMContext::getInstance(Context::getInstance()->getContainer())->load($name);
     }
 
     /**

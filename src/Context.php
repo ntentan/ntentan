@@ -131,13 +131,28 @@ class Context
     {
         $container = $container ?? new panie\Container();
         // Force binding of context as singleton in container
-        $container->bind(self::class)->to(self::class)->asSingleton();
+        $container->bind(self::class)->to(function($container) use ($namespace){
+            return new Context($container, $namespace);
+        })->asSingleton();
         $context = $container->resolve(self::class, ['namespace' => $namespace]);
         $context->app = $container->resolve($applicationClass);
         $context->app->setup();
         $context->parameters = Parameters::wrap([]);
         self::$instance = $context;
         return $context;
+    }
+    
+    /**
+     * Return the static instance of the context created during initialization.
+     * 
+     * @return Context
+     */
+    public static function getInstance()
+    {
+        if(self::$instance === null) {
+            throw new exceptions\NtentanException("You have not initialized the ntentan context.");
+        }
+        return self::$instance;
     }
 
     /**
@@ -163,7 +178,9 @@ class Context
         $container->bind(ComponentResolverInterface::class)->to(ClassNameResolver::class);
         $container->bind(ControllerClassResolverInterface::class)->to(ClassNameResolver::class);
         $container->bind(View::class)->to(View::class)->asSingleton();
-        $container->bind(nibii\ORMContext::class)->to(nibii\ORMContext::class)->asSingleton();
+        $container->bind(nibii\ORMContext::class)->to(function($container) {
+            return new nibii\ORMContext($container, $this->config->get('db'));
+        })->asSingleton();
 
         $dbConfig = $this->config->get('db');
         $driver = $dbConfig['driver'];
@@ -172,7 +189,6 @@ class Context
         if ($driver) {
             $container->bind(DriverAdapter::class)->to(Resolver::getDriverAdapterClassName($driver));
             $container->bind(atiaa\Driver::class)->to(atiaa\DbContext::getDriverClassName($driver));
-            $container->resolve(nibii\ORMContext::class, ['config' => $dbConfig]);
         }
 
         $this->modelBinders = new controllers\ModelBinderRegister($container);
