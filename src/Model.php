@@ -10,6 +10,11 @@ use ntentan\nibii\RecordWrapper;
  */
 class Model extends RecordWrapper implements \Serializable
 {
+    
+    private static function getORMContext()
+    {
+        return nibii\ORMContext::getInstance(Context::getInstance()->getContainer());
+    }
 
     /**
      * Loads a model described by a string.
@@ -18,8 +23,23 @@ class Model extends RecordWrapper implements \Serializable
      */
     public static function load($name)
     {
-        return nibii\ORMContext::getInstance(Context::getInstance()->getContainer())->load($name);
+        return self::getORMContext()->load($name);
     }
+    
+    /**
+     * Create a new instance of this Model
+     * @return \ntentan\nibii\RecordWrapper
+     */
+    public static function createNew() {
+        $instance = self::getORMContext()->getContainer()->resolve(get_called_class());
+        $instance->initialize();
+        return $instance;
+    }    
+    
+    public static function __callStatic($name, $arguments) 
+    {
+        return call_user_func_array([self::createNew(), $name], $arguments);
+    }    
 
     /**
      * Get a descriptive name for the model.

@@ -169,7 +169,6 @@ class Context
         $this->config->readPath('config');
         $this->setupAutoloader();
         $this->prefix = $this->config->get('app.prefix');
-        $this->prefix = ($this->prefix == '' ? '' : '/') . $this->prefix;
 
         $container->bind(kaikai\CacheBackendInterface::class)->to(Cache::getBackendClassName($this->config->get('cache.backend', 'volatile')));
         $container->bind(ModelClassResolverInterface::class)->to(ClassNameResolver::class);

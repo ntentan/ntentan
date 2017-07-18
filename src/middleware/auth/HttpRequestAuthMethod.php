@@ -15,7 +15,7 @@ class HttpRequestAuthMethod extends AbstractAuthMethod
     private function isExcluded($route, $excludedRoutes, $context)
     {
         foreach($excludedRoutes as $excluded) {
-            if($context->getUrl($route) === $excluded) {
+            if($route === $excluded) {
                 return true;
             }
         }
@@ -31,7 +31,7 @@ class HttpRequestAuthMethod extends AbstractAuthMethod
         if (Input::exists(Input::POST, $usernameField) && Input::exists(Input::POST, $passwordField)) {
             $username = Input::post($usernameField);
             if ($this->authLocalPassword($username, Input::post($passwordField))) {
-                return $context->getRedirect($parameters->get('redirect_route', $context->getUrl('/')));
+                return $context->getRedirect($parameters->get('success_redirect', $context->getUrl('/')));
             } else {
                 $view = $context->getContainer()->resolve(View::class);
                 $view->set(['auth_message' => $this->message, 'username' => $username]);
