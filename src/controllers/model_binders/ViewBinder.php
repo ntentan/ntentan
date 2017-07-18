@@ -8,7 +8,7 @@ use ntentan\Context;
 use ntentan\honam\TemplateEngine;
 
 /**
- * Creates an instance of a view and binds it to parameters in action methods.
+ * Creates an instance of \ntentan\View and binds it to parameters in action methods.
  * 
  * @author ekow
  */
