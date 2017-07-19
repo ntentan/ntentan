@@ -177,17 +177,15 @@ class Context
         $container->bind(ComponentResolverInterface::class)->to(ClassNameResolver::class);
         $container->bind(ControllerClassResolverInterface::class)->to(ClassNameResolver::class);
         $container->bind(View::class)->to(View::class)->asSingleton();
-        $container->bind(nibii\ORMContext::class)->to(function($container) {
-            return new nibii\ORMContext($container, $this->config->get('db'));
-        })->asSingleton();
+        $container->bind(nibii\ORMContext::class)->to(nibii\ORMContext::class)->asSingleton();
 
         $dbConfig = $this->config->get('db');
-        $driver = $dbConfig['driver'];
         $this->cache = $container->resolve(Cache::class, ['config' => $dbConfig]);
 
-        if ($driver) {
-            $container->bind(DriverAdapter::class)->to(Resolver::getDriverAdapterClassName($driver));
-            $container->bind(atiaa\Driver::class)->to(atiaa\DbContext::getDriverClassName($driver));
+        if (isset($dbConfig['driver'])) {
+            $container->bind(DriverAdapter::class)->to(Resolver::getDriverAdapterClassName($dbConfig['driver']));
+            $container->bind(atiaa\Driver::class)->to(atiaa\DbContext::getDriverClassName($dbConfig['driver']));
+            $container->resolve(nibii\ORMContext::class, ['config' => $dbConfig]);
         }
 
         $this->modelBinders = new controllers\ModelBinderRegister($container);

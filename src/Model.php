@@ -10,12 +10,6 @@ use ntentan\nibii\RecordWrapper;
  */
 class Model extends RecordWrapper implements \Serializable
 {
-    
-    private static function getORMContext()
-    {
-        return nibii\ORMContext::getInstance(Context::getInstance()->getContainer());
-    }
-
     /**
      * Loads a model described by a string.
      * @param string $name
@@ -23,7 +17,7 @@ class Model extends RecordWrapper implements \Serializable
      */
     public static function load($name)
     {
-        return self::getORMContext()->load($name);
+        return nibii\ORMContext::getInstance()->load($name);
     }
     
     /**
@@ -31,7 +25,7 @@ class Model extends RecordWrapper implements \Serializable
      * @return \ntentan\nibii\RecordWrapper
      */
     public static function createNew() {
-        $instance = self::getORMContext()->getContainer()->resolve(get_called_class());
+        $instance = nibii\ORMContext::getInstance()->getContainer()->resolve(get_called_class());
         $instance->initialize();
         return $instance;
     }    
@@ -73,7 +67,7 @@ class Model extends RecordWrapper implements \Serializable
     public function serialize()
     {
         return json_encode([
-            'data' => $this->getData(),
+            'data' => $this->modelData,
             'table' => $this->table,
             'schema' => $this->schema,
             'hasMany' => $this->hasMany,
@@ -85,7 +79,7 @@ class Model extends RecordWrapper implements \Serializable
     public function unserialize($serialized)
     {
         $unserialized = json_decode($serialized, true);
-        $this->setData($unserialized['data']);
+        $this->modelData = $unserialized['data'];
         $this->table = $unserialized['table'];
         $this->schema = $unserialized['schema'];
         $this->hasMany = $unserialized['hasMany'];
