@@ -165,26 +165,37 @@ class Context
     {
         $this->container = $container;
         $this->namespace = $namespace;
-        $this->config = new Config();
-        $this->config->readPath('config');
         $this->setupAutoloader();
-        $this->prefix = $this->config->get('app.prefix');
 
-        $container->bind(kaikai\CacheBackendInterface::class)->to(Cache::getBackendClassName($this->config->get('cache.backend', 'volatile')));
-        $container->bind(ModelClassResolverInterface::class)->to(ClassNameResolver::class);
-        $container->bind(ModelJoinerInterface::class)->to(ClassNameResolver::class);
-        $container->bind(TableNameResolverInterface::class)->to(nibii\Resolver::class);
-        $container->bind(ComponentResolverInterface::class)->to(ClassNameResolver::class);
-        $container->bind(ControllerClassResolverInterface::class)->to(ClassNameResolver::class);
-        $container->bind(View::class)->to(View::class)->asSingleton();
-        $container->bind(nibii\ORMContext::class)->to(nibii\ORMContext::class)->asSingleton();
+        if(!$container->has(Config::class)){
+            $container->bind(Config::class)->to(function($container){
+                $config = new Config();
+                $config->readPath('config');
+                return $config;
+            });
+        }
+        
+        $config = $this->getConfig();
+        $this->prefix = $config->get('app.prefix');
+        $container->setup([
+            ModelClassResolverInterface::class => ClassNameResolver::class,
+            ModelJoinerInterface::class => ClassNameResolver::class,
+            TableNameResolverInterface::class => nibii\Resolver::class,
+            ComponentResolverInterface::class => ClassNameResolver::class,
+            ControllerClassResolverInterface::class => ClassNameResolver::class,
+            View::class => [View::class, "singleton" => true],
+            nibii\ORMContext::class => [nibii\ORMContext::class, "singleton" => true],
+            kaikai\CacheBackendInterface::class => Cache::getBackendClassName($config->get('cache.backend', 'volatile'))
+        ], false);
 
-        $dbConfig = $this->config->get('db');
+        $dbConfig = $config->get('db');
         $this->cache = $container->resolve(Cache::class, ['config' => $dbConfig]);
 
         if (isset($dbConfig['driver'])) {
-            $container->bind(DriverAdapter::class)->to(Resolver::getDriverAdapterClassName($dbConfig['driver']));
-            $container->bind(atiaa\Driver::class)->to(atiaa\DbContext::getDriverClassName($dbConfig['driver']));
+            $container->setup([
+                DriverAdapter::class => Resolver::getDriverAdapterClassName($dbConfig['driver']),
+                atiaa\Driver::class => atiaa\DbContext::getDriverClassName($dbConfig['driver'])
+            ], false);
             $container->resolve(nibii\ORMContext::class, ['config' => $dbConfig]);
         }
 
@@ -270,7 +281,8 @@ class Context
     }
 
     /**
-     *
+     * Get an instance of the cache.
+     * 
      * @return kaikai\Cache
      */
     public function getCache()
@@ -280,6 +292,9 @@ class Context
 
     public function getConfig()
     {
+        if(!$this->config) {
+            $this->config = $this->container->resolve(Config::class);
+        }
         return $this->config;
     }
 
@@ -300,15 +315,25 @@ class Context
     {
         return $this->modelBinders;
     }
+    
+    private function startSession()
+    {
+        $sessionContainerType = $this->config->get('app.sessions.container', 'default');
+        switch($sessionContainerType) {
+            case 'none':
+                return;
+            case 'default':
+                break;
+            default:
+                $this->container->resolve(SessionContainer::getClassName($sessionContainerType));
+        }
+        session_start();        
+    }
 
     public function execute($applicationClass = Application::class)
     {
-        $sessionContainerType = $this->config->get('app.sessions.container', 'default');
-        if($sessionContainerType !== 'default') {
-            $sessionContainer = $this->container->resolve(SessionContainer::getClassName($sessionContainerType));
-        }
-        session_start();
-        $route = $this->getRouter()->route(substr(parse_url(Input::server('REQUEST_URI'), PHP_URL_PATH), 1), $this->config->get('app.prefix'));
+        $this->startSession();
+        $route = $this->getRouter()->route(substr(parse_url(Input::server('REQUEST_URI'), PHP_URL_PATH), 1), $this->prefix);
         $pipeline = $route['description']['parameters']['pipeline'] ?? $this->app->getPipeline();
         $output = $this->container->resolve(PipelineRunner::class)->run($pipeline, $route);
         echo $output;

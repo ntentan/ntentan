@@ -13,7 +13,7 @@ class FileContainer extends SessionContainer
 
     public function open($sessionPath, $sessionName)
     {
-        $this->sessionPath = $this->context->getConfig()->get('app.sessions.path', $sessionPath);
+        $this->sessionPath = $this->config->get('app.sessions.path', $sessionPath);
         $this->sessionName = $sessionName;
         return true;
     }
