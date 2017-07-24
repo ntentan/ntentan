@@ -117,6 +117,8 @@ class Context
      * @var Application
      */
     private $app;
+    
+    private $prefix;
 
     /**
      * Create an instance of the context.
@@ -305,9 +307,9 @@ class Context
 
     public function getUrl($path)
     {
-        return preg_replace('~/+~', '/', $this->config->get('app.prefix') . "/$path");
+        return preg_replace('~/+~', '/', $this->prefix . "/$path");
     }
-
+    
     /**
      * @return controllers\ModelBinderRegister
      */

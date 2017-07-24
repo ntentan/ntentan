@@ -6,6 +6,7 @@ use ntentan\controllers\ModelBinderInterface;
 use ntentan\Controller;
 use ntentan\Context;
 use ntentan\honam\TemplateEngine;
+use ntentan\View;
 
 /**
  * Creates an instance of \ntentan\View and binds it to parameters in action methods.
@@ -24,7 +25,7 @@ class ViewBinder implements ModelBinderInterface
 
     public function bind(Controller $controller, $action, $type, $name)
     {
-        $view = $this->container->resolve($type);
+        $view = $this->container->resolve(View::class);
         $className = strtolower(substr((new \ReflectionClass($controller))->getShortName(), 0, -10));
         TemplateEngine::prependPath("views/{$className}");
         if ($view->getTemplate() == null) {
