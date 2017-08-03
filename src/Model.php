@@ -87,5 +87,14 @@ class Model extends RecordWrapper implements \Serializable
         $this->manyHaveMany = $unserialized['manyHaveMany'];
         $this->initialize();
     }
+    
+    public function count()
+    {
+        if(isset($this) && $this instanceof self) {
+            return parent::count();
+        } else {
+            return self::__callStatic('count', []);
+        }
+    }
 
 }
