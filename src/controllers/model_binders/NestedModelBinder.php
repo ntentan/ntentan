@@ -5,13 +5,14 @@ namespace ntentan\controllers\model_binders;
 use ntentan\utils\Input;
 use ntentan\Controller;
 use ntentan\panie\Container;
+use ntentan\controllers\ModelBinderInterface;
 
 /**
  * Description of DefaultModelBinder
  *
  * @author ekow
  */
-class NestedModelBinder implements \ntentan\controllers\ModelBinderInterface
+class NestedModelBinder implements ModelBinderInterface
 {
     private $bound;
     protected $container;
