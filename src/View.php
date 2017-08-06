@@ -121,7 +121,7 @@ class View
         if (is_string($params1)) {
             $this->variables[$params1] = $params2;
         } elseif (is_array($params1)) {
-            $this->variables += $params1;
+            $this->variables = $params1 + $this->variables;
         }
     }
 
