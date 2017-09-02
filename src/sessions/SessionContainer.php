@@ -3,7 +3,6 @@
 namespace ntentan\sessions;
 
 use ntentan\config\Config;
-use ntentan\utils\Text;
 
 abstract class SessionContainer implements \SessionHandlerInterface
 {
@@ -31,10 +30,5 @@ abstract class SessionContainer implements \SessionHandlerInterface
     abstract public function gc($lifetime);
 
     abstract public function isNew();
-
-    public static function getClassName($container)
-    {
-        return '\ntentan\sessions\containers\\' . Text::ucamelize($container) . 'Container';
-    }
 
 }

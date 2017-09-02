@@ -6,6 +6,8 @@ use ntentan\Router;
 use ntentan\config\Config;
 use ntentan\utils\Input;
 use ntentan\Context;
+use ntentan\panie\Container;
+use ntentan\middleware\MiddlewareFactory;
 
 class Application
 {
@@ -14,6 +16,7 @@ class Application
     protected $config;
     protected $prefix;
     private $runner;
+    private $middlewareFactory;
     protected $container;
     protected $namespace;
 
@@ -21,42 +24,30 @@ class Application
      *
      * @param type $context
      */
-    private function __construct($namespace)
+    public final function __construct(Router $router, Config $config, PipelineRunner $runner, MiddlewareFactory $middlewareFactory)
     {
-        $this->container = ContainerBuilder::getContainer();
         Context::initialize();
-        $this->router = $this->container->resolve(Router::class);
-        $this->config = $this->container->resolve(Config::class);
-        $this->runner = $this->container->resolve(PipelineRunner::class);
-        $this->prefix = $this->config->get('app.prefix');
+        $this->router = $router;
+        $this->config = $config;
+        $this->runner = $runner;
+        $this->middlewareFactory = $middlewareFactory;
+        $this->prefix = $config->get('app.prefix');
         $this->prependMiddleware(middleware\MVCMiddleware::class);
-    }
-    
-    public static function initialize($namespace)
-    {
-        $class = get_called_class();
-        return new $class($namespace);
     }
 
     protected function setup()
     {
     }
     
-    private function setupMiddleware($class, $options)
-    {
-        $instance = $this->container->resolve($class);
-        $instance->setParameters($options);
-        return $instance;
-    }
 
     public function appendMiddleware($class, $options = [])
     {
-        $this->pipeline[] = $this->setupMiddleware($class, $options);
+        $this->pipeline[] = $this->middlewareFactory->createMiddleware($class, $options);
     }
 
     public function prependMiddleware($class, $options = [])
     {
-        array_unshift($this->pipeline, $this->setupMiddleware($class, $options));
+        array_unshift($this->pipeline, $this->middlewareFactory->createMiddleware($class, $options));
     }
     
     private function startSession()

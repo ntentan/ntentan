@@ -26,11 +26,9 @@ class PipelineRunner
         return $this->runMiddleware();
     }
 
-    public function runMiddleware($response = null)
+    private function runMiddleware($response = null)
     {
         $middleware = array_shift($this->pipeline);
-        $instance = $middleware;
-        $instance->setRunner($this);
-        return $instance->run($this->route, $response);
+        return $middleware->run($this->route, $response);
     }
 }
