@@ -3,7 +3,6 @@
 namespace ntentan\middleware\auth;
 
 use ntentan\Model;
-use ntentan\Context;
 use ntentan\Session;
 
 abstract class AbstractAuthMethod
@@ -11,7 +10,7 @@ abstract class AbstractAuthMethod
     protected $message;
     private $parameters;
 
-    abstract public function login(Context $context, $route);
+    abstract public function login($route);
 
     public function authLocalPassword($username, $password)
     {

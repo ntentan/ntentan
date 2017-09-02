@@ -7,7 +7,6 @@ namespace ntentan;
  */
 class PipelineRunner
 {
-
     /**
      * An array of middleware that exist in the pipeline.
      * @var array<Middleware>
@@ -15,21 +14,10 @@ class PipelineRunner
     private $pipeline;
 
     /**
-     * Dependency injection container extracted from ntentan context.
-     * @var \ntentan\panie\Container
-     */
-    private $container;
-
-    /**
      * A description of the current rount being executed.
      * @var array<mixed>
      */
     private $route;
-
-    public function __construct(Context $context)
-    {
-        $this->container = $context->getContainer();
-    }
 
     public function run($pipeline, $route)
     {
@@ -41,9 +29,8 @@ class PipelineRunner
     public function runMiddleware($response = null)
     {
         $middleware = array_shift($this->pipeline);
-        $instance = $this->container->resolve($middleware[0]);
-        $instance->setParameters($middleware[1] ?? []);
-        $instance->injectRunner($this);
+        $instance = $middleware;
+        $instance->setRunner($this);
         return $instance->run($this->route, $response);
     }
 }

@@ -14,7 +14,7 @@ abstract class Middleware
 
     abstract public function run($route, $response);
 
-    public function injectRunner(PipelineRunner $runner)
+    public function setRunner(PipelineRunner $runner)
     {
         $this->runner = $runner;
     }

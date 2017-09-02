@@ -22,8 +22,9 @@ class HttpRequestAuthMethod extends AbstractAuthMethod
         return false;
     }
     
-    public function login(Context $context, $route)
+    public function login($route)
     {
+        $context = Context::getInstance();
         $parameters = $this->getParameters();
         $usernameField = $parameters->get('username_field', "username");
         $passwordField = $parameters->get('password_field', "password");

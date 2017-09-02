@@ -67,13 +67,6 @@ class Context
      * @var \ntentan\config\Config
      */
     private $config;
-
-    /**
-     * An instance of the dependency injection container.
-     * 
-     * @var \ntentan\panie\Container
-     */
-    private $container;
     
     /**
      * The namespace under which the application code is kept.
@@ -129,16 +122,9 @@ class Context
      * 
      * @return Context New context
      */
-    public static function initialize($namespace = 'app', $applicationClass = Application::class, panie\Container $container = null)
+    public static function initialize($namespace = 'app')
     {
-        $container = $container ?? new panie\Container();
-        // Force binding of context as singleton in container
-        $container->bind(self::class)->to(function($container) use ($namespace){
-            return new Context($container, $namespace);
-        })->asSingleton();
-        $context = $container->resolve(self::class, ['namespace' => $namespace]);
-        $context->app = $container->resolve($applicationClass);
-        $context->app->setup();
+        $context = new self();
         $context->parameters = Parameters::wrap([]);
         self::$instance = $context;
         return $context;
@@ -163,35 +149,10 @@ class Context
      * @param panie\Container $container
      * @param string $namespace
      */
-    private function __construct(Container $container, $namespace)
+    public function __construct()
     {
-        $this->container = $container;
-        $this->namespace = $namespace;
-        $this->setupAutoloader();
-
-        if(!$container->has(Config::class)){
-            $container->bind(Config::class)->to(function($container){
-                $config = new Config();
-                $config->readPath('config');
-                return $config;
-            });
-        }
-        
-        $config = $this->getConfig();
-        $this->prefix = $config->get('app.prefix');
-        $container->setup([
-            ModelClassResolverInterface::class => ClassNameResolver::class,
-            ModelJoinerInterface::class => ClassNameResolver::class,
-            TableNameResolverInterface::class => nibii\Resolver::class,
-            ComponentResolverInterface::class => ClassNameResolver::class,
-            ControllerClassResolverInterface::class => ClassNameResolver::class,
-            View::class => [View::class, "singleton" => true],
-            nibii\ORMContext::class => [nibii\ORMContext::class, "singleton" => true],
-            kaikai\CacheBackendInterface::class => Cache::getBackendClassName($config->get('cache.backend', 'volatile'))
-        ], false);
-
+        /*$this->prefix = $config->get('app.prefix');
         $dbConfig = $config->get('db');
-        $this->cache = $container->resolve(Cache::class, ['config' => $dbConfig]);
 
         if (isset($dbConfig['driver'])) {
             $container->setup([
@@ -199,40 +160,40 @@ class Context
                 atiaa\Driver::class => atiaa\DbContext::getDriverClassName($dbConfig['driver'])
             ], false);
             $container->resolve(nibii\ORMContext::class, ['config' => $dbConfig]);
-        }
+        }       
 
-        $this->modelBinders = new controllers\ModelBinderRegister($container);
+        /*$this->modelBinders = new controllers\ModelBinderRegister($container);
         $this->modelBinders->setDefaultBinderClass(
-                controllers\model_binders\DefaultModelBinder::class
+            controllers\model_binders\DefaultModelBinder::class
         );
         $this->modelBinders->register(
                 utils\filesystem\UploadedFile::class, controllers\model_binders\UploadedFileBinder::class
         );
-        $this->modelBinders->register(View::class, controllers\model_binders\ViewBinder::class);
+        $this->modelBinders->register(View::class, controllers\model_binders\ViewBinder::class);*/
     }
 
     /**
      * Initialises ntentan's autoloader mechanism for classes that require the application's namespace. 
      */
-    private function setupAutoloader()
-    {
-        spl_autoload_register(function ($class) {
-            $prefix = $this->namespace . "\\";
-            $baseDir = 'src/';
-            $len = strlen($prefix);
-
-            if (strncmp($prefix, $class, $len) !== 0) {
-                return;
-            }
-
-            $relativeClass = substr($class, $len);
-            $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
-
-            if (file_exists($file)) {
-                include $file;
-            }
-        });
-    }
+//    private function setupAutoloader()
+//    {
+//        spl_autoload_register(function ($class) {
+//            $prefix = $this->namespace . "\\";
+//            $baseDir = 'src/';
+//            $len = strlen($prefix);
+//
+//            if (strncmp($prefix, $class, $len) !== 0) {
+//                return;
+//            }
+//
+//            $relativeClass = substr($class, $len);
+//            $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
+//
+//            if (file_exists($file)) {
+//                include $file;
+//            }
+//        });
+//    }
 
     /**
      * Get the namespace for this application.
@@ -252,19 +213,6 @@ class Context
     public function getRouter()
     {
         return $this->container->singleton(Router::class);
-    }
-    
-    /**
-     * Get an instance of the container used within the context.
-     * During initialisation, ntentan either creates a new container or receives an existing container. This method
-     * returns that container instance. It is advisable in most cases to use this same container to resolve your 
-     * own classes too.
-     * 
-     * @return \ntentan\panie\Container
-     */
-    public function getContainer()
-    {
-        return $this->container;
     }
 
     /**
@@ -294,9 +242,6 @@ class Context
 
     public function getConfig()
     {
-        if(!$this->config) {
-            $this->config = $this->container->resolve(Config::class);
-        }
         return $this->config;
     }
 
@@ -316,29 +261,6 @@ class Context
     public function getModelBinders()
     {
         return $this->modelBinders;
-    }
-    
-    private function startSession()
-    {
-        $sessionContainerType = $this->config->get('app.sessions.container', 'default');
-        switch($sessionContainerType) {
-            case 'none':
-                return;
-            case 'default':
-                break;
-            default:
-                $this->container->resolve(SessionContainer::getClassName($sessionContainerType));
-        }
-        session_start();        
-    }
-
-    public function execute($applicationClass = Application::class)
-    {
-        $this->startSession();
-        $route = $this->getRouter()->route(substr(parse_url(Input::server('REQUEST_URI'), PHP_URL_PATH), 1), $this->prefix);
-        $pipeline = $route['description']['parameters']['pipeline'] ?? $this->app->getPipeline();
-        $output = $this->container->resolve(PipelineRunner::class)->run($pipeline, $route);
-        echo $output;
     }
 
     public function getParameter($parameter)

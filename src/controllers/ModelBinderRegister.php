@@ -14,12 +14,6 @@ class ModelBinderRegister
     private $binders = [];
     private $customBinderInstances = [];
     private $defaultBinderClass;
-    private $container;
-    
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
-    }
 
     private function getCustomBinder($binder)
     {

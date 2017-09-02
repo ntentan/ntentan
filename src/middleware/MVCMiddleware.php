@@ -10,23 +10,16 @@ use ntentan\Context;
 class MVCMiddleware extends \ntentan\Middleware
 {
     private $container;
-    private $context;
     
     private $loaders = [
         'controller' => mvc\ControllerLoader::class
     ];
     
-    public function __construct(Context $context)
-    {
-        $this->container = $context->getContainer();
-        $this->context = $context;
-    }
-    
     public function run($route, $response)
     {
         TemplateEngine::prependPath('views/shared');
         TemplateEngine::prependPath('views/layouts');
-        Helper::setBaseUrl($this->context->getUrl(''));
+        Helper::setBaseUrl(Context::getInstance()->getUrl(''));
         return $this->loadResource($route);
     }
     

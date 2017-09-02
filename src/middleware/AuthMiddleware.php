@@ -34,10 +34,8 @@
 namespace ntentan\middleware;
 
 use ntentan\Session;
-use ntentan\Context;
-use ntentan\middleware\auth\HttpRequestAuthMethod;
-use ntentan\middleware\auth\HttpBasicAuthMethod;
 use ntentan\Middleware;
+use ntentan\middleware\auth\AuthMethodFactory;
 
 /**
  * AuthComponent provides a simplified authentication scheme
@@ -47,17 +45,12 @@ use ntentan\Middleware;
 class AuthMiddleware extends Middleware
 {
     private $authenticated;
-    private static $authMethods = [
-        'http_request' => HttpRequestAuthMethod::class,
-        'http_basic' => HttpBasicAuthMethod::class
-    ];
-    
-    private $context;
+    private $authMethodFactory;
 
-    public function __construct(Context $context)
+    public function __construct(AuthMethodFactory $authMethodFactory)
     {
-        $this->context = $context;
         $this->authenticated = Session::get('logged_in');
+        $this->authMethodFactory = $authMethodFactory;
     }
 
     public static function registerAuthMethod($authMethod, $class)
@@ -67,12 +60,8 @@ class AuthMiddleware extends Middleware
 
     private function getAuthMethod()
     {
-        $authMethod = $this->getParameters()->get('auth_method', 'http_request');
-        if (!isset(self::$authMethods[$authMethod])) {
-            throw new \Exception("Auth method $authMethod not found");
-        }
-        $class = self::$authMethods[$authMethod];
-        $authMethod = $this->context->getContainer()->resolve($class);
+        $authMethodType = $this->getParameters()->get('auth_method', 'http_request');
+        $authMethod = $this->authMethodFactory->createAuthMethod($this->getParameters());
         $authMethod->setParameters($this->getParameters());
         return $authMethod;
     }
@@ -89,7 +78,7 @@ class AuthMiddleware extends Middleware
             return $this->next($route, $response);
         }
         
-        $response = $this->getAuthMethod()->login($this->context, $route);
+        $response = $this->getAuthMethod()->login($route);
         if ($response === true) {
             return $this->next($route, $response);
         } else {
