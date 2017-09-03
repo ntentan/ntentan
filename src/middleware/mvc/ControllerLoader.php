@@ -6,40 +6,31 @@ use ntentan\interfaces\ControllerClassResolverInterface;
 use ntentan\exceptions\ControllerNotFoundException;
 use ntentan\interfaces\ResourceLoaderInterface;
 use ntentan\Context;
+use ntentan\panie\Container;
+use ntentan\utils\Text;
 
 class ControllerLoader implements ResourceLoaderInterface
 {
     private $container;
-    private $context;
 
-    public function __construct(Context $context)
+    public function __construct()
     {
-        $this->context = $context;
-        $this->container = $context->getContainer();
+        $this->container = new Container();
     }
 
     public function load($params)
     {
         $controller = $params['controller'];
         $action = isset($params['action']) ? $params['action'] : null;
+        $context = Context::getInstance();
 
-        // Try to get the classname based on router parameters
-        $controllerClassName = $this->container->resolve(ControllerClassResolverInterface::class)
-                ->getControllerClassName($controller);
-
-        // Try to resolve the classname
-        $resolvedControllerClass = $this->container->getResolvedClassName($controllerClassName);
-
-        if ($resolvedControllerClass) {
-            // use resolved class name
-            $this->context->setParameter('controller_path', $this->context->getUrl($controller));
-            $controllerInstance = $this->container->resolve($controllerClassName);
-        } elseif (class_exists($controller)) {
-            // use controller class
+        if(class_exists($controller)) {
             $controllerInstance = $this->container->resolve($controller);
         } else {
-            throw new ControllerNotFoundException("Failed to find $controllerClassName]");
+            $controllerClassName = sprintf('\%s\controllers\%sController', $context->getNamespace(), Text::ucamelize($controller));
+            $context->setParameter('controller_path', $context->getUrl($controller));
+            $controllerInstance = $this->container->resolve($controllerClassName);
         }
-        return $controllerInstance->executeControllerAction($action, $params, $this->context);
+        return $controllerInstance->executeControllerAction($action, $params);
     }
 }

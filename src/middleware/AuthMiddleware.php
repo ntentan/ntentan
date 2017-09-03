@@ -34,7 +34,7 @@
 namespace ntentan\middleware;
 
 use ntentan\Session;
-use ntentan\Middleware;
+use ntentan\AbstractMiddleware;
 use ntentan\middleware\auth\AuthMethodFactory;
 
 /**
@@ -42,7 +42,7 @@ use ntentan\middleware\auth\AuthMethodFactory;
  *
  * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
  */
-class AuthMiddleware extends Middleware
+class AuthMiddleware extends AbstractMiddleware
 {
     private $authenticated;
     private $authMethodFactory;

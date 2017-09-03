@@ -122,9 +122,9 @@ class Context
      * 
      * @return Context New context
      */
-    public static function initialize($namespace = 'app')
+    public static function initialize($namespace)
     {
-        $context = new self();
+        $context = new self($namespace);
         $context->parameters = Parameters::wrap([]);
         self::$instance = $context;
         return $context;
@@ -149,8 +149,9 @@ class Context
      * @param panie\Container $container
      * @param string $namespace
      */
-    public function __construct()
+    public function __construct($namespace)
     {
+        $this->namespace = $namespace;
         /*$this->prefix = $config->get('app.prefix');
         $dbConfig = $config->get('db');
 

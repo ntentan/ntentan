@@ -53,13 +53,6 @@ class Controller
     private $componentMap = [];
     private $boundParameters = [];
     private $activeAction;
-    
-    /**
-     * An instance of the ntentan context with which this application is running.
-     * 
-     * @var Context 
-     */
-    private $context;
 
     public function __get($property)
     {
@@ -71,26 +64,17 @@ class Controller
         }
     }
 
-    /**
-     * 
-     * @return Context
-     */
-    protected function getContext()
-    {
-        return $this->context;
-    }
-
     protected function getRedirect()
     {
-        $c = $this->context;
+        $c = Context::getInstance();
         $redirect = new Redirect($c->getUrl($c->getParameter('controller_path')));
         return $redirect;
     }
 
     protected function getActionUrl($action)
     {
-        $c = $this->context;
-        return  $c->getUrl($c->getParameter('controller_path') . $action);
+        $c = Context::getInstance();
+        return $c->getUrl($c->getParameter('controller_path') . $action);
     }
 
     /**
@@ -112,7 +96,7 @@ class Controller
                 $this->boundParameters[$methodParameter->name] = $binder->getBound();
             } else {
                 $invokeParameters[] = $methodParameter->isDefaultValueAvailable() ?
-                        $methodParameter->getDefaultValue() : null;
+                    $methodParameter->getDefaultValue() : null;
             }
         }
     }
@@ -136,30 +120,31 @@ class Controller
 
     private function getMethod($path)
     {
+        $context = Context::getInstance();
         $className = (new ReflectionClass($this))->getShortName();
         $methods = $this->context->getCache()->read(
             "controller.{$className}.methods", function () {
-                $class = new ReflectionClass($this);
-                $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
-                $results = [];
-                foreach ($methods as $method) {
-                    $methodName = $method->getName();
-                    if (substr($methodName, 0, 2) == '__') {
-                        continue;
-                    }
-                    if (array_search($methodName, ['getActiveControllerAction', 'executeControllerAction'])) {
-                        continue;
-                    }
-                    $docComments = $this->parseDocComment($method->getDocComment());
-                    $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
-                    $results[$keyName] = [
-                        'name' => $method->getName(),
-                        'binder' => $docComments['binder'] ?? $this->context->getModelBinders()->getDefaultBinderClass(),
-                        'binder_params' => $docComments['binder.params'] ?? ''
-                    ];
+            $class = new ReflectionClass($this);
+            $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
+            $results = [];
+            foreach ($methods as $method) {
+                $methodName = $method->getName();
+                if (substr($methodName, 0, 2) == '__') {
+                    continue;
                 }
-                return $results;
+                if (array_search($methodName, ['getActiveControllerAction', 'executeControllerAction'])) {
+                    continue;
+                }
+                $docComments = $this->parseDocComment($method->getDocComment());
+                $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
+                $results[$keyName] = [
+                    'name' => $method->getName(),
+                    'binder' => $docComments['binder'] ?? $this->context->getModelBinders()->getDefaultBinderClass(),
+                    'binder_params' => $docComments['binder.params'] ?? ''
+                ];
             }
+            return $results;
+        }
         );
 
         if (isset($methods[$path . utils\Input::server('REQUEST_METHOD')])) {
@@ -171,19 +156,19 @@ class Controller
         return false;
     }
 
-    public function executeControllerAction($action, $params, $context)
+    public function executeControllerAction($action, $params)
     {
+        $context = Context::getInstance();
         $action = $action == '' ? 'index' : $action;
         $methodName = Text::camelize($action);
         $return = null;
         $invokeParameters = [];
-        $this->context = $context;
 
         if ($methodDetails = $this->getMethod($methodName)) {
             $this->activeAction = $action;
             $container = $context->getContainer();
             $container->bind(controllers\ModelBinderInterface::class)
-                    ->to($methodDetails['binder']);
+                ->to($methodDetails['binder']);
             $method = new \ReflectionMethod($this, $methodDetails['name']);
             $methodParameters = $method->getParameters();
             foreach ($methodParameters as $methodParameter) {

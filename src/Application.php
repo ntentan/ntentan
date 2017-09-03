@@ -2,12 +2,14 @@
 
 namespace ntentan;
 
+use ntentan\middleware\auth\AbstractAuthMethod;
 use ntentan\Router;
 use ntentan\config\Config;
 use ntentan\utils\Input;
 use ntentan\Context;
-use ntentan\panie\Container;
 use ntentan\middleware\MiddlewareFactory;
+use ntentan\controllers\ModelBinderRegister;
+use ntentan\AbstractMiddleware;
 
 class Application
 {
@@ -16,38 +18,40 @@ class Application
     protected $config;
     protected $prefix;
     private $runner;
-    private $middlewareFactory;
-    protected $container;
-    protected $namespace;
 
     /**
      *
      * @param type $context
      */
-    public final function __construct(Router $router, Config $config, PipelineRunner $runner, MiddlewareFactory $middlewareFactory)
+    public final function __construct(Router $router, Config $config, PipelineRunner $runner, string $namespace)
     {
-        Context::initialize();
+        $context = Context::initialize($namespace);
         $this->router = $router;
         $this->config = $config;
         $this->runner = $runner;
-        $this->middlewareFactory = $middlewareFactory;
         $this->prefix = $config->get('app.prefix');
-        $this->prependMiddleware(middleware\MVCMiddleware::class);
+        var_dump($config);
     }
 
     protected function setup()
     {
     }
     
-
-    public function appendMiddleware($class, $options = [])
+    public function setModelBinderRegister(ModelBinderRegister $modelBinderRegister)
     {
-        $this->pipeline[] = $this->middlewareFactory->createMiddleware($class, $options);
+        $this->modelBinderRegister = $modelBinderRegister;
     }
 
-    public function prependMiddleware($class, $options = [])
+    public function appendMiddleware(AbstractMiddleware $middleware, $options)
     {
-        array_unshift($this->pipeline, $this->middlewareFactory->createMiddleware($class, $options));
+        $middleware->setParameters($options);
+        $this->pipeline[] = $middleware;
+    }
+
+    public function prependMiddleware(AbstractMiddleware $middleware, $options = [])
+    {
+        $middleware->setParameters($options);
+        array_unshift($this->pipeline, $middleware);
     }
     
     private function startSession()

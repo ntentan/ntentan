@@ -2,7 +2,7 @@
 
 namespace ntentan;
 
-abstract class Middleware
+abstract class AbstractMiddleware
 {
 
     /**

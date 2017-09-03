@@ -2,19 +2,23 @@
 
 namespace ntentan\middleware;
 
+use ntentan\middleware\mvc\ResourceLoaderFactory;
 use ntentan\utils\Input;
 use ntentan\honam\TemplateEngine;
 use ntentan\honam\Helper;
 use ntentan\Context;
+use ntentan\AbstractMiddleware;
 
-class MVCMiddleware extends \ntentan\Middleware
+class MVCMiddleware extends AbstractMiddleware
 {
     private $container;
-    
-    private $loaders = [
-        'controller' => mvc\ControllerLoader::class
-    ];
-    
+    private $loaderFactory;
+
+    public function __construct(ResourceLoaderFactory $loaderFactory)
+    {
+        $this->loaderFactory = $loaderFactory;
+    }
+
     public function run($route, $response)
     {
         TemplateEngine::prependPath('views/shared');
@@ -40,16 +44,6 @@ class MVCMiddleware extends \ntentan\Middleware
             }
         }
         $parameters += Input::get() + Input::post();
-        foreach ($this->loaders as $key => $class) {
-            if (isset($parameters[$key])) {
-                return $this->container->resolve($class)->load($parameters);
-            }
-        }
-        return ['success' => false, 'message' => 'Failed to find a suitable loader for this route'];
-    }
-    
-    public function registerLoader($key, $class)
-    {
-        $this->loaders[$key] = $class;
+        return $this->loaderFactory->createLoader($parameters);
     }
 }

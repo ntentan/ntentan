@@ -13,11 +13,10 @@ class MiddlewareFactory
         $this->runner = $runner;
     }
     
-    public function createMiddleware($class, $options)
+    public function createMiddleware($class, $options = [])
     {
         $instance = new $class();
         $instance->setParameters($options);
-        $instance->setRunner($this->runner);
         return $instance;
     }
 }
