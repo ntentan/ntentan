@@ -2,6 +2,8 @@
 
 namespace ntentan;
 
+use ntentan\controllers\model_binders\DefaultModelBinder;
+use ntentan\kaikai\Cache;
 use ntentan\middleware\auth\AbstractAuthMethod;
 use ntentan\Router;
 use ntentan\config\Config;
@@ -18,19 +20,20 @@ class Application
     protected $config;
     protected $prefix;
     private $runner;
+    private $context;
 
     /**
      *
      * @param type $context
      */
-    public final function __construct(Router $router, Config $config, PipelineRunner $runner, string $namespace)
+    public final function __construct(Router $router, Config $config, PipelineRunner $runner, Cache $cache, string $namespace)
     {
-        $context = Context::initialize($namespace);
+        $this->context = Context::initialize($namespace);
+        $this->context->setCache($cache);
         $this->router = $router;
         $this->config = $config;
         $this->runner = $runner;
         $this->prefix = $config->get('app.prefix');
-        var_dump($config);
     }
 
     protected function setup()
@@ -40,6 +43,8 @@ class Application
     public function setModelBinderRegister(ModelBinderRegister $modelBinderRegister)
     {
         $this->modelBinderRegister = $modelBinderRegister;
+        $modelBinderRegister->setDefaultBinderClass(DefaultModelBinder::class);
+        $this->context->setModelBinderRegister($modelBinderRegister);
     }
 
     public function appendMiddleware(AbstractMiddleware $middleware, $options)

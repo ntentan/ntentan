@@ -10,6 +10,7 @@ use ntentan\interfaces\ContainerBuilderInterface;
 use ntentan\Application;
 use ntentan\config\Config;
 use ntentan\utils\Text;
+use ntentan\View;
 
 /**
  * Wires up the panie IoC container for ntentan.

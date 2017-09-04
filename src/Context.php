@@ -152,49 +152,8 @@ class Context
     public function __construct($namespace)
     {
         $this->namespace = $namespace;
-        /*$this->prefix = $config->get('app.prefix');
-        $dbConfig = $config->get('db');
-
-        if (isset($dbConfig['driver'])) {
-            $container->setup([
-                DriverAdapter::class => Resolver::getDriverAdapterClassName($dbConfig['driver']),
-                atiaa\Driver::class => atiaa\DbContext::getDriverClassName($dbConfig['driver'])
-            ], false);
-            $container->resolve(nibii\ORMContext::class, ['config' => $dbConfig]);
-        }       
-
-        /*$this->modelBinders = new controllers\ModelBinderRegister($container);
-        $this->modelBinders->setDefaultBinderClass(
-            controllers\model_binders\DefaultModelBinder::class
-        );
-        $this->modelBinders->register(
-                utils\filesystem\UploadedFile::class, controllers\model_binders\UploadedFileBinder::class
-        );
-        $this->modelBinders->register(View::class, controllers\model_binders\ViewBinder::class);*/
     }
 
-    /**
-     * Initialises ntentan's autoloader mechanism for classes that require the application's namespace. 
-     */
-//    private function setupAutoloader()
-//    {
-//        spl_autoload_register(function ($class) {
-//            $prefix = $this->namespace . "\\";
-//            $baseDir = 'src/';
-//            $len = strlen($prefix);
-//
-//            if (strncmp($prefix, $class, $len) !== 0) {
-//                return;
-//            }
-//
-//            $relativeClass = substr($class, $len);
-//            $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
-//
-//            if (file_exists($file)) {
-//                include $file;
-//            }
-//        });
-//    }
 
     /**
      * Get the namespace for this application.
@@ -241,6 +200,11 @@ class Context
         return $this->cache;
     }
 
+    public function setCache($cache)
+    {
+        $this->cache = $cache;
+    }
+
     public function getConfig()
     {
         return $this->config;
@@ -259,9 +223,14 @@ class Context
     /**
      * @return controllers\ModelBinderRegister
      */
-    public function getModelBinders()
+    public function getModelBinderRegister()
     {
-        return $this->modelBinders;
+        return $this->modelBinderRegister;
+    }
+
+    public function setModelBinderRegister($modelBinderRegister)
+    {
+        $this->modelBinderRegister = $modelBinderRegister;
     }
 
     public function getParameter($parameter)

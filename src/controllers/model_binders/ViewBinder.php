@@ -16,16 +16,10 @@ use ntentan\View;
 class ViewBinder implements ModelBinderInterface
 {
     private $bound = false;
-    private $container;
-    
-    public function __construct(Context $context)
-    {
-        $this->container = $context->getContainer();
-    }
 
     public function bind(Controller $controller, $action, $type, $name)
     {
-        $view = $this->container->resolve(View::class);
+        $view = new $type;
         $className = strtolower(substr((new \ReflectionClass($controller))->getShortName(), 0, -10));
         TemplateEngine::prependPath("views/{$className}");
         if ($view->getTemplate() == null) {

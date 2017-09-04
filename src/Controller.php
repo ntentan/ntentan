@@ -53,28 +53,19 @@ class Controller
     private $componentMap = [];
     private $boundParameters = [];
     private $activeAction;
-
-    public function __get($property)
-    {
-        if (substr($property, -9) == "Component") {
-            $component = substr($property, 0, strlen($property) - 9);
-            return $this->getComponentInstance($this->componentMap[$component]);
-        } else {
-            throw new \Exception("Unknown property *{$property}* requested");
-        }
-    }
+    private $context;
 
     protected function getRedirect()
     {
-        $c = Context::getInstance();
-        $redirect = new Redirect($c->getUrl($c->getParameter('controller_path')));
+        $context = Context::getInstance();
+        $redirect = new Redirect($context->getUrl($context->getParameter('controller_path')));
         return $redirect;
     }
 
     protected function getActionUrl($action)
     {
-        $c = Context::getInstance();
-        return $c->getUrl($c->getParameter('controller_path') . $action);
+        $context = Context::getInstance();
+        return $context->getUrl($context->getParameter('controller_path') . $action);
     }
 
     /**
@@ -91,7 +82,7 @@ class Controller
         } else {
             $type = $methodParameter->getClass();
             if ($type !== null) {
-                $binder = $this->context->getModelBinders()->get($type->getName());
+                $binder = Context::getInstance()->getModelBinderRegister()->get($type->getName());
                 $invokeParameters[] = $binder->bind($this, $this->activeAction, $type->getName(), $methodParameter->name);
                 $this->boundParameters[$methodParameter->name] = $binder->getBound();
             } else {
@@ -122,8 +113,8 @@ class Controller
     {
         $context = Context::getInstance();
         $className = (new ReflectionClass($this))->getShortName();
-        $methods = $this->context->getCache()->read(
-            "controller.{$className}.methods", function () {
+        $methods = $context->getCache()->read(
+            "controller.{$className}.methods", function () use ($context) {
             $class = new ReflectionClass($this);
             $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
             $results = [];
@@ -139,7 +130,7 @@ class Controller
                 $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
                 $results[$keyName] = [
                     'name' => $method->getName(),
-                    'binder' => $docComments['binder'] ?? $this->context->getModelBinders()->getDefaultBinderClass(),
+                    'binder' => $docComments['binder'] ?? $context->getModelBinderRegister()->getDefaultBinderClass(),
                     'binder_params' => $docComments['binder.params'] ?? ''
                 ];
             }
@@ -166,9 +157,9 @@ class Controller
 
         if ($methodDetails = $this->getMethod($methodName)) {
             $this->activeAction = $action;
-            $container = $context->getContainer();
+            /*$container = $context->getContainer();
             $container->bind(controllers\ModelBinderInterface::class)
-                ->to($methodDetails['binder']);
+                ->to($methodDetails['binder']);*/
             $method = new \ReflectionMethod($this, $methodDetails['name']);
             $methodParameters = $method->getParameters();
             foreach ($methodParameters as $methodParameter) {

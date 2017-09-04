@@ -40,10 +40,7 @@ class ModelBinderRegister
 
     public function get($type)
     {
-        if (isset($this->binders[$type])) {
-            return $this->getCustomBinder($this->binders[$type]);
-        } else {
-            return $this->container->singleton(ModelBinderInterface::class);
-        }
+        $binderClass = $this->binders[$type] ?? $this->defaultBinderClass;
+        return new $binderClass();
     }
 }
