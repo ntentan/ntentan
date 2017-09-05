@@ -2,9 +2,13 @@
 
 namespace ntentan;
 
+use ntentan\atiaa\DbContext;
+use ntentan\atiaa\DriverFactory;
 use ntentan\controllers\model_binders\DefaultModelBinder;
 use ntentan\kaikai\Cache;
 use ntentan\middleware\auth\AbstractAuthMethod;
+use ntentan\nibii\ModelFactoryInterface;
+use ntentan\nibii\ORMContext;
 use ntentan\Router;
 use ntentan\config\Config;
 use ntentan\utils\Input;
@@ -12,6 +16,7 @@ use ntentan\Context;
 use ntentan\middleware\MiddlewareFactory;
 use ntentan\controllers\ModelBinderRegister;
 use ntentan\AbstractMiddleware;
+use ntentan\atiaa\Driver;
 
 class Application
 {
@@ -21,6 +26,7 @@ class Application
     protected $prefix;
     private $runner;
     private $context;
+    private $cache;
 
     /**
      *
@@ -33,34 +39,44 @@ class Application
         $this->router = $router;
         $this->config = $config;
         $this->runner = $runner;
+        $this->cache = $cache;
         $this->prefix = $config->get('app.prefix');
     }
 
-    protected function setup()
+    protected function setup() : void
     {
     }
+
+    public function setDriverFactory(DriverFactory $driverFactory) : void
+    {
+        DbContext::initialize($driverFactory);
+    }
+
+    public function setModelFactory(ModelFactoryInterface $modelFactory) : void
+    {
+        ORMContext::initialize($modelFactory, DbContext::getInstance(), $this->cache);
+    }
     
-    public function setModelBinderRegister(ModelBinderRegister $modelBinderRegister)
+    public function setModelBinderRegister(ModelBinderRegister $modelBinderRegister) : void
     {
         $this->modelBinderRegister = $modelBinderRegister;
         $modelBinderRegister->setDefaultBinderClass(DefaultModelBinder::class);
         $this->context->setModelBinderRegister($modelBinderRegister);
     }
 
-    public function appendMiddleware(AbstractMiddleware $middleware, $options)
+    public function appendMiddleware(AbstractMiddleware $middleware)
     {
-        $middleware->setParameters($options);
         $this->pipeline[] = $middleware;
     }
 
-    public function prependMiddleware(AbstractMiddleware $middleware, $options = [])
+    public function prependMiddleware(AbstractMiddleware $middleware)
     {
-        $middleware->setParameters($options);
         array_unshift($this->pipeline, $middleware);
     }
     
     private function startSession()
     {
+        // Replace with a factory oya!
         $sessionContainerType = $this->config->get('app.sessions.container', 'default');
         switch($sessionContainerType) {
             case 'none':

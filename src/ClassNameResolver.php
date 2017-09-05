@@ -48,11 +48,4 @@ class ClassNameResolver implements ModelClassResolverInterface, ControllerClassR
 
         return implode('\\', $joinerParts);
     }
-
-    public function getControllerClassName($name)
-    {
-        return sprintf(
-                '\%s\controllers\%sController', $this->namespace, utils\Text::ucamelize($name)
-        );
-    }
 }

@@ -2,9 +2,11 @@
 
 namespace ntentan;
 
+use ntentan\atiaa\DriverFactory;
 use ntentan\middleware\mvc\ControllerLoader;
 use ntentan\middleware\mvc\ResourceLoaderFactory;
 use ntentan\middleware\MVCMiddleware;
+use ntentan\nibii\ModelFactoryInterface;
 use ntentan\panie\Container;
 use ntentan\interfaces\ContainerBuilderInterface;
 use ntentan\Application;
@@ -29,15 +31,27 @@ class ContainerBuilder implements ContainerBuilderInterface
             ModelClassResolverInterface::class => ClassNameResolver::class,
             ModelJoinerInterface::class => ClassNameResolver::class,
             TableNameResolverInterface::class => nibii\Resolver::class,
-            ComponentResolverInterface::class => ClassNameResolver::class,
-            ControllerClassResolverInterface::class => ClassNameResolver::class,
-            View::class => [View::class, "singleton" => true],
-            nibii\ORMContext::class => [nibii\ORMContext::class, "singleton" => true],
+
+            DriverFactory::class => [
+                function($container) {
+                    $config = $container->resolve(Config::class);
+                    return new DriverFactory($config->get('db'));
+                }
+            ],
+
+            ModelFactoryInterface::class => [
+                function() {
+                    return new ModelFactory(Context::getInstance()->getNamespace());
+                }
+            ],
 
             // Wire up the application class
             Application::class => [
                 Application::class,
-                'calls' => ['setModelBinderRegister', 'prependMiddleware' => ['middleware' => MVCMiddleware::class]]
+                'calls' => [
+                    'prependMiddleware' => ['middleware' => MVCMiddleware::class],
+                    'setModelBinderRegister', 'setDriverFactory', 'setModelFactory'
+                ]
             ],
 
             // Wire up the resource loader to setup initial loader types
