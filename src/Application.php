@@ -7,6 +7,7 @@ use ntentan\atiaa\DriverFactory;
 use ntentan\controllers\model_binders\DefaultModelBinder;
 use ntentan\kaikai\Cache;
 use ntentan\middleware\auth\AbstractAuthMethod;
+use ntentan\nibii\DriverAdapterFactoryInterface;
 use ntentan\nibii\ModelFactoryInterface;
 use ntentan\nibii\ORMContext;
 use ntentan\Router;
@@ -18,6 +19,10 @@ use ntentan\controllers\ModelBinderRegister;
 use ntentan\AbstractMiddleware;
 use ntentan\atiaa\Driver;
 
+/**
+ * Application bootstrapping class.
+ * @package ntentan
+ */
 class Application
 {
     private $pipeline = [];
@@ -52,9 +57,9 @@ class Application
         DbContext::initialize($driverFactory);
     }
 
-    public function setModelFactory(ModelFactoryInterface $modelFactory) : void
+    public function setOrmFactories(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory) : void
     {
-        ORMContext::initialize($modelFactory, DbContext::getInstance(), $this->cache);
+        ORMContext::initialize($modelFactory, $driverAdapterFactory, DbContext::getInstance(), $this->cache);
     }
     
     public function setModelBinderRegister(ModelBinderRegister $modelBinderRegister) : void
@@ -74,7 +79,7 @@ class Application
         array_unshift($this->pipeline, $middleware);
     }
     
-    private function startSession()
+    /*private function startSession()
     {
         // Replace with a factory oya!
         $sessionContainerType = $this->config->get('app.sessions.container', 'default');
@@ -87,12 +92,12 @@ class Application
                 $this->container->resolve(SessionContainer::getClassName($sessionContainerType));
         }
         session_start();        
-    }
+    }*/
 
     public function execute()
     {
         $this->setup();
-        $this->startSession();
+        //$this->startSession();
         $route = $this->router->route(substr(parse_url(Input::server('REQUEST_URI'), PHP_URL_PATH), 1), $this->prefix);
         $pipeline = $route['description']['parameters']['pipeline'] ?? $this->pipeline;
         echo $this->runner->run($pipeline, $route);

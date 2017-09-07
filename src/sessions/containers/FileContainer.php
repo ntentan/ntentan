@@ -11,6 +11,12 @@ class FileContainer extends SessionContainer
     private $sessionName;
     private $sessionPath;
 
+    public function __construct(Config $config)
+    {
+        parent::__construct($config);
+        session_start();
+    }
+
     public function open($sessionPath, $sessionName)
     {
         $this->sessionPath = $this->config->get('app.sessions.path', $sessionPath);

@@ -6,6 +6,8 @@ use ntentan\atiaa\DriverFactory;
 use ntentan\middleware\mvc\ControllerLoader;
 use ntentan\middleware\mvc\ResourceLoaderFactory;
 use ntentan\middleware\MVCMiddleware;
+use ntentan\nibii\DriverAdapterFactory;
+use ntentan\nibii\DriverAdapterFactoryInterface;
 use ntentan\nibii\ModelFactoryInterface;
 use ntentan\panie\Container;
 use ntentan\interfaces\ContainerBuilderInterface;
@@ -45,12 +47,19 @@ class ContainerBuilder implements ContainerBuilderInterface
                 }
             ],
 
+            DriverAdapterFactoryInterface::class => [
+                function($container) {
+                    $config = $container->resolve(Config::class);
+                    return new DriverAdapterFactory($config->get('db'));
+                }
+            ],
+
             // Wire up the application class
             Application::class => [
                 Application::class,
                 'calls' => [
                     'prependMiddleware' => ['middleware' => MVCMiddleware::class],
-                    'setModelBinderRegister', 'setDriverFactory', 'setModelFactory'
+                    'setModelBinderRegister', 'setDriverFactory', 'setOrmFactories'
                 ]
             ],
 

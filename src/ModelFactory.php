@@ -28,4 +28,11 @@ class ModelFactory implements ModelFactoryInterface
         $className = "\\{$this->namespace}\\models\\" . Text::ucamelize($name);
         return new $className;
     }
+
+    public function getModelTable($instance)
+    {
+        $class = new \ReflectionClass($instance);
+        $nameParts = explode("\\", $class->getName());
+        return \ntentan\utils\Text::deCamelize(end($nameParts));
+    }
 }
