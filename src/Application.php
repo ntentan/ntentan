@@ -12,6 +12,7 @@ use ntentan\nibii\ModelFactoryInterface;
 use ntentan\nibii\ORMContext;
 use ntentan\Router;
 use ntentan\config\Config;
+use ntentan\sessions\SessionContainerFactory;
 use ntentan\utils\Input;
 use ntentan\Context;
 use ntentan\middleware\MiddlewareFactory;
@@ -32,12 +33,13 @@ class Application
     private $runner;
     private $context;
     private $cache;
+    private $sessionContainerFactory;
 
     /**
      *
      * @param type $context
      */
-    public final function __construct(Router $router, Config $config, PipelineRunner $runner, Cache $cache, string $namespace)
+    public final function __construct(Router $router, Config $config, PipelineRunner $runner, Cache $cache, SessionContainerFactory $sessionContainerFactory, string $namespace)
     {
         $this->context = Context::initialize($namespace);
         $this->context->setCache($cache);
@@ -45,6 +47,7 @@ class Application
         $this->config = $config;
         $this->runner = $runner;
         $this->cache = $cache;
+        $this->sessionContainerFactory = $sessionContainerFactory;
         $this->prefix = $config->get('app.prefix');
     }
 
@@ -78,26 +81,11 @@ class Application
     {
         array_unshift($this->pipeline, $middleware);
     }
-    
-    /*private function startSession()
-    {
-        // Replace with a factory oya!
-        $sessionContainerType = $this->config->get('app.sessions.container', 'default');
-        switch($sessionContainerType) {
-            case 'none':
-                return;
-            case 'default':
-                break;
-            default:
-                $this->container->resolve(SessionContainer::getClassName($sessionContainerType));
-        }
-        session_start();        
-    }*/
 
     public function execute()
     {
         $this->setup();
-        //$this->startSession();
+        $this->sessionContainerFactory->createSessionContainer();
         $route = $this->router->route(substr(parse_url(Input::server('REQUEST_URI'), PHP_URL_PATH), 1), $this->prefix);
         $pipeline = $route['description']['parameters']['pipeline'] ?? $this->pipeline;
         echo $this->runner->run($pipeline, $route);

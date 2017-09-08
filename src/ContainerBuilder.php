@@ -87,16 +87,6 @@ class ContainerBuilder implements ContainerBuilderInterface
                     return $container->resolve($classname);
                 }, 
                 'singleton' => true
-            ],
-            
-            // Factory for session containers
-            sessions\SessionContainer::class => [
-                function($container){
-                    $sessionContainerType = $container->resolve(Config::class)->get('app.sessions.container', 'default');
-                    $className = '\ntentan\sessions\containers\\' . Text::ucamelize($sessionContainerType) . 'Container';
-                    return $container->resolve($className);
-                },
-                'singleton' => true
             ]
         ]);
         return $container;        

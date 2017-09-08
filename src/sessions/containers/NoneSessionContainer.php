@@ -2,15 +2,8 @@
 
 namespace ntentan\sessions\containers;
 
-use ntentan\sessions\SessionContainer;
-
-class NoneContainer extends SessionContainer
+class NoneSessionContainer extends AbstractSessionContainer
 {
-
-    private $file;
-    private $sessionName;
-    private $sessionPath;
-
     public function open($sessionPath, $sessionName)
     {
         return true;

@@ -2,24 +2,22 @@
 
 namespace ntentan\sessions\containers;
 
-use ntentan\sessions\SessionContainer;
-
-class FileContainer extends SessionContainer
+class FileSessionContainer extends AbstractSessionContainer
 {
 
     private $file;
     private $sessionName;
     private $sessionPath;
 
-    public function __construct(Config $config)
+    public function __construct()
     {
-        parent::__construct($config);
+        session_set_save_handler($this, true);
         session_start();
     }
 
     public function open($sessionPath, $sessionName)
     {
-        $this->sessionPath = $this->config->get('app.sessions.path', $sessionPath);
+        $this->sessionPath = $this->config['path'] ?? $sessionPath;
         $this->sessionName = $sessionName;
         return true;
     }
@@ -33,7 +31,7 @@ class FileContainer extends SessionContainer
     {
         $this->file = "{$this->sessionPath}/session_{$this->sessionName}_{$sessionId}";
         if (file_exists($this->file)) {
-            if (filemtime($this->file) + $this->lifespan > time()) {
+            if (filemtime($this->file) + $this->config['lifespa'] > time()) {
                 return file_get_contents($this->file);
             } else {
                 return '';

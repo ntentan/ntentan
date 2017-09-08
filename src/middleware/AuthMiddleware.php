@@ -36,6 +36,7 @@ namespace ntentan\middleware;
 use ntentan\Session;
 use ntentan\AbstractMiddleware;
 use ntentan\middleware\auth\AuthMethodFactory;
+use ntentan\sessions\SessionContainerFactory;
 
 /**
  * AuthComponent provides a simplified authentication scheme
@@ -60,7 +61,6 @@ class AuthMiddleware extends AbstractMiddleware
 
     private function getAuthMethod()
     {
-        //$authMethodType = $this->getParameters()->get('auth_method', 'http_request');
         $authMethod = $this->authMethodFactory->createAuthMethod($this->getParameters());
         $authMethod->setParameters($this->getParameters()); // 2 factory
         return $authMethod;
@@ -71,13 +71,13 @@ class AuthMiddleware extends AbstractMiddleware
         if (Session::get('logged_in')) {
             return $this->next($route, $response);
         }
-        
+
         $parameters = $this->getParameters();
         $excluded = $parameters->get('excluded', []);
         if (in_array($route['route'], $excluded)) {
             return $this->next($route, $response);
         }
-        
+
         $response = $this->getAuthMethod()->login($route);
         if ($response === true) {
             return $this->next($route, $response);

@@ -28,22 +28,20 @@ class HttpRequestAuthMethod extends AbstractAuthMethod
         $parameters = $this->getParameters();
         $usernameField = $parameters->get('username_field', "username");
         $passwordField = $parameters->get('password_field', "password");
-        
+
         if (Input::exists(Input::POST, $usernameField) && Input::exists(Input::POST, $passwordField)) {
             $username = Input::post($usernameField);
             if ($this->authLocalPassword($username, Input::post($passwordField))) {
                 return $context->getRedirect($parameters->get('success_redirect', $context->getUrl('/')));
             } else {
-                $view = $context->getContainer()->resolve(View::class);
-                $view->set(['auth_message' => $this->message, 'username' => $username]);
+                //$view = $context->getContainer()->resolve(View::class);
+                //$view->set(['auth_message' => $this->message, 'username' => $username]);
             }
         }
         
         $excluded = array_merge($parameters->get('excluded_routes', []), [$parameters->get('login_route', '/login')]);
         if(!$this->isExcluded($route['route'], $excluded, $context)) {
-            var_dump($parameters->get('login_route', '/login'), $parameters);
-            die();
-            //return $context->getRedirect($parameters->get('login_route', '/login'));
+            return $context->getRedirect($parameters->get('login_route', '/login'));
         }
         
         return true;

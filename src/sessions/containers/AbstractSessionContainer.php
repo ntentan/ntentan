@@ -1,20 +1,16 @@
 <?php
 
-namespace ntentan\sessions;
+namespace ntentan\sessions\containers;
 
-use ntentan\config\Config;
-
-abstract class SessionContainer implements \SessionHandlerInterface
+abstract class AbstractSessionContainer implements \SessionHandlerInterface
 {
-
-    protected $lifespan;
     protected $config;
+    protected $lifespan;
 
-    public function __construct(Config $config)
+    public function setConfig($config)
     {
-        $this->lifespan = $config->get('app.sessions.lifespan', 86000);
         $this->config = $config;
-        session_set_save_handler($this, true);
+        $this->lifespan = $config['lifespan'] ?? 3600;
     }
 
     abstract public function open($sessionPath, $sessionName);
