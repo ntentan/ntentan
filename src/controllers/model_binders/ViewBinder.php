@@ -4,9 +4,7 @@ namespace ntentan\controllers\model_binders;
 
 use ntentan\controllers\ModelBinderInterface;
 use ntentan\Controller;
-use ntentan\Context;
 use ntentan\honam\TemplateEngine;
-use ntentan\View;
 
 /**
  * Creates an instance of \ntentan\View and binds it to parameters in action methods.

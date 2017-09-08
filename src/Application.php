@@ -6,7 +6,6 @@ use ntentan\atiaa\DbContext;
 use ntentan\atiaa\DriverFactory;
 use ntentan\controllers\model_binders\DefaultModelBinder;
 use ntentan\kaikai\Cache;
-use ntentan\middleware\auth\AbstractAuthMethod;
 use ntentan\nibii\DriverAdapterFactoryInterface;
 use ntentan\nibii\ModelFactoryInterface;
 use ntentan\nibii\ORMContext;
@@ -15,10 +14,8 @@ use ntentan\config\Config;
 use ntentan\sessions\SessionContainerFactory;
 use ntentan\utils\Input;
 use ntentan\Context;
-use ntentan\middleware\MiddlewareFactory;
 use ntentan\controllers\ModelBinderRegister;
 use ntentan\AbstractMiddleware;
-use ntentan\atiaa\Driver;
 
 /**
  * Application bootstrapping class.
@@ -34,6 +31,7 @@ class Application
     private $context;
     private $cache;
     private $sessionContainerFactory;
+    protected $modelBinderRegister;
 
     /**
      *
@@ -41,7 +39,7 @@ class Application
      */
     public final function __construct(Router $router, Config $config, PipelineRunner $runner, Cache $cache, SessionContainerFactory $sessionContainerFactory, string $namespace)
     {
-        $this->context = Context::initialize($namespace);
+        $this->context = Context::initialize($namespace, $config, $cache);
         $this->context->setCache($cache);
         $this->router = $router;
         $this->config = $config;
@@ -69,6 +67,7 @@ class Application
     {
         $this->modelBinderRegister = $modelBinderRegister;
         $modelBinderRegister->setDefaultBinderClass(DefaultModelBinder::class);
+        $modelBinderRegister->register(View::class, controllers\model_binders\ViewBinder::class);
         $this->context->setModelBinderRegister($modelBinderRegister);
     }
 

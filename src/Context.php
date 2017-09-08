@@ -37,19 +37,6 @@
 
 namespace ntentan;
 
-use ntentan\config\Config;
-use ntentan\interfaces\ControllerClassResolverInterface;
-use ntentan\nibii\interfaces\ModelClassResolverInterface;
-use ntentan\nibii\interfaces\ModelJoinerInterface;
-use ntentan\nibii\interfaces\TableNameResolverInterface;
-use ntentan\panie\ComponentResolverInterface;
-use ntentan\nibii\DriverAdapter;
-use ntentan\nibii\Resolver;
-use ntentan\utils\Input;
-use ntentan\kaikai\Cache;
-use ntentan\panie\Container;
-use ntentan\sessions\SessionContainer;
-
 
 /**
  * A context within which the current request is served.
@@ -81,13 +68,6 @@ class Context
      * @var \ntentan\kaikai\Cache
      */
     private $cache;
-    
-    /**
-     * An instance of the model binder register.
-     * 
-     * @var \ntentan\controllers\model_binders\ModelBinderRegister
-     */
-    private $modelBinders;
     
     /**
      * Stores parameters that are shared across the application.
@@ -122,9 +102,12 @@ class Context
      * 
      * @return Context New context
      */
-    public static function initialize($namespace)
+    public static function initialize($namespace, $config, $cache)
     {
         $context = new self($namespace);
+        $context->cache = $cache;
+        $context->config = $config;
+        $context->prefix = $config->get('app.prefix', null);
         $context->parameters = Parameters::wrap([]);
         self::$instance = $context;
         return $context;
@@ -149,7 +132,7 @@ class Context
      * @param panie\Container $container
      * @param string $namespace
      */
-    public function __construct($namespace)
+    private function __construct($namespace)
     {
         $this->namespace = $namespace;
     }

@@ -15,12 +15,6 @@ use ntentan\controllers\ModelBinderInterface;
 class DefaultModelBinder implements ModelBinderInterface
 {
     private $bound;
-    protected $container;
-
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
-    }
 
     /**
      *
