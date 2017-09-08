@@ -8,9 +8,13 @@ class FileSessionContainer extends AbstractSessionContainer
     private $file;
     private $sessionName;
     private $sessionPath;
+    private $config;
+    private $lifespan;
 
-    public function __construct()
+    public function __construct($config)
     {
+        $this->config = $config;
+        $this->lifespan = $config['lifespan'] ?? 3600;
         session_set_save_handler($this, true);
         session_start();
     }
@@ -31,7 +35,7 @@ class FileSessionContainer extends AbstractSessionContainer
     {
         $this->file = "{$this->sessionPath}/session_{$this->sessionName}_{$sessionId}";
         if (file_exists($this->file)) {
-            if (filemtime($this->file) + $this->config['lifespa'] > time()) {
+            if (filemtime($this->file) + $this->lifespan > time()) {
                 return file_get_contents($this->file);
             } else {
                 return '';

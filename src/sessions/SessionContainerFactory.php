@@ -10,7 +10,6 @@ namespace ntentan\sessions;
 
 use ntentan\utils\Text;
 use ntentan\config\Config;
-use ntentan\Session;
 
 class SessionContainerFactory
 {
@@ -25,9 +24,7 @@ class SessionContainerFactory
     {
         $sessionContainerType = $this->config['container'] ?? 'default';
         $className = '\ntentan\sessions\containers\\' . Text::ucamelize($sessionContainerType) . 'SessionContainer';
-        $sessionContainer = new $className();
-        $sessionContainer->setConfig($this->config);
-        //Session::start();
+        $sessionContainer = new $className($this->config);
         return $sessionContainer;
     }
 }

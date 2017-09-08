@@ -36,7 +36,6 @@ namespace ntentan\middleware;
 use ntentan\Session;
 use ntentan\AbstractMiddleware;
 use ntentan\middleware\auth\AuthMethodFactory;
-use ntentan\sessions\SessionContainerFactory;
 
 /**
  * AuthComponent provides a simplified authentication scheme

@@ -4,7 +4,6 @@ namespace ntentan\middleware\auth;
 
 use ntentan\utils\Input;
 use ntentan\Context;
-use ntentan\View;
 
 /**
  * An authentication method that receives a username and password through an HTTP request.
