@@ -8,10 +8,10 @@
 
 namespace ntentan;
 
-use ntentan\nibii\ModelFactoryInterface;
+use ntentan\nibii\interfaces\ModelFactoryInterface;
 use ntentan\utils\Text;
 
-class ModelFactory implements ModelFactoryInterface
+class MvcModelFactory implements ModelFactoryInterface
 {
     private $namespace;
 

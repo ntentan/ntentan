@@ -3,18 +3,20 @@
 namespace ntentan;
 
 use ntentan\atiaa\DriverFactory;
-use ntentan\middleware\mvc\ControllerLoader;
-use ntentan\middleware\mvc\ResourceLoaderFactory;
-use ntentan\middleware\MVCMiddleware;
-use ntentan\nibii\DriverAdapterFactory;
-use ntentan\nibii\DriverAdapterFactoryInterface;
-use ntentan\nibii\ModelFactoryInterface;
+use ntentan\interfaces\ControllerFactoryInterface;
+use ntentan\middleware\MvcMiddleware;
+use ntentan\nibii\factories\DriverAdapterFactory;
+use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
+use ntentan\nibii\interfaces\ModelFactoryInterface;
 use ntentan\panie\Container;
 use ntentan\interfaces\ContainerBuilderInterface;
 use ntentan\Application;
 use ntentan\config\Config;
 use ntentan\utils\Text;
-use ntentan\View;
+use ntentan\nibii\interfaces\ValidatorFactoryInterface;
+use ntentan\nibii\factories\DefaultValidatorFactory;
+use ntentan\kaikai\CacheBackendInterface;
+use ntentan\middleware\mvc\DefaultControllerFactory;
 
 /**
  * Wires up the panie IoC container for ntentan.
@@ -33,41 +35,41 @@ class ContainerBuilder implements ContainerBuilderInterface
             ModelClassResolverInterface::class => ClassNameResolver::class,
             ModelJoinerInterface::class => ClassNameResolver::class,
             TableNameResolverInterface::class => nibii\Resolver::class,
-
             DriverFactory::class => [
                 function($container) {
                     $config = $container->resolve(Config::class);
                     return new DriverFactory($config->get('db'));
                 }
             ],
-
             ModelFactoryInterface::class => [
                 function() {
-                    return new ModelFactory(Context::getInstance()->getNamespace());
+                    return new MvcModelFactory(Context::getInstance()->getNamespace());
                 }
             ],
-
+            ValidatorFactoryInterface::class => DefaultValidatorFactory::class,
             DriverAdapterFactoryInterface::class => [
                 function($container) {
                     $config = $container->resolve(Config::class);
                     return new DriverAdapterFactory($config->get('db'));
                 }
             ],
-
             // Wire up the application class
             Application::class => [
                 Application::class,
                 'calls' => [
-                    'prependMiddleware' => ['middleware' => MVCMiddleware::class],
+                    'prependMiddleware' => ['middleware' => MvcMiddleware::class],
                     'setModelBinderRegister', 'setDriverFactory', 'setOrmFactories'
                 ]
             ],
 
             // Wire up the resource loader to setup initial loader types
-            ResourceLoaderFactory::class => [
+            /*ResourceLoaderFactory::class => [
                 ResourceLoaderFactory::class,
                 'calls' => ['registerLoader' => ['key' => 'controller', 'class' => ControllerLoader::class]]
-            ],
+            ],*/
+                
+            // 
+            ControllerFactoryInterface::class => DefaultControllerFactory::class,
             
             // Factory for configuration class
             Config::class => [
@@ -80,7 +82,7 @@ class ContainerBuilder implements ContainerBuilderInterface
             ],
                     
             // Factory for cache backends
-            kaikai\CacheBackendInterface::class => [
+            CacheBackendInterface::class => [
                 function($container){
                     $backend = $container->resolve(Config::class)->get('cache.backend', 'volatile');
                     $classname = '\ntentan\kaikai\backends\\' . Text::ucamelize($backend) . 'Cache';

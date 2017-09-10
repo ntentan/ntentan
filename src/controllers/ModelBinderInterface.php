@@ -9,6 +9,7 @@
 namespace ntentan\controllers;
 
 use ntentan\Controller;
+use ntentan\panie\Container;
 
 /**
  * Description of ModelBinderInterface
@@ -17,7 +18,6 @@ use ntentan\Controller;
  */
 interface ModelBinderInterface
 {
-    public function bind(Controller $controller, $action, $type, $name);
-
+    public function bind(Controller $controller, Container $serviceLocator, $action, $type, $name);
     public function getBound();
 }

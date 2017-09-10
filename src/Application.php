@@ -6,8 +6,8 @@ use ntentan\atiaa\DbContext;
 use ntentan\atiaa\DriverFactory;
 use ntentan\controllers\model_binders\DefaultModelBinder;
 use ntentan\kaikai\Cache;
-use ntentan\nibii\DriverAdapterFactoryInterface;
-use ntentan\nibii\ModelFactoryInterface;
+use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
+use ntentan\nibii\interfaces\ModelFactoryInterface;
 use ntentan\nibii\ORMContext;
 use ntentan\Router;
 use ntentan\config\Config;
@@ -16,6 +16,7 @@ use ntentan\utils\Input;
 use ntentan\Context;
 use ntentan\controllers\ModelBinderRegister;
 use ntentan\AbstractMiddleware;
+use ntentan\nibii\interfaces\ValidatorFactoryInterface;
 
 /**
  * Application bootstrapping class.
@@ -58,9 +59,9 @@ class Application
         DbContext::initialize($driverFactory);
     }
 
-    public function setOrmFactories(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory) : void
+    public function setOrmFactories(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory) : void
     {
-        ORMContext::initialize($modelFactory, $driverAdapterFactory, DbContext::getInstance(), $this->cache);
+        ORMContext::initialize($modelFactory, $driverAdapterFactory, $modelValidatorFactory, DbContext::getInstance(), $this->cache);
     }
     
     public function setModelBinderRegister(ModelBinderRegister $modelBinderRegister) : void

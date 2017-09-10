@@ -25,7 +25,8 @@ class Model extends RecordWrapper implements \Serializable
      * @return \ntentan\nibii\RecordWrapper
      */
     public static function createNew() {
-        $instance = nibii\ORMContext::getInstance()->getContainer()->resolve(get_called_class());
+        $class = get_called_class();
+        $instance = new $class();
         $instance->initialize();
         return $instance;
     }    

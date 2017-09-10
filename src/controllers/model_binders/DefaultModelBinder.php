@@ -4,8 +4,8 @@ namespace ntentan\controllers\model_binders;
 
 use ntentan\utils\Input;
 use ntentan\Controller;
-use ntentan\panie\Container;
 use ntentan\controllers\ModelBinderInterface;
+use ntentan\panie\Container;
 
 /**
  * Description of DefaultModelBinder
@@ -36,10 +36,10 @@ class DefaultModelBinder implements ModelBinderInterface
         return $fields;
     }
 
-    public function bind(Controller $controller, $action, $type, $name)
+    public function bind(Controller $controller, Container $serviceLocator, $action, $type, $name)
     {
         $this->bound = false;
-        $object = $this->container->resolve($type);
+        $object = $serviceLocator->resolve($type);
         if (is_a($object, '\ntentan\Model')) {
             $fields = $this->getModelFields($object);
         } else {
