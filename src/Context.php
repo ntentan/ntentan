@@ -37,7 +37,6 @@
 
 namespace ntentan;
 
-
 /**
  * A context within which the current request is served.
  * The context holds instances of utility classes that are needed by ntentan in order to serve a request.
@@ -83,13 +82,6 @@ class Context
      * @var ntentan\Context
      */
     private static $instance;
-
-    /**
-     * An instance of the Application class that was used to initialize the application.
-     * 
-     * @var Application
-     */
-    private $app;
     
     private $prefix;
 
@@ -149,31 +141,6 @@ class Context
     }
 
     /**
-     * Get an instance of the router used for routing requests.
-     * 
-     * @return Router
-     */
-    public function getRouter()
-    {
-        return $this->container->singleton(Router::class);
-    }
-
-    /**
-     * Return an instance of the application class that was used to setup this context.
-     * While instantiating the context, an instance of the application class is created. While creating this application
-     * object, the class can extend the setup() method to run custom code before any other part of the application runs.
-     * In addition to the setup method, you can add other application specific methods to your application class for
-     * use during application runtime. The framework presents a default Application class in cases where none is
-     * supplied.
-     * 
-     * @return Application
-     */
-    public function getApp()
-    {
-        return $this->app;
-    }
-
-    /**
      * Get an instance of the cache.
      * 
      * @return kaikai\Cache
@@ -186,11 +153,6 @@ class Context
     public function setCache($cache)
     {
         $this->cache = $cache;
-    }
-
-    public function getConfig()
-    {
-        return $this->config;
     }
 
     public function getRedirect($path)

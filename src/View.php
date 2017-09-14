@@ -39,7 +39,7 @@ class View
      * @var Array
      */
     private $variables = array();
-
+    
     /**
      * Set the mimetype of the response.
      * Calling this method will cause a Content-Type header to be sent to the client with the content type that is
