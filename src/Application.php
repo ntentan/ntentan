@@ -61,7 +61,7 @@ class Application
 
     public function setOrmFactories(ModelFactoryInterface $modelFactory, DriverAdapterFactoryInterface $driverAdapterFactory, ValidatorFactoryInterface $modelValidatorFactory) : void
     {
-        ORMContext::initialize($modelFactory, $driverAdapterFactory, $modelValidatorFactory, DbContext::getInstance(), $this->cache);
+        ORMContext::initialize($modelFactory, $driverAdapterFactory, $modelValidatorFactory, $this->cache);
     }
     
     public function setModelBinderRegister(ModelBinderRegister $modelBinderRegister) : void
