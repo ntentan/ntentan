@@ -187,4 +187,9 @@ class Context
     {
         $this->parameters->set($parameter, $value);
     }
+    
+    public function getPrefix()
+    {
+        return $this->prefix;
+    }
 }

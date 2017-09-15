@@ -2,7 +2,6 @@
 
 namespace ntentan\middleware;
 
-use ntentan\middleware\mvc\ResourceLoaderFactory;
 use ntentan\utils\Input;
 use ntentan\honam\TemplateEngine;
 use ntentan\honam\Helper;
@@ -51,8 +50,8 @@ class MvcMiddleware extends AbstractMiddleware
         TemplateEngine::prependPath('views/layouts');
         Helper::setBaseUrl(Context::getInstance()->getUrl(''));
         $parameters = $this->extractRouteParameters($route);
-        $controller = $this->controllerFactory->createController($parameters['controller']);
-        return $this->controllerFactory->executeController($controller, $parameters['action'], $parameters);        
+        $controller = $this->controllerFactory->createController($parameters);
+        return $this->controllerFactory->executeController($controller, $parameters);        
     }
     
     /**

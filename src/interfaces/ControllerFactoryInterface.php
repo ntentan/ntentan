@@ -10,6 +10,6 @@ use ntentan\Controller;
  */
 interface ControllerFactoryInterface
 {
-    public function createController(string $controller): Controller;
-    public function executeController(Controller $controller, string $action, array $parameters): string;
+    public function createController(array &$parameters): Controller;
+    public function executeController(Controller $controller, array $parameters): string;
 }

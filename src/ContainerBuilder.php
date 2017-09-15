@@ -61,12 +61,6 @@ class ContainerBuilder implements ContainerBuilderInterface
                     'setModelBinderRegister', 'setDriverFactory', 'setOrmFactories'
                 ]
             ],
-
-            // Wire up the resource loader to setup initial loader types
-            /*ResourceLoaderFactory::class => [
-                ResourceLoaderFactory::class,
-                'calls' => ['registerLoader' => ['key' => 'controller', 'class' => ControllerLoader::class]]
-            ],*/
                 
             // 
             ControllerFactoryInterface::class => DefaultControllerFactory::class,

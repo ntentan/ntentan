@@ -98,8 +98,9 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         return false;
     }
 
-    public function createController(string $controller): Controller
+    public function createController(array &$parameters): Controller
     {
+        $controller = $parameters['controller'];
         $context = Context::getInstance();
 
         if (class_exists($controller)) {
@@ -112,8 +113,9 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         return $controllerInstance;
     }
 
-    public function executeController(Controller $controller, string $action, array $parameters): string
+    public function executeController(Controller $controller, array $parameters): string
     {
+        $action = $parameters['action'];
         $methodName = Text::camelize($action);
         $invokeParameters = [];
         $methodDetails = $this->getMethod($controller, $methodName);
