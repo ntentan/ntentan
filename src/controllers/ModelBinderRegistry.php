@@ -9,7 +9,7 @@ use ntentan\panie\Container;
  *
  * @author ekow
  */
-class ModelBinderRegister
+class ModelBinderRegistry
 {
     private $binders = [];
     private $customBinderInstances = [];

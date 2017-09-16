@@ -166,16 +166,16 @@ class Context
     }
     
     /**
-     * @return controllers\ModelBinderRegister
+     * @return controllers\ModelBinderRegistry
      */
-    public function getModelBinderRegister()
+    public function getModelBinderRegistry()
     {
-        return $this->modelBinderRegister;
+        return $this->modelBinderRegistry;
     }
 
-    public function setModelBinderRegister($modelBinderRegister)
+    public function setModelBinderRegistry($modelBinderRegistry)
     {
-        $this->modelBinderRegister = $modelBinderRegister;
+        $this->modelBinderRegistry = $modelBinderRegistry;
     }
 
     public function getParameter($parameter)

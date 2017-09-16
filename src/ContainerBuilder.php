@@ -17,6 +17,8 @@ use ntentan\nibii\interfaces\ValidatorFactoryInterface;
 use ntentan\nibii\factories\DefaultValidatorFactory;
 use ntentan\kaikai\CacheBackendInterface;
 use ntentan\middleware\mvc\DefaultControllerFactory;
+use ntentan\middleware\MiddlewareFactoryRegistry;
+use ntentan\middleware\MvcMiddlewareFactory;
 
 /**
  * Wires up the panie IoC container for ntentan.
@@ -41,11 +43,7 @@ class ContainerBuilder implements ContainerBuilderInterface
                     return new DriverFactory($config->get('db'));
                 }
             ],
-            ModelFactoryInterface::class => [
-                function() {
-                    return new MvcModelFactory(Context::getInstance()->getNamespace());
-                }
-            ],
+            ModelFactoryInterface::class => MvcModelFactory::class,
             ValidatorFactoryInterface::class => DefaultValidatorFactory::class,
             DriverAdapterFactoryInterface::class => [
                 function($container) {
@@ -56,9 +54,13 @@ class ContainerBuilder implements ContainerBuilderInterface
             // Wire up the application class
             Application::class => [
                 Application::class,
+                'calls' => ['setMiddlewareFactoryRegistry', 'setModelBinderRegistry', 'setDatabaseDriverFactory', 'setOrmFactories']
+            ],
+                
+            MiddlewareFactoryRegistry::class => [
+                MiddlewareFactoryRegistry::class, 
                 'calls' => [
-                    'prependMiddleware' => ['middleware' => MvcMiddleware::class],
-                    'setModelBinderRegister', 'setDriverFactory', 'setOrmFactories'
+                    'register' => ['middlewareFactory' => MvcMiddlewareFactory::class, 'name' => MvcMiddleware::class ]
                 ]
             ],
                 

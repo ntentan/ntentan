@@ -34,7 +34,7 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         } else {
             $type = $methodParameter->getClass();
             if ($type !== null) {
-                $binder = Context::getInstance()->getModelBinderRegister()->get($type->getName());
+                $binder = Context::getInstance()->getModelBinderRegistry()->get($type->getName());
                 $invokeParameters[] = $binder->bind($controller, $this->container, $this->activeAction, $type->getName(), $methodParameter->name);
                 $this->boundParameters[$methodParameter->name] = $binder->getBound();
             } else {
@@ -81,7 +81,7 @@ class DefaultControllerFactory implements ControllerFactoryInterface
                 $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
                 $results[$keyName] = [
                     'name' => $method->getName(),
-                    'binder' => $docComments['binder'] ?? $context->getModelBinderRegister()->getDefaultBinderClass(),
+                    'binder' => $docComments['binder'] ?? $context->getModelBinderRegistry()->getDefaultBinderClass(),
                     'binder_params' => $docComments['binder.params'] ?? ''
                 ];
             }

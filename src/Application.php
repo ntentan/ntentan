@@ -14,9 +14,10 @@ use ntentan\config\Config;
 use ntentan\sessions\SessionContainerFactory;
 use ntentan\utils\Input;
 use ntentan\Context;
-use ntentan\controllers\ModelBinderRegister;
+use ntentan\controllers\ModelBinderRegistry;
 use ntentan\AbstractMiddleware;
 use ntentan\nibii\interfaces\ValidatorFactoryInterface;
+use ntentan\middleware\MiddlewareFactoryRegistry;
 
 /**
  * Application bootstrapping class.
@@ -32,7 +33,8 @@ class Application
     private $context;
     private $cache;
     private $sessionContainerFactory;
-    protected $modelBinderRegister;
+    protected $modelBinderRegistry;
+    protected $middlewareFactoryRegistry;
 
     /**
      *
@@ -48,13 +50,14 @@ class Application
         $this->cache = $cache;
         $this->sessionContainerFactory = $sessionContainerFactory;
         $this->prefix = $config->get('app.prefix');
+        $this->appendMiddleware(middleware\MvcMiddleware::class);
     }
 
     protected function setup() : void
     {
     }
 
-    public function setDriverFactory(DriverFactory $driverFactory) : void
+    public function setDatabaseDriverFactory(DriverFactory $driverFactory) : void
     {
         DbContext::initialize($driverFactory);
     }
@@ -64,22 +67,37 @@ class Application
         ORMContext::initialize($modelFactory, $driverAdapterFactory, $modelValidatorFactory, $this->cache);
     }
     
-    public function setModelBinderRegister(ModelBinderRegister $modelBinderRegister) : void
+    public function setMiddlewareFactoryRegistry(MiddlewareFactoryRegistry $middlewareFactoryRegistry)
     {
-        $this->modelBinderRegister = $modelBinderRegister;
-        $modelBinderRegister->setDefaultBinderClass(DefaultModelBinder::class);
-        $modelBinderRegister->register(View::class, controllers\model_binders\ViewBinder::class);
-        $this->context->setModelBinderRegister($modelBinderRegister);
+        $this->middlewareFactoryRegistry = $middlewareFactoryRegistry;
+    }
+    
+    public function setModelBinderRegistry(ModelBinderRegistry $modelBinderRegistry) : void
+    {
+        $this->modelBinderRegistry = $modelBinderRegistry;
+        $modelBinderRegistry->setDefaultBinderClass(DefaultModelBinder::class);
+        $modelBinderRegistry->register(View::class, controllers\model_binders\ViewBinder::class);
+        $this->context->setModelBinderRegistry($modelBinderRegistry);
     }
 
-    public function appendMiddleware(AbstractMiddleware $middleware)
+    public function appendMiddleware(string $middleware, array $parameters = [])
     {
-        $this->pipeline[] = $middleware;
+        $this->pipeline[] = [$middleware, $parameters];
     }
 
-    public function prependMiddleware(AbstractMiddleware $middleware)
+    public function prependMiddleware(string $middleware, array $parameters = [])
     {
-        array_unshift($this->pipeline, $middleware);
+        array_unshift($this->pipeline, [$middleware, $parameters]);
+    }
+    
+    private function buildPipeline($pipeline)
+    {
+        $instances = [];
+        foreach($pipeline as $middleware) {
+            $instance = $this->middlewareFactoryRegistry->getFactory($middleware[0])->createMiddleware($middleware[1] ?? []);
+            $instances[] = $instance;
+        }
+        return $instances;
     }
 
     public function execute()
@@ -88,7 +106,7 @@ class Application
         $this->sessionContainerFactory->createSessionContainer();
         $route = $this->router->route(substr(parse_url(Input::server('REQUEST_URI'), PHP_URL_PATH), 1), $this->prefix);
         $this->context->setParameter('route', $route['route']);
-        $pipeline = $route['description']['parameters']['pipeline'] ?? $this->pipeline;
+        $pipeline = $this->buildPipeline($route['description']['parameters']['pipeline'] ?? $this->pipeline);
         echo $this->runner->run($pipeline, $route);
     }    
 }
