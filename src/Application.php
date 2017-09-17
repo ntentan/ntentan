@@ -15,7 +15,6 @@ use ntentan\sessions\SessionContainerFactory;
 use ntentan\utils\Input;
 use ntentan\Context;
 use ntentan\controllers\ModelBinderRegistry;
-use ntentan\AbstractMiddleware;
 use ntentan\nibii\interfaces\ValidatorFactoryInterface;
 use ntentan\middleware\MiddlewareFactoryRegistry;
 
