@@ -195,16 +195,16 @@
         },
         {
             "name": "ntentan/atiaa",
-            "version": "v0.6.0",
+            "version": "v0.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/atiaa.git",
-                "reference": "8a572d979620f4dd41662fba07b0d77aa9b2a5fc"
+                "reference": "d7738d14c7643abda50273a74a6e5b07ff42f3c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/8a572d979620f4dd41662fba07b0d77aa9b2a5fc",
-                "reference": "8a572d979620f4dd41662fba07b0d77aa9b2a5fc",
+                "url": "https://api.github.com/repos/ntentan/atiaa/zipball/d7738d14c7643abda50273a74a6e5b07ff42f3c2",
+                "reference": "d7738d14c7643abda50273a74a6e5b07ff42f3c2",
                 "shasum": ""
             },
             "require": {
@@ -233,7 +233,7 @@
                 }
             ],
             "description": "A slim wrapper around PDO to provide some extra utilities",
-            "time": "2017-09-18T02:39:57+00:00"
+            "time": "2017-09-23T16:45:31+00:00"
         },
         {
             "name": "ntentan/config",
@@ -400,16 +400,16 @@
         },
         {
             "name": "ntentan/panie",
-            "version": "v0.5.0",
+            "version": "v0.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/panie.git",
-                "reference": "40c321a6ede7dcfa85f9b771493f5e3130ef10bd"
+                "reference": "95b05c2762491e09bc6c3d7ac029c1683c8e3715"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/panie/zipball/40c321a6ede7dcfa85f9b771493f5e3130ef10bd",
-                "reference": "40c321a6ede7dcfa85f9b771493f5e3130ef10bd",
+                "url": "https://api.github.com/repos/ntentan/panie/zipball/95b05c2762491e09bc6c3d7ac029c1683c8e3715",
+                "reference": "95b05c2762491e09bc6c3d7ac029c1683c8e3715",
                 "shasum": ""
             },
             "require": {
@@ -437,7 +437,7 @@
                 }
             ],
             "description": "A thin DI container for NtentanFX",
-            "time": "2017-09-17T02:57:15+00:00"
+            "time": "2017-09-24T02:59:55+00:00"
         },
         {
             "name": "ntentan/utils",
