@@ -48,7 +48,7 @@ class ContainerBuilder implements ContainerBuilderInterface
             DriverAdapterFactoryInterface::class => [
                 function($container) {
                     $config = $container->resolve(Config::class);
-                    return new DriverAdapterFactory($config->get('db'));
+                    return new DriverAdapterFactory($config->get('db')['driver']);
                 }
             ],
             // Wire up the application class

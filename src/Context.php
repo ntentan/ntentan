@@ -192,4 +192,9 @@ class Context
     {
         return $this->prefix;
     }
+    
+    public function getConfig()
+    {
+        return $this->config;
+    }
 }
