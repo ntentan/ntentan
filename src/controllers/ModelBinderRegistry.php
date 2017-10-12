@@ -2,26 +2,17 @@
 
 namespace ntentan\controllers;
 
-use ntentan\panie\Container;
-
 /**
- *
+ * This registry tracks data types and their associated model binders. 
+ * For types without specific model binder specified, a default model binder is used. Ntentan ships with a 
+ * DefaultModelBinder class that can be replaced with with a user specified default binder if needed.
  *
  * @author ekow
  */
 class ModelBinderRegistry
 {
     private $binders = [];
-    private $customBinderInstances = [];
     private $defaultBinderClass;
-
-    private function getCustomBinder($binder)
-    {
-        if (!isset($this->customBinderInstances[$binder])) {
-            $this->customBinderInstances[$binder] = $this->container->resolve($binder);
-        }
-        return $this->customBinderInstances[$binder];
-    }
 
     public function setDefaultBinderClass($defaultBinderClass)
     {

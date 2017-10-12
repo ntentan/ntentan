@@ -74,9 +74,6 @@ class DefaultControllerFactory implements ControllerFactoryInterface
                 if (substr($methodName, 0, 2) == '__') {
                     continue;
                 }
-                if (array_search($methodName, ['getActiveControllerAction', 'executeControllerAction'])) {
-                    continue;
-                }
                 $docComments = $this->parseDocComment($method->getDocComment());
                 $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
                 $results[$keyName] = [

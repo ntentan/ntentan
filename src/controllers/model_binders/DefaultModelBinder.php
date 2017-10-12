@@ -8,7 +8,7 @@ use ntentan\controllers\ModelBinderInterface;
 use ntentan\panie\Container;
 
 /**
- * Description of DefaultModelBinder
+ * This class
  *
  * @author ekow
  */
