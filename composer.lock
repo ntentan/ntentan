@@ -357,16 +357,16 @@
         },
         {
             "name": "ntentan/nibii",
-            "version": "v0.6.0",
+            "version": "v0.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ntentan/nibii.git",
-                "reference": "7f9afc3a8741e6767aca4f226454893b353e4435"
+                "reference": "f610fc497610994709a4ee339043c2bf7dac5ae4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ntentan/nibii/zipball/7f9afc3a8741e6767aca4f226454893b353e4435",
-                "reference": "7f9afc3a8741e6767aca4f226454893b353e4435",
+                "url": "https://api.github.com/repos/ntentan/nibii/zipball/f610fc497610994709a4ee339043c2bf7dac5ae4",
+                "reference": "f610fc497610994709a4ee339043c2bf7dac5ae4",
                 "shasum": ""
             },
             "require": {
@@ -396,7 +396,7 @@
                 }
             ],
             "description": "ORM for ntentan",
-            "time": "2017-09-21T00:18:32+00:00"
+            "time": "2017-10-13T03:54:52+00:00"
         },
         {
             "name": "ntentan/panie",
@@ -1234,16 +1234,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "6.3.0",
+            "version": "6.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "9501bab711403a1ab5b8378a8adb4ec3db3debdb"
+                "reference": "b770d8ba7e60295ee91d69d5a5e01ae833cac220"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/9501bab711403a1ab5b8378a8adb4ec3db3debdb",
-                "reference": "9501bab711403a1ab5b8378a8adb4ec3db3debdb",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/b770d8ba7e60295ee91d69d5a5e01ae833cac220",
+                "reference": "b770d8ba7e60295ee91d69d5a5e01ae833cac220",
                 "shasum": ""
             },
             "require": {
@@ -1288,7 +1288,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.3.x-dev"
+                    "dev-master": "6.4.x-dev"
                 }
             },
             "autoload": {
@@ -1314,7 +1314,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-08-04T05:20:39+00:00"
+            "time": "2017-10-07T17:53:53+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
