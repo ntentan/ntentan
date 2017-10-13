@@ -82,6 +82,8 @@ class Context
      * @var ntentan\Context
      */
     private static $instance;
+
+    private $modelBinderRegistry;
     
     private $prefix;
 

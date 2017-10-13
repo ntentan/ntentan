@@ -1,23 +1,28 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace ntentan\controllers;
 
 use ntentan\Controller;
-use ntentan\panie\Container;
 
 /**
- * Description of ModelBinderInterface
+ * Describes the interface for model binders.
+ * Model binders allow the framework to assign values from HTTP requests to object instances that are passed as
+ * arguments of action methods.
  *
  * @author ekow
  */
 interface ModelBinderInterface
 {
-    public function bind(Controller $controller, Container $serviceLocator, $action, $type, $name);
-    public function getBound();
+    /**
+     * Creates or sets up an object to be used as an argument for an action method.
+     *
+     * @param Controller $controller An instance of the controller
+     * @param string $type The type to be bound
+     * @param string $name The name of the argument on the action method
+     * @param mixed $instance An instance pre created
+     * @return void
+     */
+    public function bind(Controller $controller, $type, $name, $instance = null);
+    //public function getBound();
+    public function requiresInstance();
 }

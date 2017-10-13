@@ -3,8 +3,8 @@
 namespace ntentan\controllers;
 
 /**
- * This registry tracks data types and their associated model binders. 
- * For types without specific model binder specified, a default model binder is used. Ntentan ships with a 
+ * Tracks data types and their associated model binders. 
+ * For types without specific model binder, a default model binder is used. Ntentan ships with a 
  * DefaultModelBinder class that can be replaced with with a user specified default binder if needed.
  *
  * @author ekow

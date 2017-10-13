@@ -36,27 +36,31 @@ class DefaultModelBinder implements ModelBinderInterface
         return $fields;
     }
 
-    public function bind(Controller $controller, Container $serviceLocator, $action, $type, $name)
+    public function bind(Controller $controller, $type, $name, $instance = null)
     {
         $this->bound = false;
-        $object = $serviceLocator->resolve($type);
-        if (is_a($object, '\ntentan\Model')) {
-            $fields = $this->getModelFields($object);
+        if (is_a($instance, '\ntentan\Model')) {
+            $fields = $this->getModelFields($instance);
         } else {
-            $fields = $this->getClassFields($object);
+            $fields = $this->getClassFields($instance);
         }
         $requestData = Input::post() + Input::get();
         foreach ($fields as $field) {
             if (isset($requestData[$field])) {
-                $object->$field = $requestData[$field] == '' ? null : $requestData[$field];
+                $instance->$field = $requestData[$field] == '' ? null : $requestData[$field];
                 $this->bound = true;
             }
         }
-        return $object;
+        return $instance;
     }
 
-    public function getBound()
+    public function requiresInstance()
+    {
+        return true;
+    }
+
+    /*public function getBound()
     {
         return $this->bound;
-    }
+    }*/
 }

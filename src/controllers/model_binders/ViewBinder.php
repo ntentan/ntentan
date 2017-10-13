@@ -16,19 +16,24 @@ class ViewBinder implements ModelBinderInterface
 {
     private $bound = false;
 
-    public function bind(Controller $controller, Container $serviceLocator, $action, $type, $name)
+    public function bind(Controller $controller, $type, $name, $instance=null)
     {
-        $view = $serviceLocator->resolve($type);
         $className = strtolower(substr((new \ReflectionClass($controller))->getShortName(), 0, -10));
+        $action = $controller->getActionMethod();
         TemplateEngine::prependPath("views/{$className}");
-        if ($view->getTemplate() == null) {
-            $view->setTemplate("{$className}_{$action}.tpl.php");
+        if ($instance->getTemplate() == null) {
+            $instance->setTemplate("{$className}_{$action}.tpl.php");
         }
-        return $view;
+        return $instance;
     }
 
-    public function getBound()
+    /*public function getBound()
     {
         return $this->bound;
+    }*/
+
+    public function requiresInstance()
+    {
+        return true;
     }
 }

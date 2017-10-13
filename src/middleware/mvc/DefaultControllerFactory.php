@@ -14,6 +14,7 @@ class DefaultControllerFactory implements ControllerFactoryInterface
 {
 
     private $container;
+    private $modelBinderRegistry;
 
     public function __construct()
     {
@@ -25,7 +26,7 @@ class DefaultControllerFactory implements ControllerFactoryInterface
     {
         
     }
-
+    
     private function bindParameter(Controller $controller, &$invokeParameters, $methodParameter, $params)
     {
         if (isset($params[$methodParameter->name])) {
@@ -34,19 +35,24 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         } else {
             $type = $methodParameter->getClass();
             if ($type !== null) {
-                $binder = Context::getInstance()->getModelBinderRegistry()->get($type->getName());
-                $invokeParameters[] = $binder->bind($controller, $this->container, $this->activeAction, $type->getName(), $methodParameter->name);
-                $this->boundParameters[$methodParameter->name] = $binder->getBound();
+                $binder = $this->modelBinderRegistry->get($type->getName());
+                $instance = null;
+                $typeName = $type->getName();
+                if($binder->requiresInstance()) {
+                    $instance = $this->container->resolve($typeName);
+                }
+                $invokeParameters[] = $binder->bind($controller, $typeName, $methodParameter->name, $instance);
+                //$this->boundParameters[$methodParameter->name] = $binder->getBound();
             } else {
                 $invokeParameters[] = $methodParameter->isDefaultValueAvailable() ? $methodParameter->getDefaultValue() : null;
             }
         }
     }
 
-    protected function isBound($parameter)
+    /*protected function isBound($parameter)
     {
         return $this->boundParameters[$parameter];
-    }
+    }*/
 
     private function parseDocComment($comment)
     {
@@ -65,8 +71,8 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         $context = Context::getInstance();
         $reflectionClass = new \ReflectionClass($controller);
         $className = $reflectionClass->getShortName();
-        $methods = $context->getCache()->read(
-            "controller.{$className}.methods", function () use ($context, $reflectionClass) {
+        
+        $getMethods = function () use ($context, $reflectionClass) {
             $methods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
             $results = [];
             foreach ($methods as $method) {
@@ -83,8 +89,10 @@ class DefaultControllerFactory implements ControllerFactoryInterface
                 ];
             }
             return $results;
-        }
-        );
+        };
+        
+        /* @var $methods array */
+        $methods = $context->getCache()->read("controller.{$className}.methods", $getMethods);
 
         if (isset($methods[$path . Input::server('REQUEST_METHOD')])) {
             return $methods[$path . Input::server('REQUEST_METHOD')];
@@ -116,15 +124,16 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         $methodName = Text::camelize($action);
         $invokeParameters = [];
         $methodDetails = $this->getMethod($controller, $methodName);
+        $this->modelBinderRegistry = Context::getInstance()->getModelBinderRegistry();
         
         if ($methodDetails !== false) {
-            $this->activeAction = $action ?? 'index';
+            $controller->setActionMethod($action ?? 'index');
             $method = new \ReflectionMethod($controller, $methodDetails['name']);
             $methodParameters = $method->getParameters();
+            $this->modelBinderRegistry->setDefaultBinderClass($methodDetails['binder']);
             foreach ($methodParameters as $methodParameter) {
                 $this->bindParameter($controller, $invokeParameters, $methodParameter, $parameters);
             }
-
             return $method->invokeArgs($controller, $invokeParameters);
         }
         throw new ControllerActionNotFoundException($this, $methodName);

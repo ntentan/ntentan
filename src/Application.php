@@ -20,6 +20,7 @@ use ntentan\middleware\MiddlewareFactoryRegistry;
 
 /**
  * Application bootstrapping class.
+ * 
  * @package ntentan
  */
 class Application

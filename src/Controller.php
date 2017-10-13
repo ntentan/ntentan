@@ -47,16 +47,67 @@ namespace ntentan;
  */
 class Controller
 {
-    protected function getRedirect()
+    /**
+     * The action method that this controller will execute.
+     *
+     * @var string
+     */
+    private $actionMethod;
+
+    /**
+     * The parameters that are sent to the action method.
+     *
+     * @var array
+     */
+    private $actionParameters;
+
+    /**
+     * Get an instance of the Redirect object that is setup with this controller as its base URL.
+     *
+     * @return Redirect
+     */
+    protected function getRedirect() : Redirect
     {
         $context = Context::getInstance();
         $redirect = new Redirect($context->getUrl($context->getParameter('controller_path')));
         return $redirect;
     }
 
-    protected function getActionUrl($action)
+    /**
+     * Returns a URL to an action in this controller.
+     *
+     * @param string $action The name of the action
+     * @return string A URL to the action
+     */
+    protected function getActionUrl($action) : string
     {
         $context = Context::getInstance();
         return $context->getUrl($context->getParameter('controller_path') . $action);
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param string $actionMethod 
+     * @return void
+     */
+    public function setActionMethod($actionMethod) : void
+    {
+        $this->actionMethod = $actionMethod;
+    }
+
+    public function setActionParameters($actionParameters) : void
+    {
+        $this->actionParameters = $actionParameters;
+    }
+
+    public function getActionMethod() : string
+    {
+        return $this->actionMethod;
+    }
+
+    public function getActionParameters() : array
+    {
+        return $this->actionParameters;
     }
 }
