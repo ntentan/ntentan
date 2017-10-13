@@ -14,14 +14,6 @@ use ntentan\controllers\ModelBinderInterface;
  */
 class NestedModelBinder implements ModelBinderInterface
 {
-    private $bound;
-    protected $container;
-
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
-    }
-
     /**
      *
      * @param \ntentan\Model $object
@@ -39,9 +31,9 @@ class NestedModelBinder implements ModelBinderInterface
                 'instance' => $modelRelationship->getModelInstance()
             ];
             $relationshipFields = array_map(
-                    function ($field) {
-                        return $field['name'];
-                    }, $modelRelationship->getModelInstance()->getDescription()->getFields()
+                function ($field) {
+                    return $field['name'];
+                }, $modelRelationship->getModelInstance()->getDescription()->getFields()
             );
             foreach ($relationshipFields as $field) {
                 $relationshipField = "$model.$field";
@@ -62,19 +54,16 @@ class NestedModelBinder implements ModelBinderInterface
         }
     }
 
-    public function bind(Controller $controller, $action, $type, $name)
+    public function bind(Controller $controller, $type, $name, $instance = null)
     {
-        $this->bound = false;
-        $object = $this->container->resolve($type);
-
-        if (!is_a($object, '\ntentan\Model')) {
+        if (!is_a($instance, '\ntentan\Model')) {
             return false;
         }
 
-        $fieldDescriptions = $object->getDescription()->getFields();
+        $fieldDescriptions = $instance->getDescription()->getFields();
 
         $requestData = Input::post() + Input::get();
-        $fields = $this->getModelFields($object);
+        $fields = $this->getModelFields($instance);
         $requestFields = array_keys($requestData);
 
         //@todo Clean up this mess!
@@ -105,18 +94,18 @@ class NestedModelBinder implements ModelBinderInterface
                         }
                     }
                     $fields[$field]['instance']->setData($relatedData);
-                    $object[$fields[$field]['model']] = $fields[$field]['instance'];
+                    $instance[$fields[$field]['model']] = $fields[$field]['instance'];
                 } else {
-                    $object[$field] = $requestData[$field] == '' ? null : $this->cast($requestData[$field], $fieldDescriptions[$field]['type']);
+                    $instance[$field] = $requestData[$field] == '' ? null : $this->cast($requestData[$field], $fieldDescriptions[$field]['type']);
                 }
             }
         }
 
-        return $object;
+        return $instance;
     }
-
-    public function getBound()
+    
+    public function requiresInstance() : bool
     {
-        return $this->bound;
+        return true;
     }
 }

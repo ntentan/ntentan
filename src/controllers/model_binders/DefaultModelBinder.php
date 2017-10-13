@@ -54,13 +54,8 @@ class DefaultModelBinder implements ModelBinderInterface
         return $instance;
     }
 
-    public function requiresInstance()
+    public function requiresInstance() : bool
     {
         return true;
     }
-
-    /*public function getBound()
-    {
-        return $this->bound;
-    }*/
 }

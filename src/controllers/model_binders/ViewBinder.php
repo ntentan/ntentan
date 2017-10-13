@@ -14,8 +14,6 @@ use ntentan\panie\Container;
  */
 class ViewBinder implements ModelBinderInterface
 {
-    private $bound = false;
-
     public function bind(Controller $controller, $type, $name, $instance=null)
     {
         $className = strtolower(substr((new \ReflectionClass($controller))->getShortName(), 0, -10));
@@ -27,12 +25,7 @@ class ViewBinder implements ModelBinderInterface
         return $instance;
     }
 
-    /*public function getBound()
-    {
-        return $this->bound;
-    }*/
-
-    public function requiresInstance()
+    public function requiresInstance() : bool
     {
         return true;
     }

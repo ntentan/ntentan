@@ -42,17 +42,11 @@ class DefaultControllerFactory implements ControllerFactoryInterface
                     $instance = $this->container->resolve($typeName);
                 }
                 $invokeParameters[] = $binder->bind($controller, $typeName, $methodParameter->name, $instance);
-                //$this->boundParameters[$methodParameter->name] = $binder->getBound();
             } else {
                 $invokeParameters[] = $methodParameter->isDefaultValueAvailable() ? $methodParameter->getDefaultValue() : null;
             }
         }
     }
-
-    /*protected function isBound($parameter)
-    {
-        return $this->boundParameters[$parameter];
-    }*/
 
     private function parseDocComment($comment)
     {
