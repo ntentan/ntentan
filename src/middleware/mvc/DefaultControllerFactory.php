@@ -2,6 +2,7 @@
 
 namespace ntentan\middleware\mvc;
 
+use ntentan\controllers\ModelBinderRegistry;
 use ntentan\interfaces\ControllerFactoryInterface;
 use ntentan\panie\Container;
 use ntentan\Context;
@@ -10,18 +11,37 @@ use ntentan\Controller;
 use ntentan\utils\Input;
 use ntentan\exceptions\ControllerActionNotFoundException;
 
+/**
+ * Class DefaultControllerFactory
+ * @package ntentan\middleware\mvc
+ */
 class DefaultControllerFactory implements ControllerFactoryInterface
 {
-
+    /**
+     * A container used as a service container for the controller execution phase.
+     * @var Container
+     */
     private $container;
+
+    /**
+     * An instance of the ModelBinderRegistry that holds model binders for all types.
+     * @var ModelBinderRegistry
+     */
     private $modelBinderRegistry;
 
+    /**
+     * DefaultControllerFactory constructor.
+     */
     public function __construct()
     {
         $this->container = new Container();
         $this->setupBindings($this->container);
     }
 
+    /**
+     * This method is overridden by sub classes to add custom bindings to the service locator.
+     * @param Container $serviceLocator
+     */
     protected function setupBindings(Container $serviceLocator)
     {
         

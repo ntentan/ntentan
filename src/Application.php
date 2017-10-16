@@ -5,15 +5,15 @@ namespace ntentan;
 use ntentan\atiaa\DbContext;
 use ntentan\atiaa\DriverFactory;
 use ntentan\controllers\model_binders\DefaultModelBinder;
+use ntentan\controllers\model_binders\UploadedFileBinder;
 use ntentan\kaikai\Cache;
 use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
 use ntentan\nibii\interfaces\ModelFactoryInterface;
 use ntentan\nibii\ORMContext;
-use ntentan\Router;
 use ntentan\config\Config;
 use ntentan\sessions\SessionContainerFactory;
+use ntentan\utils\filesystem\UploadedFile;
 use ntentan\utils\Input;
-use ntentan\Context;
 use ntentan\controllers\ModelBinderRegistry;
 use ntentan\nibii\interfaces\ValidatorFactoryInterface;
 use ntentan\middleware\MiddlewareFactoryRegistry;
@@ -77,6 +77,7 @@ class Application
         $this->modelBinderRegistry = $modelBinderRegistry;
         $modelBinderRegistry->setDefaultBinderClass(DefaultModelBinder::class);
         $modelBinderRegistry->register(View::class, controllers\model_binders\ViewBinder::class);
+        $modelBinderRegistry->register(UploadedFile::class, UploadedFileBinder::class);
         $this->context->setModelBinderRegistry($modelBinderRegistry);
     }
 
