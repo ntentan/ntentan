@@ -86,7 +86,7 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         $reflectionClass = new \ReflectionClass($controller);
         $className = $reflectionClass->getShortName();
         
-        $getMethods = function () use ($context, $reflectionClass) {
+        $getMethods = function () use ($context, $reflectionClass, $controller) {
             $methods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
             $results = [];
             foreach ($methods as $method) {
@@ -98,7 +98,9 @@ class DefaultControllerFactory implements ControllerFactoryInterface
                 $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
                 $results[$keyName] = [
                     'name' => $method->getName(),
-                    'binder' => $docComments['binder'] ?? $context->getModelBinderRegistry()->getDefaultBinderClass(),
+                    'binder' => $docComments['binder']
+                        ?? $controller->getDefaultModelBinderClass()
+                        ?? $context->getModelBinderRegistry()->getDefaultBinderClass(),
                     'binder_params' => $docComments['binder.params'] ?? ''
                 ];
             }

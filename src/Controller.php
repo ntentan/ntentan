@@ -42,8 +42,7 @@ namespace ntentan;
  * which are later rendered as output to the end user through views.
  *
  * @author  James Ekow Abaka Ainooson
- * @todo    Controllers must output data that can be passed to some kind of
- *          template engine like smarty.
+ * @todo    There must be a controller interface to be satisfied by all controllers
  */
 class Controller
 {
@@ -60,6 +59,15 @@ class Controller
      * @var array
      */
     private $actionParameters;
+
+    /**
+     * The name of a model binder to use as default for this controller only.
+     * This model binder overrides the global default model binder but can be overidden by a model binder on an action
+     * method.
+     * @var string
+     */
+    protected $defaultModelBinderClass;
+
 
     /**
      * Get an instance of the Redirect object that is setup with this controller as its base URL.
@@ -86,7 +94,7 @@ class Controller
     }
 
     /**
-     * Undocumented function
+     * Set the action method to be executed by this controller.
      *
      * @param string $actionMethod 
      * @return void
@@ -96,18 +104,40 @@ class Controller
         $this->actionMethod = $actionMethod;
     }
 
-    public function setActionParameters($actionParameters) : void
+    /**
+     * Set the parameters to be passed to the action method.
+     *
+     * @param array $actionParameters
+     */
+    public function setActionParameters(array $actionParameters) : void
     {
         $this->actionParameters = $actionParameters;
     }
 
+    /**
+     * Get the action method selected to be executed for this controller.
+     * @return string
+     */
     public function getActionMethod() : string
     {
         return $this->actionMethod;
     }
 
+    /**
+     * Get the parameters to be passed to the action method.
+     * @return array
+     */
     public function getActionParameters() : array
     {
         return $this->actionParameters;
+    }
+
+    /**
+     * Return the default model binder class for this controller if any.
+     * @return string
+     */
+    public function getDefaultModelBinderClass()
+    {
+        return $this->defaultModelBinderClass;
     }
 }
