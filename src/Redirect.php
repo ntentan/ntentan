@@ -30,15 +30,26 @@ class Redirect
         $this->url = Input::get("redirect") ?? $url ;
     }
 
+    /**
+     * Sets the header to redirect and returns a message to the user.
+     *
+     * @return string
+     */
     public function __toString()
     {
         header("Location: {$this->url}");
         return "Redirecting to {$this->url} ...";
     }
 
+    /**
+     * For redirect initialized with a controller url, this method modifies redirect to an action.
+     *
+     * @param $action
+     * @return $this
+     */
     public function toAction($action)
     {
-        $this->url .= "/{$action}";
+        $this->url .= ($this->url[-1] === '/' ? '' : '/') . "{$action}";
         return $this;
     }
 }

@@ -57,7 +57,7 @@ class NestedModelBinder implements ModelBinderInterface
     public function bind(Controller $controller, $type, $name, $instance = null)
     {
         if (!is_a($instance, '\ntentan\Model')) {
-            return false;
+            return $instance;
         }
 
         $fieldDescriptions = $instance->getDescription()->getFields();

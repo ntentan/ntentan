@@ -19,6 +19,7 @@ class DefaultModelBinder implements ModelBinderInterface
     /**
      *
      * @param \ntentan\Model $object
+     * @return array
      */
     private function getModelFields($object)
     {

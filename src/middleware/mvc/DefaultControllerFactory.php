@@ -21,7 +21,7 @@ class DefaultControllerFactory implements ControllerFactoryInterface
      * A container used as a service container for the controller execution phase.
      * @var Container
      */
-    private $container;
+    private $serviceContainer;
 
     /**
      * An instance of the ModelBinderRegistry that holds model binders for all types.
@@ -34,8 +34,8 @@ class DefaultControllerFactory implements ControllerFactoryInterface
      */
     public function __construct()
     {
-        $this->container = new Container();
-        $this->setupBindings($this->container);
+        $this->serviceContainer = new Container();
+        $this->setupBindings($this->serviceContainer);
     }
 
     /**
@@ -59,7 +59,7 @@ class DefaultControllerFactory implements ControllerFactoryInterface
                 $instance = null;
                 $typeName = $type->getName();
                 if($binder->requiresInstance()) {
-                    $instance = $this->container->resolve($typeName);
+                    $instance = $this->serviceContainer->resolve($typeName);
                 }
                 $invokeParameters[] = $binder->bind($controller, $typeName, $methodParameter->name, $instance);
             } else {
@@ -125,11 +125,11 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         $context = Context::getInstance();
 
         if (class_exists($controller)) {
-            $controllerInstance = $this->container->resolve($controller);
+            $controllerInstance = $this->serviceContainer->resolve($controller);
         } else {
             $controllerClassName = sprintf('\%s\controllers\%sController', $context->getNamespace(), Text::ucamelize($controller));
             $context->setParameter('controller_path', $context->getUrl($controller));
-            $controllerInstance = $this->container->resolve($controllerClassName);
+            $controllerInstance = $this->serviceContainer->resolve($controllerClassName);
         }
         return $controllerInstance;
     }
