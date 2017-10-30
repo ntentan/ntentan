@@ -19,22 +19,23 @@ class Model extends RecordWrapper implements \Serializable
     {
         return nibii\ORMContext::getInstance()->load($name);
     }
-    
+
     /**
      * Create a new instance of this Model
      * @return \ntentan\nibii\RecordWrapper
      */
-    public static function createNew() {
+    public static function createNew()
+    {
         $class = get_called_class();
         $instance = new $class();
         $instance->initialize();
         return $instance;
-    }    
-    
-    public static function __callStatic($name, $arguments) 
+    }
+
+    public static function __callStatic($name, $arguments)
     {
         return call_user_func_array([self::createNew(), $name], $arguments);
-    }    
+    }
 
     /**
      * Get a descriptive name for the model.
@@ -64,7 +65,7 @@ class Model extends RecordWrapper implements \Serializable
     {
         return $this->getAdapter()->getDriver();
     }
-    
+
     public function serialize()
     {
         return json_encode([
@@ -88,13 +89,13 @@ class Model extends RecordWrapper implements \Serializable
         $this->manyHaveMany = $unserialized['manyHaveMany'];
         $this->initialize();
     }
-    
-    public function count()
+
+    public function count($query = null)
     {
-        if(isset($this) && $this instanceof self) {
-            return parent::count();
+        if (isset($this) && $this instanceof self) {
+            return parent::count($query);
         } else {
-            return self::__callStatic('count', []);
+            return self::__callStatic('count', [$query]);
         }
     }
 
