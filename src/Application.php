@@ -107,6 +107,7 @@ class Application
         $this->sessionContainerFactory->createSessionContainer();
         $route = $this->router->route(substr(parse_url(Input::server('REQUEST_URI'), PHP_URL_PATH), 1), $this->prefix);
         $this->context->setParameter('route', $route['route']);
+        $this->context->setParameter('route_parameters', $route['parameters']);
         $pipeline = $this->buildPipeline($route['description']['parameters']['pipeline'] ?? $this->pipeline);
         echo $this->runner->run($pipeline, $route);
     }    

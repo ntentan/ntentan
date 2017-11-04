@@ -5,7 +5,6 @@ namespace ntentan\controllers\model_binders;
 use ntentan\utils\Input;
 use ntentan\Controller;
 use ntentan\controllers\ModelBinderInterface;
-use ntentan\panie\Container;
 
 /**
  * This class

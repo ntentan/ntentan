@@ -125,6 +125,11 @@ class View
         }
     }
 
+    public function get($key)
+    {
+        return $this->variables[$key];
+    }
+
     /**
      * Render the view to a string whenever this view object is used as a string.
      * 

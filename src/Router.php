@@ -30,23 +30,24 @@ class Router
 
     /**
      * Invoke the router to load a given resource.
+     *
      * @param string $route
+     * @return array
      * @throws exceptions\RouteNotAvailableException
      */
     public function route($route, $prefix = null)
     {
         $this->route = substr(explode('?', $route)[0], strlen($prefix));
-        $routeName = '';
         $parameters = [];
 
         // Go through predefined routes till a match is found
-        foreach ($this->routes as $routeName => $routeDescription) {
+        foreach ($this->routes as $index => $routeDescription) {
             $parameters = $this->match($this->route, $routeDescription);
             if ($parameters !== false) {
                 return [
                     'route' => $this->route,
                     'parameters' => $parameters,
-                    'description' => $this->routes[$routeName]
+                    'description' => $routeDescription
                 ];
             }
         }
@@ -84,42 +85,35 @@ class Router
         return $value;
     }
 
-    public function mapRoute($name, $pattern, $parameters = [])
+    private function createRoute($name, $pattern, $parameters)
     {
         // Generate a PCRE regular expression from pattern
-        $variables;
+        $variables = null;
         $regexp = preg_replace_callback(
-                "/{(?<prefix>\*|\#)?(?<name>[a-z_][a-zA-Z0-9\_]*)}/", function ($matches) use (&$variables) {
-                    $variables[] = $matches['name'];
-                    return sprintf(
-                    "(?<{$matches['name']}%s>[a-z0-9_.~:#[\]@!$&'()*+,;=%s\s]+)?", $matches['prefix'] == '#' ? '____array' : null, $matches['prefix'] != '' ? "\-/_" : null
+            "/{(?<prefix>\*|\#)?(?<name>[a-z_][a-zA-Z0-9\_]*)}/", function ($matches) use (&$variables) {
+            $variables[] = $matches['name'];
+            return sprintf(
+                "(?<{$matches['name']}%s>[a-z0-9_.~:#[\]@!$&'()*+,;=%s\s]+)?", $matches['prefix'] == '#' ? '____array' : null, $matches['prefix'] != '' ? "\-/_" : null
             );
-                }, str_replace('/', '(/)?', $pattern)
+        }, str_replace('/', '(/)?', $pattern)
         );
 
-        $routeDetails = [
+        return [
             'name' => $name,
             'pattern' => $pattern,
             'regexp' => $regexp,
             'parameters' => $parameters,
             'variables' => $variables
         ];
-
-        $this->routes[$name] = $routeDetails;
     }
 
-    public function getRoute()
+    public function appendRoute($name, $pattern, $parameters = [])
     {
-        return $this->route;
+        $this->routes[] = $this->createRoute($name, $pattern, $parameters);
     }
 
-    public function getRouteDefinition($routeName)
+    public function prependRoute($name, $pattern, $parameters = [])
     {
-        return $this->routes[$routeName];
-    }
-
-    public function registerLoader($tag, $class, $direction = 'append')
-    {
-        $this->register[$tag] = $class;
+        array_unshift($this->routes, $this->createRoute($name, $pattern, $parameters));
     }
 }

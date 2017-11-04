@@ -8,7 +8,7 @@ use ntentan\honam\TemplateEngine;
 use ntentan\panie\Container;
 
 /**
- * Creates an instance of \ntentan\View and binds it to parameters in action methods.
+ * Creates an instance of the View class and sets the appropriate template and layouts for binding in action methods.
  * 
  * @author ekow
  */

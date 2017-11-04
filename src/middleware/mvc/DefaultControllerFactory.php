@@ -126,6 +126,10 @@ class DefaultControllerFactory implements ControllerFactoryInterface
 
         if (class_exists($controller)) {
             $controllerInstance = $this->serviceContainer->resolve($controller);
+            $context->setParameter(
+                'controller_path',
+                explode($parameters['action'], $context->getParameter('route'))[0] . '/'
+            );
         } else {
             $controllerClassName = sprintf('\%s\controllers\%sController', $context->getNamespace(), Text::ucamelize($controller));
             $context->setParameter('controller_path', $context->getUrl($controller));
