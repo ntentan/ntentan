@@ -84,9 +84,9 @@ class DefaultControllerFactory implements ControllerFactoryInterface
     {
         $context = Context::getInstance();
         $reflectionClass = new \ReflectionClass($controller);
-        $className = $reflectionClass->getShortName();
-        
-        $getMethods = function () use ($context, $reflectionClass, $controller) {
+        $className = $reflectionClass->getName();
+
+        $getMethods = function () use ($context, $reflectionClass, $controller, $className) {
             $methods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
             $results = [];
             foreach ($methods as $method) {
@@ -96,6 +96,9 @@ class DefaultControllerFactory implements ControllerFactoryInterface
                 }
                 $docComments = $this->parseDocComment($method->getDocComment());
                 $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
+                if(isset($results[$keyName]) && $method->class != $className) {
+                    continue;
+                }
                 $results[$keyName] = [
                     'name' => $method->getName(),
                     'binder' => $docComments['binder']

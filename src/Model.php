@@ -3,6 +3,7 @@
 namespace ntentan;
 
 use ntentan\nibii\RecordWrapper;
+use ntentan\atiaa\Driver;
 
 /**
  * An extension of the nibii\RecordWrapper which contains specific Ntentan
@@ -61,6 +62,9 @@ class Model extends RecordWrapper implements \Serializable
         return "{$dbStore['quoted_table']}";
     }
 
+    /**
+     * @return Driver
+     */
     public function getDriver()
     {
         return $this->getAdapter()->getDriver();
