@@ -127,7 +127,7 @@ class View
 
     public function get($key)
     {
-        return $this->variables[$key];
+        return $this->variables[$key] ?? null;
     }
 
     /**
