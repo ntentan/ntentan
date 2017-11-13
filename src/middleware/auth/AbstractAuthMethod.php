@@ -16,7 +16,7 @@ abstract class AbstractAuthMethod
     {
         $users = Model::load($this->parameters->get('users_model', 'users'));
         $usernameField = $this->parameters->get('username_field', "username");
-        $passwordField = $this->parameters->get('password_field', "password");        
+        $passwordField = $this->parameters->get('password_field', "password");
         $result = $users->filter("$usernameField = ?", $username)->fetchFirst();
         $passwordCrypt = $this->parameters->get(
             'password_crypt_function',

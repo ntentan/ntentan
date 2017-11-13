@@ -38,7 +38,12 @@ class Application
 
     /**
      *
-     * @param type $context
+     * @param Router $router
+     * @param Config $config
+     * @param PipelineRunner $runner
+     * @param Cache $cache
+     * @param SessionContainerFactory $sessionContainerFactory
+     * @param string $namespace
      */
     public final function __construct(Router $router, Config $config, PipelineRunner $runner, Cache $cache, SessionContainerFactory $sessionContainerFactory, string $namespace)
     {

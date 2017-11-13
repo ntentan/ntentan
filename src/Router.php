@@ -2,6 +2,8 @@
 
 namespace ntentan;
 
+use ntentan\exceptions\RouteExistsException;
+
 /**
  * Provides default routing logic that loads controllers based on URL requests
  * passed to the framework.
@@ -29,6 +31,12 @@ class Router
     private $route;
 
     /**
+     * Names of all routes added to the routing table.
+     * @var array
+     */
+    private $routeOrder = [];
+
+    /**
      * Invoke the router to load a given resource.
      *
      * @param string $route
@@ -41,7 +49,8 @@ class Router
         $parameters = [];
 
         // Go through predefined routes till a match is found
-        foreach ($this->routes as $index => $routeDescription) {
+        foreach ($this->routeOrder as $routeName) {
+            $routeDescription = $this->routes[$routeName];
             $parameters = $this->match($this->route, $routeDescription);
             if ($parameters !== false) {
                 return [
@@ -89,6 +98,9 @@ class Router
     {
         // Generate a PCRE regular expression from pattern
         $variables = null;
+        if(isset($this->routes[$name])) {
+            throw new RouteExistsException("A route named '$name' already exists");
+        }
         $regexp = preg_replace_callback(
             "/{(?<prefix>\*|\#)?(?<name>[a-z_][a-zA-Z0-9\_]*)}/", function ($matches) use (&$variables) {
             $variables[] = $matches['name'];
@@ -98,7 +110,7 @@ class Router
         }, str_replace('/', '(/)?', $pattern)
         );
 
-        return [
+        $this->routes[$name] = [
             'name' => $name,
             'pattern' => $pattern,
             'regexp' => $regexp,
@@ -109,11 +121,18 @@ class Router
 
     public function appendRoute($name, $pattern, $parameters = [])
     {
-        $this->routes[] = $this->createRoute($name, $pattern, $parameters);
+        $this->createRoute($name, $pattern, $parameters);
+        $this->routeOrder[] = $name;
     }
 
     public function prependRoute($name, $pattern, $parameters = [])
     {
-        array_unshift($this->routes, $this->createRoute($name, $pattern, $parameters));
+        $this->createRoute($name, $pattern, $parameters);
+        array_unshift($this->routeOrder, $name);
+    }
+
+    public function &getRoute($name)
+    {
+        return $this->routes[$name];
     }
 }

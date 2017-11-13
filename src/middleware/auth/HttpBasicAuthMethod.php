@@ -7,7 +7,7 @@ use ntentan\Context;
 
 class HttpBasicAuthMethod extends AbstractAuthMethod
 {
-    public function login(Context $context, $route)
+    public function login($route)
     {
         if (!isset($_SERVER['PHP_AUTH_USER'])) {
             header('WWW-Authenticate: Basic realm="Protected"');

@@ -102,5 +102,4 @@ class Model extends RecordWrapper implements \Serializable
             return self::__callStatic('count', [$query]);
         }
     }
-
 }
