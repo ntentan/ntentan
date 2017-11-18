@@ -21,7 +21,7 @@ class MvcModelFactory implements ModelFactoryInterface
     {
         $class = new \ReflectionClass($instance);
         $nameParts = explode("\\", $class->getName());
-        return \ntentan\utils\Text::deCamelize(end($nameParts));
+        return Text::deCamelize(end($nameParts));
     }
     
     public function getJunctionClassName($classA, $classB)
@@ -43,5 +43,11 @@ class MvcModelFactory implements ModelFactoryInterface
         $joinerParts[] = implode('', $class);
 
         return implode('\\', $joinerParts);
-    }    
+    }
+
+    public function getClassName($model)
+    {
+        $namespace = Context::getInstance()->getNamespace();
+        return "\\{$namespace}\\models\\" . Text::ucamelize($model);
+    }
 }
