@@ -106,11 +106,11 @@ class Context
         self::$instance = $context;
         return $context;
     }
-    
+
     /**
      * Return the static instance of the context created during initialization.
-     * 
      * @return Context
+     * @throws exceptions\NtentanException
      */
     public static function getInstance()
     {
@@ -123,7 +123,6 @@ class Context
     /**
      * Constructor for the context
      *
-     * @param panie\Container $container
      * @param string $namespace
      */
     private function __construct($namespace)

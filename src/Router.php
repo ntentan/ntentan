@@ -5,8 +5,7 @@ namespace ntentan;
 use ntentan\exceptions\RouteExistsException;
 
 /**
- * Provides default routing logic that loads controllers based on URL requests
- * passed to the framework.
+ * Provides default routing logic that loads controllers based on URLs passed to the framework.
  */
 class Router
 {
@@ -37,11 +36,11 @@ class Router
     private $routeOrder = [];
 
     /**
-     * Invoke the router to load a given resource.
+     * Invoke the router to load a route.
      *
      * @param string $route
+     * @param string $prefix
      * @return array
-     * @throws exceptions\RouteNotAvailableException
      */
     public function route($route, $prefix = null)
     {
@@ -55,7 +54,7 @@ class Router
             if ($parameters !== false) {
                 return [
                     'route' => $this->route,
-                    'parameters' => $parameters,
+                    'parameters' => $this->fillInDefaultParameters($routeDescription, $parameters),
                     'description' => $routeDescription
                 ];
             }
@@ -65,6 +64,16 @@ class Router
             'parameters' => $parameters,
             'description' => $this->routes['default']
         ];
+    }
+
+    private function fillInDefaultParameters($routeDescription, $parameters)
+    {
+        foreach ($routeDescription['parameters']['default'] as $parameter => $value) {
+            if (!isset($parameters[$parameter])) {
+                $parameters[$parameter] = $value;
+            }
+        }
+        return $parameters;
     }
 
     private function match($route, $description)
@@ -96,16 +105,17 @@ class Router
 
     private function createRoute($name, $pattern, $parameters)
     {
-        // Generate a PCRE regular expression from pattern
         $variables = null;
         if(isset($this->routes[$name])) {
             throw new RouteExistsException("A route named '$name' already exists");
         }
+        // Generate a PCRE regular expression from pattern
         $regexp = preg_replace_callback(
             "/{(?<prefix>\*|\#)?(?<name>[a-z_][a-zA-Z0-9\_]*)}/", function ($matches) use (&$variables) {
             $variables[] = $matches['name'];
             return sprintf(
-                "(?<{$matches['name']}%s>[a-z0-9_.~:#[\]@!$&'()*+,;=%s\s]+)?", $matches['prefix'] == '#' ? '____array' : null, $matches['prefix'] != '' ? "\-/_" : null
+                "(?<{$matches['name']}%s>[a-z0-9_.~:#[\]@!$&'()*+,;=%s\s]+)?",
+                $matches['prefix'] == '#' ? '____array' : null, $matches['prefix'] != '' ? "\-/_" : null
             );
         }, str_replace('/', '(/)?', $pattern)
         );
@@ -131,6 +141,13 @@ class Router
         array_unshift($this->routeOrder, $name);
     }
 
+    /**
+     * Get the details for a particular route.
+     * Details can be returned by reference so modifications can be made before the router runs.
+     *
+     * @param $name
+     * @return mixed
+     */
     public function &getRoute($name)
     {
         return $this->routes[$name];

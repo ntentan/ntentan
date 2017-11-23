@@ -80,38 +80,44 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         return $attributes;
     }
 
+    private function getListOfMethods($controller, $className, $methods)
+    {
+        $context = Context::getInstance();
+        $results = [];
+        foreach ($methods as $method) {
+            $methodName = $method->getName();
+            if (substr($methodName, 0, 2) == '__') {
+                continue;
+            }
+            $docComments = $this->parseDocComment($method->getDocComment());
+            $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
+            if(isset($results[$keyName]) && $method->class != $className) {
+                continue;
+            }
+            $results[$keyName] = [
+                'name' => $method->getName(),
+                'binder' => $docComments['binder']
+                    ?? $controller->getDefaultModelBinderClass()
+                    ?? $context->getModelBinderRegistry()->getDefaultBinderClass(),
+                'binder_params' => $docComments['binder.params'] ?? ''
+            ];
+        }
+        return $results;
+    }
+
     private function getMethod(Controller $controller, $path)
     {
         $context = Context::getInstance();
         $reflectionClass = new \ReflectionClass($controller);
         $className = $reflectionClass->getName();
 
-        $getMethods = function () use ($context, $reflectionClass, $controller, $className) {
-            $methods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
-            $results = [];
-            foreach ($methods as $method) {
-                $methodName = $method->getName();
-                if (substr($methodName, 0, 2) == '__') {
-                    continue;
-                }
-                $docComments = $this->parseDocComment($method->getDocComment());
-                $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
-                if(isset($results[$keyName]) && $method->class != $className) {
-                    continue;
-                }
-                $results[$keyName] = [
-                    'name' => $method->getName(),
-                    'binder' => $docComments['binder']
-                        ?? $controller->getDefaultModelBinderClass()
-                        ?? $context->getModelBinderRegistry()->getDefaultBinderClass(),
-                    'binder_params' => $docComments['binder.params'] ?? ''
-                ];
-            }
-            return $results;
-        };
-        
         /* @var $methods array */
-        $methods = $context->getCache()->read("controller.{$className}.methods", $getMethods);
+        $methods = $context->getCache()->read("controller.{$className}.methods",
+            function() use ($controller, $reflectionClass, $className){
+                $methods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
+                return $this->getListOfMethods($controller, $className, $methods);
+            }
+        );
 
         if (isset($methods[$path . Input::server('REQUEST_METHOD')])) {
             return $methods[$path . Input::server('REQUEST_METHOD')];
