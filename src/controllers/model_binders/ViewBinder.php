@@ -5,7 +5,6 @@ namespace ntentan\controllers\model_binders;
 use ntentan\controllers\ModelBinderInterface;
 use ntentan\Controller;
 use ntentan\honam\TemplateEngine;
-use ntentan\panie\Container;
 
 /**
  * Creates an instance of the View class and sets the appropriate template and layouts for binding in action methods.

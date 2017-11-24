@@ -79,7 +79,7 @@ class Context
      * A static instance of this context. 
      * Used in situations where the context is accessed statically.
      * 
-     * @var ntentan\Context
+     * @var Context
      */
     private static $instance;
 
@@ -89,12 +89,12 @@ class Context
 
     /**
      * Create an instance of the context.
-     * 
+     *
      * @param string $namespace The namespace for the application
-     * @param string $applicationClass The name of an application class to be setup with the context.
-     * @param \ntentan\panie\Container $container A dependency injection container to use.
-     * 
+     * @param $config
+     * @param $cache
      * @return Context New context
+     *
      */
     public static function initialize($namespace, $config, $cache)
     {

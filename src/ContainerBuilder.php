@@ -10,7 +10,6 @@ use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
 use ntentan\nibii\interfaces\ModelFactoryInterface;
 use ntentan\panie\Container;
 use ntentan\interfaces\ContainerBuilderInterface;
-use ntentan\Application;
 use ntentan\config\Config;
 use ntentan\utils\Text;
 use ntentan\nibii\interfaces\ValidatorFactoryInterface;
@@ -34,9 +33,6 @@ class ContainerBuilder implements ContainerBuilderInterface
     {
         $container = new Container();
         $container->setup([
-            ModelClassResolverInterface::class => ClassNameResolver::class,
-            ModelJoinerInterface::class => ClassNameResolver::class,
-            TableNameResolverInterface::class => nibii\Resolver::class,
             DriverFactory::class => [
                 function($container) {
                     $config = $container->resolve(Config::class);
