@@ -2,6 +2,7 @@
 
 namespace ntentan;
 
+use ntentan\interfaces\RenderableInterface;
 use ntentan\utils\Input;
 
 /**
@@ -12,7 +13,7 @@ use ntentan\utils\Input;
  *
  * @author ekow
  */
-class Redirect
+class Redirect implements RenderableInterface
 {
     /**
      * URL to redirect to.
