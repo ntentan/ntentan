@@ -31,15 +31,16 @@
 
 namespace ntentan\exceptions;
 
+use ntentan\Context;
 use ntentan\Router;
 
 class RouteNotAvailableException extends NtentanException
 {
-    public function __construct($message, $route)
+    public function __construct($message, $route = null)
     {
         if ($route == '') {
-            $route = Router::getRoute();
+            $route = Context::getInstance()->getParameter('route');
         }
-        parent::__construct("Route [$route] is currently not available. Router says: $message");
+        parent::__construct("Route [$route] is currently not available. App says: [$message]");
     }
 }
