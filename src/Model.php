@@ -8,13 +8,17 @@ use ntentan\atiaa\Driver;
 /**
  * An extension of the nibii\RecordWrapper which contains specific Ntentan
  * extensions.
+ *
+ * @method static fetch
  */
 class Model extends RecordWrapper implements \Serializable
 {
     /**
      * Loads a model described by a string.
      * @param string $name
-     * @return \ntentan\Model
+     * @return self
+     * @throws nibii\NibiiException
+     * @todo Rewrite this so it works on its own here
      */
     public static function load($name)
     {
