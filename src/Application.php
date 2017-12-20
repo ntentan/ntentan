@@ -34,6 +34,10 @@ class Application
     private $cache;
     private $sessionContainerFactory;
     protected $modelBinderRegistry;
+
+    /**
+     * @var MiddlewareFactoryRegistry
+     */
     protected $middlewareFactoryRegistry;
 
     /**
