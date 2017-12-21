@@ -33,6 +33,10 @@ class Application
     private $context;
     private $cache;
     private $sessionContainerFactory;
+
+    /**
+     * @var ModelBinderRegistry
+     */
     protected $modelBinderRegistry;
 
     /**

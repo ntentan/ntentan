@@ -29,11 +29,12 @@ use ntentan\middleware\MvcMiddlewareFactory;
  */
 class ContainerBuilder implements ContainerBuilderInterface
 {
-    private $defaultSetup;
+    private $container;
 
     public function __construct()
     {
-        $this->defaultSetup = [
+        $this->container =new Container();
+        $this->container->setup([
             ModelClassResolverInterface::class => ClassNameResolver::class,
             ModelJoinerInterface::class => ClassNameResolver::class,
             TableNameResolverInterface::class => nibii\Resolver::class,
@@ -86,21 +87,27 @@ class ContainerBuilder implements ContainerBuilderInterface
                 },
                 'singleton' => true
             ]
-        ];
+        ]);
+    }
+
+    public function addBindings(array $bindings)
+    {
+        $this->container->setup($bindings);
+        return $this;
     }
 
     public function getContainer() 
     {
-        $container = new Container();
-        $container->setup($this->defaultSetup);
-        return $container;        
+        return $this->container;
     }
 
     public function registerMiddleWare($factory, $middleware)
     {
-        $this->defaultSetup[MiddlewareFactoryRegistry::class]['calls'][]= [
-            'register' => ['middlewareFactory' => $factory, 'name' => $middleware]
-        ];
+        $this->container->setup([
+            MiddlewareFactoryRegistry::class => [
+            'calls' => [['register' => ['middlewareFactory' => $factory, 'name' => $middleware]]]
+            ]
+        ]);
         return $this;
     }
 }

@@ -10,6 +10,7 @@ use ntentan\utils\Text;
 use ntentan\Controller;
 use ntentan\utils\Input;
 use ntentan\exceptions\ControllerActionNotFoundException;
+use ntentan\View;
 
 /**
  * Class DefaultControllerFactory
