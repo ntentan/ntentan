@@ -56,13 +56,13 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         } else {
             $type = $methodParameter->getClass();
             if ($type !== null) {
-                $binder = $this->modelBinderRegistry->get($type->getName());
+                $binder = $this->serviceContainer->resolve($this->modelBinderRegistry->get($type->getName()));
                 $instance = null;
                 $typeName = $type->getName();
                 if($binder->requiresInstance()) {
                     $instance = $this->serviceContainer->resolve($typeName);
                 }
-                $invokeParameters[] = $binder->bind($controller, $typeName, $methodParameter->name, $instance);
+                $invokeParameters[] = $binder->bind($controller, $typeName, $methodParameter->name, $params, $instance);
             } else {
                 $invokeParameters[] = $methodParameter->isDefaultValueAvailable() ? $methodParameter->getDefaultValue() : null;
             }

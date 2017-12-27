@@ -13,7 +13,7 @@ use ntentan\honam\TemplateEngine;
  */
 class ViewBinder implements ModelBinderInterface
 {
-    public function bind(Controller $controller, $type, $name, $instance=null)
+    public function bind(Controller $controller, string $type, string $name, array $parameters, $instance=null)
     {
         $className = strtolower(substr((new \ReflectionClass($controller))->getShortName(), 0, -10));
         $action = $controller->getActionMethod();

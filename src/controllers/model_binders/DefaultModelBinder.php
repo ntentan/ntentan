@@ -36,7 +36,7 @@ class DefaultModelBinder implements ModelBinderInterface
         return $fields;
     }
 
-    public function bind(Controller $controller, $type, $name, $instance = null)
+    public function bind(Controller $controller, string $type, string $name, array $parameters, $instance = null)
     {
         $this->bound = false;
         if (is_a($instance, '\ntentan\Model')) {
@@ -44,7 +44,7 @@ class DefaultModelBinder implements ModelBinderInterface
         } else {
             $fields = $this->getClassFields($instance);
         }
-        $requestData = Input::post() + Input::get();
+        $requestData = Input::post() + Input::get(); //@todo look at using parameters for this
         foreach ($fields as $field) {
             if (isset($requestData[$field])) {
                 $instance->$field = $requestData[$field] == '' ? null : $requestData[$field];
