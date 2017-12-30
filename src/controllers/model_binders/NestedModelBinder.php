@@ -54,7 +54,7 @@ class NestedModelBinder implements ModelBinderInterface
         }
     }
 
-    public function bind(Controller $controller, $type, $name, $instance = null)
+    public function bind(Controller $controller, string $type, string $name, array $parameters, $instance = null)
     {
         if (!is_a($instance, '\ntentan\Model')) {
             return $instance;
