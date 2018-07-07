@@ -78,7 +78,7 @@ class AuthMiddleware extends AbstractMiddleware
         }
 
         $response = $this->getAuthMethod()->login($route);
-        if ($response === true) {
+        if ($response == false) {
             return $this->next($route, $response);
         } else {
             return $response;
