@@ -58,12 +58,12 @@ class ContainerBuilder implements ContainerBuilderInterface
                 'calls' => ['setMiddlewareFactoryRegistry', 'setModelBinderRegistry', 'setDatabaseDriverFactory', 'setOrmFactories']
             ],
 
-            MiddlewareFactoryRegistry::class => [
-                MiddlewareFactoryRegistry::class,
-                'calls' => [
-                    ['register' => ['middlewareFactory' => MvcMiddlewareFactory::class, 'name' => MvcMiddleware::class ]]
-                ]
-            ],
+//            MiddlewareFactoryRegistry::class => [
+//                MiddlewareFactoryRegistry::class,
+//                'calls' => [
+//                    ['register' => ['middlewareFactory' => MvcMiddlewareFactory::class, 'name' => MvcMiddleware::class ]]
+//                ]
+//            ],
 
             //
             ControllerFactoryInterface::class => DefaultControllerFactory::class,
@@ -88,6 +88,7 @@ class ContainerBuilder implements ContainerBuilderInterface
                 'singleton' => true
             ]
         ]);
+        $this->registerMiddleWare(MvcMiddlewareFactory::class, MvcMiddleware::class);
     }
 
     public function addBindings(array $bindings)
