@@ -106,7 +106,7 @@ class ContainerBuilder implements ContainerBuilderInterface
     {
         $this->container->setup([
             MiddlewareFactoryRegistry::class => [
-            'calls' => [['register' => ['middlewareFactory' => $factory, 'name' => $middleware]]]
+            'calls' => ['register' => ['middlewareFactory' => $factory, 'name' => $middleware]]
             ]
         ]);
         return $this;
