@@ -5,12 +5,12 @@
     "license" : "MIT",
     "require": {
         "php": ">=7.1.0",
-        "ntentan/honam" : "dev-dev",
+        "ntentan/honam" : "@stable",
         "monolog/monolog" : "@stable",
-        "ntentan/nibii" : "dev-dev",
-        "ntentan/config": "dev-dev",
-        "ntentan/panie": "dev-dev",
-        "ntentan/kaikai": "dev-dev"
+        "ntentan/nibii" : "@stable",
+        "ntentan/config": "@stable",
+        "ntentan/panie": "@stable",
+        "ntentan/kaikai": "@stable"
     },
     "require-dev": {
         "phpunit/phpunit" : "@stable"
@@ -26,6 +26,5 @@
         "psr-4": {
             "ntentan\\": "src/"
         }
-    },
-    "minimum-stability": "dev"
+    }
 }
