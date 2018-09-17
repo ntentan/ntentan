@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ekow
- * Date: 9/7/17
- * Time: 8:42 AM
- */
 
 namespace ntentan\sessions;
 
@@ -20,9 +14,18 @@ class SessionContainerFactory
         $this->config = $config->get('app.sessions');
     }
 
+    /**
+     * Create and return an instance of the custom session container if required.
+     */
     public function createSessionContainer()
     {
-        $sessionContainerType = $this->config['container'] ?? 'default';
+        // Check and start a default session if a custom session container is not supplied
+        if(!isset($this->config['container'])) {
+            session_start();
+            return;
+        }
+        // Create an instance of the session container. Session containers are responsible for starting the session.
+        $sessionContainerType = $this->config['container'];
         $className = '\ntentan\sessions\containers\\' . Text::ucamelize($sessionContainerType) . 'SessionContainer';
         $sessionContainer = new $className($this->config);
         return $sessionContainer;

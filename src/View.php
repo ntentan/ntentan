@@ -1,6 +1,8 @@
 <?php
 
 namespace ntentan;
+use ntentan\interfaces\RenderableInterface;
+use ntentan\interfaces\ThemableInterface;
 
 /**
  * A wrapper around the honam template engine system that acts as a view class.
@@ -10,7 +12,7 @@ namespace ntentan;
  *
  * @author ekow
  */
-class View
+class View implements RenderableInterface, ThemableInterface
 {
     /**
      * Description of the default layout
@@ -84,6 +86,16 @@ class View
     public function setLayout($layout)
     {
         $this->layout = $layout;
+    }
+
+    /**
+     * Get the current layout assigned to this view.
+     *
+     * @return string
+     */
+    public function getLayout()
+    {
+        return $this->layout;
     }
 
     /**

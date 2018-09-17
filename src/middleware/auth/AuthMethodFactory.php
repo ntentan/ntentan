@@ -2,6 +2,8 @@
 
 namespace ntentan\middleware\auth;
 
+use ntentan\Parameters;
+
 class AuthMethodFactory
 {
     private $authMethods = [
@@ -9,7 +11,7 @@ class AuthMethodFactory
         'http_basic' => HttpBasicAuthMethod::class
     ];
     
-    public function createAuthMethod($parameters)
+    public function createAuthMethod(Parameters $parameters) : AbstractAuthMethod
     {
         $authMethodType = $parameters->get('auth_method', 'http_request');
         if (!isset($this->authMethods[$authMethodType])) {
@@ -17,5 +19,10 @@ class AuthMethodFactory
         }        
         $class = $this->authMethods[$authMethodType];
         return new $class();
+    }
+
+    public function registerAuthMethod(string $name, string $class) : void
+    {
+        $this->authMethods[$name] = $class;
     }
 }

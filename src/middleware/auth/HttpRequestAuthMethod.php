@@ -33,8 +33,7 @@ class HttpRequestAuthMethod extends AbstractAuthMethod
             if ($this->authLocalPassword($username, Input::post($passwordField))) {
                 return $context->getRedirect($parameters->get('success_redirect', $context->getUrl('/')));
             } else {
-                //$view = $context->getContainer()->resolve(View::class);
-                //$view->set(['auth_message' => $this->message, 'username' => $username]);
+                return false;
             }
         }
         
@@ -42,7 +41,5 @@ class HttpRequestAuthMethod extends AbstractAuthMethod
         if(!$this->isExcluded($route['route'], $excluded, $context)) {
             return $context->getRedirect($parameters->get('login_route', '/login'));
         }
-        
-        return true;
     }
 }

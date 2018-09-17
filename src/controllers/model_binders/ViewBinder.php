@@ -5,7 +5,6 @@ namespace ntentan\controllers\model_binders;
 use ntentan\controllers\ModelBinderInterface;
 use ntentan\Controller;
 use ntentan\honam\TemplateEngine;
-use ntentan\panie\Container;
 
 /**
  * Creates an instance of the View class and sets the appropriate template and layouts for binding in action methods.
@@ -14,7 +13,7 @@ use ntentan\panie\Container;
  */
 class ViewBinder implements ModelBinderInterface
 {
-    public function bind(Controller $controller, $type, $name, $instance=null)
+    public function bind(Controller $controller, string $type, string $name, array $parameters, $instance=null)
     {
         $className = strtolower(substr((new \ReflectionClass($controller))->getShortName(), 0, -10));
         $action = $controller->getActionMethod();

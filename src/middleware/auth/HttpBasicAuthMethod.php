@@ -14,13 +14,10 @@ class HttpBasicAuthMethod extends AbstractAuthMethod
             header('HTTP/1.0 401 Unauthorized');
             return "Failed to authenticate";
         } else {
-            if ($this->authLocalPassword(
-                filter_var($_SERVER['PHP_AUTH_USER']),
-                filter_var($_SERVER['PHP_AUTH_PW'])
-            )) {
-                return true;
+            if ($this->authLocalPassword(filter_var($_SERVER['PHP_AUTH_USER']), filter_var($_SERVER['PHP_AUTH_PW']))) {
+                return $context->getRedirect($parameters->get('success_redirect', $context->getUrl('/')));
             } else {
-                return false;
+                return "Failed to authenticate";
             }
         }
     }

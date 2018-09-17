@@ -10,7 +10,6 @@ use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
 use ntentan\nibii\interfaces\ModelFactoryInterface;
 use ntentan\panie\Container;
 use ntentan\interfaces\ContainerBuilderInterface;
-use ntentan\Application;
 use ntentan\config\Config;
 use ntentan\utils\Text;
 use ntentan\nibii\interfaces\ValidatorFactoryInterface;
@@ -30,10 +29,12 @@ use ntentan\middleware\MvcMiddlewareFactory;
  */
 class ContainerBuilder implements ContainerBuilderInterface
 {
-    public function getContainer() 
+    private $container;
+
+    public function __construct()
     {
-        $container = new Container();
-        $container->setup([
+        $this->container =new Container();
+        $this->container->setup([
             ModelClassResolverInterface::class => ClassNameResolver::class,
             ModelJoinerInterface::class => ClassNameResolver::class,
             TableNameResolverInterface::class => nibii\Resolver::class,
@@ -56,37 +57,58 @@ class ContainerBuilder implements ContainerBuilderInterface
                 Application::class,
                 'calls' => ['setMiddlewareFactoryRegistry', 'setModelBinderRegistry', 'setDatabaseDriverFactory', 'setOrmFactories']
             ],
-                
-            MiddlewareFactoryRegistry::class => [
-                MiddlewareFactoryRegistry::class, 
-                'calls' => [
-                    'register' => ['middlewareFactory' => MvcMiddlewareFactory::class, 'name' => MvcMiddleware::class ]
-                ]
-            ],
-                
-            // 
+
+//            MiddlewareFactoryRegistry::class => [
+//                MiddlewareFactoryRegistry::class,
+//                'calls' => [
+//                    ['register' => ['middlewareFactory' => MvcMiddlewareFactory::class, 'name' => MvcMiddleware::class ]]
+//                ]
+//            ],
+
+            //
             ControllerFactoryInterface::class => DefaultControllerFactory::class,
-            
+
             // Factory for configuration class
             Config::class => [
                 function(){
                     $config = new Config();
                     $config->readPath('config');
                     return $config;
-                }, 
+                },
                 'singleton' => true
             ],
-                    
+
             // Factory for cache backends
             CacheBackendInterface::class => [
                 function($container){
                     $backend = $container->resolve(Config::class)->get('cache.backend', 'volatile');
                     $classname = '\ntentan\kaikai\backends\\' . Text::ucamelize($backend) . 'Cache';
                     return $container->resolve($classname);
-                }, 
+                },
                 'singleton' => true
             ]
         ]);
-        return $container;        
+        $this->registerMiddleWare(MvcMiddlewareFactory::class, MvcMiddleware::class);
+    }
+
+    public function addBindings(array $bindings)
+    {
+        $this->container->setup($bindings);
+        return $this;
+    }
+
+    public function getContainer() 
+    {
+        return $this->container;
+    }
+
+    public function registerMiddleWare($factory, $middleware)
+    {
+        $this->container->setup([
+            MiddlewareFactoryRegistry::class => [
+            'calls' => ['register' => ['middlewareFactory' => $factory, 'name' => $middleware]]
+            ]
+        ]);
+        return $this;
     }
 }

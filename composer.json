@@ -4,12 +4,13 @@
     "description": "Another PHP application framework.",
     "license" : "MIT",
     "require": {
-        "php": ">=5.4.0",
-        "ntentan/honam" : "0.*",
+        "php": ">=7.1.0",
+        "ntentan/honam" : "@stable",
         "monolog/monolog" : "@stable",
-        "ntentan/nibii" : "0.*",
-        "ntentan/config": "0.*",
-        "ntentan/panie": "0.*"
+        "ntentan/nibii" : "@stable",
+        "ntentan/config": "@stable",
+        "ntentan/panie": "@stable",
+        "ntentan/kaikai": "@stable"
     },
     "require-dev": {
         "phpunit/phpunit" : "@stable"

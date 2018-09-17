@@ -12,9 +12,9 @@ use ntentan\Controller;
  */
 class UploadedFileBinder implements ModelBinderInterface
 {
-    public function bind(Controller $controller, $type, $name, $instance = null)
+    public function bind(Controller $controller, string $type, string $name, array $parameters, $instance = null)
     {
-        return new UploadedFile($_FILES[$name]);
+        return isset($_FILES[$name]) ? new UploadedFile($_FILES[$name]) : null;
     }
     
     public function requiresInstance() : bool

@@ -31,7 +31,6 @@ class ModelBinderRegistry
 
     public function get($type)
     {
-        $binderClass = $this->binders[$type] ?? $this->defaultBinderClass;
-        return new $binderClass();
+        return $this->binders[$type] ?? $this->defaultBinderClass;
     }
 }

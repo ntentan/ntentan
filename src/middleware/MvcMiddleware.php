@@ -24,32 +24,13 @@ class MvcMiddleware extends AbstractMiddleware
     {
         $this->controllerFactory = $controllerFactory;
     }
-    
-    private function extractRouteParameters($route)
-    {
-        $parameters = $route['parameters'];
-        $routeDescription = $route['description'];
-        foreach ($routeDescription['parameters']['default'] as $parameter => $value) {
-            // Only set the controller on default route, if no route is presented to the router.
-            if ($routeDescription['name'] == 'default' && $route['route'] != '' && $parameter == 'controller') {
-                continue;
-            }
-            if (!isset($parameters[$parameter])) {
-                $parameters[$parameter] = $value;
-            } elseif ($parameters[$parameter] === '') {
-                $parameters[$parameter] = $value;
-            }
-        }        
-        $parameters += Input::get() + Input::post();
-        return $parameters;
-    }
 
     public function run($route, $response)
     {
         TemplateEngine::prependPath('views/shared');
         TemplateEngine::prependPath('views/layouts');
         Helper::setBaseUrl(Context::getInstance()->getUrl(''));
-        $parameters = $this->extractRouteParameters($route);
+        $parameters = $route['parameters'] + Input::get() + Input::post();
         $controller = $this->controllerFactory->createController($parameters);
         return $this->controllerFactory->executeController($controller, $parameters);        
     }    
