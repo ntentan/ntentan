@@ -39,10 +39,9 @@ class DefaultModelBinder implements ModelBinderInterface
     public function bind(Controller $controller, string $type, string $name, array $parameters, $instance = null)
     {
         $this->bound = false;
+        $fields = $this->getClassFields($instance);
         if (is_a($instance, '\ntentan\Model')) {
-            $fields = $this->getModelFields($instance);
-        } else {
-            $fields = $this->getClassFields($instance);
+            $fields = array_merge($fields, $this->getModelFields($instance));
         }
         $requestData = Input::post() + Input::get(); //@todo look at using parameters for this
         foreach ($fields as $field) {

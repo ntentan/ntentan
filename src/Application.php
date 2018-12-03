@@ -5,6 +5,7 @@ namespace ntentan;
 use ntentan\atiaa\DbContext;
 use ntentan\atiaa\DriverFactory;
 use ntentan\controllers\model_binders\DefaultModelBinder;
+use ntentan\controllers\model_binders\RedirectBinder;
 use ntentan\controllers\model_binders\UploadedFileBinder;
 use ntentan\kaikai\Cache;
 use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
@@ -17,6 +18,7 @@ use ntentan\utils\Input;
 use ntentan\controllers\ModelBinderRegistry;
 use ntentan\nibii\interfaces\ValidatorFactoryInterface;
 use ntentan\middleware\MiddlewareFactoryRegistry;
+use ntentan\controllers\model_binders\ViewBinder;
 
 /**
  * Application bootstrapping class.
@@ -89,8 +91,9 @@ class Application
     {
         $this->modelBinderRegistry = $modelBinderRegistry;
         $modelBinderRegistry->setDefaultBinderClass(DefaultModelBinder::class);
-        $modelBinderRegistry->register(View::class, controllers\model_binders\ViewBinder::class);
+        $modelBinderRegistry->register(View::class, ViewBinder::class);
         $modelBinderRegistry->register(UploadedFile::class, UploadedFileBinder::class);
+        $modelBinderRegistry->register(Redirect::class, RedirectBinder::class);
         $this->context->setModelBinderRegistry($modelBinderRegistry);
     }
 
