@@ -44,7 +44,7 @@ class Router
      */
     public function route($route, $prefix = null)
     {
-        $this->route = substr(explode('?', $route)[0], strlen($prefix));
+        $this->route = substr($route, strlen($prefix));
         $parameters = [];
 
         // Go through predefined routes till a match is found
