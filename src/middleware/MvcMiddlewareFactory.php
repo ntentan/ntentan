@@ -11,6 +11,7 @@ namespace ntentan\middleware;
 use ntentan\interfaces\MiddlewareFactoryInterface;
 use ntentan\AbstractMiddleware;
 use ntentan\interfaces\ControllerFactoryInterface;
+use ntentan\honam\Templates;
 
 /**
  * Description of DefaultMiddlewareFactory
@@ -24,15 +25,17 @@ class MvcMiddlewareFactory implements MiddlewareFactoryInterface
      * @var string
      */
     private $controllerFactory;
+    private $templates;
     
-    public function __construct(ControllerFactoryInterface $controllerFactory)
+    public function __construct(ControllerFactoryInterface $controllerFactory, Templates $templates)
     {
         $this->controllerFactory = $controllerFactory;
+        $this->templates = $templates;
     }
     
     public function createMiddleware(array $parameters): AbstractMiddleware
     {
-        $instance = new MvcMiddleware($this->controllerFactory);
+        $instance = new MvcMiddleware($this->controllerFactory, $this->templates);
         $instance->setParameters($parameters);
         return $instance;
     }

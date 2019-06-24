@@ -37,6 +37,8 @@
 
 namespace ntentan;
 
+use ntentan\honam\Templates;
+
 /**
  * A context within which the current request is served.
  * The context holds instances of utility classes that are needed by ntentan in order to serve a request.
@@ -86,6 +88,8 @@ class Context
     private $modelBinderRegistry;
     
     private $prefix;
+
+    private $templates;
 
     /**
      * Create an instance of the context.
@@ -197,5 +201,15 @@ class Context
     public function getConfig()
     {
         return $this->config;
+    }
+
+    public function setTemplates(Templates $templates)
+    {
+        $this->templates = $templates;
+    }
+
+    public function getTemplates()
+    {
+        return $this->templates;
     }
 }
