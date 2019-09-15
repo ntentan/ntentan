@@ -3,6 +3,7 @@
 namespace ntentan\middleware\mvc;
 
 use ntentan\controllers\ModelBinderRegistry;
+use ntentan\exceptions\NtentanException;
 use ntentan\interfaces\ControllerFactoryInterface;
 use ntentan\panie\Container;
 use ntentan\Context;
@@ -132,19 +133,22 @@ class DefaultControllerFactory implements ControllerFactoryInterface
     public function createController(array &$parameters): Controller
     {
         $controller = $parameters['controller'];
+        if($controller == null) {
+            throw new NtentanException("There is no controller specified for this request");
+        }
         $context = Context::getInstance();
 
-        if (class_exists($controller)) {
-            $controllerInstance = $this->serviceContainer->resolve($controller);
-            $context->setParameter(
-                'controller_path',
-                explode($parameters['action'], $context->getParameter('route'))[0] . '/'
-            );
-        } else {
-            $controllerClassName = sprintf('\%s\controllers\%sController', $context->getNamespace(), Text::ucamelize($controller));
-            $context->setParameter('controller_path', $context->getUrl($controller));
-            $controllerInstance = $this->serviceContainer->resolve($controllerClassName);
-        }
+//        if (class_exists($controller)) {
+//            $controllerInstance = $this->serviceContainer->resolve($controller);
+//            $context->setParameter(
+//                'controller_path',
+//                explode($parameters['action'], $context->getParameter('route'))[0] . '/'
+//            );
+//        } else {
+        $controllerClassName = sprintf('\%s\controllers\%sController', $context->getNamespace(), Text::ucamelize($controller));
+        $context->setParameter('controller_path', $context->getUrl($controller));
+        $controllerInstance = $this->serviceContainer->resolve($controllerClassName);
+//        }
         return $controllerInstance;
     }
 

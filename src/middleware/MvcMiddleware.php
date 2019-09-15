@@ -31,7 +31,6 @@ class MvcMiddleware extends AbstractMiddleware
     {
         $this->templates->prependPath('views/shared');
         $this->templates->prependPath('views/layouts');
-        //Helper::setBaseUrl(Context::getInstance()->getUrl(''));
         $parameters = $route['parameters'] + Input::get() + Input::post();
         $controller = $this->controllerFactory->createController($parameters);
         return $this->controllerFactory->executeController($controller, $parameters);        
