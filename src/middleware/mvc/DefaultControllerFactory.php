@@ -137,18 +137,9 @@ class DefaultControllerFactory implements ControllerFactoryInterface
             throw new NtentanException("There is no controller specified for this request");
         }
         $context = Context::getInstance();
-
-//        if (class_exists($controller)) {
-//            $controllerInstance = $this->serviceContainer->resolve($controller);
-//            $context->setParameter(
-//                'controller_path',
-//                explode($parameters['action'], $context->getParameter('route'))[0] . '/'
-//            );
-//        } else {
         $controllerClassName = sprintf('\%s\controllers\%sController', $context->getNamespace(), Text::ucamelize($controller));
         $context->setParameter('controller_path', $context->getUrl($controller));
         $controllerInstance = $this->serviceContainer->resolve($controllerClassName);
-//        }
         return $controllerInstance;
     }
 

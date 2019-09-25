@@ -20,7 +20,7 @@ class View implements RenderableInterface, ThemableInterface
      * 
      * @var string
      */
-    private $layout = 'main.tpl.php';
+    private $layout = 'main';
     
     /**
      * Description of the default template.
