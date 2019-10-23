@@ -60,7 +60,7 @@ class AuthMiddleware extends AbstractMiddleware
 
     private function getAuthMethod()
     {
-        $authMethod = $this->authMethodFactory->createAuthMethod($this->getParameters());
+        $authMethod = $this->authMethodFactory->createAuthMethod($this->getParameters() ?? ['']);
         $authMethod->setParameters($this->getParameters()); // 2 factory
         return $authMethod;
     }

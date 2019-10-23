@@ -4,6 +4,7 @@ namespace ntentan;
 
 use ntentan\atiaa\DriverFactory;
 use ntentan\exceptions\NtentanException;
+use ntentan\honam\factories\SmartyEngineFactory;
 use ntentan\honam\TemplateFileResolver;
 use ntentan\honam\TemplateRenderer;
 use ntentan\honam\Templates;
@@ -74,6 +75,7 @@ class ContainerBuilder implements ContainerBuilderInterface
                     $templateFileResolver = $container->get(TemplateFileResolver::class);
                     $templateRenderer = new TemplateRenderer($engineRegistry, $templateFileResolver);
                     $engineRegistry->registerEngine(['mustache'], $container->get(MustacheEngineFactory::class));
+                    $engineRegistry->registerEngine(['smarty', 'tpl'], $container->get(SmartyEngineFactory::class));
                     $engineRegistry->registerEngine(['tpl.php'],
                         new PhpEngineFactory($templateRenderer,
                             new HelperVariable($templateRenderer, $container->get(TemplateFileResolver::class)),
