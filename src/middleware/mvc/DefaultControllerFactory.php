@@ -11,6 +11,7 @@ use ntentan\Controller;
 use ntentan\utils\Input;
 use ntentan\exceptions\ControllerActionNotFoundException;
 use ntentan\View;
+use ntentan\config\Config;
 
 /**
  * Class DefaultControllerFactory
@@ -36,6 +37,10 @@ class DefaultControllerFactory implements ControllerFactoryInterface
     public function __construct()
     {
         $this->serviceContainer = new Container();
+        $this->serviceContainer->setup([
+            Context::class => function() { return Context::getInstance(); },
+            Config::class => function() { return Context::getInstance()->getConfig(); }
+        ]);
         $this->setupBindings($this->serviceContainer);
     }
 
