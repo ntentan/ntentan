@@ -89,6 +89,9 @@ class Context
     
     private $prefix;
 
+    /**
+     * @var Templates
+     */
     private $templates;
 
     /**
@@ -208,7 +211,7 @@ class Context
         $this->templates = $templates;
     }
 
-    public function getTemplates()
+    public function getTemplates() : Templates
     {
         return $this->templates;
     }

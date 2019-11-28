@@ -59,7 +59,6 @@ class Application
     public final function __construct(Templates $templates, Router $router, Config $config, PipelineRunner $runner, Cache $cache, SessionContainerFactory $sessionContainerFactory, string $namespace)
     {
         $this->context = Context::initialize($namespace, $config, $cache);
-        $this->context->setCache($cache);
         $this->context->setTemplates($templates);
         $this->router = $router;
         $this->config = $config;
