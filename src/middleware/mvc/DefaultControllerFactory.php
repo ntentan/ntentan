@@ -56,8 +56,9 @@ class DefaultControllerFactory implements ControllerFactoryInterface
     
     private function bindParameter(Controller $controller, &$invokeParameters, $methodParameter, $params)
     {
-        if (isset($params[$methodParameter->name])) {
-            $invokeParameters[] = $params[$methodParameter->name];
+        $decamelizedParameter = Text::deCamelize($methodParameter->name);
+        if (isset($params[$methodParameter->name]) || isset($params[$decamelizedParameter])) {
+            $invokeParameters[] = $params[$methodParameter->name] ?? $params[$decamelizedParameter];
             $this->boundParameters[$methodParameter->name] = true;
         } else {
             $type = $methodParameter->getClass();
@@ -168,5 +169,4 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         }
         throw new ControllerActionNotFoundException($this, $methodName);
     }
-
 }
