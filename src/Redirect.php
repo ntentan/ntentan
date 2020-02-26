@@ -53,4 +53,9 @@ class Redirect implements RenderableInterface
         $this->url .= ($this->url[-1] === '/' ? '' : '/') . "{$action}";
         return $this;
     }
+
+    public static function to($url)
+    {
+        return new self($url);
+    }
 }

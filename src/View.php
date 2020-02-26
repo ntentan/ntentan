@@ -1,6 +1,7 @@
 <?php
 
 namespace ntentan;
+use ntentan\honam\Templates;
 use ntentan\interfaces\RenderableInterface;
 use ntentan\interfaces\ThemableInterface;
 
@@ -19,7 +20,7 @@ class View implements RenderableInterface, ThemableInterface
      * 
      * @var string
      */
-    private $layout = 'main.tpl.php';
+    private $layout = 'main';
     
     /**
      * Description of the default template.
@@ -41,7 +42,7 @@ class View implements RenderableInterface, ThemableInterface
      * @var Array
      */
     private $variables = array();
-    
+
     /**
      * Set the mimetype of the response.
      * Calling this method will cause a Content-Type header to be sent to the client with the content type that is
@@ -150,12 +151,13 @@ class View implements RenderableInterface, ThemableInterface
     public function __toString()
     {
         $viewData = $this->variables;
+        $templates = Context::getInstance()->getTemplates();
         if ($this->template != false) {
-            $renderedTemplate = honam\TemplateEngine::render($this->template, $viewData);
+            $renderedTemplate = $templates->render($this->template, $viewData);
             $viewData['contents'] = $renderedTemplate;
         }
         if ($this->layout != false) {
-            return honam\TemplateEngine::render($this->layout, $viewData);
+            return $templates->render($this->layout, $viewData);
         }
     }
 }

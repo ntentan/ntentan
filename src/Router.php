@@ -61,14 +61,14 @@ class Router
         }
         return [
             'route' => $this->route,
-            'parameters' => $parameters,
+            'parameters' => [],
             'description' => $this->routes['default']
         ];
     }
 
     private function fillInDefaultParameters($routeDescription, $parameters)
     {
-        foreach ($routeDescription['parameters']['default'] as $parameter => $value) {
+        foreach ($routeDescription['parameters']['default'] ?? [] as $parameter => $value) {
             if (!isset($parameters[$parameter])) {
                 $parameters[$parameter] = $value;
             }

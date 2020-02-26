@@ -7,6 +7,7 @@ use ntentan\atiaa\DriverFactory;
 use ntentan\controllers\model_binders\DefaultModelBinder;
 use ntentan\controllers\model_binders\RedirectBinder;
 use ntentan\controllers\model_binders\UploadedFileBinder;
+use ntentan\honam\Templates;
 use ntentan\kaikai\Cache;
 use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
 use ntentan\nibii\interfaces\ModelFactoryInterface;
@@ -55,10 +56,10 @@ class Application
      * @param SessionContainerFactory $sessionContainerFactory
      * @param string $namespace
      */
-    public final function __construct(Router $router, Config $config, PipelineRunner $runner, Cache $cache, SessionContainerFactory $sessionContainerFactory, string $namespace)
+    public final function __construct(Templates $templates, Router $router, Config $config, PipelineRunner $runner, Cache $cache, SessionContainerFactory $sessionContainerFactory, string $namespace)
     {
         $this->context = Context::initialize($namespace, $config, $cache);
-        $this->context->setCache($cache);
+        $this->context->setTemplates($templates);
         $this->router = $router;
         $this->config = $config;
         $this->runner = $runner;

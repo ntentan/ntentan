@@ -3,6 +3,11 @@
 namespace ntentan;
 
 use ntentan\atiaa\DriverFactory;
+use ntentan\exceptions\NtentanException;
+use ntentan\honam\factories\SmartyEngineFactory;
+use ntentan\honam\TemplateFileResolver;
+use ntentan\honam\TemplateRenderer;
+use ntentan\honam\Templates;
 use ntentan\interfaces\ControllerFactoryInterface;
 use ntentan\middleware\MvcMiddleware;
 use ntentan\nibii\factories\DriverAdapterFactory;
@@ -18,6 +23,11 @@ use ntentan\kaikai\CacheBackendInterface;
 use ntentan\middleware\mvc\DefaultControllerFactory;
 use ntentan\middleware\MiddlewareFactoryRegistry;
 use ntentan\middleware\MvcMiddlewareFactory;
+use ntentan\honam\EngineRegistry;
+use ntentan\honam\factories\MustacheEngineFactory;
+use ntentan\honam\factories\PhpEngineFactory;
+use ntentan\honam\engines\php\HelperVariable;
+use ntentan\honam\engines\php\Janitor;
 
 /**
  * Wires up the panie IoC container for ntentan.
@@ -49,8 +59,31 @@ class ContainerBuilder implements ContainerBuilderInterface
             DriverAdapterFactoryInterface::class => [
                 function($container) {
                     $config = $container->resolve(Config::class);
+                    $driver = $config->get('db')['driver'];
+                    if($driver === null) {
+                        throw new NtentanException("Please provide a database configuration that specifies the driver");
+                    }
                     return new DriverAdapterFactory($config->get('db')['driver']);
                 }
+            ],
+            Templates::class => [Templates::class, 'singleton' => true],
+            TemplateFileResolver::class => [TemplateFileResolver::class, 'singleton' => true],
+            TemplateRenderer::class => [
+                function($container) {
+                    /** @var EngineRegistry $engineRegistry */
+                    $engineRegistry = $container->get(EngineRegistry::class);
+                    $templateFileResolver = $container->get(TemplateFileResolver::class);
+                    $templateRenderer = new TemplateRenderer($engineRegistry, $templateFileResolver);
+                    $engineRegistry->registerEngine(['mustache'], $container->get(MustacheEngineFactory::class));
+                    $engineRegistry->registerEngine(['smarty', 'tpl'], $container->get(SmartyEngineFactory::class));
+                    $engineRegistry->registerEngine(['tpl.php'],
+                        new PhpEngineFactory($templateRenderer,
+                            new HelperVariable($templateRenderer, $container->get(TemplateFileResolver::class)),
+                            $container->get(Janitor::class)
+                        ));
+                    return $templateRenderer;
+                },
+                'singleton' => true
             ],
             // Wire up the application class
             Application::class => [

@@ -3,6 +3,7 @@
 namespace ntentan\middleware\mvc;
 
 use ntentan\controllers\ModelBinderRegistry;
+use ntentan\exceptions\NtentanException;
 use ntentan\interfaces\ControllerFactoryInterface;
 use ntentan\panie\Container;
 use ntentan\Context;
@@ -11,6 +12,7 @@ use ntentan\Controller;
 use ntentan\utils\Input;
 use ntentan\exceptions\ControllerActionNotFoundException;
 use ntentan\View;
+use ntentan\config\Config;
 
 /**
  * Class DefaultControllerFactory
@@ -36,6 +38,10 @@ class DefaultControllerFactory implements ControllerFactoryInterface
     public function __construct()
     {
         $this->serviceContainer = new Container();
+        $this->serviceContainer->setup([
+            Context::class => function() { return Context::getInstance(); },
+            Config::class => function() { return Context::getInstance()->getConfig(); }
+        ]);
         $this->setupBindings($this->serviceContainer);
     }
 
@@ -50,8 +56,9 @@ class DefaultControllerFactory implements ControllerFactoryInterface
     
     private function bindParameter(Controller $controller, &$invokeParameters, $methodParameter, $params)
     {
-        if (isset($params[$methodParameter->name])) {
-            $invokeParameters[] = $params[$methodParameter->name];
+        $decamelizedParameter = Text::deCamelize($methodParameter->name);
+        if (isset($params[$methodParameter->name]) || isset($params[$decamelizedParameter])) {
+            $invokeParameters[] = $params[$methodParameter->name] ?? $params[$decamelizedParameter];
             $this->boundParameters[$methodParameter->name] = true;
         } else {
             $type = $methodParameter->getClass();
@@ -132,19 +139,13 @@ class DefaultControllerFactory implements ControllerFactoryInterface
     public function createController(array &$parameters): Controller
     {
         $controller = $parameters['controller'];
-        $context = Context::getInstance();
-
-        if (class_exists($controller)) {
-            $controllerInstance = $this->serviceContainer->resolve($controller);
-            $context->setParameter(
-                'controller_path',
-                explode($parameters['action'], $context->getParameter('route'))[0] . '/'
-            );
-        } else {
-            $controllerClassName = sprintf('\%s\controllers\%sController', $context->getNamespace(), Text::ucamelize($controller));
-            $context->setParameter('controller_path', $context->getUrl($controller));
-            $controllerInstance = $this->serviceContainer->resolve($controllerClassName);
+        if($controller == null) {
+            throw new NtentanException("There is no controller specified for this request");
         }
+        $context = Context::getInstance();
+        $controllerClassName = sprintf('\%s\controllers\%sController', $context->getNamespace(), Text::ucamelize($controller));
+        $context->setParameter('controller_path', $context->getUrl($controller));
+        $controllerInstance = $this->serviceContainer->resolve($controllerClassName);
         return $controllerInstance;
     }
 
@@ -168,5 +169,4 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         }
         throw new ControllerActionNotFoundException($this, $methodName);
     }
-
 }
