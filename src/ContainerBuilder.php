@@ -58,12 +58,15 @@ class ContainerBuilder implements ContainerBuilderInterface
             ValidatorFactoryInterface::class => DefaultValidatorFactory::class,
             DriverAdapterFactoryInterface::class => [
                 function($container) {
+                    /** @var Config $config */
                     $config = $container->resolve(Config::class);
-                    $driver = $config->get('db')['driver'];
-                    if($driver === null) {
-                        throw new NtentanException("Please provide a database configuration that specifies the driver");
+                    if($config->isKeySet('db')) {
+                        $driver = $config->get('db')['driver'];
+                        if($driver === null) {
+                            throw new NtentanException("Please provide a database configuration that specifies a driver.");
+                        }
+                        return new DriverAdapterFactory($config->get('db')['driver']);
                     }
-                    return new DriverAdapterFactory($config->get('db')['driver']);
                 }
             ],
             Templates::class => [Templates::class, 'singleton' => true],
@@ -87,8 +90,10 @@ class ContainerBuilder implements ContainerBuilderInterface
             ],
             // Wire up the application class
             Application::class => [
-                Application::class,
-                'calls' => ['setMiddlewareFactoryRegistry', 'setModelBinderRegistry', 'setDatabaseDriverFactory', 'setOrmFactories']
+                function ($container) {
+                    $application = new Application()
+                },
+                //'calls' => ['setMiddlewareFactoryRegistry', 'setModelBinderRegistry', 'setDatabaseDriverFactory', 'setOrmFactories']
             ],
 
 //            MiddlewareFactoryRegistry::class => [
