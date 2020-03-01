@@ -62,7 +62,7 @@ class Router
         return [
             'route' => $this->route,
             'parameters' => [],
-            'description' => $this->routes['default']
+            'description' => $this->routes['main']
         ];
     }
 
@@ -151,5 +151,14 @@ class Router
     public function &getRoute($name)
     {
         return $this->routes[$name];
+    }
+
+    public function setRoutes($routes)
+    {
+        foreach($routes as $route) {
+            $this->createRoute($route['name'], $route['pattern'], $route['parameters']);
+            $this->routeOrder[] = $route['name'];
+        }
+
     }
 }

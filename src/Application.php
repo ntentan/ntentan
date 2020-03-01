@@ -71,6 +71,8 @@ class Application
 
     protected function setup() : void
     {
+        $routes = require "bootstrap/routes.php";
+        $this->router->setRoutes($routes);
     }
 
     public function setDatabaseDriverFactory(DriverFactory $driverFactory) : void

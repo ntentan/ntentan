@@ -165,7 +165,11 @@ class DefaultControllerFactory implements ControllerFactoryInterface
             foreach ($methodParameters as $methodParameter) {
                 $this->bindParameter($controller, $invokeParameters, $methodParameter, $parameters);
             }
-            return $method->invokeArgs($controller, $invokeParameters);
+            $output = $method->invokeArgs($controller, $invokeParameters);
+            if($output === null) {
+                throw new NtentanException("Output from the $action action cannot be null");
+            }
+            return $output;
         }
         throw new ControllerActionNotFoundException($this, $methodName);
     }

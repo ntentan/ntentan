@@ -89,11 +89,8 @@ class ContainerBuilder implements ContainerBuilderInterface
                 'singleton' => true
             ],
             // Wire up the application class
-            Application::class => [
-                function ($container) {
-                    $application = new Application()
-                },
-                //'calls' => ['setMiddlewareFactoryRegistry', 'setModelBinderRegistry', 'setDatabaseDriverFactory', 'setOrmFactories']
+            Application::class => [ Application::class,
+                'calls' => ['setMiddlewareFactoryRegistry', 'setModelBinderRegistry'] //, 'setDatabaseDriverFactory', 'setOrmFactories']
             ],
 
 //            MiddlewareFactoryRegistry::class => [
