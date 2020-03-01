@@ -9,6 +9,7 @@ use ntentan\honam\TemplateFileResolver;
 use ntentan\honam\TemplateRenderer;
 use ntentan\honam\Templates;
 use ntentan\interfaces\ControllerFactoryInterface;
+use ntentan\kaikai\Cache;
 use ntentan\middleware\MvcMiddleware;
 use ntentan\nibii\factories\DriverAdapterFactory;
 use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
@@ -16,6 +17,7 @@ use ntentan\nibii\interfaces\ModelFactoryInterface;
 use ntentan\panie\Container;
 use ntentan\interfaces\ContainerBuilderInterface;
 use ntentan\config\Config;
+use ntentan\sessions\SessionContainerFactory;
 use ntentan\utils\Text;
 use ntentan\nibii\interfaces\ValidatorFactoryInterface;
 use ntentan\nibii\factories\DefaultValidatorFactory;
@@ -41,7 +43,7 @@ class ContainerBuilder implements ContainerBuilderInterface
 {
     private $container;
 
-    public function __construct()
+    public function __construct($namespace)
     {
         $this->container =new Container();
         $this->container->setup([
@@ -89,16 +91,30 @@ class ContainerBuilder implements ContainerBuilderInterface
                 'singleton' => true
             ],
             // Wire up the application class
-            Application::class => [ Application::class,
+            Application::class => [ //Application::class,
+                function ($container) use ($namespace) {
+                    $config = $container->get(Config::class);
+                    $application = new Application(
+                        $container->get(Templates::class),
+                        $container->get(Router::class),
+                        $config,
+                        $container->get(PipelineRunner::class),
+                        $container->get(Cache::class),
+                        $container->get(SessionContainerFactory::class),
+                        $namespace
+                    );
+                    if($config->isKeySet('db')) {
+                        $application->setDatabaseDriverFactory($container->get(DriverFactory::class));
+                        $application->setOrmFactories(
+                            $container->get(ModelFactoryInterface::class),
+                            $container->get(DriverAdapterFactoryInterface::class),
+                            $container->get(ValidatorFactoryInterface::class)
+                        );
+                    }
+                    return $application;
+                },
                 'calls' => ['setMiddlewareFactoryRegistry', 'setModelBinderRegistry'] //, 'setDatabaseDriverFactory', 'setOrmFactories']
             ],
-
-//            MiddlewareFactoryRegistry::class => [
-//                MiddlewareFactoryRegistry::class,
-//                'calls' => [
-//                    ['register' => ['middlewareFactory' => MvcMiddlewareFactory::class, 'name' => MvcMiddleware::class ]]
-//                ]
-//            ],
 
             //
             ControllerFactoryInterface::class => DefaultControllerFactory::class,
