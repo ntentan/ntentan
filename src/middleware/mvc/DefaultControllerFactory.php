@@ -2,16 +2,17 @@
 
 namespace ntentan\middleware\mvc;
 
+use Closure;
 use ntentan\controllers\ModelBinderRegistry;
 use ntentan\exceptions\NtentanException;
 use ntentan\interfaces\ControllerFactoryInterface;
+use ntentan\kaikai\Cache;
 use ntentan\panie\Container;
 use ntentan\Context;
 use ntentan\utils\Text;
 use ntentan\Controller;
 use ntentan\utils\Input;
 use ntentan\exceptions\ControllerActionNotFoundException;
-use ntentan\View;
 use ntentan\config\Config;
 
 /**
@@ -32,17 +33,25 @@ class DefaultControllerFactory implements ControllerFactoryInterface
      */
     private $modelBinderRegistry;
 
+    protected $context;
+
+    private $cache;
+
     /**
      * DefaultControllerFactory constructor.
+     * @param Context $context
+     * @param Cache $cache
+     * @param ModelBinderRegistry $modelBinderRegistry
+     * @param ServiceContainerBuilder $serviceContainerBuilder
      */
-    public function __construct()
+    public function __construct(Context $context, Cache $cache, ModelBinderRegistry $modelBinderRegistry, ServiceContainerBuilder $serviceContainerBuilder)
     {
-        $this->serviceContainer = new Container();
-        $this->serviceContainer->setup([
-            Context::class => function() { return Context::getInstance(); },
-            Config::class => function() { return Context::getInstance()->getConfig(); }
-        ]);
-        $this->setupBindings($this->serviceContainer);
+        $this->serviceContainer = $serviceContainerBuilder->getContainer();
+        $this->context = $context;
+        $this->cache = $cache;
+        $this->modelBinderRegistry = $modelBinderRegistry;
+        $closure = Closure::bind(Closure::fromCallable(function () { return require "bootstrap/mvc_di.php"; }), null);
+        $this->serviceContainer->setup($closure());
     }
 
     /**
@@ -51,7 +60,6 @@ class DefaultControllerFactory implements ControllerFactoryInterface
      */
     protected function setupBindings(Container $serviceLocator)
     {
-        
     }
     
     private function bindParameter(Controller $controller, &$invokeParameters, $methodParameter, $params)
@@ -59,7 +67,6 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         $decamelizedParameter = Text::deCamelize($methodParameter->name);
         if (isset($params[$methodParameter->name]) || isset($params[$decamelizedParameter])) {
             $invokeParameters[] = $params[$methodParameter->name] ?? $params[$decamelizedParameter];
-            $this->boundParameters[$methodParameter->name] = true;
         } else {
             $type = $methodParameter->getClass();
             if ($type !== null) {
@@ -90,7 +97,7 @@ class DefaultControllerFactory implements ControllerFactoryInterface
 
     private function getListOfMethods($controller, $className, $methods)
     {
-        $context = Context::getInstance();
+        //$context = Context::getInstance();
         $results = [];
         foreach ($methods as $method) {
             $methodName = $method->getName();
@@ -106,7 +113,7 @@ class DefaultControllerFactory implements ControllerFactoryInterface
                 'name' => $method->getName(),
                 'binder' => $docComments['binder']
                     ?? $controller->getDefaultModelBinderClass()
-                    ?? $context->getModelBinderRegistry()->getDefaultBinderClass(),
+                    ?? $this->modelBinderRegistry->getDefaultBinderClass(),
                 'binder_params' => $docComments['binder.params'] ?? ''
             ];
         }
@@ -115,12 +122,11 @@ class DefaultControllerFactory implements ControllerFactoryInterface
 
     private function getMethod(Controller $controller, $path)
     {
-        $context = Context::getInstance();
         $reflectionClass = new \ReflectionClass($controller);
         $className = $reflectionClass->getName();
 
         /* @var $methods array */
-        $methods = $context->getCache()->read("controller.{$className}.methods",
+        $methods = $this->cache->read("controller.{$className}.methods",
             function() use ($controller, $reflectionClass, $className){
                 $methods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
                 return $this->getListOfMethods($controller, $className, $methods);
@@ -142,9 +148,8 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         if($controller == null) {
             throw new NtentanException("There is no controller specified for this request");
         }
-        $context = Context::getInstance();
-        $controllerClassName = sprintf('\%s\controllers\%sController', $context->getNamespace(), Text::ucamelize($controller));
-        $context->setParameter('controller_path', $context->getUrl($controller));
+        $controllerClassName = sprintf('\%s\controllers\%sController', $this->context->getNamespace(), Text::ucamelize($controller));
+        $this->context->setParameter('controller_path', $this->context->getUrl($controller));
         $controllerInstance = $this->serviceContainer->resolve($controllerClassName);
         return $controllerInstance;
     }
@@ -155,8 +160,7 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         $methodName = Text::camelize($action);
         $invokeParameters = [];
         $methodDetails = $this->getMethod($controller, $methodName);
-        $this->modelBinderRegistry = Context::getInstance()->getModelBinderRegistry();
-        
+
         if ($methodDetails !== false) {
             $controller->setActionMethod($action ?? 'index');
             $method = new \ReflectionMethod($controller, $methodDetails['name']);

@@ -30,6 +30,7 @@
  * @copyright Copyright 2010 James Ekow Abaka Ainooson
  * @license MIT
  */
+
 /**
  * Root namespace for all ntentan classes
  * @author ekow
@@ -37,7 +38,7 @@
 
 namespace ntentan;
 
-use ntentan\honam\Templates;
+use ntentan\config\Config;
 
 /**
  * A context within which the current request is served.
@@ -55,92 +56,38 @@ class Context
      * @var \ntentan\config\Config
      */
     private $config;
-    
+
     /**
      * The namespace under which the application code is kept.
-     * 
+     *
      * @var string
      */
     private $namespace = 'app';
-    
-    /**
-     * An instance of the caching class.
-     * 
-     * @var \ntentan\kaikai\Cache
-     */
-    private $cache;
-    
+
     /**
      * Stores parameters that are shared across the application.
-     * 
-     * @var \ntentan\Parameters
+     *
+     * @var array
      */
-    private $parameters;
-    
-    /**
-     * A static instance of this context. 
-     * Used in situations where the context is accessed statically.
-     * 
-     * @var Context
-     */
-    private static $instance;
+    private $parameters = [];
 
-    private $modelBinderRegistry;
-    
     private $prefix;
-
-    /**
-     * @var Templates
-     */
-    private $templates;
-
-    /**
-     * Create an instance of the context.
-     *
-     * @param string $namespace The namespace for the application
-     * @param $config
-     * @param $cache
-     * @return Context New context
-     *
-     */
-    public static function initialize($namespace, $config, $cache)
-    {
-        $context = new self($namespace);
-        $context->cache = $cache;
-        $context->config = $config;
-        $context->prefix = $config->get('app.prefix', null);
-        $context->parameters = Parameters::wrap([]);
-        self::$instance = $context;
-        return $context;
-    }
-
-    /**
-     * Return the static instance of the context created during initialization.
-     * @return Context
-     * @throws exceptions\NtentanException
-     */
-    public static function getInstance()
-    {
-        if(self::$instance === null) {
-            throw new exceptions\NtentanException("You have not initialized the ntentan context.");
-        }
-        return self::$instance;
-    }
 
     /**
      * Constructor for the context
      *
      * @param string $namespace
      */
-    private function __construct($namespace)
+    public function __construct(Config $config, string $namespace, string $prefix = '')
     {
         $this->namespace = $namespace;
+        $this->prefix = $prefix;
+        $this->config = $config;
     }
-
 
     /**
      * Get the namespace for this application.
-     * 
+     *
      * @return string
      */
     public function getNamespace()
@@ -148,71 +95,28 @@ class Context
         return $this->namespace;
     }
 
-    /**
-     * Get an instance of the cache.
-     * 
-     * @return kaikai\Cache
-     */
-    public function getCache()
-    {
-        return $this->cache;
-    }
-
-    public function setCache($cache)
-    {
-        $this->cache = $cache;
-    }
-
-    public function getRedirect($path)
-    {
-        return new Redirect($path);
-    }
-
     public function getUrl($path)
     {
         return preg_replace('~/+~', '/', $this->prefix . "/$path");
     }
-    
-    /**
-     * @return controllers\ModelBinderRegistry
-     */
-    public function getModelBinderRegistry()
-    {
-        return $this->modelBinderRegistry;
-    }
-
-    public function setModelBinderRegistry($modelBinderRegistry)
-    {
-        $this->modelBinderRegistry = $modelBinderRegistry;
-    }
 
     public function getParameter($parameter)
     {
-        return $this->parameters->get($parameter);
+        return $this->parameters[$parameter] ?? '';
     }
-    
+
     public function setParameter($parameter, $value)
     {
-        $this->parameters->set($parameter, $value);
+        $this->parameters[$parameter] = $value;
     }
-    
+
     public function getPrefix()
     {
         return $this->prefix;
     }
-    
+
     public function getConfig()
     {
         return $this->config;
-    }
-
-    public function setTemplates(Templates $templates)
-    {
-        $this->templates = $templates;
-    }
-
-    public function getTemplates() : Templates
-    {
-        return $this->templates;
     }
 }

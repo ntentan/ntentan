@@ -3,6 +3,11 @@
 namespace ntentan;
 
 use ntentan\atiaa\DriverFactory;
+use ntentan\controllers\model_binders\DefaultModelBinder;
+use ntentan\controllers\model_binders\RedirectBinder;
+use ntentan\controllers\model_binders\UploadedFileBinder;
+use ntentan\controllers\model_binders\ViewBinder;
+use ntentan\controllers\ModelBinderRegistry;
 use ntentan\exceptions\NtentanException;
 use ntentan\honam\factories\SmartyEngineFactory;
 use ntentan\honam\TemplateFileResolver;
@@ -18,6 +23,7 @@ use ntentan\panie\Container;
 use ntentan\interfaces\ContainerBuilderInterface;
 use ntentan\config\Config;
 use ntentan\sessions\SessionContainerFactory;
+use ntentan\utils\filesystem\UploadedFile;
 use ntentan\utils\Text;
 use ntentan\nibii\interfaces\ValidatorFactoryInterface;
 use ntentan\nibii\factories\DefaultValidatorFactory;
@@ -47,6 +53,12 @@ class ContainerBuilder implements ContainerBuilderInterface
     {
         $this->container =new Container();
         $this->container->setup([
+            Context::class => [
+                function($container) use ($namespace) {
+                    return new Context($container->get(Config::class), $namespace);
+                },
+                'singleton' => true
+            ],
             ModelClassResolverInterface::class => ClassNameResolver::class,
             ModelJoinerInterface::class => ClassNameResolver::class,
             TableNameResolverInterface::class => nibii\Resolver::class,
@@ -71,31 +83,23 @@ class ContainerBuilder implements ContainerBuilderInterface
                     }
                 }
             ],
-            Templates::class => [Templates::class, 'singleton' => true],
-            TemplateFileResolver::class => [TemplateFileResolver::class, 'singleton' => true],
-            TemplateRenderer::class => [
-                function($container) {
-                    /** @var EngineRegistry $engineRegistry */
-                    $engineRegistry = $container->get(EngineRegistry::class);
-                    $templateFileResolver = $container->get(TemplateFileResolver::class);
-                    $templateRenderer = new TemplateRenderer($engineRegistry, $templateFileResolver);
-                    $engineRegistry->registerEngine(['mustache'], $container->get(MustacheEngineFactory::class));
-                    $engineRegistry->registerEngine(['smarty', 'tpl'], $container->get(SmartyEngineFactory::class));
-                    $engineRegistry->registerEngine(['tpl.php'],
-                        new PhpEngineFactory($templateRenderer,
-                            new HelperVariable($templateRenderer, $container->get(TemplateFileResolver::class)),
-                            $container->get(Janitor::class)
-                        ));
-                    return $templateRenderer;
-                },
-                'singleton' => true
+            ModelBinderRegistry::class => [
+                function () {
+                    $modelBinderRegistry = new ModelBinderRegistry();
+                    $modelBinderRegistry->setDefaultBinderClass(DefaultModelBinder::class);
+                    $modelBinderRegistry->register(View::class, ViewBinder::class);
+                    $modelBinderRegistry->register(UploadedFile::class, UploadedFileBinder::class);
+                    $modelBinderRegistry->register(Redirect::class, RedirectBinder::class);
+                    return $modelBinderRegistry;
+                }
             ],
+
             // Wire up the application class
             Application::class => [ //Application::class,
                 function ($container) use ($namespace) {
                     $config = $container->get(Config::class);
                     $application = new Application(
-                        $container->get(Templates::class),
+                        $container->get(Context::class),
                         $container->get(Router::class),
                         $config,
                         $container->get(PipelineRunner::class),
@@ -113,7 +117,7 @@ class ContainerBuilder implements ContainerBuilderInterface
                     }
                     return $application;
                 },
-                'calls' => ['setMiddlewareFactoryRegistry', 'setModelBinderRegistry'] //, 'setDatabaseDriverFactory', 'setOrmFactories']
+                'calls' => ['setMiddlewareFactoryRegistry'] //, 'setDatabaseDriverFactory', 'setOrmFactories']
             ],
 
             //

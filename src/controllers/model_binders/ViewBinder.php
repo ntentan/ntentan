@@ -15,11 +15,18 @@ use ntentan\honam\Templates;
  */
 class ViewBinder implements ModelBinderInterface
 {
+    private $templates;
+
+    public function __construct(Templates $templates)
+    {
+        $this->templates = $templates;
+    }
+
     public function bind(Controller $controller, string $type, string $name, array $parameters, $instance=null)
     {
         $className = strtolower(substr((new \ReflectionClass($controller))->getShortName(), 0, -10));
         $action = $controller->getActionMethod();
-        Context::getInstance()->getTemplates()->prependPath("views/{$className}");
+        $this->templates->prependPath("views/{$className}");
         if ($instance->getTemplate() == null) {
             $instance->setTemplate("{$className}_{$action}.tpl.php");
         }

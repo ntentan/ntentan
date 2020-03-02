@@ -69,29 +69,29 @@ class Controller
     protected $defaultModelBinderClass;
 
 
-    /**
-     * Get an instance of the Redirect object that is setup with this controller as its base URL.
-     *
-     * @return Redirect
-     */
-    protected function getRedirect() : Redirect
-    {
-        $context = Context::getInstance();
-        $redirect = new Redirect($context->getUrl($context->getParameter('controller_path')));
-        return $redirect;
-    }
-
-    /**
-     * Returns a URL to an action in this controller.
-     *
-     * @param string $action The name of the action
-     * @return string A URL to the action
-     */
-    protected function getActionUrl($action) : string
-    {
-        $context = Context::getInstance();
-        return $context->getUrl($context->getParameter('controller_path') . $action);
-    }
+//    /**
+//     * Get an instance of the Redirect object that is setup with this controller as its base URL.
+//     *
+//     * @return Redirect
+//     */
+//    protected function getRedirect() : Redirect
+//    {
+//        $context = Context::getInstance();
+//        $redirect = new Redirect($context->getUrl($context->getParameter('controller_path')));
+//        return $redirect;
+//    }
+//
+//    /**
+//     * Returns a URL to an action in this controller.
+//     *
+//     * @param string $action The name of the action
+//     * @return string A URL to the action
+//     */
+//    protected function getActionUrl($action) : string
+//    {
+//        $context = Context::getInstance();
+//        return $context->getUrl($context->getParameter('controller_path') . $action);
+//    }
 
     /**
      * Set the action method to be executed by this controller.

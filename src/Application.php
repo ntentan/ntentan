@@ -56,10 +56,11 @@ class Application
      * @param SessionContainerFactory $sessionContainerFactory
      * @param string $namespace
      */
-    public final function __construct(Templates $templates, Router $router, Config $config, PipelineRunner $runner, Cache $cache, SessionContainerFactory $sessionContainerFactory, string $namespace)
+    public final function __construct(Context $context, Router $router, Config $config, PipelineRunner $runner, Cache $cache, SessionContainerFactory $sessionContainerFactory, string $namespace)
     {
-        $this->context = Context::initialize($namespace, $config, $cache);
-        $this->context->setTemplates($templates);
+        //$this->context = Context::initialize($namespace, $config, $cache);
+        //$this->context->setTemplates($templates);
+        $this->context = $context;
         $this->router = $router;
         $this->config = $config;
         $this->runner = $runner;
@@ -90,15 +91,15 @@ class Application
         $this->middlewareFactoryRegistry = $middlewareFactoryRegistry;
     }
     
-    public function setModelBinderRegistry(ModelBinderRegistry $modelBinderRegistry) : void
-    {
-        $this->modelBinderRegistry = $modelBinderRegistry;
-        $modelBinderRegistry->setDefaultBinderClass(DefaultModelBinder::class);
-        $modelBinderRegistry->register(View::class, ViewBinder::class);
-        $modelBinderRegistry->register(UploadedFile::class, UploadedFileBinder::class);
-        $modelBinderRegistry->register(Redirect::class, RedirectBinder::class);
-        $this->context->setModelBinderRegistry($modelBinderRegistry);
-    }
+//    public function setModelBinderRegistry(ModelBinderRegistry $modelBinderRegistry) : void
+//    {
+//        $this->modelBinderRegistry = $modelBinderRegistry;
+//        $modelBinderRegistry->setDefaultBinderClass(DefaultModelBinder::class);
+//        $modelBinderRegistry->register(View::class, ViewBinder::class);
+//        $modelBinderRegistry->register(UploadedFile::class, UploadedFileBinder::class);
+//        $modelBinderRegistry->register(Redirect::class, RedirectBinder::class);
+//        //$this->context->setModelBinderRegistry($modelBinderRegistry);
+//    }
 
     public function appendMiddleware(string $middleware, array $parameters = [])
     {

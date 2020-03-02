@@ -43,6 +43,13 @@ class View implements RenderableInterface, ThemableInterface
      */
     private $variables = array();
 
+    private $templates;
+
+    public function __construct(Templates $templates)
+    {
+        $this->templates = $templates;
+    }
+
     /**
      * Set the mimetype of the response.
      * Calling this method will cause a Content-Type header to be sent to the client with the content type that is
@@ -151,13 +158,12 @@ class View implements RenderableInterface, ThemableInterface
     public function __toString()
     {
         $viewData = $this->variables;
-        $templates = Context::getInstance()->getTemplates();
         if ($this->template != false) {
-            $renderedTemplate = $templates->render($this->template, $viewData);
+            $renderedTemplate = $this->templates->render($this->template, $viewData);
             $viewData['contents'] = $renderedTemplate;
         }
         if ($this->layout != false) {
-            return $templates->render($this->layout, $viewData);
+            return $this->templates->render($this->layout, $viewData);
         }
     }
 }
