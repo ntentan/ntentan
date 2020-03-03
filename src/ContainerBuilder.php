@@ -2,6 +2,7 @@
 
 namespace ntentan;
 
+use Closure;
 use ntentan\atiaa\DriverFactory;
 use ntentan\controllers\model_binders\DefaultModelBinder;
 use ntentan\controllers\model_binders\RedirectBinder;
@@ -143,7 +144,14 @@ class ContainerBuilder implements ContainerBuilderInterface
                 'singleton' => true
             ]
         ]);
-        $this->registerMiddleWare(MvcMiddlewareFactory::class, MvcMiddleware::class);
+
+        $bindingsClosure = Closure::bind(Closure::fromCallable(function () { return (require "bootstrap/services.php")['core']; }), null);
+        $this->addBindings($bindingsClosure());
+
+        foreach(require "bootstrap/middleware.php" as $middleware) {
+            $this->registerMiddleWare($middleware[0], $middleware[1]);
+        }
+
     }
 
     public function addBindings(array $bindings)
@@ -161,7 +169,7 @@ class ContainerBuilder implements ContainerBuilderInterface
     {
         $this->container->setup([
             MiddlewareFactoryRegistry::class => [
-            'calls' => ['register' => ['middlewareFactory' => $factory, 'name' => $middleware]]
+                'calls' => ['register' => ['middlewareFactory' => $factory, 'name' => $middleware]]
             ]
         ]);
         return $this;

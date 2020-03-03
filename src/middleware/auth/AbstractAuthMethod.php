@@ -9,6 +9,7 @@ use ntentan\Session;
 abstract class AbstractAuthMethod
 {
     private $parameters;
+    protected $context;
 
     abstract public function login($route);
 
@@ -50,4 +51,6 @@ abstract class AbstractAuthMethod
     {
         Context::getInstance()->setParameter('auth_message', $message);
     }
+
+
 }

@@ -50,16 +50,8 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         $this->context = $context;
         $this->cache = $cache;
         $this->modelBinderRegistry = $modelBinderRegistry;
-        $closure = Closure::bind(Closure::fromCallable(function () { return require "bootstrap/mvc_di.php"; }), null);
+        $closure = Closure::bind(Closure::fromCallable(function () { return (require "bootstrap/services.php")['mvc']; }), null);
         $this->serviceContainer->setup($closure());
-    }
-
-    /**
-     * This method is overridden by sub classes to add custom bindings to the service locator.
-     * @param Container $serviceLocator
-     */
-    protected function setupBindings(Container $serviceLocator)
-    {
     }
     
     private function bindParameter(Controller $controller, &$invokeParameters, $methodParameter, $params)

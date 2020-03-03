@@ -7,6 +7,8 @@ use ntentan\Context;
 
 class HttpBasicAuthMethod extends AbstractAuthMethod
 {
+    use Redirects;
+
     public function login($route)
     {
         if (!isset($_SERVER['PHP_AUTH_USER'])) {
@@ -15,7 +17,7 @@ class HttpBasicAuthMethod extends AbstractAuthMethod
             return "Failed to authenticate";
         } else {
             if ($this->authLocalPassword(filter_var($_SERVER['PHP_AUTH_USER']), filter_var($_SERVER['PHP_AUTH_PW']))) {
-                return $context->getRedirect($parameters->get('success_redirect', $context->getUrl('/')));
+                return $this->redirect->($parameters->get('success_redirect', $context->getUrl('/')));
             } else {
                 return "Failed to authenticate";
             }
