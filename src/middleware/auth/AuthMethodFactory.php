@@ -28,7 +28,14 @@ class AuthMethodFactory
             throw new \Exception("Auth method $authMethodType not found");
         }
         $class = $this->authMethods[$authMethodType];
-        return new $class();
+        $instance = new $class();
+
+        $instance->setContext($this->context);
+        if(array_search(Redirects::class, class_uses($instance))) {
+            $instance->setRedirect($this->redirect);
+        }
+
+        return $instance;
     }
 
     public function registerAuthMethod(string $name, string $class) : void

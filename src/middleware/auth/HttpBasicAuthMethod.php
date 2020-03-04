@@ -17,7 +17,7 @@ class HttpBasicAuthMethod extends AbstractAuthMethod
             return "Failed to authenticate";
         } else {
             if ($this->authLocalPassword(filter_var($_SERVER['PHP_AUTH_USER']), filter_var($_SERVER['PHP_AUTH_PW']))) {
-                return $this->redirect->($parameters->get('success_redirect', $context->getUrl('/')));
+                return $this->getRedirect()->to($this->getParameters()->get('success_redirect', $this->context->getUrl('/')));
             } else {
                 return "Failed to authenticate";
             }

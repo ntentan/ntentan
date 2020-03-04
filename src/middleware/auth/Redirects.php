@@ -14,4 +14,9 @@ trait Redirects
     {
         $this->redirect = $redirect;
     }
+
+    public function getRedirect()
+    {
+        return $this->redirect;
+    }
 }

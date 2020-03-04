@@ -54,6 +54,12 @@ class Redirect implements RenderableInterface
         return $this;
     }
 
+    public function toUrl($url)
+    {
+        $this->url = $url;
+        return $this;
+    }
+
     public static function to($url)
     {
         return new self($url);

@@ -10,7 +10,7 @@ use ntentan\utils\Input;
  */
 class HttpRequestAuthMethod extends AbstractAuthMethod
 {
-    private $redirect;
+    use Redirects;
 
     private function isExcluded($route, $excludedRoutes)
     {
@@ -31,7 +31,7 @@ class HttpRequestAuthMethod extends AbstractAuthMethod
         if (Input::exists(Input::POST, $usernameField) && Input::exists(Input::POST, $passwordField)) {
             $username = Input::post($usernameField);
             if ($this->authLocalPassword($username, Input::post($passwordField))) {
-                return $this->redirect->to($parameters->get('success_redirect', $context->getUrl('/')));
+                return $this->getRedirect()->toUrl($parameters->get('success_redirect', $this->context->getUrl('/')));
             } else {
                 return false;
             }
@@ -39,7 +39,7 @@ class HttpRequestAuthMethod extends AbstractAuthMethod
         
         $excluded = array_merge($parameters->get('excluded_routes', []), [$parameters->get('login_route', 'login')]);
         if(!$this->isExcluded($route['route'], $excluded)) {
-            return $context->getRedirect($parameters->get('login_route', '/login'));
+            return $this->getRedirect()->toUrl($parameters->get('login_route', '/login'));
         }
     }
 }
