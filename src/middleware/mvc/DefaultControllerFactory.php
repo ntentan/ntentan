@@ -97,7 +97,6 @@ class DefaultControllerFactory implements ControllerFactoryInterface
 
     private function getListOfMethods($controller, $className, $methods)
     {
-        //$context = Context::getInstance();
         $results = [];
         foreach ($methods as $method) {
             $methodName = $method->getName();
@@ -150,8 +149,7 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         }
         $controllerClassName = sprintf('\%s\controllers\%sController', $this->context->getNamespace(), Text::ucamelize($controller));
         $this->context->setParameter('controller_path', $this->context->getUrl($controller));
-        $controllerInstance = $this->serviceContainer->resolve($controllerClassName);
-        return $controllerInstance;
+        return $this->serviceContainer->resolve($controllerClassName);
     }
 
     public function executeController(Controller $controller, array $parameters): string
