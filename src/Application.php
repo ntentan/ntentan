@@ -28,7 +28,7 @@ use ntentan\controllers\model_binders\ViewBinder;
  */
 class Application
 {
-    private $pipeline = [];
+    private $defaultPipeline = [];
     protected $router;
     protected $config;
     protected $prefix;
@@ -36,11 +36,6 @@ class Application
     private $context;
     private $cache;
     private $sessionContainerFactory;
-
-    /**
-     * @var ModelBinderRegistry
-     */
-    protected $modelBinderRegistry;
 
     /**
      * @var MiddlewareFactoryRegistry
@@ -58,8 +53,6 @@ class Application
      */
     public final function __construct(Context $context, Router $router, Config $config, PipelineRunner $runner, Cache $cache, SessionContainerFactory $sessionContainerFactory, string $namespace)
     {
-        //$this->context = Context::initialize($namespace, $config, $cache);
-        //$this->context->setTemplates($templates);
         $this->context = $context;
         $this->router = $router;
         $this->config = $config;
@@ -67,13 +60,13 @@ class Application
         $this->cache = $cache;
         $this->sessionContainerFactory = $sessionContainerFactory;
         $this->prefix = $config->get('app.prefix');
-        $this->appendMiddleware(middleware\MvcMiddleware::class);
     }
 
     protected function setup() : void
     {
         $routes = require "bootstrap/routes.php";
-        $this->router->setRoutes($routes);
+        $this->router->setRoutes($routes['routes']);
+        $this->defaultPipeline = $routes['default_pipeline'];
     }
 
     public function setDatabaseDriverFactory(DriverFactory $driverFactory) : void
@@ -89,26 +82,6 @@ class Application
     public function setMiddlewareFactoryRegistry(MiddlewareFactoryRegistry $middlewareFactoryRegistry)
     {
         $this->middlewareFactoryRegistry = $middlewareFactoryRegistry;
-    }
-    
-//    public function setModelBinderRegistry(ModelBinderRegistry $modelBinderRegistry) : void
-//    {
-//        $this->modelBinderRegistry = $modelBinderRegistry;
-//        $modelBinderRegistry->setDefaultBinderClass(DefaultModelBinder::class);
-//        $modelBinderRegistry->register(View::class, ViewBinder::class);
-//        $modelBinderRegistry->register(UploadedFile::class, UploadedFileBinder::class);
-//        $modelBinderRegistry->register(Redirect::class, RedirectBinder::class);
-//        //$this->context->setModelBinderRegistry($modelBinderRegistry);
-//    }
-
-    public function appendMiddleware(string $middleware, array $parameters = [])
-    {
-        $this->pipeline[] = [$middleware, $parameters];
-    }
-
-    public function prependMiddleware(string $middleware, array $parameters = [])
-    {
-        array_unshift($this->pipeline, [$middleware, $parameters]);
     }
     
     private function buildPipeline($pipeline)
@@ -128,7 +101,7 @@ class Application
         $route = $this->router->route(substr(parse_url(Input::server('REQUEST_URI'), PHP_URL_PATH), 1), $this->prefix);
         $this->context->setParameter('route', $route['route']);
         $this->context->setParameter('route_parameters', $route['parameters']);
-        $pipeline = $this->buildPipeline($route['description']['parameters']['pipeline'] ?? $this->pipeline);
+        $pipeline = $this->buildPipeline($route['description']['parameters']['pipeline'] ?? $this->defaultPipeline);
         echo $this->runner->run($pipeline, $route);
     }    
 }

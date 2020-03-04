@@ -10,6 +10,11 @@ abstract class AbstractAuthMethod
 {
     private $parameters;
 
+    /**
+     * @var Context
+     */
+    protected $context;
+
     abstract public function login($route);
 
     public function authLocalPassword($username, $password)
@@ -48,6 +53,11 @@ abstract class AbstractAuthMethod
 
     protected function setMessage($message)
     {
-        Context::getInstance()->setParameter('auth_message', $message);
+        $this->context->setParameter('auth_message', $message);
+    }
+
+    public function setContext($context)
+    {
+        $this->context = $context;
     }
 }

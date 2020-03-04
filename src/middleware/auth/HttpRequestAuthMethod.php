@@ -3,7 +3,6 @@
 namespace ntentan\middleware\auth;
 
 use ntentan\utils\Input;
-use ntentan\Context;
 
 /**
  * An authentication method that receives a username and password through an HTTP request.
@@ -11,7 +10,9 @@ use ntentan\Context;
  */
 class HttpRequestAuthMethod extends AbstractAuthMethod
 {
-    private function isExcluded($route, $excludedRoutes, $context)
+    use Redirects;
+
+    private function isExcluded($route, $excludedRoutes)
     {
         foreach($excludedRoutes as $excluded) {
             if($route === $excluded) {
@@ -23,7 +24,6 @@ class HttpRequestAuthMethod extends AbstractAuthMethod
     
     public function login($route)
     {
-        $context = Context::getInstance();
         $parameters = $this->getParameters();
         $usernameField = $parameters->get('username_field', "username");
         $passwordField = $parameters->get('password_field', "password");
@@ -31,15 +31,15 @@ class HttpRequestAuthMethod extends AbstractAuthMethod
         if (Input::exists(Input::POST, $usernameField) && Input::exists(Input::POST, $passwordField)) {
             $username = Input::post($usernameField);
             if ($this->authLocalPassword($username, Input::post($passwordField))) {
-                return $context->getRedirect($parameters->get('success_redirect', $context->getUrl('/')));
+                return $this->getRedirect()->toUrl($parameters->get('success_redirect', $this->context->getUrl('/')));
             } else {
                 return false;
             }
         }
         
         $excluded = array_merge($parameters->get('excluded_routes', []), [$parameters->get('login_route', 'login')]);
-        if(!$this->isExcluded($route['route'], $excluded, $context)) {
-            return $context->getRedirect($parameters->get('login_route', '/login'));
+        if(!$this->isExcluded($route['route'], $excluded)) {
+            return $this->getRedirect()->toUrl($parameters->get('login_route', '/login'));
         }
     }
 }

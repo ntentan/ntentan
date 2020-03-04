@@ -7,9 +7,16 @@ use ntentan\utils\Text;
 
 class MvcModelFactory implements ModelFactoryInterface
 {
+    private $context;
+
+    public function __construct(Context $context)
+    {
+        $this->context = $context;
+    }
+
     public function createModel($name, $context)
     {
-        $namespace = Context::getInstance()->getNamespace();
+        $namespace = $this->context->getNamespace();
         if ($context == nibii\Relationship::BELONGS_TO) {
             $name = Text::pluralize($name);
         }
@@ -47,7 +54,7 @@ class MvcModelFactory implements ModelFactoryInterface
 
     public function getClassName($model)
     {
-        $namespace = Context::getInstance()->getNamespace();
+        $namespace = $this->context->getNamespace();
         return "\\{$namespace}\\models\\" . Text::ucamelize($model);
     }
 }
