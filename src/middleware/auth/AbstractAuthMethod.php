@@ -29,7 +29,7 @@ abstract class AbstractAuthMethod
                 return password_verify($password, $storedPassword);
             }
         );
-        if ($passwordCrypt($password, $result->{$passwordField}) && $result->blocked != '1') {
+        if ($result && $passwordCrypt($password, $result->{$passwordField}) && $result->blocked != '1') {
             Session::set("logged_in", true);
             Session::set("username", $username);
             Session::set("user_id", $result["id"]);
