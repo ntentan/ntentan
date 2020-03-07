@@ -26,7 +26,7 @@ class ViewBinder implements ModelBinderInterface
     {
         $className = strtolower(substr((new \ReflectionClass($controller))->getShortName(), 0, -10));
         $action = $controller->getActionMethod();
-        $this->templates->prependPath("views/{$className}");
+        $this->templates->prependPath(APP_HOME . "views/{$className}");
         if ($instance->getTemplate() == null) {
             $instance->setTemplate("{$className}_{$action}.tpl.php");
         }

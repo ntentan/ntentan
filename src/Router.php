@@ -45,7 +45,6 @@ class Router
     public function route($route, $prefix = null)
     {
         $this->route = substr($route, strlen($prefix));
-        $parameters = [];
 
         // Go through predefined routes till a match is found
         foreach ($this->routeOrder as $routeName) {

@@ -124,8 +124,9 @@ class DefaultControllerFactory implements ControllerFactoryInterface
             }
         );
 
-        if (isset($methods[$path . Input::server('REQUEST_METHOD')])) {
-            return $methods[$path . Input::server('REQUEST_METHOD')];
+        $specialMethod = $path . Input::server('REQUEST_METHOD');
+        if (isset($methods[$specialMethod])) {
+            return $methods[$specialMethod];
         } elseif (isset($methods[$path])) {
             return $methods[$path];
         }

@@ -10,13 +10,8 @@ use ntentan\controllers\model_binders\UploadedFileBinder;
 use ntentan\controllers\model_binders\ViewBinder;
 use ntentan\controllers\ModelBinderRegistry;
 use ntentan\exceptions\NtentanException;
-use ntentan\honam\factories\SmartyEngineFactory;
-use ntentan\honam\TemplateFileResolver;
-use ntentan\honam\TemplateRenderer;
-use ntentan\honam\Templates;
 use ntentan\interfaces\ControllerFactoryInterface;
 use ntentan\kaikai\Cache;
-use ntentan\middleware\MvcMiddleware;
 use ntentan\nibii\factories\DriverAdapterFactory;
 use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
 use ntentan\nibii\interfaces\ModelFactoryInterface;
@@ -31,12 +26,6 @@ use ntentan\nibii\factories\DefaultValidatorFactory;
 use ntentan\kaikai\CacheBackendInterface;
 use ntentan\middleware\mvc\DefaultControllerFactory;
 use ntentan\middleware\MiddlewareFactoryRegistry;
-use ntentan\middleware\MvcMiddlewareFactory;
-use ntentan\honam\EngineRegistry;
-use ntentan\honam\factories\MustacheEngineFactory;
-use ntentan\honam\factories\PhpEngineFactory;
-use ntentan\honam\engines\php\HelperVariable;
-use ntentan\honam\engines\php\Janitor;
 
 /**
  * Wires up the panie IoC container for ntentan.
@@ -91,6 +80,12 @@ class ContainerBuilder implements ContainerBuilderInterface
                     $modelBinderRegistry->register(View::class, ViewBinder::class);
                     $modelBinderRegistry->register(UploadedFile::class, UploadedFileBinder::class);
                     $modelBinderRegistry->register(Redirect::class, RedirectBinder::class);
+
+                    $customBinders = require APP_HOME . "bootstrap/model_binders.php";
+                    foreach($customBinders as $class => $binder) {
+                        $modelBinderRegistry->register($class, $binder);
+                    }
+
                     return $modelBinderRegistry;
                 }
             ],
@@ -128,7 +123,7 @@ class ContainerBuilder implements ContainerBuilderInterface
             Config::class => [
                 function(){
                     $config = new Config();
-                    $config->readPath('config');
+                    $config->readPath(APP_HOME . 'config');
                     return $config;
                 },
                 'singleton' => true

@@ -31,8 +31,8 @@ class ServiceContainerBuilder
             TemplateFileResolver::class => [
                 function() {
                     $fileResolver = new TemplateFileResolver();
-                    $fileResolver->appendToPathHierarchy('views/shared');
-                    $fileResolver->appendToPathHierarchy('views/layouts');
+                    $fileResolver->appendToPathHierarchy(APP_HOME . 'views/shared');
+                    $fileResolver->appendToPathHierarchy(APP_HOME . 'views/layouts');
 
                     return $fileResolver;
                 },

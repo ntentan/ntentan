@@ -46,6 +46,7 @@ class Model extends RecordWrapper implements \Serializable
      * Get a descriptive name for the model.
      * Names are usually deduced from the class name of the underlying model.
      * @return string
+     * @throws \ReflectionException
      */
     public function getName()
     {
