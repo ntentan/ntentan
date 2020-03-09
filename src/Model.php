@@ -16,8 +16,8 @@ class Model extends RecordWrapper implements \Serializable
     /**
      * Loads a model described by a string.
      * @param string $name
-     * @return self
-     * @throws nibii\NibiiException
+     * @return nibii\RecordWrapper
+     * @throws nibii\exceptions\NibiiException
      * @todo Rewrite this so it works on its own here
      */
     public static function load($name)
@@ -78,7 +78,7 @@ class Model extends RecordWrapper implements \Serializable
     public function serialize()
     {
         return json_encode([
-            'data' => $this->modelData,
+            'data' => serialize($this->modelData),
             'table' => $this->table,
             'schema' => $this->schema,
             'hasMany' => $this->hasMany,
@@ -87,10 +87,16 @@ class Model extends RecordWrapper implements \Serializable
         ]);
     }
 
+    public function __debugInfo()
+    {
+        $data = $this->getData();
+        return $this->hasMultipleItems() ? $data : isset($data[0]) ? $data[0] : [];
+    }
+
     public function unserialize($serialized)
     {
         $unserialized = json_decode($serialized, true);
-        $this->modelData = $unserialized['data'];
+        $this->modelData = unserialize($unserialized['data']);
         $this->table = $unserialized['table'];
         $this->schema = $unserialized['schema'];
         $this->hasMany = $unserialized['hasMany'];
