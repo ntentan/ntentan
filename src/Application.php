@@ -49,9 +49,8 @@ class Application
      * @param PipelineRunner $runner
      * @param Cache $cache
      * @param SessionContainerFactory $sessionContainerFactory
-     * @param string $namespace
      */
-    public final function __construct(Context $context, Router $router, Config $config, PipelineRunner $runner, Cache $cache, SessionContainerFactory $sessionContainerFactory, string $namespace)
+    public final function __construct(Context $context, Router $router, Config $config, PipelineRunner $runner, Cache $cache, SessionContainerFactory $sessionContainerFactory)
     {
         $this->context = $context;
         $this->router = $router;
