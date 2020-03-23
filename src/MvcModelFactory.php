@@ -3,6 +3,7 @@
 namespace ntentan;
 
 use ntentan\nibii\interfaces\ModelFactoryInterface;
+use ntentan\nibii\ORMContext;
 use ntentan\utils\Text;
 
 class MvcModelFactory implements ModelFactoryInterface
@@ -33,7 +34,7 @@ class MvcModelFactory implements ModelFactoryInterface
     
     public function getJunctionClassName($classA, $classB)
     {
-        $classBParts = explode('\\', substr(nibii\Nibii::getClassName($classB), 1));
+        $classBParts = explode('\\', substr($this->getClassName($classB), 1));
         $classAParts = explode('\\', $classA);
         $joinerParts = [];
 
