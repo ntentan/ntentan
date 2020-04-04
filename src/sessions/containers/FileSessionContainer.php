@@ -66,7 +66,7 @@ class FileSessionContainer extends AbstractSessionContainer
 
     public function gc($lifetime)
     {
-        foreach (glob("{$this->path}/sess_*") as $filename) {
+        foreach (glob("{$this->sessionPath}/sess_*") as $filename) {
             if (filemtime($filename) + $this->lifespan < time()) {
                 unlink($file);
             }
