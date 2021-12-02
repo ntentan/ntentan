@@ -164,6 +164,8 @@ class View implements RenderableInterface, ThemableInterface
         }
         if ($this->layout != false) {
             return $this->templates->render($this->layout, $viewData);
+        } else {
+            return $renderedTemplate;
         }
     }
 }
