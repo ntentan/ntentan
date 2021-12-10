@@ -81,7 +81,7 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         $attributes = [];
         foreach ($lines as $line) {
             if (preg_match("/@ntentan\.(?<attribute>[a-z_.]+)\s+(?<value>.+)/", $line, $matches)) {
-                $attributes[$matches['attribute']] = $matches['value'];
+                $attributes[$matches['attribute']] = trim($matches['value']);
             }
         }
         return $attributes;
