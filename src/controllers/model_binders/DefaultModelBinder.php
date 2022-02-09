@@ -3,17 +3,18 @@
 namespace ntentan\controllers\model_binders;
 
 use ntentan\utils\Input;
+use ntentan\utils\Text;
 use ntentan\Controller;
 use ntentan\controllers\ModelBinderInterface;
 
 /**
- * This class
+ * This class is responsible for binding request data with standard ntentan models or classes.
  *
  * @author ekow
  */
 class DefaultModelBinder implements ModelBinderInterface
 {
-    private $bound;
+
 
     /**
      *
@@ -38,16 +39,15 @@ class DefaultModelBinder implements ModelBinderInterface
 
     public function bind(Controller $controller, string $type, string $name, array $parameters, $instance = null)
     {
-        $this->bound = false;
         $fields = $this->getClassFields($instance);
         if (is_a($instance, '\ntentan\Model')) {
             $fields = array_merge($fields, $this->getModelFields($instance));
         }
-        $requestData = Input::post() + Input::get(); //@todo look at using parameters for this
+        $requestData = Input::post() + Input::get();
         foreach ($fields as $field) {
-            if (isset($requestData[$field])) {
-                $instance->$field = $requestData[$field] == '' ? null : $requestData[$field];
-                $this->bound = true;
+            $decamelized = Text::deCamelize($field);
+            if (isset($requestData[$decamelized])) {
+                $instance->$field = $requestData[$decamelized] == '' ? null : $requestData[$decamelized];
             }
         }
         return $instance;
