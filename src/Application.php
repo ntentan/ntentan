@@ -58,7 +58,7 @@ class Application
         $this->runner = $runner;
         $this->cache = $cache;
         $this->sessionContainerFactory = $sessionContainerFactory;
-        $this->prefix = $config->get('app.prefix');
+        $this->prefix = $config->get('app.prefix') ?? "";
     }
 
     protected function setup() : void
@@ -97,7 +97,7 @@ class Application
     {
         $this->setup();
         $this->sessionContainerFactory->createSessionContainer();
-        $route = $this->router->route(substr(parse_url(Input::server('REQUEST_URI'), PHP_URL_PATH), 1), $this->prefix);
+        $route = $this->router->route(substr(parse_url(filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL), PHP_URL_PATH), 1), $this->prefix);
         $this->context->setParameter('route', $route['route']);
         $this->context->setParameter('route_parameters', $route['parameters']);
         $pipeline = $this->buildPipeline($route['description']['parameters']['pipeline'] ?? $this->defaultPipeline);

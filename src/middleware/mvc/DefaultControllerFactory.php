@@ -60,7 +60,8 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         if (isset($params[$methodParameter->name]) || isset($params[$decamelizedParameter])) {
             $invokeParameters[] = $params[$methodParameter->name] ?? $params[$decamelizedParameter];
         } else {
-            $type = $methodParameter->getClass();
+            //$type = $methodParameter->getClass();
+            $type = $methodParameter->getType();
             if ($type !== null) {
                 $binder = $this->serviceContainer->resolve($this->modelBinderRegistry->get($type->getName()));
                 $instance = null;
@@ -124,7 +125,7 @@ class DefaultControllerFactory implements ControllerFactoryInterface
             }
         );
 
-        $specialMethod = $path . Input::server('REQUEST_METHOD');
+        $specialMethod = $path . filter_var($_SERVER['REQUEST_METHOD']); //Input::server('REQUEST_METHOD');
         if (isset($methods[$specialMethod])) {
             return $methods[$specialMethod];
         } elseif (isset($methods[$path])) {
