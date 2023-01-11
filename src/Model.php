@@ -11,7 +11,7 @@ use ntentan\atiaa\Driver;
  *
  * @method static fetch
  */
-class Model extends RecordWrapper implements \Serializable
+class Model extends RecordWrapper
 {
     /**
      * Loads a model described by a string.
@@ -75,37 +75,36 @@ class Model extends RecordWrapper implements \Serializable
         return $this->getAdapter()->getDriver();
     }
 
-    public function serialize()
+    public function __serialize()
     {
-        return json_encode([
+        return [
             'data' => serialize($this->modelData),
             'table' => $this->table,
             'schema' => $this->schema,
             'hasMany' => $this->hasMany,
             'belongsTo' => $this->belongsTo,
             'manyHaveMany' => $this->manyHaveMany
-        ]);
+        ];
     }
 
     public function __debugInfo()
     {
         $data = $this->getData();
-        return $this->hasMultipleItems() ? $data : isset($data[0]) ? $data[0] : [];
+        return $this->hasMultipleItems() ? $data : (isset($data[0]) ? $data[0] : []);
     }
 
-    public function unserialize($serialized)
+    public function __unserialize($data)
     {
-        $unserialized = json_decode($serialized, true);
-        $this->modelData = unserialize($unserialized['data']);
-        $this->table = $unserialized['table'];
-        $this->schema = $unserialized['schema'];
-        $this->hasMany = $unserialized['hasMany'];
-        $this->belongsTo = $unserialized['belongsTo'];
-        $this->manyHaveMany = $unserialized['manyHaveMany'];
+        $this->modelData = unserialize($data['data']);
+        $this->table = $data['table'];
+        $this->schema = $data['schema'];
+        $this->hasMany = $data['hasMany'];
+        $this->belongsTo = $data['belongsTo'];
+        $this->manyHaveMany = $data['manyHaveMany'];
         $this->initialize();
     }
 
-    public function count($query = null)
+    public function count($query = null): int
     {
         if (isset($this) && $this instanceof self) {
             return parent::count($query);
