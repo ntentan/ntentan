@@ -11,8 +11,9 @@ use ntentan\panie\Container;
 use ntentan\Context;
 use ntentan\utils\Text;
 use ntentan\Controller;
-use ntentan\utils\Input;
 use ntentan\exceptions\ControllerActionNotFoundException;
+use ntentan\attributes\Action;
+use ntentan\attributes\RequestMethod;
 use ntentan\config\Config;
 
 /**
@@ -76,38 +77,50 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         }
     }
 
-    private function parseDocComment($comment)
-    {
-        $lines = explode("\n", $comment);
-        $attributes = [];
-        foreach ($lines as $line) {
-            if (preg_match("/@ntentan\.(?<attribute>[a-z_.]+)\s+(?<value>.+)/", $line, $matches)) {
-                $attributes[$matches['attribute']] = trim($matches['value']);
-            }
-        }
-        return $attributes;
-    }
-
     private function getListOfMethods($controller, $className, $methods)
     {
         $results = [];
         foreach ($methods as $method) {
             $methodName = $method->getName();
+
+            // Skip internal methods
             if (substr($methodName, 0, 2) == '__') {
                 continue;
             }
-            $docComments = $this->parseDocComment($method->getDocComment());
-            $keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
-            if(isset($results[$keyName]) && $method->class != $className) {
+            $action = $methodName;
+            $requestMethod = "";
+
+            foreach ($method->getAttributes() as $attribute) {
+                match($attribute->getName()) {
+                    Action::class => $action = $attribute->newInstance()->getPath(),
+                    RequestMethod::class => $requestMethod = $attribute->newInstance()->getType()
+                };
+            }
+
+            $methodKey = $action . $requestMethod;
+            if (isset($results[$methodKey]) && $method->class != $className) {
                 continue;
             }
-            $results[$keyName] = [
-                'name' => $method->getName(),
-                'binder' => $docComments['binder']
-                    ?? $controller->getDefaultModelBinderClass()
-                    ?? $this->modelBinderRegistry->getDefaultBinderClass(),
-                'binder_params' => $docComments['binder.params'] ?? ''
+
+            $results[$methodKey] = [
+                'name' => $methodName,
+                'binder' => $binder 
+                    ?? $controller->getDefaultModelBinderClass() 
+                    ?? $this->modelBinderRegistry->getDefaultBinderClass()
             ];
+            //$docComments = $this->parseDocComment($method->getDocComment());
+            //$keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
+
+            // if(isset($results[$keyName]) && $method->class != $className) {
+            //     continue;
+            // }
+            // $results[$keyName] = [
+            //     'name' => $method->getName(),
+            //     'binder' => $docComments['binder']
+            //         ?? $controller->getDefaultModelBinderClass()
+            //         ?? $this->modelBinderRegistry->getDefaultBinderClass(),
+            //     'binder_params' => $docComments['binder.params'] ?? ''
+            // ];
         }
         return $results;
     }
@@ -125,7 +138,7 @@ class DefaultControllerFactory implements ControllerFactoryInterface
             }
         );
 
-        $specialMethod = $path . filter_var($_SERVER['REQUEST_METHOD']); //Input::server('REQUEST_METHOD');
+        $specialMethod = $path . filter_var($_SERVER['REQUEST_METHOD']);
         if (isset($methods[$specialMethod])) {
             return $methods[$specialMethod];
         } elseif (isset($methods[$path])) {

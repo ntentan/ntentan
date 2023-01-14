@@ -6,8 +6,7 @@ use ntentan\nibii\RecordWrapper;
 use ntentan\atiaa\Driver;
 
 /**
- * An extension of the nibii\RecordWrapper which contains specific Ntentan
- * extensions.
+ * An extension of the nibii\RecordWrapper which contains specific extensions to make models in ntentan easier to use.
  *
  * @method static fetch
  */
@@ -85,12 +84,6 @@ class Model extends RecordWrapper
             'belongsTo' => $this->belongsTo,
             'manyHaveMany' => $this->manyHaveMany
         ];
-    }
-
-    public function __debugInfo()
-    {
-        $data = $this->getData();
-        return $this->hasMultipleItems() ? $data : (isset($data[0]) ? $data[0] : []);
     }
 
     public function __unserialize($data)
