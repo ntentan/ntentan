@@ -61,9 +61,8 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         if (isset($params[$methodParameter->name]) || isset($params[$decamelizedParameter])) {
             $invokeParameters[] = $params[$methodParameter->name] ?? $params[$decamelizedParameter];
         } else {
-            //$type = $methodParameter->getClass();
             $type = $methodParameter->getType();
-            if ($type !== null) {
+            if ($type !== null && ! $type->isBuiltin()) {
                 $binder = $this->serviceContainer->resolve($this->modelBinderRegistry->get($type->getName()));
                 $instance = null;
                 $typeName = $type->getName();
@@ -108,19 +107,6 @@ class DefaultControllerFactory implements ControllerFactoryInterface
                     ?? $controller->getDefaultModelBinderClass() 
                     ?? $this->modelBinderRegistry->getDefaultBinderClass()
             ];
-            //$docComments = $this->parseDocComment($method->getDocComment());
-            //$keyName = isset($docComments['action']) ? $docComments['action'] . $docComments['method'] : $methodName;
-
-            // if(isset($results[$keyName]) && $method->class != $className) {
-            //     continue;
-            // }
-            // $results[$keyName] = [
-            //     'name' => $method->getName(),
-            //     'binder' => $docComments['binder']
-            //         ?? $controller->getDefaultModelBinderClass()
-            //         ?? $this->modelBinderRegistry->getDefaultBinderClass(),
-            //     'binder_params' => $docComments['binder.params'] ?? ''
-            // ];
         }
         return $results;
     }
