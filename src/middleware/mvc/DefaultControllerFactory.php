@@ -164,7 +164,7 @@ class DefaultControllerFactory implements ControllerFactoryInterface
             if($output === null) {
                 throw new NtentanException("Output from the $action action cannot be null");
             }
-            return $output;
+            return (string) $output;
         }
         throw new ControllerActionNotFoundException($this, $methodName);
     }
