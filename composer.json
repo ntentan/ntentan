@@ -4,13 +4,9 @@
     "description": "Another PHP application framework.",
     "license" : "MIT",
     "require": {
-        "php": ">=7.1.0",
-        "ntentan/honam" : "@stable",
-        "monolog/monolog" : "@stable",
-        "ntentan/nibii" : "@stable",
+        "php": ">=8.2.0",
         "ntentan/config": "@stable",
-        "ntentan/panie": "@stable",
-        "ntentan/kaikai": "@stable"
+        "ntentan/panie": "@stable"
     },
     "require-dev": {
         "phpunit/phpunit" : "@stable"
@@ -24,7 +20,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "ntentan\\": "src/"
+            "ntentan\\core\\": "src/"
         }
     }
 }
