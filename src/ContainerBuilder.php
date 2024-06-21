@@ -41,111 +41,114 @@ class ContainerBuilder implements ContainerBuilderInterface
 
     public function __construct($namespace)
     {
-        $this->container =new Container();
+        $this->container = new Container();
         $this->container->setup([
-            Context::class => [
-                function($container) use ($namespace) {
-                    return new Context($container->get(Config::class), $namespace);
-                },
-                'singleton' => true
-            ],
-            ModelClassResolverInterface::class => ClassNameResolver::class,
-            ModelJoinerInterface::class => ClassNameResolver::class,
-            TableNameResolverInterface::class => nibii\Resolver::class,
-            DriverFactory::class => [
-                function($container) {
-                    $config = $container->resolve(Config::class);
-                    return new DriverFactory($config->get('db'));
-                }
-            ],
-            ModelFactoryInterface::class => MvcModelFactory::class,
-            ValidatorFactoryInterface::class => DefaultValidatorFactory::class,
-            DriverAdapterFactoryInterface::class => [
-                function($container) {
-                    /** @var Config $config */
-                    $config = $container->resolve(Config::class);
-                    if($config->isKeySet('db')) {
-                        $driver = $config->get('db')['driver'];
-                        if($driver === null) {
-                            throw new NtentanException("Please provide a database configuration that specifies a driver.");
-                        }
-                        return new DriverAdapterFactory($config->get('db')['driver']);
-                    }
-                }
-            ],
-            ModelBinderRegistry::class => [
-                function () {
-                    $modelBinderRegistry = new ModelBinderRegistry();
-                    $modelBinderRegistry->setDefaultBinderClass(DefaultModelBinder::class);
-                    $modelBinderRegistry->register(View::class, ViewBinder::class);
-                    $modelBinderRegistry->register(UploadedFile::class, UploadedFileBinder::class);
-                    $modelBinderRegistry->register(Redirect::class, RedirectBinder::class);
-
-                    $customBinders = require APP_HOME . "bootstrap/model_binders.php";
-                    foreach($customBinders as $class => $binder) {
-                        $modelBinderRegistry->register($class, $binder);
-                    }
-
-                    return $modelBinderRegistry;
-                }
-            ],
-
-            // Wire up the application class
-            Application::class => [ //Application::class,
-                function ($container) use ($namespace) {
-                    $config = $container->get(Config::class);
-                    $application = new Application(
-                        $container->get(Context::class),
-                        $container->get(Router::class),
-                        $config,
-                        $container->get(PipelineRunner::class),
-                        $container->get(Cache::class),
-                        $container->get(SessionContainerFactory::class),
-                        $namespace
-                    );
-                    if($config->isKeySet('db')) {
-                        $application->setDatabaseDriverFactory($container->get(DriverFactory::class));
-                        $application->setOrmFactories(
-                            $container->get(ModelFactoryInterface::class),
-                            $container->get(DriverAdapterFactoryInterface::class),
-                            $container->get(ValidatorFactoryInterface::class)
-                        );
-                    }
-                    return $application;
-                },
-                'calls' => ['setMiddlewareFactoryRegistry'] //, 'setDatabaseDriverFactory', 'setOrmFactories']
-            ],
-
-            //
-            ControllerFactoryInterface::class => DefaultControllerFactory::class,
-
-            // Factory for configuration class
-            Config::class => [
-                function(){
-                    $config = new Config();
-                    $config->readPath(APP_HOME . 'config');
-                    return $config;
-                },
-                'singleton' => true
-            ],
-
-            // Factory for cache backends
-            CacheBackendInterface::class => [
-                function($container){
-                    $backend = $container->resolve(Config::class)->get('cache.backend', 'volatile');
-                    $classname = '\ntentan\kaikai\backends\\' . Text::ucamelize($backend) . 'Cache';
-                    return $container->resolve($classname);
-                },
-                'singleton' => true
-            ]
+            
         ]);
-
-        $bindingsClosure = Closure::bind(Closure::fromCallable(function () { return (require "bootstrap/services.php")['core']; }), null);
-        $this->addBindings($bindingsClosure());
-
-        foreach(require "bootstrap/middleware.php" as $middleware) {
-            $this->registerMiddleWare($middleware[0], $middleware[1]);
-        }
+//        $this->container->setup([
+//            Context::class => [
+//                function($container) use ($namespace) {
+//                    return new Context($container->get(Config::class), $namespace);
+//                },
+//                'singleton' => true
+//            ],
+//            ModelClassResolverInterface::class => ClassNameResolver::class,
+//            ModelJoinerInterface::class => ClassNameResolver::class,
+//            TableNameResolverInterface::class => nibii\Resolver::class,
+//            DriverFactory::class => [
+//                function($container) {
+//                    $config = $container->resolve(Config::class);
+//                    return new DriverFactory($config->get('db'));
+//                }
+//            ],
+//            ModelFactoryInterface::class => MvcModelFactory::class,
+//            ValidatorFactoryInterface::class => DefaultValidatorFactory::class,
+//            DriverAdapterFactoryInterface::class => [
+//                function($container) {
+//                    /** @var Config $config */
+//                    $config = $container->resolve(Config::class);
+//                    if($config->isKeySet('db')) {
+//                        $driver = $config->get('db')['driver'];
+//                        if($driver === null) {
+//                            throw new NtentanException("Please provide a database configuration that specifies a driver.");
+//                        }
+//                        return new DriverAdapterFactory($config->get('db')['driver']);
+//                    }
+//                }
+//            ],
+//            ModelBinderRegistry::class => [
+//                function () {
+//                    $modelBinderRegistry = new ModelBinderRegistry();
+//                    $modelBinderRegistry->setDefaultBinderClass(DefaultModelBinder::class);
+//                    $modelBinderRegistry->register(View::class, ViewBinder::class);
+//                    $modelBinderRegistry->register(UploadedFile::class, UploadedFileBinder::class);
+//                    $modelBinderRegistry->register(Redirect::class, RedirectBinder::class);
+//
+//                    $customBinders = require APP_HOME . "bootstrap/model_binders.php";
+//                    foreach($customBinders as $class => $binder) {
+//                        $modelBinderRegistry->register($class, $binder);
+//                    }
+//
+//                    return $modelBinderRegistry;
+//                }
+//            ],
+//
+//            // Wire up the application class
+//            Application::class => [ //Application::class,
+//                function ($container) use ($namespace) {
+//                    $config = $container->get(Config::class);
+//                    $application = new Application(
+//                        $container->get(Context::class),
+//                        $container->get(Router::class),
+//                        $config,
+//                        $container->get(PipelineRunner::class),
+//                        $container->get(Cache::class),
+//                        $container->get(SessionContainerFactory::class),
+//                        $namespace
+//                    );
+//                    if($config->isKeySet('db')) {
+//                        $application->setDatabaseDriverFactory($container->get(DriverFactory::class));
+//                        $application->setOrmFactories(
+//                            $container->get(ModelFactoryInterface::class),
+//                            $container->get(DriverAdapterFactoryInterface::class),
+//                            $container->get(ValidatorFactoryInterface::class)
+//                        );
+//                    }
+//                    return $application;
+//                },
+//                'calls' => ['setMiddlewareFactoryRegistry'] //, 'setDatabaseDriverFactory', 'setOrmFactories']
+//            ],
+//
+//            //
+//            ControllerFactoryInterface::class => DefaultControllerFactory::class,
+//
+//            // Factory for configuration class
+//            Config::class => [
+//                function(){
+//                    $config = new Config();
+//                    $config->readPath(APP_HOME . 'config');
+//                    return $config;
+//                },
+//                'singleton' => true
+//            ],
+//
+//            // Factory for cache backends
+//            CacheBackendInterface::class => [
+//                function($container){
+//                    $backend = $container->resolve(Config::class)->get('cache.backend', 'volatile');
+//                    $classname = '\ntentan\kaikai\backends\\' . Text::ucamelize($backend) . 'Cache';
+//                    return $container->resolve($classname);
+//                },
+//                'singleton' => true
+//            ]
+//        ]);
+//
+//        $bindingsClosure = Closure::bind(Closure::fromCallable(function () { return (require "bootstrap/services.php")['core']; }), null);
+//        $this->addBindings($bindingsClosure());
+//
+//        foreach(require "bootstrap/middleware.php" as $middleware) {
+//            $this->registerMiddleWare($middleware[0], $middleware[1]);
+//        }
 
     }
 

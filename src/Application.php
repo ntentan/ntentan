@@ -2,48 +2,24 @@
 
 namespace ntentan;
 
-use ntentan\atiaa\DbContext;
-use ntentan\atiaa\DriverFactory;
-use ntentan\kaikai\Cache;
-use ntentan\nibii\interfaces\DriverAdapterFactoryInterface;
-use ntentan\nibii\interfaces\ModelFactoryInterface;
-use ntentan\nibii\ORMContext;
-use ntentan\config\Config;
-use ntentan\sessions\SessionContainerFactory;
-use ntentan\nibii\interfaces\ValidatorFactoryInterface;
-use ntentan\middleware\MiddlewareFactoryRegistry;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Application bootstrapping class.
  */
 class Application
 {
-    private $defaultPipeline = [];
-    protected $router;
-    protected $config;
-    protected $prefix;
-    private $runner;
-    private $context;
-    private $cache;
-    private $sessionContainerFactory;
-
+    private RequestInterface $request;
+    private ResponseInterface $response;
+    
     /**
-     * @var MiddlewareFactoryRegistry
+     * Create an instance of the application.
      */
-    protected $middlewareFactoryRegistry;
-
-    /**
-     * 
-     */
-    public final function __construct(SessionContainerFactory $sessionContainerFactory)
+    public final function __construct(RequestInterface $request, ResponseInterface $response) //SessionContainerFactory $sessionContainerFactory)
     {
-//        $this->context = $context;
-//        $this->router = $router;
-//        $this->config = $config;
-//        $this->runner = $runner;
-//        $this->cache = $cache;
-        $this->sessionContainerFactory = $sessionContainerFactory;
-//        $this->prefix = $config->get('app.prefix') ?? "";
+        $this->request = $request;
+        $this->response = $response;
     }
 
 //    protected function setup() : void
