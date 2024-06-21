@@ -6,7 +6,10 @@
     "require": {
         "php": ">=8.2.0",
         "ntentan/config": "@stable",
-        "ntentan/panie": "@stable"
+        "ntentan/panie": "@stable",
+        "psr/http-message": "^2.0",
+        "psr/http-server-handler": "^1.0",
+        "psr/http-server-middleware": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit" : "@stable"
