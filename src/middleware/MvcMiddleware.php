@@ -23,7 +23,7 @@ class MvcMiddleware implements Middleware
     #[\Override]
     public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
-        return $this->controllerFactory->create($request)->run();      
+        $controller = $this->controllerFactory->create($request);      
     }    
     
     public function setup(array $config): MvcMiddleware

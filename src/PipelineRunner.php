@@ -6,15 +6,13 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Description of Runner
- *
+ * Executes the pipeline.
+ * 
  * @author ekow
  */
-class PipelineRunner 
+class PipelineRunner  
 {
-
     private middleware\Registry $registry;
-//    private array $middlewareClasses;
     private array $pipeline;
 
     public function __construct(middleware\Registry $registry) 
@@ -26,8 +24,8 @@ class PipelineRunner
     {
         $this->pipeline = $pipeline;
         return $this->registry
-                        ->get($this->pipeline[0][0], $this->pipeline[0][1] ?? [])
-                        ->run($request, $response, $this);
+            ->get($this->pipeline[0][0], $this->pipeline[0][1] ?? [])
+            ->run($request, $response, $this);
     }
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface 
