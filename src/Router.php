@@ -42,27 +42,18 @@ class Router
      * @param string $prefix
      * @return array
      */
-    public function route($route, $prefix = null)
+    public function route(string $path, string $query, string $prefix = null): array
     {
-        $this->route = substr($route, strlen($prefix));
+        $this->route = substr($path, strlen($prefix));
 
         // Go through predefined routes till a match is found
         foreach ($this->routeOrder as $routeName) {
             $routeDescription = $this->routes[$routeName];
             $parameters = $this->match($this->route, $routeDescription);
             if ($parameters !== false) {
-                return [
-                    'route' => $this->route,
-                    'parameters' => $this->fillInDefaultParameters($routeDescription, $parameters),
-                    'description' => $routeDescription
-                ];
+                return $this->fillInDefaultParameters($routeDescription, $parameters);
             }
         }
-        return [
-            'route' => $this->route,
-            'parameters' => [],
-            'description' => $this->routes['main']
-        ];
     }
 
     private function fillInDefaultParameters($routeDescription, $parameters)
@@ -80,7 +71,7 @@ class Router
         $parameters = [];
         if (preg_match("|^{$description['regexp']}$|i", urldecode($route), $matches)) {
             foreach ($matches as $key => $value) {
-                if (!is_numeric($key)) {
+                if (!is_numeric($key) && $value != "") {
                     $parameters[$key] = $this->expandParameter($key, $value);
                 }
             }
@@ -102,7 +93,7 @@ class Router
         return $value;
     }
 
-    private function createRoute($name, $pattern, $parameters)
+    private function createRouteRegex($name, $pattern, $parameters)
     {
         $variables = null;
         if(isset($this->routes[$name])) {
@@ -111,12 +102,12 @@ class Router
         // Generate a PCRE regular expression from pattern
         $regexp = preg_replace_callback(
             "/{(?<prefix>\*|\#)?(?<name>[a-z_][a-zA-Z0-9\_]*)}/", function ($matches) use (&$variables) {
-            $variables[] = $matches['name'];
-            return sprintf(
-                "(?<{$matches['name']}%s>[a-z0-9_.~:#[\]@!$&'()*+,;=%s\s]+)?",
-                $matches['prefix'] == '#' ? '____array' : null, $matches['prefix'] != '' ? "\-/_" : null
-            );
-        }, str_replace('/', '(/)?', $pattern)
+                $variables[] = $matches['name'];
+                return sprintf(
+                    "(?<{$matches['name']}%s>[a-z0-9_.~:#[\]@!$&'()*+,;=%s\s]+)?",
+                    $matches['prefix'] == '#' ? '____array' : null, $matches['prefix'] != '' ? "\-/_" : null
+                );
+            }, str_replace('/', '(/)?', $pattern)
         );
 
         $this->routes[$name] = [
@@ -130,19 +121,19 @@ class Router
 
     public function appendRoute($name, $pattern, $parameters = [])
     {
-        $this->createRoute($name, $pattern, $parameters);
+        $this->createRouteRegex($name, $pattern, $parameters);
         $this->routeOrder[] = $name;
     }
 
     public function prependRoute($name, $pattern, $parameters = [])
     {
-        $this->createRoute($name, $pattern, $parameters);
+        $this->createRouteRegex($name, $pattern, $parameters);
         array_unshift($this->routeOrder, $name);
     }
 
     /**
      * Get the details for a particular route.
-     * Details can be returned by reference so modifications can be made before the router runs.
+     * Details are returned by reference so modifications can be made before the router runs.
      *
      * @param $name
      * @return mixed
@@ -155,9 +146,9 @@ class Router
     public function setRoutes($routes)
     {
         foreach($routes as $route) {
-            $this->createRoute($route['name'], $route['pattern'], $route['parameters']);
+            $this->createRouteRegex($route['name'], $route['pattern'], $route['parameters']);
             $this->routeOrder[] = $route['name'];
         }
-
     }
 }
+

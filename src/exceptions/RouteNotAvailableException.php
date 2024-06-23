@@ -38,9 +38,9 @@ class RouteNotAvailableException extends NtentanException
 {
     public function __construct($message, $route = null)
     {
-        if ($route == '') {
-            $route = Context::getInstance()->getParameter('route');
-        }
+//        if ($route == '') {
+//            $route = Context::getInstance()->getParameter('route');
+//        }
         parent::__construct("Route [$route] is currently not available. App says: [$message]");
     }
 }

@@ -2,33 +2,33 @@
 
 namespace ntentan\middleware;
 
-use ntentan\honam\TemplateFileResolver;
-use ntentan\honam\Templates;
-use ntentan\utils\Input;
-use ntentan\Context;
-use ntentan\AbstractMiddleware;
 use ntentan\interfaces\ControllerFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use ntentan\Middleware;
 
 /**
  * 
  */
-class MvcMiddleware extends AbstractMiddleware
+class MvcMiddleware implements Middleware
 {
-    /**
-     *
-     * @var ControllerFactoryInterface
-     */
-    private $controllerFactory;
+
+    private ControllerFactoryInterface $controllerFactory;
 
     public function __construct(ControllerFactoryInterface $controllerFactory)
     {
         $this->controllerFactory = $controllerFactory;
     }
 
-    public function run($route, $response)
+    #[\Override]
+    public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
-        $parameters = $route['parameters'] + Input::get() + Input::post();
-        $controller = $this->controllerFactory->createController($parameters);
-        return $this->controllerFactory->executeController($controller, $parameters);        
+        return $this->controllerFactory->create($request)->run();      
     }    
+    
+    public function setup(array $config): MvcMiddleware
+    {
+        $this->controllerFactory->setup($config['controllers']);
+        return $this;
+    }
 }

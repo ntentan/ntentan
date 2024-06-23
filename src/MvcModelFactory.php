@@ -10,10 +10,10 @@ class MvcModelFactory implements ModelFactoryInterface
 {
     private $context;
 
-    public function __construct(Context $context)
-    {
-        $this->context = $context;
-    }
+//    public function __construct(Context $context)
+//    {
+//        $this->context = $context;
+//    }
 
     public function createModel($name, $context)
     {

@@ -3,13 +3,13 @@
 namespace ntentan\interfaces;
 
 use ntentan\Controller;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
-/**
- * 
- * @author ekow
- */
+
 interface ControllerFactoryInterface
 {
-    public function createController(array &$parameters): Controller;
-    public function executeController(Controller $controller, array $parameters): string;
+    public function create(ServerRequestInterface $request): Controller;
+    public function setup(array $config): void;
+    public function run(): ResponseInterface;
 }

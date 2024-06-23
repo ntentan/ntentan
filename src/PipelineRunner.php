@@ -2,34 +2,40 @@
 
 namespace ntentan;
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
 /**
- * Runs a pipeline of application middleware.
+ * Description of Runner
+ *
+ * @author ekow
  */
-class PipelineRunner
+class PipelineRunner 
 {
-    /**
-     * An array of middleware that exist in the pipeline.
-     * @var array<Middleware>
-     */
-    private $pipeline;
 
-    /**
-     * A description of the current rount being executed.
-     * @var array<mixed>
-     */
-    private $route;
+    private middleware\Registry $registry;
+//    private array $middlewareClasses;
+    private array $pipeline;
 
-    public function run($pipeline, $route)
+    public function __construct(middleware\Registry $registry) 
     {
-        $this->pipeline = $pipeline;
-        $this->route = $route;
-        return $this->runMiddleware();
+        $this->registry = $registry;
     }
 
-    public function runMiddleware($response = null)
+    public function run(array $pipeline, ServerRequestInterface $request, ResponseInterface $response): ResponseInterface 
     {
-        $middleware = array_shift($this->pipeline);
-        $middleware->setRunner($this);
-        return $middleware->run($this->route, $response);
+        $this->pipeline = $pipeline;
+        return $this->registry
+                        ->get($this->pipeline[0][0], $this->pipeline[0][1] ?? [])
+                        ->run($request, $response, $this);
+    }
+
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface 
+    {
+        $nextMiddleWare = next($this->pipeline);
+        if ($nextMiddleWare !== false) {
+            $middleware = $this->registry->get($nextMiddleWare[0], $nextMiddleWare[1]);
+            return $middleware->run($request, $response, $this);
+        }
     }
 }

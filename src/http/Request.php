@@ -2,19 +2,31 @@
 
 namespace ntentan\http;
 
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\RequestInterface;
 
 /**
- * Description of Request
+ * Represents an HTTP request.
  *
  * @author ekow
  */
-class Request implements RequestInterface {
+class Request implements ServerRequestInterface {
 
-    private $headers = null;
+    private array $headers;
+    private UriInterface $uri;
+    
+    public function __construct(UriInterface $uri) {
+        $this->uri = $uri;
+    }
+    
+    private function initializeHeaders(): void {
+        if (empty($this->headers)) {
+            
+        }
+    }
 
     #[\Override]
     public function getBody(): StreamInterface {
@@ -23,9 +35,7 @@ class Request implements RequestInterface {
 
     #[\Override]
     public function getHeader(string $name): array {
-        if ($this->headers === null) {
-            
-        }
+
     }
 
     #[\Override]
@@ -55,7 +65,7 @@ class Request implements RequestInterface {
 
     #[\Override]
     public function getUri(): UriInterface {
-        
+        return $this->uri;
     }
 
     #[\Override]
@@ -100,6 +110,71 @@ class Request implements RequestInterface {
 
     #[\Override]
     public function withoutHeader(string $name): MessageInterface {
+        
+    }
+
+    #[\Override]
+    public function getAttribute(string $name, $default = null): mixed {
+        
+    }
+
+    #[\Override]
+    public function getAttributes(): array {
+        
+    }
+
+    #[\Override]
+    public function getCookieParams(): array {
+        
+    }
+
+    #[\Override]
+    public function getParsedBody() {
+        
+    }
+
+    #[\Override]
+    public function getQueryParams(): array {
+        
+    }
+
+    #[\Override]
+    public function getServerParams(): array {
+        
+    }
+
+    #[\Override]
+    public function getUploadedFiles(): array {
+        
+    }
+
+    #[\Override]
+    public function withAttribute(string $name, $value): ServerRequestInterface {
+        
+    }
+
+    #[\Override]
+    public function withCookieParams(array $cookies): ServerRequestInterface {
+        
+    }
+
+    #[\Override]
+    public function withParsedBody($data): ServerRequestInterface {
+        
+    }
+
+    #[\Override]
+    public function withQueryParams(array $query): ServerRequestInterface {
+        
+    }
+
+    #[\Override]
+    public function withUploadedFiles(array $uploadedFiles): ServerRequestInterface {
+        
+    }
+
+    #[\Override]
+    public function withoutAttribute(string $name): ServerRequestInterface {
         
     }
 }

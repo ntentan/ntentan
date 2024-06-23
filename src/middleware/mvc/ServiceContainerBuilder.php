@@ -1,6 +1,4 @@
 <?php
-
-
 namespace ntentan\middleware\mvc;
 
 
@@ -19,11 +17,10 @@ use ntentan\panie\Container;
 
 class ServiceContainerBuilder
 {
-    private $context;
     private $templates;
     private $container;
 
-    public function __construct(Context $context)
+    public function __construct()
     {
         $this->container = new Container();
         $this->container->setup([
@@ -38,7 +35,7 @@ class ServiceContainerBuilder
                 },
                 'singleton' => true
             ],
-            Context::class => [function() use ($context) {return $context;}],
+//            Context::class => [function() use ($context) {return $context;}],
             Config::class => [function() use ($context) {return $context->getConfig();}],
             TemplateRenderer::class => [
                 function($container) {

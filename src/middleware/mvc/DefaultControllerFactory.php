@@ -2,19 +2,21 @@
 
 namespace ntentan\middleware\mvc;
 
-use Closure;
 use ntentan\controllers\ModelBinderRegistry;
 use ntentan\exceptions\NtentanException;
 use ntentan\interfaces\ControllerFactoryInterface;
 use ntentan\kaikai\Cache;
-use ntentan\panie\Container;
 use ntentan\Context;
 use ntentan\utils\Text;
 use ntentan\Controller;
 use ntentan\exceptions\ControllerActionNotFoundException;
 use ntentan\attributes\Action;
 use ntentan\attributes\RequestMethod;
-use ntentan\config\Config;
+use ntentan\Router;
+use ntentan\panie\Inject;
+
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class DefaultControllerFactory
@@ -22,21 +24,26 @@ use ntentan\config\Config;
  */
 class DefaultControllerFactory implements ControllerFactoryInterface
 {
-    /**
-     * A container used as a service container for the controller execution phase.
-     * @var Container
-     */
-    private $serviceContainer;
+    // /**
+    //  * A container used as a service container for the controller execution phase.
+    //  * @var Container
+    //  */
+    // private $serviceContainer;
 
-    /**
-     * An instance of the ModelBinderRegistry that holds model binders for all types.
-     * @var ModelBinderRegistry
-     */
-    private $modelBinderRegistry;
+    // /**
+    //  * An instance of the ModelBinderRegistry that holds model binders for all types.
+    //  * @var ModelBinderRegistry
+    //  */
+    // private $modelBinderRegistry;
 
-    protected $context;
+    // private Context $context;
 
-    private $cache;
+    // private $cache;
+    
+    private Router $router;
+
+    #[Inject]
+    private string $namespace = 'app';
 
     /**
      * DefaultControllerFactory constructor.
@@ -45,14 +52,14 @@ class DefaultControllerFactory implements ControllerFactoryInterface
      * @param ModelBinderRegistry $modelBinderRegistry
      * @param ServiceContainerBuilder $serviceContainerBuilder
      */
-    public function __construct(Context $context, Cache $cache, ModelBinderRegistry $modelBinderRegistry, ServiceContainerBuilder $serviceContainerBuilder)
+    public function __construct(Router $router) //ModelBinderRegistry $modelBinderRegistry, ServiceContainerBuilder $serviceContainerBuilder, Router $router)
     {
-        $this->serviceContainer = $serviceContainerBuilder->getContainer();
-        $this->context = $context;
-        $this->cache = $cache;
-        $this->modelBinderRegistry = $modelBinderRegistry;
-        $closure = Closure::bind(Closure::fromCallable(function () { return (require "bootstrap/services.php")['mvc']; }), null);
-        $this->serviceContainer->setup($closure());
+        $this->router = $router;
+        // $this->namespace = $context->getNamespace();
+//        $this->serviceContainer = $serviceContainerBuilder->getContainer();
+//        $this->modelBinderRegistry = $modelBinderRegistry;
+//        $closure = Closure::bind(Closure::fromCallable(function () { return (require "bootstrap/services.php")['mvc']; }), null);
+//        $this->serviceContainer->setup($closure());
     }
     
     private function bindParameter(Controller $controller, &$invokeParameters, $methodParameter, $params)
@@ -133,19 +140,27 @@ class DefaultControllerFactory implements ControllerFactoryInterface
 
         return false;
     }
-
-    public function createController(array &$parameters): Controller
+    
+    #[\Override]
+    public function create(ServerRequestInterface $request): Controller
     {
-        $controller = $parameters['controller'];
-        if($controller == null) {
-            throw new NtentanException("There is no controller specified for this request");
-        }
-        $controllerClassName = sprintf('\%s\controllers\%sController', $this->context->getNamespace(), Text::ucamelize($controller));
-        $this->context->setParameter('controller_path', $this->context->getUrl($controller));
-        return $this->serviceContainer->resolve($controllerClassName);
+        $uri = $request->getUri();
+        $parameters = $this->router->route($uri->getPath(), $uri->getQuery());
+        $controllerClassName = sprintf(
+            '\%s\controllers\%sController', $this->namespace, Text::ucamelize($parameters['controller'])
+        );
+        return new $controllerClassName();
+//        $controller = $parameters['controller'];
+//        if($controller == null) {
+//            throw new NtentanException("There is no controller specified for this request");
+//        }
+//        $controllerClassName = sprintf('\%s\controllers\%sController', $this->context->getNamespace(), Text::ucamelize($controller));
+//        $this->context->setParameter('controller_path', $this->context->getUrl($controller));
+//        return $this->serviceContainer->resolve($controllerClassName);
     }
 
-    public function executeController(Controller $controller, array $parameters): string
+    #[\Override]
+    public function run(): ResponseInterface //(Controller $controller, array $parameters): string
     {
         $action = $parameters['action'];
         $methodName = Text::camelize($action);
@@ -167,5 +182,10 @@ class DefaultControllerFactory implements ControllerFactoryInterface
             return (string) $output;
         }
         throw new ControllerActionNotFoundException($this, $methodName);
+    }
+
+    #[\Override]
+    public function setup(array $config): void {
+        $this->router->setRoutes($config['routes']);
     }
 }
