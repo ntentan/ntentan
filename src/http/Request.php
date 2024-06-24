@@ -50,7 +50,7 @@ class Request implements ServerRequestInterface {
 
     #[\Override]
     public function getMethod(): string {
-        
+        return $_SERVER['REQUEST_METHOD'];
     }
 
     #[\Override]

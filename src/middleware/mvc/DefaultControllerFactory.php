@@ -14,6 +14,7 @@ use ntentan\attributes\Action;
 use ntentan\attributes\RequestMethod;
 use ntentan\Router;
 use ntentan\panie\Inject;
+use ntentan\panie\Container;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -28,7 +29,7 @@ class DefaultControllerFactory implements ControllerFactoryInterface
     //  * A container used as a service container for the controller execution phase.
     //  * @var Container
     //  */
-    // private $serviceContainer;
+    private Container $serviceContainer;
 
     // /**
     //  * An instance of the ModelBinderRegistry that holds model binders for all types.
@@ -52,9 +53,10 @@ class DefaultControllerFactory implements ControllerFactoryInterface
      * @param ModelBinderRegistry $modelBinderRegistry
      * @param ServiceContainerBuilder $serviceContainerBuilder
      */
-    public function __construct(Router $router) //ModelBinderRegistry $modelBinderRegistry, ServiceContainerBuilder $serviceContainerBuilder, Router $router)
+    public function __construct(Router $router, ServiceContainerBuilder $containerBuilder) //ModelBinderRegistry $modelBinderRegistry, ServiceContainerBuilder $serviceContainerBuilder, Router $router)
     {
         $this->router = $router;
+        $this->serviceContainer = $containerBuilder->getContainer();
         // $this->namespace = $context->getNamespace();
 //        $this->serviceContainer = $serviceContainerBuilder->getContainer();
 //        $this->modelBinderRegistry = $modelBinderRegistry;
@@ -149,14 +151,15 @@ class DefaultControllerFactory implements ControllerFactoryInterface
         $controllerClassName = sprintf(
             '\%s\controllers\%sController', $this->namespace, Text::ucamelize($parameters['controller'])
         );
-        return new $controllerClassName();
-//        $controller = $parameters['controller'];
-//        if($controller == null) {
-//            throw new NtentanException("There is no controller specified for this request");
-//        }
-//        $controllerClassName = sprintf('\%s\controllers\%sController', $this->context->getNamespace(), Text::ucamelize($controller));
-//        $this->context->setParameter('controller_path', $this->context->getUrl($controller));
-//        return $this->serviceContainer->resolve($controllerClassName);
+        $controller = $this->serviceContainer->get($controllerClassName); //new $controllerClassName();
+        
+    //    $controller = $parameters['controller'];
+    //    if($controller == null) {
+    //        throw new NtentanException("There is no controller specified for this request");
+    //    }
+    //    $controllerClassName = sprintf('\%s\controllers\%sController', $this->context->getNamespace(), Text::ucamelize($controller));
+    //    $this->context->setParameter('controller_path', $this->context->getUrl($controller));
+    //    return $this->serviceContainer->resolve($controllerClassName);
     }
 
     #[\Override]
