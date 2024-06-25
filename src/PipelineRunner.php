@@ -12,10 +12,10 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class PipelineRunner  
 {
-    private middleware\Registry $registry;
+    private middleware\MiddlewareRegistry $registry;
     private array $pipeline;
 
-    public function __construct(middleware\Registry $registry) 
+    public function __construct(middleware\MiddlewareRegistry $registry) 
     {
         $this->registry = $registry;
     }

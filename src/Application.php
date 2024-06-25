@@ -26,6 +26,8 @@ class Application
 
     public function execute(array $pipeline): void
     {
-        $this->runner->run($pipeline, $this->request, $this->response);
+        $response = $this->runner->run($pipeline, $this->request, $this->response);
+        http_response_code($response->getStatusCode());
+        echo $response->getBody()->getContents();
     }
 }

@@ -2,8 +2,8 @@
 namespace ntentan\middleware\mvc;
 
 
-use ntentan\config\Config;
-use ntentan\Context;
+//use ntentan\config\Config;
+//use ntentan\Context;
 use ntentan\honam\EngineRegistry;
 use ntentan\honam\engines\php\HelperVariable;
 use ntentan\honam\engines\php\Janitor;
@@ -17,26 +17,26 @@ use ntentan\panie\Container;
 
 class ServiceContainerBuilder
 {
-    private $templates;
+//    private $templates;
     private $container;
 
-    public function __construct()
+    public function __construct(string $home)
     {
         $this->container = new Container();
+        $this->container->provide("string", "home")->with(fn() => $home);
         $this->container->setup([
             Templates::class => [Templates::class, 'singleton' => true],
             TemplateFileResolver::class => [
-                function() {
+                function() use ($home) {
                     $fileResolver = new TemplateFileResolver();
-                    $fileResolver->appendToPathHierarchy(APP_HOME . 'views/shared');
-                    $fileResolver->appendToPathHierarchy(APP_HOME . 'views/layouts');
-
+                    $fileResolver->appendToPathHierarchy("$home/views/shared");
+                    $fileResolver->appendToPathHierarchy("$home/views/layouts");
                     return $fileResolver;
                 },
                 'singleton' => true
             ],
 //            Context::class => [function() use ($context) {return $context;}],
-            Config::class => [function() use ($context) {return $context->getConfig();}],
+//            Config::class => [function() use ($context) {return $context->getConfig();}],
             TemplateRenderer::class => [
                 function($container) {
                     /** @var EngineRegistry $engineRegistry */

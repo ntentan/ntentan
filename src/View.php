@@ -4,6 +4,8 @@ namespace ntentan;
 use ntentan\honam\Templates;
 use ntentan\interfaces\RenderableInterface;
 use ntentan\interfaces\ThemableInterface;
+use ntentan\http\StringStream;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * A wrapper around the honam template engine system that acts as a view class.
@@ -13,73 +15,35 @@ use ntentan\interfaces\ThemableInterface;
  *
  * @author ekow
  */
-class View implements RenderableInterface, ThemableInterface
+class View //implements RenderableInterface //, ThemableInterface
 {
     /**
      * Description of the default layout
      * 
      * @var string
      */
-    private $layout = 'main';
+    private string $layout = 'primary';
     
     /**
      * Description of the default template.
      * 
      * @var string
      */
-    private $template;
-    
-    /**
-     * The lifetime of the cached version of this template.
-     * 
-     * @var double
-     */
-    private $cacheTimeout = false;
+    private string $template;
 
     /**
      * Variables assigned for template substitution.
-     * 
-     * @var Array
      */
-    private $variables = array();
+    private array $variables = array();
 
-    private $templates;
+    private Templates $templates;
+    
+    private StringStream $outputStream;
 
-    public function __construct(Templates $templates)
+    public function __construct(Templates $templates, StringStream $outputStream)
     {
         $this->templates = $templates;
-    }
-
-    /**
-     * Set the mimetype of the response.
-     * Calling this method will cause a Content-Type header to be sent to the client with the content type that is
-     * passed to this method.
-     * 
-     * @param string $contentType Content type
-     */
-    public function setContentType($contentType)
-    {
-        header("Content-Type: $contentType");
-    }
-
-    /**
-     * Get the lifetime of the cached version of this view.
-     * @return type
-     */
-    public function getCacheTimeout()
-    {
-        return $this->cacheTimeout;
-    }
-
-    /**
-     * Set the lifetime of the cached version of this view.
-     * Once a cache timeout is set, a rendered version of the view is cached and served until the cache expires.
-     * 
-     * @param double $cacheTimeout
-     */
-    public function setCacheTimeout($cacheTimeout)
-    {
-        $this->cacheTimeout = $cacheTimeout;
+        $this->outputStream = $outputStream;
     }
 
     /**
@@ -91,29 +55,9 @@ class View implements RenderableInterface, ThemableInterface
      * 
      * @param string $layout
      */
-    public function setLayout($layout)
+    public function setLayout(string $layout): void
     {
         $this->layout = $layout;
-    }
-
-    /**
-     * Get the current layout assigned to this view.
-     *
-     * @return string
-     */
-    public function getLayout()
-    {
-        return $this->layout;
-    }
-
-    /**
-     * Get the current template assigned to this view.
-     * 
-     * @return string
-     */
-    public function getTemplate()
-    {
-        return $this->template;
     }
 
     /**
@@ -149,23 +93,26 @@ class View implements RenderableInterface, ThemableInterface
     {
         return $this->variables[$key] ?? null;
     }
-
-    /**
-     * Render the view to a string whenever this view object is used as a string.
-     * 
-     * @return string
-     */
-    public function __toString()
+    
+    public function asStream(): StreamInterface
     {
+        if ($this->outputStream->getSize() > 0) {
+            return $this->outputStream;
+        }
+        
         $viewData = $this->variables;
+        
         if ($this->template != false) {
             $renderedTemplate = $this->templates->render($this->template, $viewData);
-            $viewData['contents'] = $renderedTemplate;
         }
+        
         if ($this->layout != false) {
-            return $this->templates->render($this->layout, $viewData);
+            $viewData['contents'] = $renderedTemplate;
+            $this->outputStream->setContent($this->templates->render($this->layout, $viewData));
         } else {
-            return $renderedTemplate;
+            $this->outputStream->setContent($renderedTemplate);
         }
+        
+        return $this->outputStream;
     }
 }

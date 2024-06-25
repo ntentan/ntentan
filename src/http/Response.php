@@ -3,6 +3,7 @@
 namespace ntentan\http;
 
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Description of Response
@@ -11,10 +12,12 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Response implements ResponseInterface 
 {
+    private int $status;
+    private StreamInterface $body;
    
     #[\Override]
     public function getBody(): \Psr\Http\Message\StreamInterface {
-        
+        return $this->body;
     }
 
     #[\Override]
@@ -44,7 +47,7 @@ class Response implements ResponseInterface
 
     #[\Override]
     public function getStatusCode(): int {
-        
+        return $this->status;
     }
 
     #[\Override]
@@ -59,7 +62,8 @@ class Response implements ResponseInterface
 
     #[\Override]
     public function withBody(\Psr\Http\Message\StreamInterface $body): \Psr\Http\Message\MessageInterface {
-        
+        $this->body = $body;
+        return $this;
     }
 
     #[\Override]
@@ -74,7 +78,8 @@ class Response implements ResponseInterface
 
     #[\Override]
     public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface {
-        
+        $this->status = $code;
+        return $this;
     }
 
     #[\Override]

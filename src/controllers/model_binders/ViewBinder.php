@@ -1,11 +1,7 @@
 <?php
-
 namespace ntentan\controllers\model_binders;
 
-use ntentan\Context;
 use ntentan\controllers\ModelBinderInterface;
-use ntentan\Controller;
-use ntentan\honam\TemplateEngine;
 use ntentan\honam\Templates;
 
 /**
@@ -16,25 +12,29 @@ use ntentan\honam\Templates;
 class ViewBinder implements ModelBinderInterface
 {
     private $templates;
+    private $home;
 
-    public function __construct(Templates $templates)
+    public function __construct(Templates $templates, string $home)
     {
         $this->templates = $templates;
+        $this->home = $home;
     }
 
-    public function bind(Controller $controller, string $type, string $name, array $parameters, $instance=null)
+    #[\Override]
+    public function bind(array $data) 
     {
-        $className = strtolower(substr((new \ReflectionClass($controller))->getShortName(), 0, -10));
-        $action = $controller->getActionMethod();
-        $this->templates->prependPath(APP_HOME . "views/{$className}");
-        if ($instance->getTemplate() == null) {
-            $instance->setTemplate("{$className}_{$action}.tpl.php");
-        }
+        $className = strtolower($data["route"]["controller"]); 
+        $action = strtolower($data["route"]["action"]); 
+        $this->templates->prependPath("{$this->home}/views/{$className}");
+        $instance = $data["instance"];
+//        if ($instance->getTemplate() == null) {
+        $instance->setTemplate("{$className}_{$action}.tpl.php");
+//        }
         return $instance;
     }
 
-    public function requiresInstance() : bool
-    {
-        return true;
+    #[\Override]
+    public function getRequirements(): array {
+        return ["instance", "route"];
     }
 }

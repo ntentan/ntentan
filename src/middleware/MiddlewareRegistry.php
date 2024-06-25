@@ -5,7 +5,7 @@ namespace ntentan\middleware;
 use ntentan\Middleware;
 use ntentan\exceptions\NtentanException;
 
-class Registry
+class MiddlewareRegistry
 {
     private $register = [];
     

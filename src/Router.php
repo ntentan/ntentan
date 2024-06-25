@@ -1,5 +1,4 @@
 <?php
-
 namespace ntentan;
 
 use ntentan\exceptions\RouteExistsException;
@@ -72,25 +71,12 @@ class Router
         if (preg_match("|^{$description['regexp']}$|i", urldecode($route), $matches)) {
             foreach ($matches as $key => $value) {
                 if (!is_numeric($key) && $value != "") {
-                    $parameters[$key] = $this->expandParameter($key, $value);
+                    $parameters[$key] = $value;
                 }
             }
             return $parameters;
         }
         return false;
-    }
-
-    private function expandParameter(&$key, $value)
-    {
-        $parts = explode('____', $key);
-        if (!isset($parts[1])) {
-            return $value;
-        }
-        if ($parts[1] == 'array') {
-            $key = $parts[0];
-            return explode('/', $value);
-        }
-        return $value;
     }
 
     private function createRouteRegex($name, $pattern, $parameters)
@@ -138,7 +124,7 @@ class Router
      * @param $name
      * @return mixed
      */
-    public function &getRoute($name)
+    public function getRoute($name)
     {
         return $this->routes[$name];
     }
