@@ -3,43 +3,43 @@
 namespace ntentan\middleware\auth;
 
 use ntentan\utils\Input;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use ntentan\http\StringStream;
 
 /**
  * An authentication method that receives a username and password through an HTTP request.
  * The parameters which should be sent through a POST request are retrieved and validated against a local auth database.
  */
-class HttpRequestAuthMethod extends AbstractAuthMethod
+class HttpRequestAuthMethod implements AuthMethod
 {
-    use Redirects;
-
-    private function isExcluded($route, $excludedRoutes)
-    {
-        foreach($excludedRoutes as $excluded) {
-            if($route === $excluded) {
-                return true;
-            }
-        }
-        return false;
-    }
+    use LocalPassword;
     
-    public function login($route)
+    private array $config;
+    
+    #[\Override]
+    public function login(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $parameters = $this->getParameters();
-        $usernameField = $parameters->get('username_field', "username");
-        $passwordField = $parameters->get('password_field', "password");
+        $usernameField = $this->config['username_field'] ?? "username";
+        $passwordField = $this->config['password_field'] ?? "password";
 
         if (Input::exists(Input::POST, $usernameField) && Input::exists(Input::POST, $passwordField)) {
             $username = Input::post($usernameField);
-            if ($this->authLocalPassword($username, Input::post($passwordField))) {
-                return $this->getRedirect()->toUrl($parameters->get('success_redirect', $this->context->getUrl('/')));
+            if ($this->verify($username, Input::post($passwordField))) {
+                return $this->getRedirect()->toUrl($this->config['success_redirect']);
             } else {
                 return false;
             }
         }
         
-        $excluded = array_merge($parameters->get('excluded_routes', []), [$parameters->get('login_route', 'login')]);
-        if(!$this->isExcluded($route['route'], $excluded)) {
-            return $this->getRedirect()->toUrl($parameters->get('login_route', '/login'));
+        if(!in_array($request->getUri()->getPath(), $this->config['excluded'])) {
+            return $response->withAddedHeader("Location", $this->config['login_path'])->withBody(StringStream::empty());
         }
+    }
+
+    #[\Override]
+    public function setup(array $config): void 
+    {
+        $this->config = $config;
     }
 }

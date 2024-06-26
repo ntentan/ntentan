@@ -17,22 +17,14 @@ class Router
      *
      * @var array
      */
-    private $routes = [];
+    private array $routes = [];
 
-    /**
-     * The route which is currently being executed. If the routing engine has
-     * modified the requested route, this property would hold the value of the
-     * new route.
-     *
-     * @var string
-     */
-    private $route;
 
     /**
      * Names of all routes added to the routing table.
      * @var array
      */
-    private $routeOrder = [];
+    private array $routeOrder = [];
 
     /**
      * Invoke the router to load a route.
@@ -43,12 +35,12 @@ class Router
      */
     public function route(string $path, string $query, string $prefix = null): array
     {
-        $this->route = substr($path, strlen($prefix));
+        $route = substr($path, strlen($prefix));
 
         // Go through predefined routes till a match is found
         foreach ($this->routeOrder as $routeName) {
             $routeDescription = $this->routes[$routeName];
-            $parameters = $this->match($this->route, $routeDescription);
+            $parameters = $this->match($route, $routeDescription);
             if ($parameters !== false) {
                 return $this->fillInDefaultParameters($routeDescription, $parameters);
             }

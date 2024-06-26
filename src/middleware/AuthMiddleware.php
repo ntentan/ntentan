@@ -1,51 +1,24 @@
 <?php
-
-/**
- * Source file for the auth component
- *
- * Ntentan Framework
- * Copyright (c) 2010-2012 James Ekow Abaka Ainooson
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * @category Components
- * @author James Ainooson <jainooson@gmail.com>
- * @copyright 2010-2012 James Ainooson
- * @license MIT
- */
-
 namespace ntentan\middleware;
 
 use ntentan\Session;
-use ntentan\AbstractMiddleware;
+use ntentan\Middleware;
 use ntentan\middleware\auth\AuthMethodFactory;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
- * AuthComponent provides a simplified authentication scheme
+ * The Authentication middleware ensures that all requests are from properly authenticated sessions before sending
+ * them down the pipeline. In cases where the request is not properly authenticated, it's passed on to an authentication
+ * module for authentication.
  *
  * @author James Ekow Abaka Ainooson <jainooson@gmail.com>
  */
-class AuthMiddleware extends AbstractMiddleware
+class AuthMiddleware implements Middleware
 {
     private $authenticated;
     private $authMethodFactory;
+    private $config;
 
     public function __construct(AuthMethodFactory $authMethodFactory)
     {
@@ -57,31 +30,27 @@ class AuthMiddleware extends AbstractMiddleware
     {
         self::$authMethods[$authMethod] = $class;
     }
-
-    private function getAuthMethod()
+    
+    public function setup(array $config): AuthMiddleware
     {
-        $authMethod = $this->authMethodFactory->createAuthMethod($this->getParameters() ?? ['']);
-        $authMethod->setParameters($this->getParameters());
-        return $authMethod;
+        $this->config = $config;
+        return $this;
     }
 
-    public function run($route, $response)
+    public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
         if (Session::get('logged_in')) {
-            return $this->next($route, $response);
+            return $next($request, $response);
+        }
+        if (in_array($request->getUri()->getPath(), $this->config['excluded'] ?? [])) {
+            return $next($request, $response);
         }
 
-        $parameters = $this->getParameters();
-        $excluded = $parameters->get('excluded', []);
-        if (in_array($route['route'], $excluded)) {
-            return $this->next($route, $response);
-        }
-
-        $response = $this->getAuthMethod()->login($route);
-        if ($response == false) {
-            return $this->next($route, $response);
+         $authResponse = $this->authMethodFactory->createAuthMethod($this->config)->login($request, $response);
+        if ($response === true) {
+            return $next($request, $response);
         } else {
-            return $response;
+            return $authResponse;
         }
     }
 }

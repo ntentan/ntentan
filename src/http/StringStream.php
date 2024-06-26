@@ -7,6 +7,7 @@ class StringStream implements StreamInterface
 {
     private int $position = 0;
     private string $content;
+    private bool $readable = false;
     
     public function __construct(string $content = '') {
         $this->content = $content;
@@ -14,6 +15,7 @@ class StringStream implements StreamInterface
     
     public function setContent(string $content): void {
         $this->content = $content;
+        $this->readable = true;
     }
 
     #[\Override]
@@ -25,12 +27,14 @@ class StringStream implements StreamInterface
     public function close(): void {
         $this->content = '';
         $this->position = 0;
+        $this->readable = false;
     }
 
     #[\Override]
     public function detach() {
         $this->content = '';
         $this->position = 0;
+        $this->readable = false;
     }
 
     #[\Override]
@@ -55,7 +59,7 @@ class StringStream implements StreamInterface
 
     #[\Override]
     public function isReadable(): bool {
-        return true;
+        return $this->readable;
     }
 
     #[\Override]
@@ -96,5 +100,9 @@ class StringStream implements StreamInterface
     #[\Override]
     public function write(string $string): int {
         return 0;
+    }
+    
+    public static function empty() {
+        return new self("");
     }
 }

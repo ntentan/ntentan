@@ -15,16 +15,7 @@ use Psr\Http\Message\ResponseInterface;
  * @author  James Ekow Abaka Ainooson
  * @todo    There must be a controller interface to be satisfied by all controllers
  */
-class Controller
+interface Controller
 {
-    
-    public final function ___run(): ResponseInterface
-    {
-        
-    }
-    
-    public final function ___setup(): void
-    {
-        
-    }    
+       
 }

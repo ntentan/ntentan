@@ -1,10 +1,5 @@
 <?php
-
 namespace ntentan\middleware\auth;
-
-use ntentan\Context;
-use ntentan\Parameters;
-use ntentan\Redirect;
 
 class AuthMethodFactory
 {
@@ -12,29 +7,15 @@ class AuthMethodFactory
         'http_request' => HttpRequestAuthMethod::class,
         'http_basic' => HttpBasicAuthMethod::class
     ];
-    private $redirect;
-    private $context;
 
-    public function __construct(Redirect $redirect, Context $context)
+    public function createAuthMethod(array $config) : AuthMethod
     {
-        $this->redirect = $redirect;
-        $this->context = $context;
-    }
-
-    public function createAuthMethod(Parameters $parameters) : AbstractAuthMethod
-    {
-        $authMethodType = $parameters->get('auth_method', 'http_request');
+        $authMethodType = $config['method'] ?? 'http_request';
         if (!isset($this->authMethods[$authMethodType])) {
             throw new \Exception("Auth method $authMethodType not found");
         }
-        $class = $this->authMethods[$authMethodType];
-        $instance = new $class();
-
-        $instance->setContext($this->context);
-        if(array_search(Redirects::class, class_uses($instance))) {
-            $instance->setRedirect($this->redirect);
-        }
-
+        $instance = new ($this->authMethods[$authMethodType])();
+        $instance->setup($config);
         return $instance;
     }
 

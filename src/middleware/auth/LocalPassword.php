@@ -1,23 +1,14 @@
 <?php
-
 namespace ntentan\middleware\auth;
 
-use ntentan\Context;
-use ntentan\Model;
-use ntentan\Session;
-
-abstract class AbstractAuthMethod
+/**
+ * Description of LocalPassword
+ *
+ * @author ekow
+ */
+trait LocalPassword 
 {
-    private $parameters;
-
-    /**
-     * @var Context
-     */
-    protected $context;
-
-    abstract public function login($route);
-
-    public function authLocalPassword($username, $password)
+    public function validate($username, $password)
     {
         $users = Model::load($this->parameters->get('users_model', 'users'));
         $usernameField = $this->parameters->get('username_field', "username");
@@ -39,25 +30,5 @@ abstract class AbstractAuthMethod
             $this->setMessage($this->parameters->get('error_message', "Invalid username or password!"));
             return false;
         }
-    }
-    
-    protected function getParameters()
-    {
-        return $this->parameters;
-    }
-    
-    public function setParameters($parameters)
-    {
-        $this->parameters = $parameters;
-    }
-
-    protected function setMessage($message)
-    {
-        $this->context->setParameter('auth_message', $message);
-    }
-
-    public function setContext($context)
-    {
-        $this->context = $context;
     }
 }

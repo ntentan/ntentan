@@ -12,11 +12,12 @@ use Psr\Http\Message\StreamInterface;
  */
 class Response implements ResponseInterface 
 {
-    private int $status;
+    private int $status = 200;
     private StreamInterface $body;
+    private array $headers = [];
    
     #[\Override]
-    public function getBody(): \Psr\Http\Message\StreamInterface {
+    public function getBody(): StreamInterface {
         return $this->body;
     }
 
@@ -32,7 +33,7 @@ class Response implements ResponseInterface
 
     #[\Override]
     public function getHeaders(): array {
-        
+        return $this->headers;
     }
 
     #[\Override]
@@ -57,7 +58,12 @@ class Response implements ResponseInterface
 
     #[\Override]
     public function withAddedHeader(string $name, $value): \Psr\Http\Message\MessageInterface {
-        
+        $name = strtolower($name);
+        if (!isset($this->headers[$name])) {
+            $this->headers[$name] = [];
+        }
+        $this->headers[$name][] = $value;
+        return $this;
     }
 
     #[\Override]

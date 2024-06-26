@@ -1,5 +1,4 @@
 <?php
-
 namespace ntentan;
 
 use Psr\Http\Message\ResponseInterface;

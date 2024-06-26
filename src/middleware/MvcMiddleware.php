@@ -63,7 +63,7 @@ class MvcMiddleware implements Middleware
             return $response->withBody($output->asStream());
         }
         
-        throw new NtentanException("Could not resolve a controller for the current request.");
+        throw new NtentanException("Could not resolve a controller for the current request [{$uri->getPath()}].");
     }
     
     private function bindParameter(\ReflectionParameter $parameter, array $route)
@@ -89,7 +89,7 @@ class MvcMiddleware implements Middleware
         return $binder->bind($binderData);
     }
     
-    private function getListOfMethods(Controller $controller, string $className): array
+    private function getListOfMethods(object $controller, string $className): array
     {
         $methods = (new \ReflectionClass($controller))->getMethods(\ReflectionMethod::IS_PUBLIC);
         $results = [];

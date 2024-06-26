@@ -28,6 +28,14 @@ class Application
     {
         $response = $this->runner->run($pipeline, $this->request, $this->response);
         http_response_code($response->getStatusCode());
-        echo $response->getBody()->getContents();
+        foreach($response->getHeaders() as $header => $values) {
+            foreach($values as $value) {
+                header("$header: $value");
+            }
+        }
+        $body = $response->getBody();
+        if ($body->isReadable()) {
+            echo $body->getContents();   
+        }
     }
 }
