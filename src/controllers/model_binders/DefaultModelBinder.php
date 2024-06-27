@@ -14,10 +14,7 @@ use ntentan\controllers\ModelBinderInterface;
  */
 class DefaultModelBinder implements ModelBinderInterface
 {
-
-
     /**
-     *
      * @param \ntentan\Model $object
      * @return array
      */
@@ -37,24 +34,21 @@ class DefaultModelBinder implements ModelBinderInterface
         return $fields;
     }
 
-    public function bind(Controller $controller, string $type, string $name, array $parameters, $instance = null)
+    public function bind(array $data)
     {
+        $instance = $data["instance"];
         $fields = $this->getClassFields($instance);
-        if (is_a($instance, '\ntentan\Model')) {
-            $fields = array_merge($fields, $this->getModelFields($instance));
-        }
         $requestData = Input::post() + Input::get();
         foreach ($fields as $field) {
-            $decamelized = Text::deCamelize($field);
-            if (isset($requestData[$decamelized])) {
-                $instance->$field = $requestData[$decamelized] == '' ? null : $requestData[$decamelized];
+            if (isset($requestData[$field])) {
+                $instance->$field = $requestData[$field];
             }
         }
         return $instance;
     }
 
-    public function requiresInstance() : bool
+    public function getRequirements(): array
     {
-        return true;
+        return ['instance'];
     }
 }

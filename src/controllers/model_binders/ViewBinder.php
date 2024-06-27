@@ -6,12 +6,14 @@ use ntentan\honam\Templates;
 
 /**
  * Creates an instance of the View class and sets the appropriate template and layouts for binding in action methods.
- * 
+ *
  * @author ekow
  */
 class ViewBinder implements ModelBinderInterface
 {
+
     private $templates;
+
     private $home;
 
     public function __construct(Templates $templates, string $home)
@@ -21,10 +23,10 @@ class ViewBinder implements ModelBinderInterface
     }
 
     #[\Override]
-    public function bind(array $data) 
+    public function bind(array $data)
     {
-        $className = strtolower($data["route"]["controller"]); 
-        $action = strtolower($data["route"]["action"]); 
+        $className = strtolower($data["route"]["controller"]);
+        $action = strtolower($data["route"]["action"]);
         $this->templates->prependPath("{$this->home}/views/{$className}");
         $instance = $data["instance"];
         $instance->setTemplate("{$className}_{$action}.tpl.php");
@@ -32,7 +34,11 @@ class ViewBinder implements ModelBinderInterface
     }
 
     #[\Override]
-    public function getRequirements(): array {
-        return ["instance", "route"];
+    public function getRequirements(): array
+    {
+        return [
+            "instance",
+            "route"
+        ];
     }
 }

@@ -13,9 +13,12 @@ use ntentan\Controller;
 use ntentan\utils\Text;
 use ntentan\exceptions\NtentanException;
 use ntentan\controllers\ModelBinderRegistry;
+use ntentan\attributes\Action;
+use ntentan\attributes\Method;
+use ntentan\View;
 
 /**
- * 
+ * Responds to requests by exe
  */
 class MvcMiddleware implements Middleware
 {
@@ -23,6 +26,8 @@ class MvcMiddleware implements Middleware
     private Router $router;
     
     private Container $serviceContainer;
+    
+    private ServiceContainerBuilder $containerBuilder;
     
     private ModelBinderRegistry $modelBinders;
 
@@ -32,13 +37,14 @@ class MvcMiddleware implements Middleware
     public function __construct(Router $router, ServiceContainerBuilder $containerBuilder, ModelBinderRegistry $modelBinders)
     {
         $this->router = $router;
-        $this->serviceContainer = $containerBuilder->getContainer();
+        $this->containerBuilder = $containerBuilder;
         $this->modelBinders = $modelBinders;
     }
 
     #[\Override]
     public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
+        $this->serviceContainer = $this->containerBuilder->getContainer($request, $response);
         $uri = $request->getUri();
         $response = $response->withStatus(200);
         $route = $this->router->route($uri->getPath(), $uri->getQuery());
@@ -48,6 +54,7 @@ class MvcMiddleware implements Middleware
         $controller = $this->serviceContainer->get($controllerClassName);
         $methods = $this->getListOfMethods($controller, $controllerClassName);
         $methodKey = "{$route['action']}." . strtolower($request->getMethod());
+        $routeParameters = array_keys($route);
         
         if (isset($methods[$methodKey])) {
             $method = $methods[$methodKey];
@@ -56,11 +63,20 @@ class MvcMiddleware implements Middleware
             $arguments = [];
             
             foreach($argumentDescription as $argument) {
-                $arguments[] = $this->bindParameter($argument, $route);
+                if ($argument->getType()->isBuiltIn() && in_array($argument->getName(), $routeParameters)) {
+                    $arguments[] = $route[$argument->getName()];
+                } else {
+                    $arguments[] = $this->bindParameter($argument, $route);
+                }
             }
             
             $output = $callable->invokeArgs($controller, $arguments);
-            return $response->withBody($output->asStream());
+            
+            return match(true) {
+                $output instanceof View => $response->withBody($output->asStream()),
+                $output instanceof ResponseInterface => $output,
+                default => throw new NtentanException("Controller returned " . get_class($output))
+            };
         }
         
         throw new NtentanException("Could not resolve a controller for the current request [{$uri->getPath()}].");
@@ -106,7 +122,7 @@ class MvcMiddleware implements Middleware
             foreach ($method->getAttributes() as $attribute) {
                 match($attribute->getName()) {
                     Action::class => $action = $attribute->newInstance()->getPath(),
-                    RequestMethod::class => $requestMethod = $attribute->newInstance()->getType()
+                    Method::class => $requestMethod = "." . strtolower($attribute->newInstance()->getType())
                 };
             }
 

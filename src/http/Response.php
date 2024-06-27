@@ -74,7 +74,8 @@ class Response implements ResponseInterface
 
     #[\Override]
     public function withHeader(string $name, $value): \Psr\Http\Message\MessageInterface {
-        
+        $this->headers[$name] = [$value];
+        return $this;
     }
 
     #[\Override]

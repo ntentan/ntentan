@@ -1,11 +1,12 @@
 <?php
 namespace ntentan\middleware;
 
-use \ntentan\interfaces\ControllerFactoryInterface;
-use ntentan\middleware\mvc\DefaultControllerFactory;
 use ntentan\controllers\ModelBinderRegistry;
 use ntentan\View;
 use ntentan\controllers\model_binders\ViewBinder;
+use ntentan\controllers\model_binders\DefaultModelBinder;
+use ntentan\panie\Container;
+use ntentan\middleware\mvc\ServiceContainerBuilder;
 
 /**
  */
@@ -13,14 +14,16 @@ class MvcWiring {
     
     public static function get() {
         return [
-            ControllerFactoryInterface::class => DefaultControllerFactory::class,
             ModelBinderRegistry::class => [
-                function() {
-                    $binder = new ModelBinderRegistry();
-                    $binder->register(View::class, ViewBinder::class);
-                    return $binder;
-                }
-            ]
+                function(Container $container) {
+                    $registry = new ModelBinderRegistry();
+                    $registry->setDefaultBinderClass(DefaultModelBinder::class);
+                    $registry->register(View::class, ViewBinder::class);
+                    return $registry;
+                },
+                'singleton' => true
+            ],
+            ServiceContainerBuilder::class => ['singleton' => true]
         ];
     }
 }

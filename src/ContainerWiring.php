@@ -44,7 +44,6 @@ class ContainerWiring
                 fn() => new Context($namespace, []),
                 'singleton' => true
             ]
-            // ControllerFactoryInterface::class => DefaultControllerFactory::class
         ];
    }
 }
