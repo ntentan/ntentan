@@ -17,9 +17,11 @@ class Request implements ServerRequestInterface {
 
     private array $headers;
     private UriInterface $uri;
+    private StreamInterface $bodyStream;
     
-    public function __construct(UriInterface $uri) {
+    public function __construct(UriInterface $uri, StreamInterface $bodyStream) {
         $this->uri = $uri;
+        $this->bodyStream = $bodyStream;
     }
     
     private function initializeHeaders(): void {
@@ -30,7 +32,7 @@ class Request implements ServerRequestInterface {
 
     #[\Override]
     public function getBody(): StreamInterface {
-        
+        return $this->bodyStream;
     }
 
     #[\Override]

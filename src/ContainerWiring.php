@@ -19,7 +19,7 @@ class ContainerWiring
     public static function requestFactory(Container $container): ServerRequestInterface
     {
         if(self::$request===null) {
-            self::$request = new Request($container->get(UriInterface::class));
+            self::$request = new Request($container->get(UriInterface::class), new http\Stream("php://input", 'r'));
         }
         return self::$request;
     }

@@ -9,13 +9,13 @@ use ntentan\Router;
 use ntentan\panie\Inject;
 use ntentan\middleware\mvc\ServiceContainerBuilder;
 use ntentan\panie\Container;
-use ntentan\Controller;
 use ntentan\utils\Text;
 use ntentan\exceptions\NtentanException;
 use ntentan\controllers\ModelBinderRegistry;
 use ntentan\attributes\Action;
 use ntentan\attributes\Method;
 use ntentan\View;
+use ntentan\http\StringStream;
 
 /**
  * Responds to requests by exe
@@ -75,7 +75,9 @@ class MvcMiddleware implements Middleware
             return match(true) {
                 $output instanceof View => $response->withBody($output->asStream()),
                 $output instanceof ResponseInterface => $output,
-                default => throw new NtentanException("Controller returned " . get_class($output))
+                gettype($output) === 'string' => $response->withBody(new StringStream($output)),
+                default => throw new NtentanException("Controller returned an unexpected " 
+                        . ($output === null ? "null output" : "object of type " .get_class($output)))
             };
         }
         
