@@ -7,7 +7,7 @@ class StringStream implements StreamInterface
 {
     private int $position = 0;
     private string $content;
-    private bool $readable = false;
+    private bool $readable = true;
     
     public function __construct(string $content = '') {
         $this->content = $content;

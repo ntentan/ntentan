@@ -19,6 +19,7 @@ class AuthMiddleware implements Middleware
     private $authenticated;
     private $authMethodFactory;
     private $config;
+    private $repository;
 
     public function __construct(AuthMethodFactory $authMethodFactory)
     {
@@ -42,16 +43,21 @@ class AuthMiddleware implements Middleware
         if (Session::get('logged_in')) {
             return $next($request, $response);
         }
+        $authResponse = $this->authMethodFactory->createAuthMethod($this->config)->login($request, $response);
         if (in_array($request->getUri()->getPath(), $this->config['excluded'] ?? [])) {
             return $next($request, $response);
         }
-
-         $authResponse = $this->authMethodFactory->createAuthMethod($this->config)->login($request, $response);
-        if ($response === true) {
+        if ($authResponse === true) {
             return $next($request, $response);
         } else {
             return $authResponse;
         }
+    }
+    
+    public function setCredentailRepository($repository): self
+    {
+        $this->repository = $repository;
+        return $this;
     }
 }
 

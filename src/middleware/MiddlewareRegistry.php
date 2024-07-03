@@ -14,11 +14,11 @@ class MiddlewareRegistry
         $this->register[$class] = $factory;
     }
     
-    public function get(string $name, array $config) : Middleware
+    public function get(string $name) : Middleware
     {
         if (!isset($this->register[$name])) {
             throw new NtentanException("{$name} has not been registered as a middleware.");
         }
-        return $this->register[$name]($config);
+        return $this->register[$name]();
     }
 }

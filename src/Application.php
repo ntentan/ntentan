@@ -12,21 +12,40 @@ class Application
 {
     private ServerRequestInterface $request;
     private ResponseInterface $response;
-    private PipelineRunner $runner;
+    private middleware\MiddlewareRegistry $registry;
+    private array $pipeline;
     
     /**
      * Create an instance of the application.
      */
-    public final function __construct(ServerRequestInterface $request, ResponseInterface $response, PipelineRunner $runner)
+    public final function __construct(ServerRequestInterface $request, ResponseInterface $response, middleware\MiddlewareRegistry $registry)
     {
         $this->request = $request;
         $this->response = $response;
-        $this->runner = $runner;
+        $this->registry = $registry;
     }
-
-    public function execute(array $pipeline): void
+    
+    
+    public function runPipeline(array $pipeline, ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $response = $this->runner->run($pipeline, $this->request, $this->response);
+        $this->pipeline = $pipeline;
+        return $this->registry
+            ->get($this->pipeline[0]) //, $this->pipeline[0][1] ?? [])
+            ->run($request, $response, $this);
+    }
+    
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        $nextMiddleWare = next($this->pipeline);
+        if ($nextMiddleWare !== false) {
+            $middleware = $this->registry->get($nextMiddleWare); 
+            return $middleware->run($request, $response, $this);
+        }
+    }
+    
+    public function execute(string ...$pipeline): void
+    {
+        $response = $this->runPipeline($pipeline, $this->request, $this->response);
         http_response_code($response->getStatusCode());
         foreach($response->getHeaders() as $header => $values) {
             foreach($values as $value) {

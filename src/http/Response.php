@@ -4,6 +4,7 @@ namespace ntentan\http;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\MessageInterface;
 
 /**
  * Description of Response
@@ -57,7 +58,7 @@ class Response implements ResponseInterface
     }
 
     #[\Override]
-    public function withAddedHeader(string $name, $value): \Psr\Http\Message\MessageInterface {
+    public function withAddedHeader(string $name, $value): MessageInterface {
         $name = strtolower($name);
         if (!isset($this->headers[$name])) {
             $this->headers[$name] = [];
@@ -65,21 +66,26 @@ class Response implements ResponseInterface
         $this->headers[$name][] = $value;
         return $this;
     }
+    
+    public function withBodyFromString(string $body): Response {
+        $this->body = new StringStream($body);
+        return $this;
+    }
 
     #[\Override]
-    public function withBody(\Psr\Http\Message\StreamInterface $body): \Psr\Http\Message\MessageInterface {
+    public function withBody(StreamInterface $body): MessageInterface {
         $this->body = $body;
         return $this;
     }
 
     #[\Override]
-    public function withHeader(string $name, $value): \Psr\Http\Message\MessageInterface {
+    public function withHeader(string $name, $value): MessageInterface {
         $this->headers[$name] = [$value];
         return $this;
     }
 
     #[\Override]
-    public function withProtocolVersion(string $version): \Psr\Http\Message\MessageInterface {
+    public function withProtocolVersion(string $version): MessageInterface {
         
     }
 
@@ -90,7 +96,7 @@ class Response implements ResponseInterface
     }
 
     #[\Override]
-    public function withoutHeader(string $name): \Psr\Http\Message\MessageInterface {
+    public function withoutHeader(string $name): MessageInterface {
         
     }
 }

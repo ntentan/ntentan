@@ -134,10 +134,7 @@ class MvcMiddleware implements Middleware
             }
 
             $results[$methodKey] = [
-                'name' => $methodName,
-//                'binder' => $binder 
-//                    ?? $controller->getDefaultModelBinderClass() 
-//                    ?? $this->modelBinderRegistry->getDefaultBinderClass()
+                'name' => $methodName
             ];
         }
         return $results;
