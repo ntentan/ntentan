@@ -12,7 +12,7 @@ use Psr\Http\Message\UriInterface;
 /**
  * 
  */
-class ContainerWiring
+class ApplicationWiring
 {
     private static ?Request $request = null;
     

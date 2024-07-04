@@ -2,21 +2,20 @@
 
 namespace ntentan\sessions\containers;
 
-class FileSessionContainer extends AbstractSessionContainer
+class FileSessionContainer implements \SessionHandlerInterface
 {
 
-    private $file;
-    private $sessionName;
-    private $sessionPath;
-    private $config;
-    private $lifespan;
+    private string $file;
+    private string $sessionName;
+    private string $sessionPath;
+    private array $config;
+    private int $lifespan;
 
-    public function __construct($config)
+    public function __construct(array $sessionConfig)
     {
-        $this->config = $config;
-        $this->lifespan = $config['lifespan'] ?? 3600;
+        $this->config = $sessionConfig;
+        $this->lifespan = $sessionConfig['lifespan'] ?? 3600;
         session_set_save_handler($this, true);
-        session_start();
     }
 
     public function open($sessionPath, $sessionName)
@@ -73,10 +72,4 @@ class FileSessionContainer extends AbstractSessionContainer
         }
         return true;
     }
-
-    public function isNew()
-    {
-        return true;
-    }
-
 }

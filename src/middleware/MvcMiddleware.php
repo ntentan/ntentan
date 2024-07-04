@@ -34,11 +34,12 @@ class MvcMiddleware implements Middleware
     #[Inject]
     private string $namespace = 'app';
 
-    public function __construct(Router $router, ServiceContainerBuilder $containerBuilder, ModelBinderRegistry $modelBinders)
+    public function __construct(Router $router, ServiceContainerBuilder $containerBuilder, ModelBinderRegistry $modelBinders, array $mvcConfig)
     {
         $this->router = $router;
         $this->containerBuilder = $containerBuilder;
         $this->modelBinders = $modelBinders;
+        $this->router->setRoutes($mvcConfig['routes']);
     }
 
     #[\Override]
@@ -139,10 +140,10 @@ class MvcMiddleware implements Middleware
         }
         return $results;
     }
-    
-    public function setup(array $config): MvcMiddleware
-    {
-        $this->router->setRoutes($config['controllers']['routes']);
-        return $this;
-    }
+//    
+//    public function setup(array $config): MvcMiddleware
+//    {
+//        $this->router->setRoutes($config['routes']);
+//        return $this;
+//    }
 }

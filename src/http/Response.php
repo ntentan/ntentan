@@ -19,7 +19,7 @@ class Response implements ResponseInterface
    
     #[\Override]
     public function getBody(): StreamInterface {
-        return $this->body;
+        return $this->body ?? new StringStream("");
     }
 
     #[\Override]

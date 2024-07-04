@@ -3,7 +3,7 @@ namespace ntentan\middleware;
 
 use ntentan\Session;
 use ntentan\Middleware;
-use ntentan\middleware\auth\AuthMethodFactory;
+use ntentan\middleware\auth\AuthMethod;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -16,48 +16,30 @@ use Psr\Http\Message\ResponseInterface;
  */
 class AuthMiddleware implements Middleware
 {
-    private $authenticated;
-    private $authMethodFactory;
+
+    private $authMethod;
+
     private $config;
-    private $repository;
 
-    public function __construct(AuthMethodFactory $authMethodFactory)
+    public function __construct(AuthMethod $authMethod, array $authConfig)
     {
-        $this->authenticated = Session::get('logged_in');
-        $this->authMethodFactory = $authMethodFactory;
+        $this->authMethod = $authMethod;
+        $this->authMethod->setup($authConfig);
+        $this->config = $authConfig;
     }
 
-    public static function registerAuthMethod($authMethod, $class)
-    {
-        self::$authMethods[$authMethod] = $class;
-    }
-    
-    public function setup(array $config): AuthMiddleware
-    {
-        $this->config = $config;
-        return $this;
-    }
-
+    #[\Override]
     public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
-        if (Session::get('logged_in')) {
+        if (Session::get('authenticated') || in_array($request->getUri()->getPath(), $this->config['excluded'] ?? [])) {
             return $next($request, $response);
         }
-        $authResponse = $this->authMethodFactory->createAuthMethod($this->config)->login($request, $response);
-        if (in_array($request->getUri()->getPath(), $this->config['excluded'] ?? [])) {
-            return $next($request, $response);
-        }
+        $authResponse = $this->authMethod->run($request, $response, $next);
         if ($authResponse === true) {
             return $next($request, $response);
         } else {
             return $authResponse;
         }
-    }
-    
-    public function setCredentailRepository($repository): self
-    {
-        $this->repository = $repository;
-        return $this;
     }
 }
 
