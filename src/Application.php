@@ -3,6 +3,7 @@ namespace ntentan;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use ntentan\middleware\MiddlewareQueue;
 
 
 /**
@@ -12,13 +13,13 @@ class Application
 {
     private ServerRequestInterface $request;
     private ResponseInterface $response;
-    private middleware\MiddlewareRegistry $registry;
+    private MiddlewareQueue $registry;
     private array $pipeline;
     
     /**
      * Create an instance of the application.
      */
-    public final function __construct(ServerRequestInterface $request, ResponseInterface $response, middleware\MiddlewareRegistry $registry)
+    public final function __construct(ServerRequestInterface $request, ResponseInterface $response, MiddlewareQueue $registry)
     {
         $this->request = $request;
         $this->response = $response;

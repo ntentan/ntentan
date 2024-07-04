@@ -6,7 +6,7 @@ use ntentan\exceptions\NtentanException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class MiddlewareRegistry
+class MiddlewareQueue
 {
     private $register = [];
     private $pipeline = [];
@@ -43,7 +43,7 @@ class MiddlewareRegistry
                     foreach($queue as $middleware) {
                         $register[$middleware] = fn() => $container->get($middleware);
                     }
-                    return new MiddlewareRegistry($queue, $register);
+                    return new MiddlewareQueue($queue, $register);
                 },
                 'singleton' => true
             ]
