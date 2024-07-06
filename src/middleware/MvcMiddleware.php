@@ -140,10 +140,4 @@ class MvcMiddleware implements Middleware
         }
         return $results;
     }
-//    
-//    public function setup(array $config): MvcMiddleware
-//    {
-//        $this->router->setRoutes($config['routes']);
-//        return $this;
-//    }
 }

@@ -33,7 +33,7 @@ class Router
      * @param string $prefix
      * @return array
      */
-    public function route(string $path, string $query, string $prefix = null): array
+    public function route(string $path, string $query, string $prefix = ""): array
     {
         $route = substr($path, strlen($prefix));
 

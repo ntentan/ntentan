@@ -8,10 +8,10 @@ use Psr\Http\Message\ResponseInterface;
 
 class MiddlewareQueue
 {
-    private $register = [];
-    private $pipeline = [];
+    private array $register = [];
+    private array $pipeline = [];
     
-    private function __construct($pipeline, $register) {
+    private function __construct(array $pipeline, array $register) {
         $this->pipeline = $pipeline;
         $this->register = $register;
     }

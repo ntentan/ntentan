@@ -25,7 +25,7 @@ class HttpRequestAuthMethod implements AuthMethod
     public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
         // Skip requests made to the login path so the underlying middleware can present the challenge.
-        if ($request->getUri()->getPath() == $this->config['login_path'] && strtolower($request->getMethod()) == "get") {
+        if ($request->getUri()->getPath() == $this->config['login_path'] && (strtolower($request->getMethod()) == "get")) {
             return $next($request, $response, $next);
         }
         if ($request->getUri()->getPath() != $this->config['login_path']) {

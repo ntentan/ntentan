@@ -16,10 +16,10 @@ use Psr\Http\Message\ResponseInterface;
  */
 class AuthMiddleware implements Middleware
 {
+    
+    private AuthMethod $authMethod;
 
-    private $authMethod;
-
-    private $config;
+    private array $config;
 
     public function __construct(AuthMethod $authMethod, array $authConfig)
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace ntentan\sessions\containers;
+namespace ntentan\sessions;
 
 class FileSessionContainer implements \SessionHandlerInterface
 {
