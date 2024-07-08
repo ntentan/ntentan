@@ -27,11 +27,21 @@ class AuthMiddleware implements Middleware
         $this->authMethod->setup($authConfig);
         $this->config = $authConfig;
     }
+    
+    private function isExcluded(string $path, array $excludedPaths)
+    {
+        foreach ($excludedPaths as $excludedPath) {
+            if (substr($path, 0, strlen($excludedPath)) == $excludedPath) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     #[\Override]
     public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
-        if (Session::get('authenticated') || in_array($request->getUri()->getPath(), $this->config['excluded'] ?? [])) {
+        if (Session::get('authenticated') || $this->isExcluded($request->getUri()->getPath(), $this->config['excluded'] ?? [])) { //in_array($request->getUri()->getPath(), $this->config['excluded'] ?? [])) {
             return $next($request, $response);
         }
         $authResponse = $this->authMethod->run($request, $response, $next);

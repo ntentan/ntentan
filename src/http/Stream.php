@@ -1,14 +1,11 @@
 <?php
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/PHPClass.php to edit this template
- */
 namespace ntentan\http;
 
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Description of Stream
+ * Wraps standard PHP streams with the PSR-7 streaming interface.
+ * This class is useful for constructing PSR-7 compliant streams around standard PHP streams.
  *
  * @author ekow
  */
@@ -17,19 +14,14 @@ class Stream implements StreamInterface
     private $handle = null;
     private string $path;
     private string $mode;
+    private bool $isReadable;
     
     public function __construct(string $path, string $mode)
     {
         $this->path = $path;
         $this->mode = $mode;
-    }
-    
-    private function getWrapper(): \streamWrapper
-    {
-        if ($this->handle === null) {
-            $this->handle = fopen($this->path, $this->mode);
-        }
-        return $this->handle;
+        $this->handle = fopen($path, $mode);
+        $this->isReadable = in_array($mode, ['r', 'r+', 'w+', 'a+', 'x+', 'c+']);
     }
     
     #[\Override]
@@ -59,7 +51,7 @@ class Stream implements StreamInterface
     #[\Override]
     public function getContents(): string
     {
-        
+        return $this->__toString();
     }
 
     #[\Override]
@@ -77,7 +69,7 @@ class Stream implements StreamInterface
     #[\Override]
     public function isReadable(): bool
     {
-        
+        return $this->isReadable;
     }
 
     #[\Override]

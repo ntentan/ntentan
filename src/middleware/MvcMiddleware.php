@@ -18,7 +18,7 @@ use ntentan\View;
 use ntentan\http\StringStream;
 
 /**
- * Responds to requests by exe
+ * Responds to requests by initializing classes according to an MVC pattern.
  */
 class MvcMiddleware implements Middleware
 {
