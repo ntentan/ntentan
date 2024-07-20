@@ -12,11 +12,11 @@ use Psr\Http\Message\UriInterface;
 /**
  * 
  */
-class ApplicationWiring
+class Bootstrap
 {
     private static ?Request $request = null;
     
-    public static function requestFactory(Container $container): ServerRequestInterface
+    private static function requestFactory(Container $container): ServerRequestInterface
     {
         if(self::$request===null) {
             self::$request = new Request($container->get(UriInterface::class), new http\Stream("php://input", 'r'));
@@ -24,7 +24,7 @@ class ApplicationWiring
         return self::$request;
     }
     
-    public static function get(string $namespace): array 
+    public static function getWiring(string $namespace): array 
     {
         return [
             ServerRequestInterface::class => [self::requestFactory(...), 'singleton' => true],
@@ -39,11 +39,20 @@ class ApplicationWiring
             ResponseInterface::class => [
                 fn() => new Response(),
                 'singleton' => true
-            ],
-            Context::class => [
-                fn() => new Context($namespace, []),
-                'singleton' => true
             ]
         ];
-   }
+    }
+    
+    public static function getConfiguration(): callable
+    {
+        return function($container) {
+            $home = $container->get('$home:string');
+            $configFile = "{$home}config/main.ini";
+            $config = [];
+            if (is_file($configFile)) {
+                $config = parse_ini_file($configFile, true);
+            }
+            return $config;
+        };
+    }
 }

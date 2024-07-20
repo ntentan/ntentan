@@ -5,7 +5,6 @@
     "license" : "MIT",
     "require": {
         "php": ">=8.2.0",
-        "ntentan/config": "@stable",
         "ntentan/panie": "@stable",
         "psr/http-message": "^2.0",
         "psr/http-server-handler": "^1.0",
