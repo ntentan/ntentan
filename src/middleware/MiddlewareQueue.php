@@ -34,16 +34,28 @@ class MiddlewareQueue
         }
     }    
     
-    public static function setup(string ...$queue) 
+    public static function setup(array $queue) //string ...$queue) 
     {
         return [
             self::class => [
                 function($container) use ($queue) {
-                    $register = [];
-                    foreach($queue as $middleware) {
-                        $register[$middleware] = fn() => $container->get($middleware);
+                    $selectedQueue = [];
+                    if (count($queue) == 1) {
+                        $selectedQueue = reset($queue);
                     }
-                    return new MiddlewareQueue($queue, $register);
+                    $register = [];
+                    $finalQueue = [];
+
+                    foreach($selectedQueue as $middlewareEntry) {
+                        list($middlewareClass, $config) = $middlewareEntry;
+                        $finalQueue[]=$middlewareClass;
+                        $register[$middlewareClass] = function() use ($container, $config, $middlewareClass) {
+                            $middleware = $container->get($middlewareClass);
+                            $middleware->configure($config);
+                            return $middleware;
+                        };
+                    }
+                    return new MiddlewareQueue($finalQueue, $register);
                 },
                 'singleton' => true
             ]

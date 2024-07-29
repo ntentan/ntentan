@@ -9,5 +9,6 @@ use Psr\Http\Message\ResponseInterface;
  * @author ekow
  */
 interface Middleware {
-    public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface;
+    function run(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface;
+    function configure(array $configuration);
 }
