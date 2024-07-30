@@ -16,6 +16,16 @@ class MiddlewareQueue
         $this->register = $register;
     }
     
+    public static function prefix(string $prefix): callable
+    {
+        return function() use ($prefix) {
+            if (substr($_SERVER['REQUEST_URI'], 0, strlen($prefix)) == $prefix) {
+                $_SERVER['REQUEST_URI'] = substr($_SERVER['REQUEST_URI'], strlen($prefix));
+                return true;
+            }
+        };
+    }
+    
     public function iterate(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         return $this->register[$this->pipeline[0]]()->run($request, $response, $this->next(...));        
@@ -39,9 +49,21 @@ class MiddlewareQueue
         return [
             self::class => [
                 function($container) use ($queue) {
+                    
                     $selectedQueue = [];
                     if (count($queue) == 1) {
-                        $selectedQueue = reset($queue);
+                        $selectedQueue = reset($queue)['pipeline'];
+                    } else {
+                        foreach($queue as $name => $pipeline) {
+                            if ($name == 'default') {
+                                $selectedQueue = $pipeline;
+                                continue;
+                            }
+                            if (isset($pipeline['filter']) && $pipeline['filter']()) {
+                                $selectedQueue = $pipeline['pipeline'];
+                                break;
+                            }
+                        }
                     }
                     $register = [];
                     $finalQueue = [];
@@ -55,6 +77,7 @@ class MiddlewareQueue
                             return $middleware;
                         };
                     }
+                    
                     return new MiddlewareQueue($finalQueue, $register);
                 },
                 'singleton' => true
