@@ -3,7 +3,7 @@ namespace ntentan\middleware;
 
 use ntentan\Session;
 use ntentan\Middleware;
-use ntentan\middleware\auth\AuthMethod;
+use ntentan\middleware\auth\AuthMethodFactory;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -17,15 +17,13 @@ use Psr\Http\Message\ResponseInterface;
 class AuthMiddleware implements Middleware
 {
     
-    private AuthMethod $authMethod;
+    private AuthMethodFactory $authMethodFactory;
 
     private array $config;
 
-    public function __construct(AuthMethod $authMethod, array $authConfig)
+    public function __construct(AuthMethodFactory $authMethodFactory)
     {
-        $this->authMethod = $authMethod;
-        $this->authMethod->setup($authConfig);
-        $this->config = $authConfig;
+        $this->authMethodFactory = $authMethodFactory;
     }
     
     private function isExcluded(string $path, array $excludedPaths)
@@ -41,15 +39,31 @@ class AuthMiddleware implements Middleware
     #[\Override]
     public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
-        if (Session::get('authenticated') || $this->isExcluded($request->getUri()->getPath(), $this->config['excluded'] ?? [])) { //in_array($request->getUri()->getPath(), $this->config['excluded'] ?? [])) {
+        // First checks
+        if (Session::get('authenticated') || $this->isExcluded($request->getUri()->getPath(), $this->config['excluded'] ?? [])) {
+            return $next($request, $response);
+        } 
+        
+        // Create instance and perform second checks
+        $authMethod = $this->authMethodFactory->create($this->config);
+        if ($authMethod->isAuthenticated()) {
             return $next($request, $response);
         }
-        $authResponse = $this->authMethod->run($request, $response, $next);
+        
+        // Run the authentication middleware and proceed accordingly
+        $authResponse = $authMethod->run($request, $response, $next);
         if ($authResponse === true) {
             return $next($request, $response);
         } else {
             return $authResponse;
         }
     }
+    
+    #[\Override]
+    public function configure(array $configuration)
+    {
+        $this->config = $configuration;
+    }
+
 }
 

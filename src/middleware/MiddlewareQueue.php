@@ -1,10 +1,10 @@
 <?php
-
 namespace ntentan\middleware;
 
 use ntentan\exceptions\NtentanException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use ntentan\http\Uri;
 
 class MiddlewareQueue
 {
@@ -18,9 +18,16 @@ class MiddlewareQueue
     
     public static function prefix(string $prefix): callable
     {
-        return function() use ($prefix) {
-            if (substr($_SERVER['REQUEST_URI'], 0, strlen($prefix)) == $prefix) {
-                $_SERVER['REQUEST_URI'] = substr($_SERVER['REQUEST_URI'], strlen($prefix));
+        return function(ServerRequestInterface $request) use ($prefix) {
+            $uri = $request->getUri();
+            $path = $uri->getPath();
+            if (substr($path, 0, strlen($prefix)) == $prefix) {
+                $path = substr($_SERVER['REQUEST_URI'], strlen($prefix));
+                $path = $path == "" ? '/' : $path;
+                if ($uri instanceof Uri) {
+                    $uri->withPrefix($prefix);
+                }
+                $request->withUri($uri->withPath($path), true);
                 return true;
             }
         };
@@ -44,9 +51,9 @@ class MiddlewareQueue
         }
     }    
     
-    public static function setup(array $queue) //string ...$queue) 
+    public static function setup(array $queue)
     {
-        return [
+            return [
             self::class => [
                 function($container) use ($queue) {
                     
@@ -54,12 +61,13 @@ class MiddlewareQueue
                     if (count($queue) == 1) {
                         $selectedQueue = reset($queue)['pipeline'];
                     } else {
+                        $request = $container->get(ServerRequestInterface::class);
                         foreach($queue as $name => $pipeline) {
                             if ($name == 'default') {
-                                $selectedQueue = $pipeline;
+                                $selectedQueue = $pipeline['pipeline'];
                                 continue;
                             }
-                            if (isset($pipeline['filter']) && $pipeline['filter']()) {
+                            if (isset($pipeline['filter']) && $pipeline['filter']($request)) {
                                 $selectedQueue = $pipeline['pipeline'];
                                 break;
                             }

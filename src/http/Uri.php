@@ -11,6 +11,7 @@ use Psr\Http\Message\UriInterface;
 class Uri implements UriInterface
 {
     private array $parts;
+    private string $prefix;
     
     public function __construct(string $uri) {
         $this->parts = parse_url($uri);
@@ -110,6 +111,17 @@ class Uri implements UriInterface
         if ($password != null) {
             $this->parts['pass'] = $password;
         }
+        return $this;
+    }
+    
+    public function getPrefix(): string
+    {
+        return $this->prefix;
+    }
+    
+    public function withPrefix(string $prefix): Uri
+    {
+        $this->prefix = $prefix;
         return $this;
     }
 }

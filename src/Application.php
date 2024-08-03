@@ -19,7 +19,7 @@ class Application
     /**
      * Create an instance of the application.
      */
-    public final function __construct(ServerRequestInterface $request, ResponseInterface $response, MiddlewareQueue $registry)
+    public final function __construct(MiddlewareQueue $registry,    ServerRequestInterface $request, ResponseInterface $response)
     {
         $this->request = $request;
         $this->response = $response;

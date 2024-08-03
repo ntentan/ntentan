@@ -106,8 +106,9 @@ class Request implements ServerRequestInterface {
     }
 
     #[\Override]
-    public function withUri(\Psr\Http\Message\UriInterface $uri, bool $preserveHost = false): RequestInterface {
-        
+    public function withUri(UriInterface $uri, bool $preserveHost = false): RequestInterface {
+        $this->uri = $uri;
+        return $this;
     }
 
     #[\Override]

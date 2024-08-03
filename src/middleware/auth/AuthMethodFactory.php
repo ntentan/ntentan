@@ -1,26 +1,28 @@
 <?php
 namespace ntentan\middleware\auth;
 
+/**
+ * A factory for creating authentication methods.
+ * 
+ * @author ekow
+ */
 class AuthMethodFactory
 {
-    private $authMethods = [
-        'http_request' => HttpRequestAuthMethod::class,
-        'http_basic' => HttpBasicAuthMethod::class
-    ];
+    private array $factories = [];
 
-    public function createAuthMethod(array $config) : AuthMethod
+    public function create(array $config): AuthMethod
     {
         $authMethodType = $config['method'] ?? 'http_request';
-        if (!isset($this->authMethods[$authMethodType])) {
+        if (!isset($this->factories[$authMethodType])) {
             throw new \Exception("Auth method $authMethodType not found");
         }
-        $instance = new ($this->authMethods[$authMethodType])();
-        $instance->setup($config);
+        $instance = $this->factories[$authMethodType]();
+        $instance->configure($config);
         return $instance;
     }
 
-    public function registerAuthMethod(string $name, string $class) : void
+    public function registerAuthMethod(string $name, callable $class) : void
     {
-        $this->authMethods[$name] = $class;
+        $this->factories[$name] = $class;
     }
 }

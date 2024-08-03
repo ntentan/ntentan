@@ -5,5 +5,5 @@ use ntentan\Middleware;
 
 interface AuthMethod extends Middleware
 {
-    public function setup(array $config);
+    function isAuthenticated(): bool;
 }
