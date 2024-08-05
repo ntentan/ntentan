@@ -64,6 +64,5 @@ class AuthMiddleware implements Middleware
     {
         $this->config = $configuration;
     }
-
 }
 

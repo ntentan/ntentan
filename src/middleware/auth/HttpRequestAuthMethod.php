@@ -7,6 +7,7 @@ use ntentan\Session;
 use ntentan\http\Redirect;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use ntentan\exceptions\NtentanException;
 
 /**
  * An authentication method that receives a username and password through an HTTP request.
@@ -41,20 +42,21 @@ class HttpRequestAuthMethod implements AuthMethod
             return $next($request, $response, $next);
         }
         if ($request->getUri()->getPath() != $this->config['login_path']) {
-            return $this->redirect->to($this->config['login_path']);//$response->withHeader("Location", $this->config['login_path'])->withStatus(303);
+            return $this->redirect->to($this->config['login_path']);
         }
         $usernameField = $this->config['username_field'] ?? "username";
         $passwordField = $this->config['password_field'] ?? "password";
 
-        if (Input::exists(Input::POST, $usernameField) && Input::exists(Input::POST, $passwordField)) {
-            if ($this->config['password_verify'](Input::post($usernameField), Input::post($passwordField))) {
+        if (isset($this->config['verify_passwords_with']) && Input::exists(Input::POST, $usernameField)) {
+            if ($this->config['verify_passwords_with'](Input::post($usernameField), Input::post($passwordField))) {
                 Session::set("authenticated", true);
                 return $this->redirect->to("/");
-//                 return $response->withHeader("Location", $this->config['success_path'] ?? '/' )->withStatus(303);
             } else {
                 return $next($request, $response->withStatus(401, "Invalid username or password"), $next);
             }
-        }        
+        } else if (!isset($this->config['verify_passwords_with'])) {
+            throw new NtentanException("A password verification function was not specified for the HTTP authentication method");
+        }
     }
 
     #[\Override]
