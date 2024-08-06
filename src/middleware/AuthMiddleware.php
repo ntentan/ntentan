@@ -16,16 +16,33 @@ use Psr\Http\Message\ResponseInterface;
  */
 class AuthMiddleware implements Middleware
 {
-    
+    /**
+     * A factory for creating authentication methods.
+     * @var \ntentan\middleware\auth\AuthMethodFactory
+     */
     private AuthMethodFactory $authMethodFactory;
 
+    /**
+     * An array holding the configuration for the authentication middleware.
+     * @var array
+     */
     private array $config;
 
+    /**
+     * Create an instance of the authentication middleware.
+     * @param AuthMethodFactory $authMethodFactory
+     */
     public function __construct(AuthMethodFactory $authMethodFactory)
     {
         $this->authMethodFactory = $authMethodFactory;
     }
     
+    /**
+     * Chech for paths that are excluded from authentication.
+     * @param string $path
+     * @param array $excludedPaths
+     * @return boolean
+     */
     private function isExcluded(string $path, array $excludedPaths)
     {
         foreach ($excludedPaths as $excludedPath) {
@@ -36,9 +53,14 @@ class AuthMiddleware implements Middleware
         return false;
     }
 
+    /**
+     * Executes the authentication middleware.
+     */
     #[\Override]
     public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
+        session_start();
+        
         // First checks
         if (Session::get('authenticated') || $this->isExcluded($request->getUri()->getPath(), $this->config['excluded'] ?? [])) {
             return $next($request, $response);

@@ -11,11 +11,13 @@ use Psr\Http\Message\UriInterface;
 use ntentan\middleware\auth\AuthMethodFactory;
 use ntentan\middleware\auth\HttpRequestAuthMethod;
 use ntentan\middleware\auth\HttpBasicAuthMethod;
+use ntentan\kaikai\CacheBackendInterface;
+use ntentan\kaikai\backends\VolatileCache;
 
 /**
  * Holds the default DI configuration for the ntentan core.
  */
-class Bootstrap
+class Configuration
 {
     private static ?Request $request = null;
     
@@ -27,7 +29,7 @@ class Bootstrap
         return self::$request;
     }
     
-    public static function getWiring(string $namespace): array 
+    public static function for(string $namespace): array 
     {
         return [
             ServerRequestInterface::class => [self::requestFactory(...), 'singleton' => true],
@@ -52,11 +54,22 @@ class Bootstrap
                     return $instance;
                 },
                 'singlton' => true
+            ],
+            CacheBackendInterface::class => [
+                function($container) {
+                    $config = $container->get('$ntentanConfig:array');
+                    if (isset($config['cache'])) {
+                        $backend = sprintf('\ntentan\kaikai\backends\%sCache', ucfirst($config['cache']['backend']));
+                        return $container->get($backend);
+                    } else {
+                        return new VolatileCache();
+                    }
+                }
             ]
         ];
     }
     
-    public static function getConfiguration(): callable
+    public static function get(): callable
     {
         return function($container) {
             $home = $container->get('$home:string');
