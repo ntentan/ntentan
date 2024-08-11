@@ -15,7 +15,7 @@ use Psr\Http\Message\RequestInterface;
  */
 class Request implements ServerRequestInterface {
 
-    private array $headers;
+    private array $headers = [];
     private UriInterface $uri;
     private StreamInterface $bodyStream;
     
@@ -26,7 +26,11 @@ class Request implements ServerRequestInterface {
     
     private function initializeHeaders(): void {
         if (empty($this->headers)) {
-            
+            $this->headers = getallheaders();
+            foreach($this->headers as $key => $value) {
+                $this->headers[strtolower($key)] = explode(',', $value);
+                unset($this->headers[$key]);
+            }
         }
     }
 
@@ -37,7 +41,8 @@ class Request implements ServerRequestInterface {
 
     #[\Override]
     public function getHeader(string $name): array {
-
+        $this->initializeHeaders();
+        return $this->headers[$name] ?? [];
     }
 
     #[\Override]
@@ -47,7 +52,8 @@ class Request implements ServerRequestInterface {
 
     #[\Override]
     public function getHeaders(): array {
-        
+        $this->initializeHeaders();
+        return $this->headers;
     }
 
     #[\Override]
@@ -72,7 +78,8 @@ class Request implements ServerRequestInterface {
 
     #[\Override]
     public function hasHeader(string $name): bool {
-        
+        $this->initializeHeaders();
+        return isset($this->headers[strtolower($name)]);
     }
 
     #[\Override]
