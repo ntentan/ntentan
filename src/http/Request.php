@@ -1,5 +1,4 @@
 <?php
-
 namespace ntentan\http;
 
 use Psr\Http\Message\ServerRequestInterface;
@@ -26,10 +25,8 @@ class Request implements ServerRequestInterface {
     
     private function initializeHeaders(): void {
         if (empty($this->headers)) {
-            $this->headers = getallheaders();
-            foreach($this->headers as $key => $value) {
+            foreach(getallheaders() as $key => $value) {
                 $this->headers[strtolower($key)] = explode(',', $value);
-                unset($this->headers[$key]);
             }
         }
     }

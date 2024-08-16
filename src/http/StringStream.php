@@ -99,7 +99,8 @@ class StringStream implements StreamInterface
 
     #[\Override]
     public function write(string $string): int {
-        return 0;
+        $this->content .= $string;
+        return strlen($string);
     }
     
     public static function empty() {
