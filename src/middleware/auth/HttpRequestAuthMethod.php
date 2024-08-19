@@ -2,9 +2,9 @@
 
 namespace ntentan\middleware\auth;
 
+use ntentan\Context;
 use ntentan\utils\Input;
 use ntentan\Session;
-use ntentan\http\Redirect;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use ntentan\exceptions\NtentanException;
@@ -15,11 +15,13 @@ use ntentan\exceptions\NtentanException;
  */
 class HttpRequestAuthMethod implements AuthMethod
 {
-    private Redirect $redirect;
+    private Context $context;
+    private AuthUserModelFactory $userModelFactory;
     
-    public function __construct(Redirect $redirect)
+    public function __construct(Context $context,  AuthUserModelFactory $userModelFactory)
     {
-        $this->redirect = $redirect;
+        $this->context = $context;
+        $this->userModelFactory = $userModelFactory;
     }
     
     /**
@@ -32,6 +34,7 @@ class HttpRequestAuthMethod implements AuthMethod
     public function configure(array $config): void 
     {
         $this->config = $config;
+        $this->userModelFactory->setModelClass($config['user_model'] ?? null);
     }
 
     #[\Override]
@@ -42,15 +45,21 @@ class HttpRequestAuthMethod implements AuthMethod
             return $next($request, $response, $next);
         }
         if ($request->getUri()->getPath() != $this->config['login_path']) {
-            return $this->redirect->to($this->config['login_path']);
+            return $response->withStatus(302)->withHeader('Location', $this->context->getPath($this->config['login_path']));
         }
         $usernameField = $this->config['username_field'] ?? "username";
         $passwordField = $this->config['password_field'] ?? "password";
 
         if (isset($this->config['verify_passwords_with']) && Input::exists(Input::POST, $usernameField)) {
-            if ($this->config['verify_passwords_with'](Input::post($usernameField), Input::post($passwordField))) {
-                Session::set("authenticated", true);
-                return $this->redirect->to("/");
+            $userModel = $this->userModelFactory->create();
+            if ($this->config['verify_passwords_with'](
+                Input::post($passwordField),
+                $userModel->getPassword(Input::post($usernameField)))
+            ) {
+                $session = $this->context->getSession();
+                $session->set('authenticated', true);
+                $session->set('user', $userModel->getSessionData(Input::post($usernameField)));
+                return $response->withStatus(302)->withHeader('Location', $this->context->getPath($this->config['login_success_path']));
             } else {
                 return $next($request, $response->withStatus(401, "Invalid username or password"), $next);
             }

@@ -1,10 +1,10 @@
 <?php
 
-namespace ntentan\sessions;
+namespace ntentan\sessions\php;
+
 
 class FileSessionContainer implements \SessionHandlerInterface
 {
-
     private string $file;
     private string $sessionName;
     private string $sessionPath;

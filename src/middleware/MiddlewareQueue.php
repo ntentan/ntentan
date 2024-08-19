@@ -1,11 +1,15 @@
 <?php
 namespace ntentan\middleware;
 
+use ntentan\Context;
 use ntentan\exceptions\NtentanException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use ntentan\http\Uri;
 
+/**
+ * The middleware queue holds an ordered list of middleware objects.
+ */
 class MiddlewareQueue
 {
     private array $register = [];
@@ -16,28 +20,33 @@ class MiddlewareQueue
         $this->register = $register;
     }
     
-    public static function prefix(string $prefix): callable
-    {
-        return function(ServerRequestInterface $request) use ($prefix) {
-            $uri = $request->getUri();
-            $path = $uri->getPath();
-            if (substr($path, 0, strlen($prefix)) == $prefix) {
-                $path = substr($_SERVER['REQUEST_URI'], strlen($prefix));
-                $path = $path == "" ? '/' : $path;
-                if ($uri instanceof Uri) {
-                    $uri->withPrefix($prefix);
-                }
-                $request->withUri($uri->withPath($path), true);
-                return true;
-            }
-        };
-    }
+//    public static function prefix(string $prefix): callable
+//    {
+//        return function(ServerRequestInterface $request) use ($prefix) {
+//            $uri = $request->getUri();
+//            $path = $uri->getPath();
+//            if (str_starts_with($path, $prefix)) {
+//                $path = substr($_SERVER['REQUEST_URI'], strlen($prefix));
+//                $path = $path == "" ? '/' : $path;
+//                if ($uri instanceof Uri) {
+//                    $uri->withPrefix($prefix);
+//                }
+//                $request->withUri($uri->withPath($path), true);
+//                $this->context->setPrefix($prefix);
+//                return true;
+//            }
+//        };
+//    }
     
     public function iterate(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         return $this->register[$this->pipeline[0]]()->run($request, $response, $this->next(...));        
     }
-    
+
+    /**
+     * Runs the next item on the middleware queue.
+     * @throws NtentanException
+     */
     private function next(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $nextMiddleWare = next($this->pipeline);
@@ -49,6 +58,10 @@ class MiddlewareQueue
             $middleware = $this->register[$nextMiddleWare]();
             return $middleware->run($request, $response, $this->next(...));
         }
+        return $response->withStatus(500)->withHeader('Content-Type', 'application/json')
+            ->write(json_encode(
+                "It appears we reached the end of the middleware queue without a proper response prepared"
+            ));
     }    
     
     public static function setup(array $queue)

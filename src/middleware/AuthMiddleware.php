@@ -1,9 +1,11 @@
 <?php
 namespace ntentan\middleware;
 
+use ntentan\middleware\auth\AuthUserModelFactory;
 use ntentan\Session;
 use ntentan\Middleware;
 use ntentan\middleware\auth\AuthMethodFactory;
+use ntentan\sessions\SessionStore;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -28,13 +30,16 @@ class AuthMiddleware implements Middleware
      */
     private array $config;
 
+    private SessionStore $session;
+
     /**
      * Create an instance of the authentication middleware.
      * @param AuthMethodFactory $authMethodFactory
      */
-    public function __construct(AuthMethodFactory $authMethodFactory)
+    public function __construct(AuthMethodFactory $authMethodFactory, SessionStore $sessionStore)
     {
         $this->authMethodFactory = $authMethodFactory;
+        $this->session = $sessionStore;
     }
     
     /**
@@ -59,18 +64,16 @@ class AuthMiddleware implements Middleware
     #[\Override]
     public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
-        session_start();
-        
         // First checks
-        if (Session::get('authenticated') || $this->isExcluded($request->getUri()->getPath(), $this->config['excluded'] ?? [])) {
+        if ($this->session->get('authenticated') || $this->isExcluded($request->getUri()->getPath(), $this->config['excluded'] ?? [])) {
             return $next($request, $response);
         } 
         
         // Create instance and perform second checks
         $authMethod = $this->authMethodFactory->create($this->config);
-        if ($authMethod->isAuthenticated()) {
-            return $next($request, $response);
-        }
+//        if ($authMethod->isAuthenticated()) {
+//            return $next($request, $response);
+//        }
         
         // Run the authentication middleware and proceed accordingly
         $authResponse = $authMethod->run($request, $response, $next);
@@ -85,6 +88,7 @@ class AuthMiddleware implements Middleware
     public function configure(array $configuration)
     {
         $this->config = $configuration;
+
     }
 }
 
