@@ -21,7 +21,7 @@ class MiddlewareFilter
             $uri = $request->getUri();
             $path = $uri->getPath();
             if (str_starts_with($path, $prefix)) {
-                $path = substr($_SERVER['REQUEST_URI'], strlen($prefix));
+                $path = substr($path, strlen($prefix));
                 $path = $path == "" ? '/' : $path;
                 if ($uri instanceof Uri) {
                     $uri->withPrefix($prefix);
