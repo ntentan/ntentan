@@ -14,7 +14,6 @@ class Application
     private ServerRequestInterface $request;
     private ResponseInterface $response;
     private MiddlewareQueue $registry;
-    private array $pipeline;
     
     /**
      * Create an instance of the application.

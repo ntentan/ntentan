@@ -11,16 +11,9 @@ use Psr\Http\Message\MessageInterface;
  *
  * @author ekow
  */
-class Response implements ResponseInterface 
+class Response extends Message implements ResponseInterface
 {
     private int $status = 200;
-    private StreamInterface $body;
-    private array $headers = [];
-   
-    #[\Override]
-    public function getBody(): StreamInterface {
-        return $this->body ?? new StringStream("");
-    }
 
     #[\Override]
     public function getHeader(string $name): array {
@@ -33,13 +26,8 @@ class Response implements ResponseInterface
     }
 
     #[\Override]
-    public function getHeaders(): array {
-        return $this->headers;
-    }
-
-    #[\Override]
     public function getProtocolVersion(): string {
-        
+
     }
 
     #[\Override]
@@ -52,37 +40,6 @@ class Response implements ResponseInterface
         return $this->status;
     }
 
-    #[\Override]
-    public function hasHeader(string $name): bool {
-        
-    }
-
-    #[\Override]
-    public function withAddedHeader(string $name, $value): MessageInterface {
-        $name = strtolower($name);
-        if (!isset($this->headers[$name])) {
-            $this->headers[$name] = [];
-        }
-        $this->headers[$name][] = $value;
-        return $this;
-    }
-    
-    public function withBodyFromString(string $body): Response {
-        $this->body = new StringStream($body);
-        return $this;
-    }
-
-    #[\Override]
-    public function withBody(StreamInterface $body): MessageInterface {
-        $this->body = $body;
-        return $this;
-    }
-
-    #[\Override]
-    public function withHeader(string $name, $value): MessageInterface {
-        $this->headers[$name] = [$value];
-        return $this;
-    }
 
     #[\Override]
     public function withProtocolVersion(string $version): MessageInterface {
@@ -95,8 +52,8 @@ class Response implements ResponseInterface
         return $this;
     }
 
-    #[\Override]
-    public function withoutHeader(string $name): MessageInterface {
-        
+    protected function initializeHeaders(): array
+    {
+        return [];
     }
 }
