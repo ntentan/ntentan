@@ -1,11 +1,9 @@
 <?php
 namespace ntentan\middleware;
 
-use ntentan\Context;
 use ntentan\exceptions\NtentanException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use ntentan\http\Uri;
 
 /**
  * The middleware queue holds an ordered list of middleware objects.
@@ -19,24 +17,6 @@ class MiddlewareQueue
         $this->pipeline = $pipeline;
         $this->register = $register;
     }
-    
-//    public static function prefix(string $prefix): callable
-//    {
-//        return function(ServerRequestInterface $request) use ($prefix) {
-//            $uri = $request->getUri();
-//            $path = $uri->getPath();
-//            if (str_starts_with($path, $prefix)) {
-//                $path = substr($_SERVER['REQUEST_URI'], strlen($prefix));
-//                $path = $path == "" ? '/' : $path;
-//                if ($uri instanceof Uri) {
-//                    $uri->withPrefix($prefix);
-//                }
-//                $request->withUri($uri->withPath($path), true);
-//                $this->context->setPrefix($prefix);
-//                return true;
-//            }
-//        };
-//    }
     
     public function iterate(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
