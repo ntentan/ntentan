@@ -26,7 +26,7 @@ abstract class Message implements MessageInterface
      */
     public function hasHeader(string $name): bool
     {
-        return isset($this->headers[$name]);
+        return isset($this->headers[strtolower($name)]);
     }
 
     /**
@@ -35,7 +35,7 @@ abstract class Message implements MessageInterface
     public function getHeader(string $name): array
     {
         $this->prepareHeaders();
-        return $this->headers[$name];
+        return $this->headers[strtolower($name)];
     }
 
     /**
@@ -43,7 +43,7 @@ abstract class Message implements MessageInterface
      */
     public function getHeaderLine(string $name): string
     {
-        // TODO: Implement getHeaderLine() method.
+        return implode(', ', $this->getHeader($name));
     }
 
     /**
@@ -76,7 +76,7 @@ abstract class Message implements MessageInterface
     public function withoutHeader(string $name): MessageInterface
     {
         $this->prepareHeaders();
-        unset($this->headers[$name]);
+        unset($this->headers[strtolower($name)]);
         return $this;
     }
 

@@ -46,7 +46,7 @@ class MiddlewareQueue
     
     public static function setup(array $queue)
     {
-            return [
+        return [
             self::class => [
                 function($container) use ($queue) {
                     

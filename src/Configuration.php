@@ -3,6 +3,7 @@ namespace ntentan;
 
 use ntentan\sessions\PhpSessionStore;
 use ntentan\sessions\SessionStore;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use ntentan\http\Request;
@@ -35,6 +36,7 @@ class Configuration
     {
         return [
             ServerRequestInterface::class => [self::requestFactory(...), 'singleton' => true],
+            RequestInterface::class => [self::requestFactory(...), 'singleton' => true],
             Request::class => [self::requestFactory(...), 'singleton' => true],
             UriInterface::class => [
                     fn() => new Uri(
