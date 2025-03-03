@@ -35,7 +35,7 @@ abstract class Message implements MessageInterface
     public function getHeader(string $name): array
     {
         $this->prepareHeaders();
-        return $this->headers[strtolower($name)];
+        return $this->headers[strtolower($name)] ?? [];
     }
 
     /**
