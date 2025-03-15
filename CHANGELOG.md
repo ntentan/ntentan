@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.9.1 - 2025-03-15
+## Fixes
+ - The header method in the implementation of PHP Message interface was completely implemented.
+
 ## v0.9.0 - 2025-01-18
 First breakup of the ntentan core for a release:
  - Removed all the MVC components so they would be implemented externally.
