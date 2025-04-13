@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v0.9.2 - 2025-04-13
+- Removed unneeded exceptions from the core into submodules where there are necessary.  
+
 ## v0.9.1 - 2025-03-15
 ## Fixes
  - The header method in the implementation of PHP Message interface was completely implemented.
