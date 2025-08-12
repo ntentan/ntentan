@@ -59,7 +59,7 @@ class HttpRequestAuthMethod implements AuthMethod
                 $session = $this->context->getSession();
                 $session->set('authenticated', true);
                 $session->set('user', $userModel->getSessionData(Input::post($usernameField)));
-                return $response->withStatus(302)->withHeader('Location', $this->context->getPath($this->config['login_success_path']));
+                return $response->withStatus(302)->withHeader('Location', $this->context->getPath($this->config['login_success_path'] ?? '/'));
             } else {
                 return $next($request, $response->withStatus(401, "Invalid username or password"), $next);
             }
