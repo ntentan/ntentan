@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v0.9.3 - 2025-09-07
+- Fixed a bug in the HTTPAuthentication middleware.
+
 ## v0.9.2 - 2025-04-13
 - Removed unneeded exceptions from the core into submodules where there are necessary.  
 
