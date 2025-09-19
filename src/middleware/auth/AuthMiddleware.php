@@ -1,13 +1,11 @@
 <?php
-namespace ntentan\middleware;
+namespace ntentan\middleware\auth;
 
-use ntentan\middleware\auth\AuthUserModelFactory;
-use ntentan\Session;
 use ntentan\Middleware;
-use ntentan\middleware\auth\AuthMethodFactory;
+use ntentan\Session;
 use ntentan\sessions\SessionStore;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * The Authentication middleware ensures that all requests are from properly authenticated sessions before sending
@@ -71,9 +69,6 @@ class AuthMiddleware implements Middleware
         
         // Create instance and perform second checks
         $authMethod = $this->authMethodFactory->create($this->config);
-//        if ($authMethod->isAuthenticated()) {
-//            return $next($request, $response);
-//        }
         
         // Run the authentication middleware and proceed accordingly
         $authResponse = $authMethod->run($request, $response, $next);

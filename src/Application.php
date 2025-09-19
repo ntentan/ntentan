@@ -13,7 +13,7 @@ class Application
 {
     private ServerRequestInterface $request;
     private ResponseInterface $response;
-    private MiddlewareQueue $registry;
+    private MiddlewareQueue $middlewareQueue;
     
     /**
      * Create an instance of the application.
@@ -22,12 +22,16 @@ class Application
     {
         $this->request = $request;
         $this->response = $response;
-        $this->registry = $registry;
+        $this->middlewareQueue = $registry;
     }
-    
+
+    /**
+     * Run the application and iterate through the middleware queue.
+     * @return void
+     */
     public function execute(): void
     {
-        $response = $this->registry->iterate($this->request, $this->response);
+        $response = $this->middlewareQueue->iterate($this->request, $this->response);
         http_response_code($response->getStatusCode());
         foreach($response->getHeaders() as $header => $values) {
             foreach($values as $value) {

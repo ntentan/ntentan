@@ -2,16 +2,21 @@
 
 namespace ntentan\middleware\requests;
 
+use ntentan\Middleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
-class RequestsMiddleware implements MiddlewareInterface
+class RequestsMiddleware implements Middleware
 {
+    private $routes = [];
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    function run(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
-        // TODO: Implement process() method.
+
+    }
+
+    function configure(array $configuration)
+    {
+        $this->routes = $configuration['routes'] ?? [];
     }
 }

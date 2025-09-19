@@ -1,10 +1,9 @@
 <?php
 
-namespace ntentan\middleware;
+namespace ntentan\middleware\auth;
 
-use ntentan\interfaces\MiddlewareFactoryInterface;
 use ntentan\AbstractMiddleware;
-use ntentan\middleware\auth\AuthMethodFactory;
+use ntentan\interfaces\MiddlewareFactoryInterface;
 
 /**
  * Description of AuthMiddlewareFactory
