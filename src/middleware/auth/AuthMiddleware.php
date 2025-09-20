@@ -1,7 +1,7 @@
 <?php
 namespace ntentan\middleware\auth;
 
-use ntentan\Middleware;
+use ntentan\middleware\Middleware;
 use ntentan\Session;
 use ntentan\sessions\SessionStore;
 use Psr\Http\Message\ResponseInterface;

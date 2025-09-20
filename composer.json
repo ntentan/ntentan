@@ -4,7 +4,7 @@
     "description": "Another PHP application framework.",
     "license" : "MIT",
     "require": {
-        "php": ">=8.2.0",
+        "php": ">=8.4.0",
         "ntentan/panie": "0.*                               ",
         "psr/http-message": "^2.0",
         "psr/http-server-handler": "^1.0",

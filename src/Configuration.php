@@ -23,65 +23,13 @@ use ntentan\kaikai\backends\VolatileCache;
 class Configuration
 {
     private static ?Request $request = null;
-    
+
     private static function requestFactory(Container $container): ServerRequestInterface
     {
         if(self::$request===null) {
             self::$request = new Request($container->get(UriInterface::class), new http\Stream("php://input", 'r'));
         }
         return self::$request;
-    }
-    
-    public static function for(string $namespace): array 
-    {
-        return [
-            ServerRequestInterface::class => [self::requestFactory(...), 'singleton' => true],
-            RequestInterface::class => [self::requestFactory(...), 'singleton' => true],
-            Request::class => [self::requestFactory(...), 'singleton' => true],
-            UriInterface::class => [
-                    fn() => new Uri(
-                    ($_SERVER['HTTPS'] ?? '' != 'on' ? 'https' : 'http')
-                    . "://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"
-                ),
-                'singleton' => true
-            ],
-            Uri::class => [ fn($container) => $container->get(UriInterface::class), 'singleton' => true],
-            ResponseInterface::class => [
-                fn() => new Response(),
-                'singleton' => true
-            ],
-            AuthMethodFactory::class => [
-                function($container) {
-                    $instance = new AuthMethodFactory();
-                    $instance->registerAuthMethod('http_request', fn() => $container->get(HttpRequestAuthMethod::class));
-                    $instance->registerAuthMethod('basin_auth', fn() => $container->get(HttpBasicAuthMethod::class));
-                    return $instance;
-                },
-                'singlton' => true
-            ],
-            CacheBackendInterface::class => [
-                function($container) {
-                    $config = $container->get('$ntentanConfig:array');
-                    if (isset($config['cache'])) {
-                        $backend = sprintf('\ntentan\kaikai\backends\%sCache', ucfirst($config['cache']['backend']));
-                        return $container->get($backend);
-                    } else {
-                        return new VolatileCache();
-                    }
-                }
-            ],
-            Context::class => ['singleton' => true],
-            SessionStore::class => [
-                function (Container $container) {
-                    $sessionHandler = null;
-                    if($container->has(\SessionHandlerInterface::class)) {
-                        $sessionHandler = $container->get(\SessionHandlerInterface::class);
-                    }
-                    return new PhpSessionStore($sessionHandler);
-                },
-                'singleton' => true
-            ]
-        ];
     }
     
     public static function get(): callable

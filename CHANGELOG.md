@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## [Unreleased]
+### Added
+- Added a new ApplicationBuilder class to make it easy to create an instance of the Application class.
+- Added initial unit tests for some essential components within this package.
+
 ## v0.9.3 - 2025-09-07
 - Fixed a bug in the HTTPAuthentication middleware.
 

@@ -1,6 +1,7 @@
 <?php
 namespace ntentan;
 
+use ntentan\panie\Container;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use ntentan\middleware\MiddlewareQueue;
@@ -42,5 +43,10 @@ class Application
         if ($body->isReadable()) {
             echo $body->getContents();   
         }
+    }
+
+    public static function builder()
+    {
+        return new ApplicationBuilder();
     }
 }

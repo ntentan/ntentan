@@ -2,7 +2,7 @@
 
 namespace ntentan\middleware\requests;
 
-use ntentan\Middleware;
+use ntentan\middleware\Middleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

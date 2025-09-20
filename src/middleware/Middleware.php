@@ -1,9 +1,9 @@
 <?php
 
-namespace ntentan;
+namespace ntentan\middleware;
 
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Defines the interface for middleware components.

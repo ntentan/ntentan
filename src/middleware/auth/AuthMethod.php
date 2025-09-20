@@ -1,7 +1,7 @@
 <?php
 namespace ntentan\middleware\auth;
 
-use ntentan\Middleware;
+use ntentan\middleware\Middleware;
 
 interface AuthMethod extends Middleware
 {
