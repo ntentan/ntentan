@@ -46,7 +46,6 @@ class ApplicationBuilder
         $this->container->setup([
             self::class => [
                 function($container) use ($middlewareQueue) {
-
                     $selectedQueue = [];
                     if (count($middlewareQueue) == 1) {
                         $selectedQueue = reset($middlewareQueue)['pipeline'];
