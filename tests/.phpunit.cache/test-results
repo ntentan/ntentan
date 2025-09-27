@@ -1,0 +1,1 @@
+{"version":2,"defects":{"ApplicationTest::testSingleItemQueue":8,"MiddlewareQueueTest::testMultipleMiddleware":5},"times":{"ApplicationTest::testSingleItemQueue":0.005,"MiddlewareQueueTest::testSingleMiddleware":0.008,"MiddlewareQueueTest::testMultipleMiddleware":0}}

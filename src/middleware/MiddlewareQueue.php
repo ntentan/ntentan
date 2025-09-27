@@ -12,10 +12,17 @@ class MiddlewareQueue
 {
     private array $registry = [];
     private array $pipeline = [];
-    
-    public function __construct(array $pipeline, array $registry) {
+
+    private ResponseInterface $pendingResponse;
+
+    /**
+     * Create a new middleware queue.
+     * @param array $pipeline A list of middleware along with their configurations. Middle ware are executed in the order presented.
+     * @param array $factories An associative array of functions for creating the middleware classes.
+     */
+    public function __construct(array $pipeline, array $factories) {
         $this->pipeline = $pipeline;
-        $this->registry = $registry;
+        $this->registry = $factories;
     }
     
     public function iterate(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
@@ -38,9 +45,6 @@ class MiddlewareQueue
             $middleware = $this->registry[$nextMiddleWare]();
             return $middleware->run($request, $response, $this->next(...));
         }
-        return $response->withStatus(500)->withHeader('Content-Type', 'application/json')
-            ->write(json_encode(
-                "It appears we reached the end of the middleware queue without a proper response prepared"
-            ));
+        return $response;
     }
 }
