@@ -47,6 +47,6 @@ class Application
 
     public static function builder()
     {
-        return new ApplicationBuilder();
+        return new ApplicationBuilder(new Container());
     }
 }

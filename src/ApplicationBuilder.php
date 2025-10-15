@@ -2,6 +2,7 @@
 
 namespace ntentan;
 
+use ntentan\exceptions\NtentanException;
 use ntentan\http\Request;
 use ntentan\http\Response;
 use ntentan\http\Uri;
@@ -19,12 +20,13 @@ class ApplicationBuilder
 {
     private Container $container;
     private string $namespace = 'app';
-
     private Request $request;
 
-    public function __construct()
+    private array $middlewareQueues = [];
+
+    public function __construct(Container $container)
     {
-        $this->container = new Container();
+        $this->container = $container;
     }
 
     public function setNamespace(string $namespace): self
@@ -41,17 +43,28 @@ class ApplicationBuilder
         return $this->request;
     }
 
-    public function setMiddlewareQueue(array $middlewareQueue): self
+    public function addMiddlewareQueue(string $name, array $middlewareQueue, callable $filter): self
+    {
+        $this->middlewareQueues[] = [
+            "middleware_queue" => $middlewareQueue,
+            "name" => $name,
+            "filter" => $filter
+        ];
+        return $this;
+    }
+
+    private function setupMiddlewareQueue(): void
     {
         $this->container->setup([
-            self::class => [
-                function($container) use ($middlewareQueue) {
+            MiddlewareQueue::class => [
+                function($container) {
                     $selectedQueue = [];
-                    if (count($middlewareQueue) == 1) {
-                        $selectedQueue = reset($middlewareQueue)['pipeline'];
-                    } else {
+                    $numMiddlewareQueues = count($this->middlewareQueues);
+                    if ($numMiddlewareQueues == 1) {
+                        $selectedQueue = reset($this->middlewareQueues)['pipeline'];
+                    } else if ($numMiddlewareQueues > 1) {
                         $request = $container->get(ServerRequestInterface::class);
-                        foreach($middlewareQueue as $name => $pipeline) {
+                        foreach($this->middlewareQueues as $name => $pipeline) {
                             if ($name == 'default') {
                                 $selectedQueue = $pipeline['pipeline'];
                                 continue;
@@ -61,6 +74,8 @@ class ApplicationBuilder
                                 break;
                             }
                         }
+                    } else {
+                        throw new NtentanException("Application can only execute if a middleware queue is defined.");
                     }
                     $registry = [];
                     $finalQueue = [];
@@ -80,7 +95,6 @@ class ApplicationBuilder
                 'singleton' => true
             ]
         ]);
-        return $this;
     }
 
     public function build(): Application
@@ -88,6 +102,7 @@ class ApplicationBuilder
         $this->container->provide("string", "namespace")->with(fn () => $this->namespace);
         $this->container->provide("string", "home")->with(fn () => __DIR__ . "/../../");
         $this->container->bind(ContainerInterface::class)->to(fn() => $this->container);
+        $this->setupMiddlewareQueue();
         $this->container->setup([
             ServerRequestInterface::class => [$this->requestFactory(...), 'singleton' => true],
             RequestInterface::class => [$this->requestFactory(...), 'singleton' => true],
