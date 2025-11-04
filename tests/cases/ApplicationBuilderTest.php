@@ -12,7 +12,6 @@ use ntentan\panie\Container;
 
 class ApplicationBuilderTest extends TestCase
 {
-    private ApplicationBuilder $builder;
 
     public function testBuild()
     {
@@ -21,7 +20,9 @@ class ApplicationBuilderTest extends TestCase
         $_SERVER['HTTPS'] = false;
         $_SERVER['HTTP_HOST'] = 'example.com';
         $this->expectException(NtentanException::class);
-        $application = $this->builder->build();
+
+        $builder = new ApplicationBuilder();
+        $application = $builder->build();
         $this->assertInstanceOf(Application::class, $application);
         $application->execute();
     }
