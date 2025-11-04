@@ -21,12 +21,11 @@ class ApplicationBuilder
     private Container $container;
     private string $namespace = 'app';
     private Request $request;
-
     private array $middlewareQueues = [];
 
-    public function __construct(Container $container)
+    public function __construct(Container|null $container = null)
     {
-        $this->container = $container;
+        $this->container = $container === null ? new Container() : $container;
     }
 
     public function setNamespace(string $namespace): self
@@ -43,10 +42,10 @@ class ApplicationBuilder
         return $this->request;
     }
 
-    public function addMiddlewareQueue(string $name, array $middlewareQueue, callable $filter): self
+    public function addMiddlewarePipeline(string $name, array $pipeline, callable|null $filter=null): self
     {
         $this->middlewareQueues[] = [
-            "middleware_queue" => $middlewareQueue,
+            "pipeline" => $pipeline,
             "name" => $name,
             "filter" => $filter
         ];
@@ -95,6 +94,11 @@ class ApplicationBuilder
                 'singleton' => true
             ]
         ]);
+    }
+
+    public function getContainer(): Container
+    {
+        return $this->container;
     }
 
     public function build(): Application

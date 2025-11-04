@@ -11,7 +11,8 @@
         "psr/http-server-middleware": "^1.0"
     },
     "require-dev": {
-        "phpunit/phpunit" : "@stable"
+        "phpunit/phpunit" : "@stable",
+        "mockery/mockery": "^1.6"
     },
     "authors": [
         {
@@ -22,7 +23,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "ntentan\\": "src/"
+            "ntentan\\": "src/",
+            "ntentan\\tests\\": "tests/"
         }
     }
 }

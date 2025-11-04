@@ -1,5 +1,7 @@
 <?php
 
+namespace ntentan\tests\cases;
+
 use ntentan\middleware\Middleware;
 use ntentan\middleware\MiddlewareQueue;
 use PHPUnit\Framework\TestCase;
