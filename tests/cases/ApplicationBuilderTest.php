@@ -12,42 +12,64 @@ use ntentan\panie\Container;
 
 class ApplicationBuilderTest extends TestCase
 {
-
-    public function testBuild()
+    public function setUp(): void
     {
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SERVER['REQUEST_URI'] = '/foo/bar';
         $_SERVER['HTTPS'] = false;
         $_SERVER['HTTP_HOST'] = 'example.com';
+    }
+    public function testBuild()
+    {
         $this->expectException(NtentanException::class);
-
-        $builder = new ApplicationBuilder();
+        $builder = Application::builder();
         $application = $builder->build();
-        $this->assertInstanceOf(Application::class, $application);
+        $application->execute();
+    }
+
+    private function createMockBuilder(bool $called = false)
+    {
+        $factoryMock = $this->getMockBuilder(MockCallback::class)
+            ->onlyMethods(['__invoke'])
+            ->getMock();
+        $middlewareMock = $this->createMock(Middleware::class);
+
+        if ($called) {
+            $middlewareMock->expects($this->once())->method('configure');
+            $factoryMock->expects($this->once())->method('__invoke')->willReturn($middlewareMock);
+        } else {
+            $factoryMock->expects($this->never())->method('__invoke');
+        }
+        return $factoryMock;
+    }
+
+    public function testBuildWithMultiMiddleware()
+    {
+        $firstFactoryMock = $this->createMockBuilder(true);
+        $secondFactoryMock = $this->createMockBuilder();
+        $container = new Container();
+        $container->setup([
+            'first' => $firstFactoryMock,
+            'second' => $secondFactoryMock,
+        ]);
+        $builder = new ApplicationBuilder($container);
+        $application = $builder
+            ->addMiddlewarePipeline('default', [['first', ['args']]])
+            ->addMiddlewarePipeline('another', [['second', ['args']]])
+            ->build();
+
         $application->execute();
     }
 
     public function testBuildWithMiddleware()
     {
-        $_SERVER['REQUEST_METHOD'] = 'GET';
-        $_SERVER['REQUEST_URI'] = '/foo/bar';
-        $_SERVER['HTTPS'] = false;
-        $_SERVER['HTTP_HOST'] = 'example.com';
-
-        $factoryMock = $this->getMockBuilder(MockCallback::class)
-            ->onlyMethods(['__invoke'])
-            ->getMock();
-        $middlewareMock = $this->createMock(Middleware::class);
-        $middlewareMock->expects($this->once())->method('configure');
-        $factoryMock->expects($this->once())->method('__invoke')->willReturn($middlewareMock);
-
+        $factoryMock = $this->createMockBuilder(true);
         $container = new Container();
         $container->setup([
             'middleware' => $factoryMock
         ]);
 
         $builder = new ApplicationBuilder($container);
-
         $application = $builder
             ->addMiddlewarePipeline('default',[
                 ['middleware', ['args']]

@@ -23,9 +23,9 @@ class ApplicationBuilder
     private Request $request;
     private array $middlewareQueues = [];
 
-    public function __construct(Container|null $container = null)
+    public function __construct(Container $container)
     {
-        $this->container = $container === null ? new Container() : $container;
+        $this->container = $container;
     }
 
     public function setNamespace(string $namespace): self
@@ -44,7 +44,10 @@ class ApplicationBuilder
 
     public function addMiddlewarePipeline(string $name, array $pipeline, callable|null $filter=null): self
     {
-        $this->middlewareQueues[] = [
+        if (isset($this->middlewareQueues[$name])) {
+            throw new NtentanException("A middleware pipeline [$name] already exists.");
+        }
+        $this->middlewareQueues[$name] = [
             "pipeline" => $pipeline,
             "name" => $name,
             "filter" => $filter
