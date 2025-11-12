@@ -43,6 +43,15 @@ class ApplicationBuilderTest extends TestCase
         return $factoryMock;
     }
 
+    public function testDuplicatePipelineException()
+    {
+        $this->expectException(NtentanException::class);
+        Application::builder()
+            ->addMiddlewarePipeline('default', [['first', ['args']]])
+            ->addMiddlewarePipeline('default', [['second', ['args']]])
+            ->build();
+    }
+
     public function testBuildWithMultiMiddleware()
     {
         $firstFactoryMock = $this->createMockBuilder(true);
