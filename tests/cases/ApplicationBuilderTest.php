@@ -52,6 +52,12 @@ class ApplicationBuilderTest extends TestCase
             ->build();
     }
 
+    public function testContainer()
+    {
+        $builder = Application::builder();
+        $this->assertInstanceOf(Container::class, $builder->getContainer());
+    }
+
     public function testBuildWithMultiMiddleware()
     {
         $firstFactoryMock = $this->createMockBuilder(true);
