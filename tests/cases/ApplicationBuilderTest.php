@@ -76,6 +76,24 @@ class ApplicationBuilderTest extends TestCase
         $application->execute();
     }
 
+    public function testMiddlewareFilters()
+    {
+        $firstFactoryMock = $this->createMockBuilder();
+        $secondFactoryMock = $this->createMockBuilder(true);
+        $container = new Container();
+        $container->setup([
+            'first' => $firstFactoryMock,
+            'second' => $secondFactoryMock,
+        ]);
+        $builder = new ApplicationBuilder($container);
+        $application = $builder
+            ->addMiddlewarePipeline('default', [['first', ['args']]])
+            ->addMiddlewarePipeline('another', [['second', ['args']]], fn() => true)
+            ->build();
+
+        $application->execute();
+    }
+
     public function testBuildWithMiddleware()
     {
         $factoryMock = $this->createMockBuilder(true);
