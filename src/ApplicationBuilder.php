@@ -28,7 +28,7 @@ class ApplicationBuilder
         $this->container = $container;
     }
 
-    public function setNamespace(string $namespace): self
+    public function withNamespace(string $namespace): self
     {
         $this->namespace = $namespace;
         return $this;
@@ -104,10 +104,16 @@ class ApplicationBuilder
         return $this->container;
     }
 
+    public function setupContainerBindings(array $bindings): self
+    {
+        $this->container->setup($bindings);
+        return $this;
+    }
+
     public function build(): Application
     {
         $this->container->provide("string", "namespace")->with(fn () => $this->namespace);
-        $this->container->provide("string", "home")->with(fn () => __DIR__ . "/../../");
+        $this->container->provide("string", "home")->with(fn () => __DIR__ . "/../../../../");
         $this->container->bind(ContainerInterface::class)->to(fn() => $this->container);
         $this->setupMiddlewareQueue();
         $this->container->setup([

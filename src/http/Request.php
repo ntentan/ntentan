@@ -2,6 +2,7 @@
 
 namespace ntentan\http;
 
+use ArrayObject;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
@@ -16,7 +17,9 @@ use Psr\Http\Message\RequestInterface;
 class Request extends Message implements ServerRequestInterface
 {
     private UriInterface $uri;
-    private array $uploadedFiles;
+    private \ArrayObject $uploadedFiles;
+    private \ArrayObject $parsedBody;
+    private string $protocolVersion = '1.1';
 
     public function __construct(UriInterface $uri, StreamInterface $bodyStream)
     {
@@ -26,7 +29,7 @@ class Request extends Message implements ServerRequestInterface
 
     public function getProtocolVersion(): string
     {
-        // TODO: Implement getProtocolVersion() method.
+        return $_SERVER['SERVER_PROTOCOL'] ?? $this->protocolVersion;
     }
 
     protected function initializeHeaders(): array
@@ -103,7 +106,14 @@ class Request extends Message implements ServerRequestInterface
     #[\Override]
     public function getParsedBody()
     {
-
+        if (!isset($this->parsedBody)) {
+            $this->parsedBody = new ArrayObject(match ($this->getHeaderLine('Content-Type')) {
+                'application/x-www-form-urlencoded' => $_POST,
+                'application/json' => json_decode((string)$this->getBody(), true),
+                default => null,
+            });
+        }
+        return $this->parsedBody->getArrayCopy();
     }
 
     #[\Override]
@@ -144,12 +154,13 @@ class Request extends Message implements ServerRequestInterface
     public function getUploadedFiles(): array
     {
         if (!isset($this->uploadedFiles)) {
-            $this->uploadedFiles = [];
+            $uploadedFiles = [];
             foreach ($_FILES as $field => $value) {
-                $this->setUploadFields($field, $value, $this->uploadedFiles);
+                $this->setUploadFields($field, $value, $uploadedFiles);
             }
+            $this->uploadedFiles = new ArrayObject($uploadedFiles);
         }
-        return $this->uploadedFiles;
+        return $this->uploadedFiles->getArrayCopy();
     }
 
     #[\Override]
@@ -167,7 +178,7 @@ class Request extends Message implements ServerRequestInterface
     #[\Override]
     public function withParsedBody($data): ServerRequestInterface
     {
-
+        $this->parsedBody = new ArrayObject($data);
     }
 
     #[\Override]
