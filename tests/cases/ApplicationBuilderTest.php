@@ -32,9 +32,9 @@ class ApplicationBuilderTest extends TestCase
         $factoryMock = $this->getMockBuilder(MockCallback::class)
             ->onlyMethods(['__invoke'])
             ->getMock();
-        $middlewareMock = $this->createMock(Middleware::class);
 
         if ($called) {
+            $middlewareMock = $this->createMock(Middleware::class);
             $middlewareMock->expects($this->once())->method('configure');
             $factoryMock->expects($this->once())->method('__invoke')->willReturn($middlewareMock);
         } else {
