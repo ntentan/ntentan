@@ -51,10 +51,10 @@ class ApplicationBuilder
         return $this->request;
     }
 
-    public function getFilter(string $class, mixed $args = null): callable
+    public static function getFilter(string $class, mixed $args = null): callable
     {
         return function() use ($class, $args) {
-            $filter = $this->container->get($class);
+            $filter = self::$instance->container->get($class);
             if($args !== null && $filter instanceof ConfigurableFilter) {
                 $filter->configure($args);
             }
