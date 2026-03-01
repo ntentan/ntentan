@@ -10,6 +10,8 @@ use ntentan\middleware\MiddlewareQueue;
 use ntentan\panie\Container;
 use ntentan\sessions\PhpSessionStore;
 use ntentan\sessions\SessionStore;
+use ntentan\middleware\filters\ConfigurableFilter;
+
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -49,13 +51,10 @@ class ApplicationBuilder
         return $this->request;
     }
 
-<<<<<<< Updated upstream
-    public function addMiddlewarePipeline(string $name, array $pipeline, callable|null $filter=null): self
-=======
-    public static function getFilter(string $class, mixed $args = null): callable
+    public function getFilter(string $class, mixed $args = null): callable
     {
         return function() use ($class, $args) {
-            $filter = self::$instance->container->get($class);
+            $filter = $this->container->get($class);
             if($args !== null && $filter instanceof ConfigurableFilter) {
                 $filter->configure($args);
             }
@@ -64,7 +63,6 @@ class ApplicationBuilder
     }
 
     public function addMiddlewarePipeline(string $name, array $pipeline, callable|null $filter = null): self
->>>>>>> Stashed changes
     {
         if (isset($this->middlewareQueues[$name])) {
             throw new NtentanException("A middleware pipeline [$name] already exists.");
@@ -87,13 +85,12 @@ class ApplicationBuilder
                     if ($numMiddlewareQueues == 1) {
                         $selectedQueue = reset($this->middlewareQueues)['pipeline'];
                     } else if ($numMiddlewareQueues > 1) {
-                        $request = $container->get(ServerRequestInterface::class);
                         foreach($this->middlewareQueues as $name => $pipeline) {
                             if ($name == 'default') {
                                 $selectedQueue = $pipeline['pipeline'];
                                 continue;
                             }
-                            if (isset($pipeline['filter']) && $pipeline['filter']($request)) {
+                            if (isset($pipeline['filter']) && $pipeline['filter']()) {
                                 $selectedQueue = $pipeline['pipeline'];
                                 break;
                             }

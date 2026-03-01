@@ -15,3 +15,4 @@ tests/tmp/*
 .netrc
 vendor
 plugins
+.phpunit.cache

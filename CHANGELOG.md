@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## [Unreleased]
+## v0.10.0 - 2025-12-23
 ### Added
 - Added a new ApplicationBuilder class to make it easy to create an instance of the Application class.
 - Added initial unit tests for some essential components within this package.

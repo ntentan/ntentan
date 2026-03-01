@@ -12,10 +12,12 @@ class MiddlewareQueueTest extends TestCase
 {
     private function createMockMiddleware(bool $isRun = false): array
     {
-        $mockMiddleware = $this->createMock(Middleware::class);
-        $mockResponse = $this->createMock(ResponseInterface::class);
+        $mockResponse = $this->createStub(ResponseInterface::class);
         if ($isRun) {
+            $mockMiddleware = $this->createMock(Middleware::class);
             $mockMiddleware->expects($this->once())->method('run')->willReturn($mockResponse);
+        } else {
+            $mockMiddleware = $this->createStub(Middleware::class);
         }
         $mockFactory = function () use ($mockMiddleware) {
             return $mockMiddleware;
@@ -28,7 +30,7 @@ class MiddlewareQueueTest extends TestCase
         $pipeline = ['first'];
         $factories = ['first' => $mockFactory];
         $middlewareQueue = new MiddlewareQueue($pipeline, $factories);
-        $output = $middlewareQueue->iterate($this->createMock(ServerRequestInterface::class), $this->createMock(ResponseInterface::class));
+        $output = $middlewareQueue->iterate($this->createStub(ServerRequestInterface::class), $this->createStub(ResponseInterface::class));
         $this->assertSame($mockResponse, $output);
 
     }
@@ -41,7 +43,7 @@ class MiddlewareQueueTest extends TestCase
         $pipeline = ['first', 'second'];
         $factories = ['first' => $mockFactory1, 'second' => $mockFactory2];
         $middlewareQueue = new MiddlewareQueue($pipeline, $factories);
-        $output = $middlewareQueue->iterate($this->createMock(ServerRequestInterface::class), $this->createMock(ResponseInterface::class));
+        $output = $middlewareQueue->iterate($this->createStub(ServerRequestInterface::class), $this->createStub(ResponseInterface::class));
         $this->assertSame($mockResponse1, $output);
         $this->assertNotSame($mockResponse2, $output);
     }
@@ -59,7 +61,7 @@ class MiddlewareQueueTest extends TestCase
         $pipeline = ['first', 'second'];
         $factories = ['first' => $mockFactory1, 'second' => $mockFactory2];
         $middlewareQueue = new MiddlewareQueue($pipeline, $factories);
-        $output = $middlewareQueue->iterate($this->createMock(ServerRequestInterface::class), $this->createMock(ResponseInterface::class));
+        $output = $middlewareQueue->iterate($this->createStub(ServerRequestInterface::class), $this->createStub(ResponseInterface::class));
         $this->assertSame($mockResponse2, $output);
     }
 
@@ -76,7 +78,7 @@ class MiddlewareQueueTest extends TestCase
         $pipeline = ['first', 'second'];
         $factories = ['first' => $mockFactory1, 'second' => $mockFactory2];
         $middlewareQueue = new MiddlewareQueue($pipeline, $factories);
-        $output = $middlewareQueue->iterate($this->createMock(ServerRequestInterface::class), $this->createMock(ResponseInterface::class));
+        $output = $middlewareQueue->iterate($this->createStub(ServerRequestInterface::class), $this->createStub(ResponseInterface::class));
         $this->assertSame($mockResponse1, $output);
     }
 
@@ -93,7 +95,7 @@ class MiddlewareQueueTest extends TestCase
         $pipeline = ['first', 'second'];
         $factories = ['first' => $mockFactory1, 'second' => $mockFactory2];
         $middlewareQueue = new MiddlewareQueue($pipeline, $factories);
-        $output = $middlewareQueue->iterate($this->createMock(ServerRequestInterface::class), $this->createMock(ResponseInterface::class));
+        $output = $middlewareQueue->iterate($this->createStub(ServerRequestInterface::class), $this->createStub(ResponseInterface::class));
         $this->assertSame($mockResponse2, $output);
     }
 }
