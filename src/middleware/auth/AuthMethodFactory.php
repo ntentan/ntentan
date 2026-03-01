@@ -1,6 +1,8 @@
 <?php
 namespace ntentan\middleware\auth;
 
+use ntentan\Context;
+
 /**
  * A factory for creating authentication methods.
  * 
@@ -9,6 +11,14 @@ namespace ntentan\middleware\auth;
 class AuthMethodFactory
 {
     private array $factories = [];
+
+    public function __construct(Context $context, AuthUserModelFactory $userModelFactory) {
+        $this->factories = [
+            'http_request' => function() use ($context, $userModelFactory) {
+                return new HttpRequestAuthMethod($context, $userModelFactory);
+            },
+        ];
+    }
 
     public function create(array $config): AuthMethod
     {

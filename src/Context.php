@@ -20,7 +20,7 @@ class Context
         return $this->prefix;
     }
 
-    public function setPrefix(string $prefix)
+    public function setPrefix(string $prefix): void
     {
         $this->prefix = $prefix;
     }

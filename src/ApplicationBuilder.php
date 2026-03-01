@@ -22,15 +22,22 @@ class ApplicationBuilder
     private string $namespace = 'app';
     private Request $request;
     private array $middlewareQueues = [];
+    private static ApplicationBuilder $instance;
 
     public function __construct(Container $container)
     {
         $this->container = $container;
+        if (isset(self::$instance)) {
+            throw new NtentanException("ApplicationBuilder can only be instantiated once.");
+        }
+        $this->container->provide("string", "home")->with(fn () => __DIR__ . "/../../../../");
+        self::$instance = $this;
     }
 
     public function withNamespace(string $namespace): self
     {
         $this->namespace = $namespace;
+        $this->container->provide("string", "namespace")->with(fn () => $this->namespace);
         return $this;
     }
 
@@ -42,7 +49,22 @@ class ApplicationBuilder
         return $this->request;
     }
 
+<<<<<<< Updated upstream
     public function addMiddlewarePipeline(string $name, array $pipeline, callable|null $filter=null): self
+=======
+    public static function getFilter(string $class, mixed $args = null): callable
+    {
+        return function() use ($class, $args) {
+            $filter = self::$instance->container->get($class);
+            if($args !== null && $filter instanceof ConfigurableFilter) {
+                $filter->configure($args);
+            }
+            return $filter->filter();
+        };
+    }
+
+    public function addMiddlewarePipeline(string $name, array $pipeline, callable|null $filter = null): self
+>>>>>>> Stashed changes
     {
         if (isset($this->middlewareQueues[$name])) {
             throw new NtentanException("A middleware pipeline [$name] already exists.");
@@ -112,8 +134,6 @@ class ApplicationBuilder
 
     public function build(): Application
     {
-        $this->container->provide("string", "namespace")->with(fn () => $this->namespace);
-        $this->container->provide("string", "home")->with(fn () => __DIR__ . "/../../../../");
         $this->container->bind(ContainerInterface::class)->to(fn() => $this->container);
         $this->setupMiddlewareQueue();
         $this->container->setup([
