@@ -24,12 +24,12 @@ class ApplicationBuilder
     private string $namespace = 'app';
     private Request $request;
     private array $middlewareQueues = [];
-    private static ApplicationBuilder $instance;
+    private static ApplicationBuilder|null $instance = null;
 
     public function __construct(Container $container)
     {
         $this->container = $container;
-        if (isset(self::$instance)) {
+        if (self::$instance !== null) {
             throw new NtentanException("ApplicationBuilder can only be instantiated once.");
         }
         $this->container->provide("string", "home")->with(fn () => __DIR__ . "/../../../../");

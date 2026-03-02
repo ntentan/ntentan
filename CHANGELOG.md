@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v0.11.0 - 2026-03-02
+### Added
+- New middleware filtering system with `PrefixFilter` and `ConfigurableFilter`.
+- `MiddlewareFilter` for structured middleware filtering logic.
+
+### Changed
+- Refactored `ApplicationBuilder` to support new middleware filtering and improved instance access.
+- Enhanced middleware filter management and cleanup.
+
+### Fixed
+- Fixed access to instances within the `ApplicationBuilder`.
+
 ## v0.10.0 - 2025-12-23
 ### Added
 - Added a new ApplicationBuilder class to make it easy to create an instance of the Application class.

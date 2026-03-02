@@ -18,6 +18,11 @@ class ApplicationBuilderTest extends TestCase
         $_SERVER['REQUEST_URI'] = '/foo/bar';
         $_SERVER['HTTPS'] = false;
         $_SERVER['HTTP_HOST'] = 'example.com';
+
+        $reflection = new \ReflectionClass(ApplicationBuilder::class);
+        $instance = $reflection->getProperty('instance');
+        $instance->setAccessible(true);
+        $instance->setValue(null, null);
     }
     public function testBuild()
     {
@@ -109,5 +114,13 @@ class ApplicationBuilderTest extends TestCase
             ])
             ->build();
         $application->execute();
+    }
+
+    public function testSingletonException()
+    {
+        $this->expectException(NtentanException::class);
+        $this->expectExceptionMessage("ApplicationBuilder can only be instantiated once.");
+        new ApplicationBuilder(new Container());
+        new ApplicationBuilder(new Container());
     }
 }
