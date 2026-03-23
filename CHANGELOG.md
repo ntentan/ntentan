@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.11.1 - 2026-03-23
+## Fixes
+- Fixed an issue where the `FileSessionHandler` was not working as expected when saving file sessions.
+
 ## v0.11.0 - 2026-03-02
 ### Added
 - New middleware filtering system with `PrefixFilter` and `ConfigurableFilter`.

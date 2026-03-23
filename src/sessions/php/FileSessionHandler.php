@@ -90,7 +90,7 @@ class FileSessionHandler implements \SessionHandlerInterface
     {
         foreach (glob("{$this->sessionPath}/sess_*") as $filename) {
             if (filemtime($filename) + $this->lifespan < time()) {
-                unlink($file);
+                unlink($filename);
             }
         }
         return true;
