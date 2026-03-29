@@ -38,13 +38,16 @@ class FileSessionHandler implements \SessionHandlerInterface
     {
         $this->sessionPath = $this->config['path'] ?? $path;
         $this->sessionName = $name;
-        if (!is_dir($this->sessionPath) && $this->config['createPath'] ?? false) {
-            throw new FileNotFoundException("Session path [{$this->sessionPath}] does not exist or is not a directory.");
+        if (!is_dir($this->sessionPath)) {
+            if ($this->config['createPath'] ?? false) {
+                mkdir($this->sessionPath, $this->config['pathPermissions'] ?? 0777, true);
+            } else {
+                throw new FileNotFoundException("Session path [{$this->sessionPath}] does not exist or is not a directory.");
+            }
         }
         if (!is_writable($this->sessionPath)) {
             throw new FileNotFoundException("Session path [{$this->sessionPath}] is not writable.");
         }
-        mkdir($this->sessionPath, $this->config['pathPermissions'] ?? 0777, true);
         return true;
     }
 
