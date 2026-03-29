@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.11.1 - 2026-03-29
+## v0.11.2 - 2026-03-29
 ### Fixes
 - Reworked the logic for the `FileSessionHandler` to be more robust to already existing session files.
 
