@@ -126,11 +126,6 @@ class ApplicationBuilder
     public function setupContainerBindings(array $bindings): self
     {
         $this->container->setup($bindings);
-        return $this;
-    }
-
-    public function build(): Application
-    {
         $this->container->bind(ContainerInterface::class)->to(fn() => $this->container);
         $this->setupMiddlewareQueue();
         $this->container->setup([
@@ -161,6 +156,41 @@ class ApplicationBuilder
                 'singleton' => true
             ]
         ]);
+        return $this;
+    }
+
+    public function build(): Application
+    {
+//        $this->container->bind(ContainerInterface::class)->to(fn() => $this->container);
+//        $this->setupMiddlewareQueue();
+//        $this->container->setup([
+//            ServerRequestInterface::class => [$this->requestFactory(...), 'singleton' => true],
+//            RequestInterface::class => [$this->requestFactory(...), 'singleton' => true],
+//            Request::class => [$this->requestFactory(...), 'singleton' => true],
+//            UriInterface::class => [
+//                fn() => new Uri(
+//                    ($_SERVER['HTTPS'] ?? '' != 'on' ? 'https' : 'http')
+//                    . "://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"
+//                ),
+//                'singleton' => true
+//            ],
+//            Uri::class => [ fn($container) => $container->get(UriInterface::class), 'singleton' => true],
+//            ResponseInterface::class => [
+//                fn() => new Response(),
+//                'singleton' => true
+//            ],
+//            Context::class => ['singleton' => true],
+//            SessionStore::class => [
+//                function (Container $container) {
+//                    $sessionHandler = null;
+//                    if($container->has(\SessionHandlerInterface::class)) {
+//                        $sessionHandler = $container->get(\SessionHandlerInterface::class);
+//                    }
+//                    return new PhpSessionStore($sessionHandler);
+//                },
+//                'singleton' => true
+//            ]
+//        ]);
 
         return $this->container->get(Application::class);
     }
