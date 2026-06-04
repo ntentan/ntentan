@@ -107,11 +107,13 @@ class Request extends Message implements ServerRequestInterface
     public function getParsedBody()
     {
         if (!isset($this->parsedBody)) {
-            $this->parsedBody = new ArrayObject(match ($this->getHeaderLine('Content-Type')) {
-                'application/x-www-form-urlencoded' => $_POST,
-                'application/json' => json_decode((string)$this->getBody(), true),
-                default => null,
-            });
+            $this->parsedBody = new ArrayObject(
+                match ($this->getHeaderLine('Content-Type')) {
+                    'application/x-www-form-urlencoded' => $_POST,
+                    'application/json' => json_decode((string)$this->getBody(), true),
+                    default => [],
+                }
+            );
         }
         return $this->parsedBody->getArrayCopy();
     }
