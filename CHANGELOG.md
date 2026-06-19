@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v0.11.3 - 2026-06-19
+### Added
+- Added `getIpAddress()` method to the `Context` class to retrieve client IP addresses (handling various forwarding headers).
+
+### Fixed
+- Fixed `Request::getParsedBody()` to return an empty array by default instead of `null` if the content type is unrecognized or unsupported.
+
+### Removed
+- Removed the deprecated authentication middleware components (`src/middleware/auth/`).
+- Removed `RequestsMiddleware` (`src/middleware/requests/`).
+
 ## v0.11.2 - 2026-03-29
 ### Fixes
 - Reworked the logic for the `FileSessionHandler` to be more robust to already existing session files.
