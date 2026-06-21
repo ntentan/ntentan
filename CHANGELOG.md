@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.11.4 - 2026-06-20
+### Fixed
+- Fixed the order in which forwarding IP headers are checked in `Context::getIpAddress()`, prioritizing headers like `HTTP_X_FORWARDED_FOR` over `HTTP_CLIENT_IP`.
+
 ## v0.11.3 - 2026-06-19
 ### Added
 - Added `getIpAddress()` method to the `Context` class to retrieve client IP addresses (handling various forwarding headers).
