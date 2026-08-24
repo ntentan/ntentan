@@ -13,12 +13,14 @@ class Uri implements UriInterface
     private array $parts;
     private string $prefix;
     
-    public function __construct(string $uri) {
+    public function __construct(string $uri)
+    {
         $this->parts = parse_url($uri);
     }
 
     #[\Override]
-    public function __toString(): string {
+    public function __toString(): string
+    {
         $scheme = $this->getScheme();
         $query = $this->getQuery();
         $fragment = $this->getFragment();

@@ -23,8 +23,8 @@ class Request extends Message implements ServerRequestInterface
 
     public function __construct(UriInterface $uri, StreamInterface $bodyStream)
     {
+        parent::__construct($bodyStream);
         $this->uri = $uri;
-        $this->withBody($bodyStream);
     }
 
     public function getProtocolVersion(): string
@@ -110,7 +110,7 @@ class Request extends Message implements ServerRequestInterface
             $this->parsedBody = new ArrayObject(
                 match ($this->getHeaderLine('Content-Type')) {
                     'application/x-www-form-urlencoded' => $_POST,
-                    'application/json' => json_decode((string)$this->getBody(), true),
+                    'application/json' => json_decode((string)$this->getBody()->getContents(), true),
                     default => [],
                 }
             );
@@ -181,6 +181,7 @@ class Request extends Message implements ServerRequestInterface
     public function withParsedBody($data): ServerRequestInterface
     {
         $this->parsedBody = new ArrayObject($data);
+        return $this;
     }
 
     #[\Override]

@@ -32,6 +32,7 @@ class Application
      */
     public function execute(): void
     {
+
         $response = $this->middlewareQueue->iterate($this->request, $this->response);
         http_response_code($response->getStatusCode());
         foreach($response->getHeaders() as $header => $values) {

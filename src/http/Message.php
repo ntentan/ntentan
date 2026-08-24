@@ -11,6 +11,10 @@ abstract class Message implements MessageInterface
     private StreamInterface $stream;
     private array $headers;
 
+    public function __construct(StreamInterface $body) {
+        $this->stream = $body;
+    }
+
 
     /**
      * @inheritDoc
