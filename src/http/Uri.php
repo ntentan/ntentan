@@ -1,129 +1,276 @@
 <?php
+
 namespace ntentan\http;
 
+use InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
 
 /**
- * An object that represents a URI.
- * 
+ * An object that represents a URI according to RFC 3986 and PSR-7.
+ *
  * @see https://www.php-fig.org/psr/psr-7/#35-psrhttpmessageuriinterface
+ * @author ekow
  */
 class Uri implements UriInterface
 {
-    private array $parts;
-    private string $prefix;
-    
-    public function __construct(string $uri)
+    private const array STANDARD_PORTS = [
+        'http' => 80,
+        'https' => 443,
+    ];
+
+    private string $scheme = '';
+    private string $userInfo = '';
+    private string $host = '';
+    private ?int $port = null;
+    private string $path = '';
+    private string $query = '';
+    private string $fragment = '';
+    private string $prefix = '';
+
+    public function __construct(string $uri = '')
     {
-        $this->parts = parse_url($uri);
+        if ($uri !== '') {
+            $parts = parse_url($uri);
+            if ($parts === false) {
+                throw new InvalidArgumentException(sprintf('Unable to parse URI: "%s"', $uri));
+            }
+            $this->applyParts($parts);
+        }
+    }
+
+    private function applyParts(array $parts): void
+    {
+        $this->scheme = isset($parts['scheme']) ? strtolower($parts['scheme']) : '';
+        $this->host = isset($parts['host']) ? strtolower($parts['host']) : '';
+        $this->port = isset($parts['port']) ? (int)$parts['port'] : null;
+        $this->path = $parts['path'] ?? '';
+        $this->query = $parts['query'] ?? '';
+        $this->fragment = $parts['fragment'] ?? '';
+
+        if (isset($parts['user'])) {
+            $this->userInfo = $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '');
+        } else {
+            $this->userInfo = '';
+        }
+    }
+
+    #[\Override]
+    public function getScheme(): string
+    {
+        return $this->scheme;
+    }
+
+    #[\Override]
+    public function getAuthority(): string
+    {
+        if ($this->host === '') {
+            return '';
+        }
+
+        $authority = $this->host;
+        if ($this->userInfo !== '') {
+            $authority = $this->userInfo . '@' . $authority;
+        }
+
+        $port = $this->getPort();
+        if ($port !== null) {
+            $authority .= ':' . $port;
+        }
+
+        return $authority;
+    }
+
+    #[\Override]
+    public function getUserInfo(): string
+    {
+        return $this->userInfo;
+    }
+
+    #[\Override]
+    public function getHost(): string
+    {
+        return $this->host;
+    }
+
+    #[\Override]
+    public function getPort(): ?int
+    {
+        if ($this->port === null) {
+            return null;
+        }
+
+        if ($this->scheme !== '' && isset(self::STANDARD_PORTS[$this->scheme]) && self::STANDARD_PORTS[$this->scheme] === $this->port) {
+            return null;
+        }
+
+        return $this->port;
+    }
+
+    #[\Override]
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    #[\Override]
+    public function getQuery(): string
+    {
+        return $this->query;
+    }
+
+    #[\Override]
+    public function getFragment(): string
+    {
+        return $this->fragment;
+    }
+
+    #[\Override]
+    public function withScheme(string $scheme): UriInterface
+    {
+        $scheme = strtolower($scheme);
+        if ($scheme !== '' && !preg_match('/^[a-z][a-z0-9+.-]*$/', $scheme)) {
+            throw new InvalidArgumentException(sprintf('Invalid URI scheme: "%s"', $scheme));
+        }
+
+        if ($this->scheme === $scheme) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->scheme = $scheme;
+        return $clone;
+    }
+
+    #[\Override]
+    public function withUserInfo(string $user, ?string $password = null): UriInterface
+    {
+        $info = $user;
+        if ($password !== null && $password !== '') {
+            $info .= ':' . $password;
+        }
+
+        if ($this->userInfo === $info) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->userInfo = $info;
+        return $clone;
+    }
+
+    #[\Override]
+    public function withHost(string $host): UriInterface
+    {
+        $host = strtolower($host);
+
+        if ($this->host === $host) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->host = $host;
+        return $clone;
+    }
+
+    #[\Override]
+    public function withPort(?int $port): UriInterface
+    {
+        if ($port !== null && ($port < 1 || $port > 65535)) {
+            throw new InvalidArgumentException(sprintf('Invalid URI port "%d", must be between 1 and 65535', $port));
+        }
+
+        if ($this->port === $port) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->port = $port;
+        return $clone;
+    }
+
+    #[\Override]
+    public function withPath(string $path): UriInterface
+    {
+        if ($this->path === $path) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->path = $path;
+        return $clone;
+    }
+
+    #[\Override]
+    public function withQuery(string $query): UriInterface
+    {
+        $query = ltrim($query, '?');
+
+        if ($this->query === $query) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->query = $query;
+        return $clone;
+    }
+
+    #[\Override]
+    public function withFragment(string $fragment): UriInterface
+    {
+        $fragment = ltrim($fragment, '#');
+
+        if ($this->fragment === $fragment) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->fragment = $fragment;
+        return $clone;
     }
 
     #[\Override]
     public function __toString(): string
     {
-        $scheme = $this->getScheme();
-        $query = $this->getQuery();
-        $fragment = $this->getFragment();
-        
-        return ($scheme == '' ? '' : "$scheme:") . "//{$this->getAuthority()}/{$this->getPath()}" .
-                ($query == '' ? '' : "?$query") . ($fragment == '' ? '' : "#{$fragment}");
-    }
+        $uri = '';
 
-    #[\Override]
-    public function getAuthority(): string {
-        $userInfo = $this->getUserInfo();
-        $port = $this->getPort();
-        return $userInfo . ($userInfo !== '' ? '@' : '') . $this->getHost() . ($port != '' ? ':' : '') . $port;
-    }
-
-    #[\Override]
-    public function getFragment(): string {
-        return $this->parts['fragment'] ?? '';
-    }
-
-    #[\Override]
-    public function getHost(): string {
-        return $this->parts['host'] ?? '';
-    }
-
-    #[\Override]
-    public function getPath(): string {
-        return $this->parts['path'] ?? '';
-    }
-
-    #[\Override]
-    public function getPort(): ?int {
-        return $this->parts['port'] ?? '';
-    }
-
-    #[\Override]
-    public function getQuery(): string {
-        return $this->parts['query'] ?? '';
-    }
-
-    #[\Override]
-    public function getScheme(): string {
-        return $this->parts['scheme'];
-    }
-
-    #[\Override]
-    public function getUserInfo(): string {
-        return $this->parts['user'] . (isset($this->parts['pass']) ? "." . $this->parts['pass'] : "");
-    }
-
-    #[\Override]
-    public function withFragment(string $fragment): UriInterface {
-        $this->parts['fragment'] = $fragment;
-        return $this;
-    }
-
-    #[\Override]
-    public function withHost(string $host): UriInterface {
-        $this->parts['host'] = $host;
-        return $this;
-    }
-
-    #[\Override]
-    public function withPath(string $path): UriInterface {
-        $this->parts['path'] = $path;
-        return $this;
-    }
-
-    #[\Override]
-    public function withPort(?int $port): UriInterface {
-        $this->parts['port'] = $port;
-        return $this;
-    }
-
-    #[\Override]
-    public function withQuery(string $query): UriInterface {
-        $this->parts['query'] = $query;
-        return $this;
-    }
-
-    #[\Override]
-    public function withScheme(string $scheme): UriInterface {
-        $this->parts['scheme'] = $scheme;
-        return $this;
-    }
-
-    #[\Override]
-    public function withUserInfo(string $user, ?string $password = null): UriInterface {
-        $this->parts['user'] = $user;
-        if ($password != null) {
-            $this->parts['pass'] = $password;
+        if ($this->scheme !== '') {
+            $uri .= $this->scheme . ':';
         }
-        return $this;
+
+        $authority = $this->getAuthority();
+        if ($authority !== '') {
+            $uri .= '//' . $authority;
+        }
+
+        $path = $this->path;
+        if ($authority !== '' && $path !== '' && !str_starts_with($path, '/')) {
+            $path = '/' . $path;
+        } elseif ($authority === '' && str_starts_with($path, '//')) {
+            $path = '/' . ltrim($path, '/');
+        }
+
+        $uri .= $path;
+
+        if ($this->query !== '') {
+            $uri .= '?' . $this->query;
+        }
+
+        if ($this->fragment !== '') {
+            $uri .= '#' . $this->fragment;
+        }
+
+        return $uri;
     }
-    
+
     public function getPrefix(): string
     {
         return $this->prefix;
     }
-    
-    public function withPrefix(string $prefix): Uri
+
+    public function withPrefix(string $prefix): self
     {
-        $this->prefix = $prefix;
-        return $this;
+        $clone = clone $this;
+        $clone->prefix = $prefix;
+        return $clone;
     }
 }

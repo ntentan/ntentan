@@ -2,7 +2,7 @@
 
 namespace ntentan\http;
 
-use ntentan\wyf\forms\f;
+use InvalidArgumentException;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -10,11 +10,35 @@ abstract class Message implements MessageInterface
 {
     private StreamInterface $stream;
     private array $headers;
+    private array $headerNames;
+    private string $protocolVersion = '1.1';
 
-    public function __construct(StreamInterface $body) {
-        $this->stream = $body;
+    public function __construct(?StreamInterface $body = null)
+    {
+        $this->stream = $body ?? new StringStream("");
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function getProtocolVersion(): string
+    {
+        return $this->protocolVersion;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withProtocolVersion(string $version): MessageInterface
+    {
+        if ($this->protocolVersion === $version) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->protocolVersion = $version;
+        return $clone;
+    }
 
     /**
      * @inheritDoc
@@ -22,7 +46,11 @@ abstract class Message implements MessageInterface
     public function getHeaders(): array
     {
         $this->prepareHeaders();
-        return $this->headers;
+        $headers = [];
+        foreach ($this->headerNames as $lower => $name) {
+            $headers[$name] = $this->headers[$lower];
+        }
+        return $headers;
     }
 
     /**
@@ -30,7 +58,8 @@ abstract class Message implements MessageInterface
      */
     public function hasHeader(string $name): bool
     {
-        return isset($this->headers[strtolower($name)]);
+        $this->prepareHeaders();
+        return isset($this->headerNames[strtolower($name)]);
     }
 
     /**
@@ -39,7 +68,8 @@ abstract class Message implements MessageInterface
     public function getHeader(string $name): array
     {
         $this->prepareHeaders();
-        return $this->headers[strtolower($name)] ?? [];
+        $lower = strtolower($name);
+        return $this->headers[$lower] ?? [];
     }
 
     /**
@@ -47,7 +77,8 @@ abstract class Message implements MessageInterface
      */
     public function getHeaderLine(string $name): string
     {
-        return implode(', ', $this->getHeader($name));
+        $values = $this->getHeader($name);
+        return implode(', ', $values);
     }
 
     /**
@@ -55,9 +86,16 @@ abstract class Message implements MessageInterface
      */
     public function withHeader(string $name, $value): MessageInterface
     {
-        $this->prepareHeaders();
-        $this->headers[strtolower($name)] = [$value];
-        return $this;
+        $this->filterHeaderName($name);
+        $normalized = $this->filterHeaderValue($value);
+
+        $clone = clone $this;
+        $clone->prepareHeaders();
+        $lower = strtolower($name);
+        $clone->headerNames[$lower] = $name;
+        $clone->headers[$lower] = $normalized;
+
+        return $clone;
     }
 
     /**
@@ -65,13 +103,21 @@ abstract class Message implements MessageInterface
      */
     public function withAddedHeader(string $name, $value): MessageInterface
     {
-        $this->prepareHeaders();
-        $name = strtolower($name);
-        if (!isset($this->headers[$name])) {
-            $this->headers[$name] = [];
+        $this->filterHeaderName($name);
+        $normalized = $this->filterHeaderValue($value);
+
+        $clone = clone $this;
+        $clone->prepareHeaders();
+        $lower = strtolower($name);
+
+        if (isset($clone->headerNames[$lower])) {
+            $clone->headers[$lower] = array_merge($clone->headers[$lower], $normalized);
+        } else {
+            $clone->headerNames[$lower] = $name;
+            $clone->headers[$lower] = $normalized;
         }
-        $this->headers[$name][] = $value;
-        return $this;
+
+        return $clone;
     }
 
     /**
@@ -80,8 +126,15 @@ abstract class Message implements MessageInterface
     public function withoutHeader(string $name): MessageInterface
     {
         $this->prepareHeaders();
-        unset($this->headers[strtolower($name)]);
-        return $this;
+        $lower = strtolower($name);
+        if (!isset($this->headerNames[$lower])) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        unset($clone->headers[$lower], $clone->headerNames[$lower]);
+
+        return $clone;
     }
 
     /**
@@ -89,7 +142,7 @@ abstract class Message implements MessageInterface
      */
     public function getBody(): StreamInterface
     {
-        return isset($this->stream) ? $this->stream : new StringStream("");
+        return $this->stream ??= new StringStream("");
     }
 
     /**
@@ -97,15 +150,63 @@ abstract class Message implements MessageInterface
      */
     public function withBody(StreamInterface $body): MessageInterface
     {
-        $this->stream = $body;
-        return $this;
+        if (isset($this->stream) && $this->stream === $body) {
+            return $this;
+        }
+
+        $clone = clone $this;
+        $clone->stream = $body;
+        return $clone;
     }
 
     private function prepareHeaders(): void
     {
         if (!isset($this->headers)) {
-            $this->headers = $this->initializeHeaders();
+            $this->headers = [];
+            $this->headerNames = [];
+            $headers = $this->initializeHeaders();
+            foreach ($headers as $name => $value) {
+                $name = (string) $name;
+                $this->filterHeaderName($name);
+                $normalized = $this->filterHeaderValue($value);
+                $lower = strtolower($name);
+                $this->headerNames[$lower] = $name;
+                $this->headers[$lower] = $normalized;
+            }
         }
+    }
+
+    private function filterHeaderName(mixed $name): void
+    {
+        if (!is_string($name) || $name === '' || !preg_match('/^[a-zA-Z0-9\'!#$%&*+\-.^_`|~]+$/', $name)) {
+            throw new InvalidArgumentException(
+                sprintf('"%s" is not a valid HTTP header name', is_scalar($name) ? (string)$name : gettype($name))
+            );
+        }
+    }
+
+    private function filterHeaderValue(mixed $value): array
+    {
+        if (!is_array($value)) {
+            $value = [$value];
+        }
+        if (empty($value)) {
+            throw new InvalidArgumentException('Header value cannot be empty');
+        }
+        $normalized = [];
+        foreach ($value as $v) {
+            if ((!is_string($v) && !is_numeric($v) && !(is_object($v) && method_exists($v, '__toString'))) || is_bool($v)) {
+                throw new InvalidArgumentException(
+                    sprintf('Header value must be a string or array of strings, %s given', gettype($v))
+                );
+            }
+            $str = (string)$v;
+            if (preg_match("/[\r\n]/", $str)) {
+                throw new InvalidArgumentException('Header value cannot contain CR or LF characters');
+            }
+            $normalized[] = $str;
+        }
+        return $normalized;
     }
 
     protected abstract function initializeHeaders(): array;
