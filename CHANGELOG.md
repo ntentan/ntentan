@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v0.12.0 - 2026-08-25
+### Added
+- Completed PSR-7 HTTP message specifications implementation across HTTP classes (`Message`, `Request`, `Response`, `Stream`, `StringStream`, `UploadedFile`, `Uri`).
+- Added comprehensive unit test suite for HTTP message components.
+
+### Changed
+- Refactored `MimeHeader` filter `match()` method to accept `ServerRequestInterface`.
+- Improved HTTP Request handling including nested uploaded file normalization and attribute management.
+- Enhanced HTTP Response status code assertions and reason phrase lookups.
+
 ## v0.11.4 - 2026-06-20
 ### Fixed
 - Fixed the order in which forwarding IP headers are checked in `Context::getIpAddress()`, prioritizing headers like `HTTP_X_FORWARDED_FOR` over `HTTP_CLIENT_IP`.
