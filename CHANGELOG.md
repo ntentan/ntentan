@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.12.1 - 2026-08-26
+### Changed
+- Updated dependencies.
+
 ## v0.12.0 - 2026-08-25
 ### Added
 - Completed PSR-7 HTTP message specifications implementation across HTTP classes (`Message`, `Request`, `Response`, `Stream`, `StringStream`, `UploadedFile`, `Uri`).
