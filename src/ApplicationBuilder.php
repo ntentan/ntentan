@@ -6,6 +6,8 @@ use ntentan\exceptions\NtentanException;
 use ntentan\http\Request;
 use ntentan\http\Response;
 use ntentan\http\Uri;
+use ntentan\kaikai\backends\VolatileCache;
+use ntentan\kaikai\CacheBackendInterface;
 use ntentan\middleware\MiddlewareQueue;
 use ntentan\panie\Container;
 use ntentan\sessions\PhpSessionStore;
@@ -137,6 +139,7 @@ class ApplicationBuilder
             ServerRequestInterface::class => [$this->requestFactory(...), 'singleton' => true],
             RequestInterface::class => [$this->requestFactory(...), 'singleton' => true],
             Request::class => [$this->requestFactory(...), 'singleton' => true],
+            CacheBackendInterface::class => VolatileCache::class,
             UriInterface::class => [
                 fn() => new Uri(
                     ($_SERVER['HTTPS'] ?? '' != 'on' ? 'https' : 'http')
