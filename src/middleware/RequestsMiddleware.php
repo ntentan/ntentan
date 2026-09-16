@@ -2,7 +2,7 @@
 
 namespace ntentan\middleware;
 
-use ntentan\http\filters\Route;
+use ntentan\http\filters\RequestFilter;
 use ntentan\kaikai\Cache;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -21,17 +21,27 @@ class RequestsMiddleware implements Middleware
     public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
         $uri = $request->getUri();
+        return $response;
     }
 
     private function getHandlerRoutes($handler): array
     {
-        $reflection = new ReflectionClass($handler);
+        $class = new ReflectionClass($handler);
         $routes = [];
 
-        foreach ($reflection->getMethods() as $method) {
-            $attributes = $method->getAttributes(Route::class);
+        foreach ($class->getMethods() as $method) {
+            $attributes = array_filter(
+                $method->getAttributes(),
+                fn($attribute) => is_subclass_of($attribute->getName(), RequestFilter::class)
+            );
             if (!empty($attributes)) {
-                $routes[] = $method->getName();
+                $routes[] = [
+                    'class' => $class->name, 'method' => $method->name,
+                    'attributes' => array_map(
+                        fn($attribute) => serialize($attribute->newInstance()),
+                        $attributes
+                    )
+                ];
             }
         }
 
@@ -41,10 +51,10 @@ class RequestsMiddleware implements Middleware
     public function configure(array $configuration)
     {
         $this->mapping = $this->cache->read('ntentan_requests_map',
-            function () {
+            function () use ($configuration) {
                 $mapping = [];
-                foreach($configuration['handler'] ?? [] as $handler) {
-                    $routes = $this->getHandlerRoutes($handler);
+                foreach($configuration['handlers'] ?? [] as $handler) {
+                    $mapping = [...$mapping, ...$this->getHandlerRoutes($handler)];
                 }
                 return $mapping;
             }

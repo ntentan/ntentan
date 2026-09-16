@@ -5,13 +5,19 @@ use Psr\Http\Message\ServerRequestInterface;
 use Override;
 
 
-abstract class Route implements RequestFilter
+class Route implements RequestFilter
 {
     private string $route;
+    protected string $method;
 
     public function __construct(string $route)
     {
         $this->route = $route;
+    }
+
+    function match(ServerRequestInterface $request): bool
+    {
+        return strtolower($request->getMethod()) == strtolower($this->type);
     }
 
     public static function compileRoute(string $pattern): array
