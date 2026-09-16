@@ -23,5 +23,5 @@ class Method implements RequestFilter
     {
         return strtolower($request->getMethod()) == strtolower($this->type);
     }
-
 }
+

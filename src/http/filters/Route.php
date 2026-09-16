@@ -4,20 +4,14 @@ namespace ntentan\http\filters;
 use Psr\Http\Message\ServerRequestInterface;
 use Override;
 
-#[\Attribute(\Attribute::TARGET_METHOD)]
-class Route implements RequestFilter
+
+abstract class Route implements RequestFilter
 {
     private string $route;
 
     public function __construct(string $route)
     {
         $this->route = $route;
-    }
-
-    #[Override]
-    public function match(ServerRequestInterface $request): bool
-    {
-        throw new \Exception('Not implemented');
     }
 
     public static function compileRoute(string $pattern): array
