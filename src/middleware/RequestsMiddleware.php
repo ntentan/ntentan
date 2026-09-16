@@ -4,6 +4,7 @@ namespace ntentan\middleware;
 
 use ntentan\http\filters\RequestFilter;
 use ntentan\kaikai\Cache;
+use ntentan\panie\Container;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use ReflectionClass;
@@ -12,10 +13,12 @@ class RequestsMiddleware implements Middleware
 {
     private Cache $cache;
     private array $mapping;
+    private Container $serviceContainer;
 
-    public function __construct(Cache $cache)
+    public function __construct(Cache $cache, Container $serviceContainer)
     {
         $this->cache = $cache;
+        $this->serviceContainer = $serviceContainer;
     }
 
     public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
@@ -50,6 +53,7 @@ class RequestsMiddleware implements Middleware
 
     public function configure(array $configuration)
     {
+        $this->serviceContainer->config()
         $this->mapping = $this->cache->read('ntentan_requests_map',
             function () use ($configuration) {
                 $mapping = [];
