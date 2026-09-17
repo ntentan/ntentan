@@ -2,7 +2,7 @@
 namespace ntentan\http\filters;
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
-class Post extends Route
+class Get extends Route
 {
-    protected string $method = 'post';
+    protected string $method = 'get';
 }

@@ -4,25 +4,49 @@ namespace ntentan\middleware;
 
 use ntentan\http\filters\RequestFilter;
 use ntentan\kaikai\Cache;
-use ntentan\panie\Container;
+use ntentan\ServiceContainer;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use ntentan\ServiceContainerBuilder;
 use ReflectionClass;
 
 class RequestsMiddleware implements Middleware
 {
+    use ServiceContainer;
+
     private Cache $cache;
     private array $mapping;
-    private Container $serviceContainer;
 
-    public function __construct(Cache $cache, Container $serviceContainer)
+
+    public function __construct(Cache $cache, ServiceContainerBuilder $containerBuilder)
     {
         $this->cache = $cache;
-        $this->serviceContainer = $serviceContainer;
+        $this->containerBuilder = $containerBuilder;
     }
 
     public function run(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
+        $serviceContainer = $this->getServiceContainer($request, $response);
+        foreach($this->mapping as $route) {
+            $success = true;
+            $variables = [];
+            foreach($route['attributes'] as $attribute) {
+                /** @var RequestFilter $attributeInstance */
+                $attributeInstance = unserialize($attribute);
+
+                if (!$attributeInstance->match($request)) {
+                    $success = false;
+                    break;
+                };
+
+                $variables = [...$variables, ...$attributeInstance->getValues()];
+            }
+
+            if ($success) {
+                $handler = $serviceContainer->get($route['class']);
+                $method = unserialize($route['method']);
+            }
+        }
         $uri = $request->getUri();
         return $response;
     }
@@ -37,13 +61,18 @@ class RequestsMiddleware implements Middleware
                 $method->getAttributes(),
                 fn($attribute) => is_subclass_of($attribute->getName(), RequestFilter::class)
             );
+            $parameters = [];
+            foreach($method->getParameters() as $parameter) {
+                $parameters[$parameter->name] = ['type' => $parameter->getType()];
+            }
             if (!empty($attributes)) {
                 $routes[] = [
-                    'class' => $class->name, 'method' => $method->name,
+                    'class' => $class->name, 'method' => $method,
                     'attributes' => array_map(
                         fn($attribute) => serialize($attribute->newInstance()),
                         $attributes
-                    )
+                    ),
+                    'parameters' => $parameters
                 ];
             }
         }
@@ -51,9 +80,8 @@ class RequestsMiddleware implements Middleware
         return $routes;
     }
 
-    public function configure(array $configuration)
+    public function configure(array $configuration): void
     {
-        $this->serviceContainer->config()
         $this->mapping = $this->cache->read('ntentan_requests_map',
             function () use ($configuration) {
                 $mapping = [];

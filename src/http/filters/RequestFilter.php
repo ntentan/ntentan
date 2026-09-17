@@ -7,5 +7,6 @@ use ntentan\mvc\ControllerSpec;
 interface RequestFilter 
 {
     function match(ServerRequestInterface $request): bool;
+    function getValues(): array;
 }
 

@@ -2,25 +2,32 @@
 namespace ntentan\http\filters;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Override;
 
 
 class Route implements RequestFilter
 {
-    private string $route;
+    private string $regexp;
+    private array $variables;
+    private array $values;
     protected string $method;
 
     public function __construct(string $route)
     {
-        $this->route = $route;
+        list($this->regexp, $this->variables) = $this->compile($route);
     }
 
     function match(ServerRequestInterface $request): bool
     {
-        return strtolower($request->getMethod()) == strtolower($this->type);
+        if (strtolower($request->getMethod()) == strtolower($this->method)
+            && preg_match("|^{$this->regexp}$|i", urldecode($request->getUri()->getPath()), $matches)
+        ) {
+            $this->values = $matches;
+            return true;
+        }
+        return false;
     }
 
-    public static function compileRoute(string $pattern): array
+    public static function compile(string $pattern): array
     {
         $variables = [];
 
@@ -37,5 +44,10 @@ class Route implements RequestFilter
         );
 
         return [$regexp, $variables];
+    }
+
+    public function getValues(): array
+    {
+        return $this->values;
     }
 }
