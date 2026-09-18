@@ -32,7 +32,7 @@ class RequestsMiddleware implements Middleware
             $variables = [];
             foreach($route['attributes'] as $attribute) {
                 /** @var RequestFilter $attributeInstance */
-                $attributeInstance = unserialize($attribute);
+                $attributeInstance = $attribute;
 
                 if (!$attributeInstance->match($request)) {
                     $success = false;
@@ -44,11 +44,11 @@ class RequestsMiddleware implements Middleware
 
             if ($success) {
                 $handler = $serviceContainer->get($route['class']);
-                $method = unserialize($route['method']);
+                /** @var \ReflectionMethod $method */
+                return $route['method']->invoke($handler);
             }
         }
-        $uri = $request->getUri();
-        return $response;
+        return $response->withStatus(404);
     }
 
     private function getHandlerRoutes($handler): array
@@ -69,7 +69,7 @@ class RequestsMiddleware implements Middleware
                 $routes[] = [
                     'class' => $class->name, 'method' => $method,
                     'attributes' => array_map(
-                        fn($attribute) => serialize($attribute->newInstance()),
+                        fn($attribute) => $attribute->newInstance(),
                         $attributes
                     ),
                     'parameters' => $parameters
