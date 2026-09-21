@@ -44,8 +44,8 @@ class RequestsMiddleware implements Middleware
 
             if ($success) {
                 $handler = $serviceContainer->get($route['class']);
-                /** @var \ReflectionMethod $method */
-                return $route['method']->invoke($handler);
+                $arguments = $serviceContainer->getMethodArguments($route['method']);
+                return $route['method']->invokeArgs($handler, $arguments);
             }
         }
         return $response->withStatus(404);
