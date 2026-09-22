@@ -125,7 +125,7 @@ class ApplicationBuilder
         return $this->container;
     }
 
-    public function setupContainerBindings(array $bindings): self
+    public function addServices(array $bindings): self
     {
         $this->container->setup($bindings);
         return $this;
