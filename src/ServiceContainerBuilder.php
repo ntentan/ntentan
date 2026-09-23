@@ -28,7 +28,7 @@ class ServiceContainerBuilder
 
     public function addBindings(array $bindings): void
     {
-        $this->bindings = $bindings;
+        $this->bindings = [...$this->bindings, ...$bindings];
     }
 
     private function getBindings(UriInterface $uri, RequestInterface $request, ResponseInterface $response): array
