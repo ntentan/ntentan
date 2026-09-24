@@ -7,13 +7,12 @@ use Psr\Http\Message\ServerRequestInterface;
 class Route implements RequestFilter
 {
     private string $regexp;
-    private array $variables;
     private array $values;
     protected string $method;
 
     public function __construct(string $route)
     {
-        list($this->regexp, $this->variables) = $this->compile($route);
+        $this->regexp = self::compile($route);
     }
 
     function match(ServerRequestInterface $request): bool
@@ -27,7 +26,7 @@ class Route implements RequestFilter
         return false;
     }
 
-    public static function compile(string $pattern): array
+    public static function compile(string $pattern): string
     {
         $variables = [];
 
@@ -43,7 +42,7 @@ class Route implements RequestFilter
             str_replace('/', '(/)*', $pattern)
         );
 
-        return [$regexp, $variables];
+        return $regexp;
     }
 
     public function getValues(): array
