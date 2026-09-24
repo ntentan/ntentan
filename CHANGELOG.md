@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## v0.13.0 - 2026-09-24
+### Added
+- Added `ServiceContainerBuilder` class and `ServiceContainer` trait to centralize and manage service container initialization and bindings for request/response lifecycles.
+- Re-architected `RequestsMiddleware` to dispatch HTTP requests using route attributes and service container resolution with caching support.
+- Added `Route` request filter with route pattern compilation and extraction of URI variables.
+- Added `Get` and `Post` method attribute filters for routing.
+- Added PHPStan static analysis configuration and integrated it into the CI pipeline.
+
+### Changed
+- Renamed `setupContainerBindings()` to `addServices()` in `ApplicationBuilder` and added a default `CacheBackendInterface` binding to `VolatileCache`.
+- Updated `RequestFilter` interface to require `getValues(): array`.
+- Updated `Middleware::configure()` return type declaration to `void`.
+
 ## v0.12.1 - 2026-08-26
 ### Changed
 - Updated dependencies.
