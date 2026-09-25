@@ -1,7 +1,6 @@
 <?php
 namespace ntentan;
 
-use ntentan\honam\Templates;
 use ntentan\panie\Container;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -35,7 +34,6 @@ class ServiceContainerBuilder
     {
         return array_merge([
             Context::class => [fn() => $this->context, 'singleton' => true],
-            Templates::class => [Templates::class, 'singleton' => true],
             Request::class => fn() => $request instanceof Request ? $request : null,
             Response::class => fn() => $response instanceof Response ? $response : null,
             Uri::class => fn() => $uri instanceof Uri ? $uri : null,

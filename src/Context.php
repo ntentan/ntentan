@@ -7,12 +7,10 @@ use ntentan\sessions\SessionStore;
 class Context
 {
     private string $prefix;
-    private SessionStore $session;
 
-    public function __construct(SessionStore $session)
+    public function __construct()
     {
         $this->prefix = '';
-        $this->session = $session;
     }
 
     public function getPrefix(): string
@@ -28,11 +26,6 @@ class Context
     public function getPath($path): string
     {
         return "{$this->prefix}{$path}";
-    }
-
-    public function getSession(): SessionStore
-    {
-        return $this->session;
     }
 
     public function getIpAddress(): string

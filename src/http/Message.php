@@ -142,7 +142,7 @@ abstract class Message implements MessageInterface
      */
     public function getBody(): StreamInterface
     {
-        return $this->stream ??= new StringStream("");
+        return $this->stream;
     }
 
     /**
@@ -150,7 +150,7 @@ abstract class Message implements MessageInterface
      */
     public function withBody(StreamInterface $body): MessageInterface
     {
-        if (isset($this->stream) && $this->stream === $body) {
+        if ($this->stream === $body) {
             return $this;
         }
 

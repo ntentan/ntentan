@@ -8,7 +8,8 @@
         "ntentan/panie": "0.*                               ",
         "psr/http-message": "^2.0",
         "psr/http-server-handler": "^1.0",
-        "psr/http-server-middleware": "^1.0"
+        "psr/http-server-middleware": "^1.0",
+        "ntentan/kaikai": "^0.7.5"
     },
     "require-dev": {
         "phpunit/phpunit" : "@stable",

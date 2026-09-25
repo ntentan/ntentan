@@ -152,17 +152,7 @@ class ApplicationBuilder
                 fn() => new Response(),
                 'singleton' => true
             ],
-            Context::class => ['singleton' => true],
-            SessionStore::class => [
-                function (Container $container) {
-                    $sessionHandler = null;
-                    if($container->has(\SessionHandlerInterface::class)) {
-                        $sessionHandler = $container->get(\SessionHandlerInterface::class);
-                    }
-                    return new PhpSessionStore($sessionHandler);
-                },
-                'singleton' => true
-            ]
+            Context::class => ['singleton' => true]
         ]);
 
         return $this->container->get(Application::class);
