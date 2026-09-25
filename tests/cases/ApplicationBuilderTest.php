@@ -21,7 +21,6 @@ class ApplicationBuilderTest extends TestCase
 
         $reflection = new \ReflectionClass(ApplicationBuilder::class);
         $instance = $reflection->getProperty('instance');
-        $instance->setAccessible(true);
         $instance->setValue(null, null);
     }
     public function testBuild()

@@ -31,5 +31,10 @@ class Header implements RequestFilter
         $values = $request->getHeader($this->header);
         return count($values) > 0 && in_array($this->value, $values);
     }
+
+    public function getValues(): array
+    {
+        return [$this->header => $this->value];
+    }
 }
 
