@@ -86,7 +86,7 @@ class UploadedFile implements UploadedFileInterface
         }
 
         $sapi = PHP_SAPI;
-        if (empty($sapi) || str_starts_with($sapi, 'cli') || !is_uploaded_file($this->path)) {
+        if (str_starts_with($sapi, 'cli') || !is_uploaded_file($this->path)) {
             if ($this->path !== '') {
                 if (!@rename($this->path, $targetPath)) {
                     if (!@copy($this->path, $targetPath)) {
