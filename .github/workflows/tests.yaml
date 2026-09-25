@@ -17,19 +17,19 @@ jobs:
       - name: Running php unit tests
         run: vendor/bin/phpunit
 
-  # PHPStan:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v2
-  #       with:
-  #         fetch-depth: 2
-  #     - name: Install PHP
-  #       uses: shivammathur/setup-php@v2
-  #       with:
-  #         tools: composer
-  #     - name: Running composer
-  #       run: composer install
-  #     - name: Running PHPStan
-  #       run: vendor/bin/phpstan analyse
+  PHPStan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          tools: composer
+      - name: Running composer
+        run: composer install
+      - name: Running PHPStan
+        run: vendor/bin/phpstan analyse
 
