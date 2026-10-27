@@ -7,11 +7,13 @@ Added
 -----
 - Restored the session management subsystem (`src/sessions/`), including the `SessionStore` interface, `PhpSessionStore`, `DefaultSessionContainer`, and `FileSessionHandler`.
 - Added `Put` and `Delete` HTTP request method attribute filters for routing.
+- Added dedicated test cases for HTTP filters (`DeleteTest`, `PutTest`) and expanded `RouteTest` for route metadata accessors and compiled variables.
 
 Changed
 -------
-- Updated `Route::compile()` to return an associative array with the compiled route regex pattern and extracted variables.
-- Updated `Route` filter to lazily compile route regular expressions and provide default empty route string.
+- Updated `Route::compile()` to return an associative array containing the compiled route regex pattern and extracted variable names.
+- Updated `Route` filter to lazily compile route regular expressions upon matching.
+- Updated `Route` filter constructor to make the route pattern optional with an empty string default.
 - Added `getRoute()` and `getMethod()` accessors to the `Route` filter.
 
 v0.13.0 - 2026-09-25
