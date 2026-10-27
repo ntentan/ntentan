@@ -9,14 +9,18 @@ class Route implements RequestFilter
     private string $regexp;
     private array $values;
     protected string $method;
+    private string $route;
 
-    public function __construct(string $route)
+    public function __construct(string $route = "")
     {
-        $this->regexp = self::compile($route);
+        $this->route = $route;
     }
 
-    function match(ServerRequestInterface $request): bool
+    public function match(ServerRequestInterface $request): bool
     {
+        if (!isset($this->regexp)) {
+            $this->regexp = self::compile($this->route)['regex'];
+        }
         if (strtolower($request->getMethod()) == strtolower($this->method)
             && preg_match("|^{$this->regexp}$|i", urldecode($request->getUri()->getPath()), $matches)
         ) {
@@ -26,7 +30,7 @@ class Route implements RequestFilter
         return false;
     }
 
-    public static function compile(string $pattern): string
+    public static function compile(string $pattern): array
     {
         $variables = [];
 
@@ -42,11 +46,21 @@ class Route implements RequestFilter
             str_replace('/', '(/)*', $pattern)
         );
 
-        return $regexp;
+        return ['regexp' => $regexp, 'variables' => $variables];
     }
 
     public function getValues(): array
     {
         return $this->values;
+    }
+
+    public function getRoute(): string
+    {
+        return $this->route;
+    }
+
+    public function getMethod(): string
+    {
+        return $this->method;
     }
 }
