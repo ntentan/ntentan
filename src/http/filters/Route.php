@@ -19,7 +19,7 @@ class Route implements RequestFilter
     public function match(ServerRequestInterface $request): bool
     {
         if (!isset($this->regexp)) {
-            $this->regexp = self::compile($this->route)['regex'];
+            $this->regexp = self::compile($this->route)['regexp'];
         }
         if (strtolower($request->getMethod()) == strtolower($this->method)
             && preg_match("|^{$this->regexp}$|i", urldecode($request->getUri()->getPath()), $matches)

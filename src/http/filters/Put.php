@@ -1,6 +1,6 @@
 <?php
 
-namespace ntenta\http\filters;
+namespace ntentan\http\filters;
 
 use ntentan\http\filters\Route;
 

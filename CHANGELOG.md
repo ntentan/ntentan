@@ -1,6 +1,19 @@
 CHANGELOG
 =========
 
+v0.14.0 - 2026-10-27
+====================
+Added
+-----
+- Restored the session management subsystem (`src/sessions/`), including the `SessionStore` interface, `PhpSessionStore`, `DefaultSessionContainer`, and `FileSessionHandler`.
+- Added `Put` and `Delete` HTTP request method attribute filters for routing.
+
+Changed
+-------
+- Updated `Route::compile()` to return an associative array with the compiled route regex pattern and extracted variables.
+- Updated `Route` filter to lazily compile route regular expressions and provide default empty route string.
+- Added `getRoute()` and `getMethod()` accessors to the `Route` filter.
+
 v0.13.0 - 2026-09-25
 ====================
 Added
