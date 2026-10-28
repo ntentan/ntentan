@@ -1,6 +1,19 @@
 CHANGELOG
 =========
 
+v0.14.1 - 2026-10-27
+====================
+Added
+-----
+- Added unit test suites for `DefaultSessionContainer` and `FileSessionHandler`.
+
+Fixed
+-----
+- Fixed return type declarations and missing methods across session handlers to satisfy PHPStan and `\SessionHandlerInterface`.
+- Fixed missing exception class import in `FileSessionHandler` by using `ntentan\exceptions\NtentanException`.
+- Fixed session garbage collection in `FileSessionHandler` to return the number of deleted session files.
+- Guarded `session_start()` in `PhpSessionStore` against already active sessions.
+
 v0.14.0 - 2026-10-27
 ====================
 Added
