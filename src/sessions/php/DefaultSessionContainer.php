@@ -4,13 +4,14 @@ namespace ntentan\sessions\php;
 
 class DefaultSessionContainer implements \SessionHandlerInterface
 {
+    private array $sessions = [];
 
     /**
      * @inheritDoc
      */
     public function close(): bool
     {
-        // TODO: Implement close() method.
+        return true;
     }
 
     /**
@@ -18,7 +19,8 @@ class DefaultSessionContainer implements \SessionHandlerInterface
      */
     public function destroy(string $id): bool
     {
-        // TODO: Implement destroy() method.
+        unset($this->sessions[$id]);
+        return true;
     }
 
     /**
@@ -26,7 +28,7 @@ class DefaultSessionContainer implements \SessionHandlerInterface
      */
     public function gc(int $max_lifetime): int|false
     {
-        // TODO: Implement gc() method.
+        return 0;
     }
 
     /**
@@ -34,7 +36,7 @@ class DefaultSessionContainer implements \SessionHandlerInterface
      */
     public function open(string $path, string $name): bool
     {
-        // TODO: Implement open() method.
+        return true;
     }
 
     /**
@@ -42,7 +44,7 @@ class DefaultSessionContainer implements \SessionHandlerInterface
      */
     public function read(string $id): string|false
     {
-        // TODO: Implement read() method.
+        return $this->sessions[$id] ?? '';
     }
 
     /**
@@ -50,6 +52,7 @@ class DefaultSessionContainer implements \SessionHandlerInterface
      */
     public function write(string $id, string $data): bool
     {
-        // TODO: Implement write() method.
+        $this->sessions[$id] = $data;
+        return true;
     }
 }

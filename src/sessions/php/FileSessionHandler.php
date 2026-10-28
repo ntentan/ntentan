@@ -2,15 +2,13 @@
 
 namespace ntentan\sessions\php;
 
-use ntentan\utils\exceptions\FileNotFoundException;
+use ntentan\exceptions\NtentanException;
 
 /**
  * A session handler that stores session data in files.
- * This session handler is
  */
 class FileSessionHandler implements \SessionHandlerInterface
 {
-    private string $file;
     private string $sessionName;
     private string $sessionPath;
     private array $config;
@@ -24,6 +22,7 @@ class FileSessionHandler implements \SessionHandlerInterface
      * - path: The path where session files will be stored.
      * - createPath: Whether to create the path if it does not exist.
      * - pathPermissions: The permissions to set for the session files.
+     * - lifespan: The session lifetime in seconds (defaults to 3600).
      *
      * @param array $sessionConfig An array containing session configuration settings.
      */
@@ -34,7 +33,12 @@ class FileSessionHandler implements \SessionHandlerInterface
         session_set_save_handler($this, true);
     }
 
-    public function open($path, $name): bool
+    private function getSessionFile(string $id): string
+    {
+        return "{$this->sessionPath}/session_{$this->sessionName}_{$id}";
+    }
+
+    public function open(string $path, string $name): bool
     {
         $this->sessionPath = $this->config['path'] ?? $path;
         $this->sessionName = $name;
@@ -42,11 +46,11 @@ class FileSessionHandler implements \SessionHandlerInterface
             if ($this->config['createPath'] ?? false) {
                 mkdir($this->sessionPath, $this->config['pathPermissions'] ?? 0777, true);
             } else {
-                throw new FileNotFoundException("Session path [{$this->sessionPath}] does not exist or is not a directory.");
+                throw new NtentanException("Session path [{$this->sessionPath}] does not exist or is not a directory.");
             }
         }
         if (!is_writable($this->sessionPath)) {
-            throw new FileNotFoundException("Session path [{$this->sessionPath}] is not writable.");
+            throw new NtentanException("Session path [{$this->sessionPath}] is not writable.");
         }
         return true;
     }
@@ -56,12 +60,12 @@ class FileSessionHandler implements \SessionHandlerInterface
         return true;
     }
 
-    public function read($id): string
+    public function read(string $id): string|false
     {
-        $this->file = "{$this->sessionPath}/session_{$this->sessionName}_{$id}";
-        if (file_exists($this->file)) {
-            if (filemtime($this->file) + $this->lifespan > time()) {
-                return file_get_contents($this->file);
+        $file = $this->getSessionFile($id);
+        if (file_exists($file)) {
+            if (filemtime($file) + $this->lifespan > time()) {
+                return file_get_contents($file);
             } else {
                 return '';
             }
@@ -70,9 +74,9 @@ class FileSessionHandler implements \SessionHandlerInterface
         }
     }
 
-    public function write($id, $data): bool
+    public function write(string $id, string $data): bool
     {
-        $file = fopen($this->file, "w");
+        $file = fopen($this->getSessionFile($id), "w");
 
         if ($file !== false) {
             fwrite($file, $data);
@@ -83,19 +87,29 @@ class FileSessionHandler implements \SessionHandlerInterface
         }
     }
 
-    public function destroy($id): bool
+    public function destroy(string $id): bool
     {
         $file = $this->getSessionFile($id);
-        return unlink($file);
-    }
-
-    public function gc($lifetime): false|int
-    {
-        foreach (glob("{$this->sessionPath}/sess_*") as $filename) {
-            if (filemtime($filename) + $this->lifespan < time()) {
-                unlink($filename);
-            }
+        if (file_exists($file)) {
+            return unlink($file);
         }
         return true;
+    }
+
+    public function gc(int $max_lifetime): int|false
+    {
+        $count = 0;
+        $files = glob("{$this->sessionPath}/session_{$this->sessionName}_*");
+        if ($files === false) {
+            return false;
+        }
+        foreach ($files as $filename) {
+            if (filemtime($filename) + $this->lifespan < time()) {
+                if (unlink($filename)) {
+                    $count++;
+                }
+            }
+        }
+        return $count;
     }
 }

@@ -4,25 +4,27 @@ namespace ntentan\sessions;
 
 class PhpSessionStore implements SessionStore
 {
-    private \SessionHandlerInterface $sessionHandler;
+    private ?\SessionHandlerInterface $sessionHandler = null;
 
-    public function __construct(?\SessionHandlerInterface $sessionHandler)
+    public function __construct(?\SessionHandlerInterface $sessionHandler = null)
     {
         if (!is_null($sessionHandler)) {
             $this->sessionHandler = $sessionHandler;
             session_set_save_handler($sessionHandler, true);
         }
-        session_start();
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
     }
 
-    public function set(string $key, mixed $value)
+    public function set(string $key, mixed $value): void
     {
         $_SESSION[$key] = $value;
     }
 
     public function get(string $key): mixed
     {
-        return isset($_SESSION[$key]) ? $_SESSION[$key] : null;
+        return $_SESSION[$key] ?? null;
     }
 
     public function has(string $key): bool
@@ -35,8 +37,7 @@ class PhpSessionStore implements SessionStore
         unset($_SESSION[$key]);
     }
 
-
-    public function destroy()
+    public function destroy(): void
     {
         session_destroy();
     }
