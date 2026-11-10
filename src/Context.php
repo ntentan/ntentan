@@ -8,9 +8,12 @@ class Context
 {
     private string $prefix;
 
-    public function __construct()
+    private SessionStore $session;
+
+    public function __construct(SessionStore $session)
     {
         $this->prefix = '';
+        $this->session = $session;
     }
 
     public function getPrefix(): string
@@ -26,6 +29,11 @@ class Context
     public function getPath($path): string
     {
         return "{$this->prefix}{$path}";
+    }
+
+    public function getSession(): object
+    {
+        return $this->session;
     }
 
     public function getIpAddress(): string
